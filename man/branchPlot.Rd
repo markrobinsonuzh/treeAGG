@@ -4,10 +4,11 @@
 \alias{branchPlot}
 \title{Plot a tree branch}
 \usage{
-branchPlot(branch, CladeLab, CladeCol, nodeLab = NULL, LegendName)
+branchPlot(nodeBranch, stree, CladeLab, CladeCol, nodeLab = NULL, sizeNode,
+  add.Lab = TRUE, colNode, LegendName, ...)
 }
 \arguments{
-\item{branch}{a selected branch to be plotted (phylo object)}
+\item{nodeBranch}{root node of a selected branch to be plotted (phylo object)}
 
 \item{CladeLab}{a vector includes the labels of root node for interested clades
 and "other" (label for the branch part which are not included in the interested
@@ -17,7 +18,13 @@ clades)}
 CladeLab and CladeCol is matched}
 
 \item{nodeLab}{a vector. Labels of nodes to be annotated in the plot; default is NULL,
-which indicates no node is annotated in the plot}
+which indicates no node is annotated in the plot.}
+
+\item{sizeNode}{a number to scale the size of the annotated node}
+
+\item{add.Lab}{indicate whether the label of annotated nodes should be added}
+
+\item{colNode}{colour specified for the nodes annotated (nodeLab)}
 
 \item{LegendName}{the name of the legend title.}
 }
@@ -27,4 +34,30 @@ a plot
 \description{
 \code{branchPlot} could show a tree plot of a selected branch with annotated
 nodes and clades
+}
+\examples{
+\\notrun{
+library(ape)
+n <- 20
+nodeLab <- paste("Node",1:(n-1),sep="")
+tipLab <- paste("T",1:n,sep="")
+# entire tree
+Tree <- rtree(n,tip.label= tipLab)
+Tree$node.label <- nodeLab
+
+# Subtrees
+sTree <- subtrees(Tree)
+names(sTree) <- nodeLab
+
+branchPlot(nodebranch = sTree[["Node1"]],
+stree = sTree,
+CladeLab = c("Node17","Node12","other"),
+CladeCol = c("blue","orange","black"),
+nodeLab = c("Node14","Node13"),
+sizeNode = 2,
+LegendName = "Clade")
+}
+
+
+
 }

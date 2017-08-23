@@ -18,13 +18,35 @@ ClusterInf(RealDat, wtree, nClus, stree)
 \value{
 a data frame
 
-First column indicates the cluster name
-Second column indicates the total number of tips in the cluster
-Third column indicates the proportions of counts for the clusters which are estimated
+Cluster column indicates the cluster name
+
+Freq column indicates the total number of tips in the cluster
+
+Proportion indicates the proportions of counts for the clusters which are estimated
 from the real data use \code{dirmult} from package dirmult
 }
 \description{
 Information of clusters
 \code{ClusterInf} summarize the total number of tips in the cluster
 and the proportion of counts for each cluster calculated from the real data
+}
+\examples{
+{
+library(GUniFrac) # real throat data
+# real data
+data("throat.otu.tab")
+data("throat.tree")
+
+
+Lab <- paste("Node", 1:throat.tree$Nnode, sep="")
+throatTree <- addNodeLab(treeO = throat.tree, nodeLab = Lab)
+# prune tree at each node
+smallTree <- pruneTree(wtree = throatTree)
+
+# cluster the tree and decide on which cluster the signal is located
+clusList <- ClusterForm(wtree = throatTree, nClus = 60)  # name order 1:nClus
+ClusInf <- ClusterInf(RealDat = throat.otu.tab, wtree = throatTree,
+nClus = 60, stree = smallTree)
+
+}
 }

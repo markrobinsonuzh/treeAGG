@@ -9,11 +9,33 @@
 #'         both tips and nodes are returned
 #' @return a character vector which includes labels of offspring tips
 #' @examples \dontrun{
-#' rnorm(10)
+#' library(ape)
+#' library(ggtree)
+#'
+#' n <- 20
+#' Lab <- paste("Node",1:(n-1),sep="")
+#' tipLab <- paste("T",1:n,sep="")
+#'
+#' # entire tree
+#' set.seed(1)
+#' Tree <- rtree(n,tip.label= tipLab)
+#' new.Tree <- addNodeLab(treeO = Tree, nodeLab = Lab)
+#' sTree <- pruneTree(new.Tree)
+#'
+#' # PLOT tree
+#' ggtree(new.Tree,branch.length = "none")+
+#' geom_tiplab()+
+#' geom_text2(aes(subset=!isTip,label=label),hjust=-0.3)
+#'
+#' # find offspring
+#' offsp1 <- FindOffspring(ancestor = "Node14", stree = sTree,
+#' only.Tip = TRUE)
+#' offsp2 <- FindOffspring(ancestor = "Node14", stree = sTree,
+#' only.Tip = FALSE)
 #' }
 
 
-FindOffspring<-function(ancestor,stree, only.Tip = TRUE){
+elementFind <- function(ancestor,stree, only.Tip = TRUE){
 
   # check whether all ancestor specified exist in the tree
   UnitAll <- unique(unlist(lapply(stree,
@@ -42,4 +64,17 @@ FindOffspring<-function(ancestor,stree, only.Tip = TRUE){
   names(des.final) <- NULL
 
   return(des.final)
+}
+
+FindOffspring <- function(ancestor,stree, only.Tip = TRUE){
+
+  a.List <- as.list(ancestor)
+  osList <- lapply(a.List, FUN = elementFind, stree = stree,
+                   only.Tip = only.Tip)
+  if(length(osList) == 1){
+    osList <- unlist(osList)
+  }else{ osList <- osList }
+
+  return(osList)
+
 }

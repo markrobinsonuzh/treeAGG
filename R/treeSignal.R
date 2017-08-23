@@ -18,7 +18,7 @@
 #'
 #' @return a tree
 #'
-#'@example \notrun{
+#'@examples \notrun{
 #' load("/Volumes/fiona/simu_500/R package/TreeInfer/data/Data_calcRateP.RData")
 #' load("/Volumes/fiona/simu_500/R package/TreeInfer/data/tree.RData")
 #'
@@ -42,7 +42,7 @@ treeSignal <- function(ModOutp, TipDiff, colSel ,sizeSel, pchSel, alpha,
   findSig <- find.p.min(wtree, ResTipNode= ModOutp, stree, P.lim, VarCol)
 
   # color for target points
-  p <- ggtree(ptree,branch.length = "none",...)
+  p <- ggtree::ggtree(ptree,branch.length = "none",...)
 
   names(pchSel) <- names(colSel) <- names(sizeSel) <-  c("True","Find","Match")
   pchPoint <- colPoint <- sizePoint <- rep(NA,nrow(p$data))
@@ -62,20 +62,21 @@ treeSignal <- function(ModOutp, TipDiff, colSel ,sizeSel, pchSel, alpha,
   sizePoint[intersect(intersect(findSig,trueSig),p$data$label)] <- sizeSel["Match"]
 
 
-  pointDef<-cbind.data.frame(label=p$data$label,
+  pointDef <- data.frame(label=p$data$label,
                              pchPoint = pchPoint,
                              colPoint = colPoint,
-                             sizePoint = sizePoint)
+                             sizePoint = sizePoint,
+                         stringsAsFactors = FALSE)
   p <- p %<+% pointDef
 
   # Tree plot
 
-  p+geom_point2(aes(subset= (p$data$label %in% c(trueSig,findSig)),
+   p + ggtree::geom_point2(aes(subset= (p$data$label %in% c(trueSig,findSig)),
                     color = I(colPoint),size=sizePoint),
                 alpha=alpha)+
-    theme(legend.position="bottom",legend.key=element_blank())+
-    guides(shape=FALSE,size=FALSE)+
-    scale_color_manual(name=LegendName,
+    ggplot2::theme(legend.position="bottom",legend.key=element_blank())+
+    ggplot2::guides(shape=FALSE,size=FALSE)+
+    ggplot2::scale_color_manual(name=LegendName,
                        values=c("blue","firebrick","darkorchid"),
                        labels=names(colSel))
 }

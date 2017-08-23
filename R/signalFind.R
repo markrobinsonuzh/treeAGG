@@ -10,18 +10,18 @@
 #' @return a character vector which shows the simplified result : signal nodes and tips
 #' which can not be aggregated any more on the tree
 #'
-#'@example \notrun{
+#'@examples \notrun{
 #' library(ape)
 #' n <- 20
-#' nodeLab <- paste("Node",1:(n-1),sep="")
+#' Lab <- paste("Node",1:(n-1),sep="")
 #' tipLab <- paste("T",1:n,sep="")
 #' # entire tree
 #' Tree <- rtree(n,tip.label= tipLab)
-#' Tree$node.label <- nodeLab
+#' Tree <- addNodeLab(treeO = Tree, nodeLab = Lab)
 #'
 #' # Subtrees
-#' sTree <- subtrees(Tree)
-#' names(sTree) <- nodeLab
+#' sTree <- pruneTree(Tree)
+#'
 #'
 #' # PLOT
 #' ggtree(Tree,branch.length = "none") +

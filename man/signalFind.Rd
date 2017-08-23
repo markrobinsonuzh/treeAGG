@@ -22,3 +22,30 @@ Given the known significant differential tips,
 this functions could find the highest nodes on the tree shared by these tips
 and aggregate the tips by their shared nodes to make the result short
 }
+\examples{
+\\notrun{
+library(ape)
+n <- 20
+Lab <- paste("Node",1:(n-1),sep="")
+tipLab <- paste("T",1:n,sep="")
+# entire tree
+Tree <- rtree(n,tip.label= tipLab)
+Tree <- addNodeLab(treeO = Tree, nodeLab = Lab)
+
+# Subtrees
+sTree <- pruneTree(Tree)
+
+
+# PLOT
+ggtree(Tree,branch.length = "none") +
+geom_text2(aes(subset=!isTip, label=label), hjust=-.3) +
+geom_tiplab()
+
+# Differential tips (expect to get "Node4" "Node8" "T1")
+# find the shared nodes from the tree plot
+DiffTip <- c("T7","T15","T1","T9","T19")
+
+# final result
+rn <- signalFind(DiffTip, Tree, sTree)
+}
+}

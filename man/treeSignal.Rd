@@ -39,3 +39,18 @@ a tree
 \code{treeSignal} returns a tree plot with true signal location and found signal
 location labelled with different colors
 }
+\examples{
+\\notrun{
+load("/Volumes/fiona/simu_500/R package/TreeInfer/data/Data_calcRateP.RData")
+load("/Volumes/fiona/simu_500/R package/TreeInfer/data/tree.RData")
+
+edg1 <- edgeRes[[1]]
+
+treeSignal (ModOutp=edg1, TipDiff=c(TipC15,TipC19),
+colSel=c("blue","firebrick","darkorchid")
+,pchSel = c(1,1,1),
+alpha=1,wtree=Wtree, stree=Stree, sizeSel = c(2,1,2),
+LegendName=" ",P.lim = 0.05,
+VarCol = "FDR",ptree=wtree,size=0.1)
+}
+}

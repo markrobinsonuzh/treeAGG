@@ -4,7 +4,7 @@
 \alias{addRank}
 \title{create rank variable}
 \usage{
-addRank(ModOutp, varEst, varSE, varRank, pkg = "edgeR")
+addRank(ModOutp, varEst, varSE, ...)
 }
 \arguments{
 \item{ModOutp}{a dataframe output from differenetial analysis package (such as: edgeR)}
@@ -13,12 +13,37 @@ addRank(ModOutp, varEst, varSE, varRank, pkg = "edgeR")
 
 \item{varSE}{the name of the column which contains the standard error of main effect estimate}
 
-\item{varRank}{the name to be used for the column of rank variable}
+\item{...}{see the arguments except data in \code{rvalues::rvalues}}
+}
+\value{
+a dataframe
+This function returns a new data frame which is actually the input dataframe ModOutp + a
+new created column rvalue.
 
-\item{pkg}{"edgeR" or "other"; if "edgeR", standard error of main effect estimates are calculated
-within the function}
+rvalue is r value
 }
 \description{
 \code{addRank} is to create a rank variable which could be used later in
 the tree aggregateion.
+}
+\examples{
+{
+
+library(DESeq2)
+# generate count tables from RNA-Seq data
+ cnts <- matrix(rnbinom(n=1000, mu=100, size=1/0.5), ncol=10)
+ rownames(cnts) <- 1:nrow(cnts)
+ cond <- factor(rep(1:2, each=5))
+
+# object construction
+dds <- DESeqDataSetFromMatrix(cnts, DataFrame(cond), ~ cond)
+
+# standard analysis
+dds <- DESeq(dds)
+res <- results(dds)
+
+# compute r-value
+Rres <- addRank(ModOutp = res, varEst = "log2FoldChange", varSE = "lfcSE",
+varRank = "rvalue")
+#' }
 }

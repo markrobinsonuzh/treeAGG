@@ -22,3 +22,20 @@ The first column the root label.
 \code{treeLevel} convert a tree structure into a matrix structure with
 tips in the rows and tree levels in columns.
 }
+\examples{
+\\notrun{
+library(ape)
+n <- 20
+Lab <- paste("Node",1:(n-1),sep="")
+tipLab <- paste("T",1:n,sep="")
+# entire tree
+Tree <- rtree(n,tip.label= tipLab)
+Tree <- addNodeLab(treeO = Tree, nodeLab = Lab)
+
+# Subtrees
+sTree <- pruneTree(Tree)
+
+
+Mtree <- treeLevel(wtree = Tree, stree = sTree)
+}
+}

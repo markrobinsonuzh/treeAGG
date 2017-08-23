@@ -10,18 +10,19 @@
 #' @return the label of the shared node
 #'
 #'
-#' @example {
+#' @examples {
 #' library(ape)
 #' n <- 20
-#' nodeLab <- paste("Node",1:(n-1),sep="")
+#' Lab <- paste("Node",1:(n-1),sep="")
 #' tipLab <- paste("T",1:n,sep="")
+#'
 #' # entire tree
 #' Tree <- rtree(n,tip.label= tipLab)
-#' Tree$node.label <- nodeLab
+#' Tree <- addNodeLab(treeO = Tree, nodeLab = Lab)
 #'
 #' # Subtrees
-#' sTree <- subtrees(Tree)
-#' names(sTree) <- nodeLab
+#' sTree <- pruneTree(Tree)
+#'
 #'
 #' # PLOT tree
 #' ggtree(Tree,branch.length = "none")+

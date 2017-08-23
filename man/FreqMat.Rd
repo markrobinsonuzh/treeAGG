@@ -15,3 +15,11 @@ a vector includes the frequency value of each row.
 \description{
 FreqMat calculate the frequency of rows with same values in a matrix
 }
+\examples{
+{
+ MM <- cbind(c(1,1,1,3,2,2,3),c(0,0,2,1,0,1,1))
+ kk<-FreqMat(MM)
+ cbind(MM,kk)
+}
+
+}

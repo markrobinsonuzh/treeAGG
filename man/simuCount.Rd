@@ -27,8 +27,9 @@ and finally select some clusters to add signal}
 (use the root node labels for these two branches); By default,
 NULL is set, which means we don't swap any two branches.}
 
-\item{diffClus}{a vector specifies some branches we want to add signal (differentially abundant)
-by directly changing their fold change; By default, NULL is set,
+\item{diffClus}{a vector specifies branches which we want to add signal
+(differentially abundant) to. The signal is created by directly
+changing their fold change; By default, NULL is set,
 which means we don't change fold change of any branch.
 (use the root node label for each branche)}
 
@@ -45,4 +46,21 @@ the start string "C1_" and string "C2_"
 on two different conditions. The signal on a specified part of a tree could be
 easily simulated by changing arguments like swapClus or diffClus in \cpde{simuCount}
 function. The proportions of all tips are estimated from the real data.
+}
+\examples{
+{
+library(dirmult)
+library("GUniFrac")
+data(throat.tree)
+data(throat.otu.tab)
+
+Wtree <- addNodeLab(treeO = throat.tree,
+nodeLab = paste("Node",1:throat.tree$Nnode,sep=""))
+
+DF <- simuCount(RealDat = throat.otu.tab,
+wtree = Wtree,nClus = 40,nSam = 5,
+muNB = 10000,sizeNB = 5,
+swapClus = c("cluster1","cluster19"),
+diffClus = NULL,FC=NULL)
+}
 }

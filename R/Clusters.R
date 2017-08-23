@@ -9,7 +9,7 @@
 #' @return a list with each element representing a cluster.
 #' In each element, all tips in that cluster are saved.
 #'
-#' @example
+#' @examples \notrun{
 #' library(ape)
 #' n <- 20
 #' nodeLab <- paste("Node",1:(n-1),sep="")
@@ -19,6 +19,8 @@
 #' Tree$node.label <- nodeLab
 #'
 #' ClusterForm(Tree,3)
+#' }
+#'
 
 ClusterForm <- function(wtree,nClus){
 
@@ -51,17 +53,38 @@ ClusterForm <- function(wtree,nClus){
 #'
 #' @return a data frame
 #'
-#' First column indicates the cluster name
-#' Second column indicates the total number of tips in the cluster
-#' Third column indicates the proportions of counts for the clusters which are estimated
+#' Cluster column indicates the cluster name
+#'
+#' Freq column indicates the total number of tips in the cluster
+#'
+#' Proportion indicates the proportions of counts for the clusters which are estimated
 #' from the real data use \code{dirmult} from package dirmult
+#'
+#' @examples {
+#' library(GUniFrac) # real throat data
+#' # real data
+#' data("throat.otu.tab")
+#' data("throat.tree")
+#'
+#'
+#' Lab <- paste("Node", 1:throat.tree$Nnode, sep="")
+#' throatTree <- addNodeLab(treeO = throat.tree, nodeLab = Lab)
+#' # prune tree at each node
+#' smallTree <- pruneTree(wtree = throatTree)
+#'
+#' # cluster the tree and decide on which cluster the signal is located
+#' clusList <- ClusterForm(wtree = throatTree, nClus = 60)  # name order 1:nClus
+#' ClusInf <- ClusterInf(RealDat = throat.otu.tab, wtree = throatTree,
+#' nClus = 60, stree = smallTree)
+#'
+#' }
 
 
 ClusterInf <- function(RealDat, wtree, nClus, stree){
 
   clusList <- ClusterForm(wtree=wtree, nClus)
   # estimate parameters for Dirichlet distribution
-  DirMultOutput<-dirmult(data=as.matrix(RealDat))
+  DirMultOutput <- dirmult::dirmult(data=as.matrix(RealDat))
 
   ############# tips & clusters proportion ###############
   p.est<-DirMultOutput$pi

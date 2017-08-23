@@ -12,18 +12,18 @@
 #' and the root. Columns from left to right includes tree level from high to low.
 #' The first column the root label.
 #'
-#'@example \notrun{
+#'@examples \notrun{
 #' library(ape)
 #' n <- 20
-#' nodeLab <- paste("Node",1:(n-1),sep="")
+#' Lab <- paste("Node",1:(n-1),sep="")
 #' tipLab <- paste("T",1:n,sep="")
 #' # entire tree
 #' Tree <- rtree(n,tip.label= tipLab)
-#' Tree$node.label <- nodeLab
+#' Tree <- addNodeLab(treeO = Tree, nodeLab = Lab)
 #'
 #' # Subtrees
-#' sTree <- subtrees(Tree)
-#' names(sTree) <- nodeLab
+#' sTree <- pruneTree(Tree)
+#'
 #'
 #' Mtree <- treeLevel(wtree = Tree, stree = sTree)
 #'}

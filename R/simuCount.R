@@ -17,8 +17,9 @@
 #' @param swapClus a vector specifies two branches we want to swap their proportions
 #'                 (use the root node labels for these two branches); By default,
 #'                 NULL is set, which means we don't swap any two branches.
-#' @param diffClus a vector specifies some branches we want to add signal (differentially abundant)
-#'                 by directly changing their fold change; By default, NULL is set,
+#' @param diffClus a vector specifies branches which we want to add signal
+#'                 (differentially abundant) to. The signal is created by directly
+#'                 changing their fold change; By default, NULL is set,
 #'                 which means we don't change fold change of any branch.
 #'                 (use the root node label for each branche)
 #'
@@ -31,13 +32,21 @@
 #' the start string "C1_" and string "C2_"
 #'
 #'
-#' @example
-#' test1 <- simuCount(RealDat = throat.otu.tab,
+#' @examples {
+#' library(dirmult)
+#' library("GUniFrac")
+#' data(throat.tree)
+#' data(throat.otu.tab)
+#'
+#' Wtree <- addNodeLab(treeO = throat.tree,
+#' nodeLab = paste("Node",1:throat.tree$Nnode,sep=""))
+#'
+#' DF <- simuCount(RealDat = throat.otu.tab,
 #' wtree = Wtree,nClus = 40,nSam = 5,
 #' muNB = 10000,sizeNB = 5,
 #' swapClus = c("cluster1","cluster19"),
 #' diffClus = NULL,FC=NULL)
-#'
+#'}
 
 
 simuCount <- function(RealDat, wtree, nClus,
@@ -45,7 +54,7 @@ simuCount <- function(RealDat, wtree, nClus,
                       swapClus,diffClus = NULL,FC = NULL){
 
   # estimate parameters for Dirichlet distribution
-  DirMultOutput<-dirmult(data=as.matrix(RealDat))
+  DirMultOutput<- dirmult::dirmult(data=as.matrix(RealDat))
 
   ############# tips & clusters proportion ###############
   estP<-DirMultOutput$pi
@@ -71,7 +80,8 @@ simuCount <- function(RealDat, wtree, nClus,
   g.c1 <- p.c1 * gplus
 
   # ----------- simulate Libary size from NB ----------------
-  nSeq <- rnbinom(n=nSam, mu = muNB, size = sizeNB)
+  nSam1 <- nSam[1]
+  nSeq <- rnbinom(n=nSam1, mu = muNB, size = sizeNB)
 
   # ---------------- simulate counts -------------------------
   # the vector of alpha for dirichlet distribution is fixed
@@ -80,14 +90,14 @@ simuCount <- function(RealDat, wtree, nClus,
 
   # Mp.c1 : sample proportions
   # Mobs.c1 : sample counts
-  Mp.c1 <- matrix(0, nSam, length(g.c1))
-  rownames(Mp.c1) <- paste("C1_",1:nSam,sep="") # tips in columns
+  Mp.c1 <- matrix(0, nSam1, length(g.c1))
+  rownames(Mp.c1) <- paste("C1_",1:nSam1,sep="") # tips in columns
   colnames(Mp.c1) <- Tips
   Mobs.c1 <- Mp.c1
 
-  for (i in 1:nSam) {
+  for (i in 1:nSam1) {
     # proportion simulated from Dirichlet distribution
-    Mp.c1[i, ] <- rdirichlet(1, g.c1)[1, ]
+    Mp.c1[i, ] <- dirmult::rdirichlet(n = 1, alpha = g.c1)[1, ]
     # count matrix simulated from multinomial distribution
     Mobs.c1[i, ] <- rmultinom(1, nSeq[i], prob=Mp.c1[i, ])[, 1]
   }
@@ -124,13 +134,14 @@ simuCount <- function(RealDat, wtree, nClus,
 
   # Mp.c2 hold the underlying proportions (condition 2)
   g.c2 <- p.c2 * gplus
-  Mp.c2 <- matrix(0, nSam, length(g.c2))
-  rownames(Mp.c2) <- paste("C2_",1:nSam,sep="")
+  nSam2 <- nSam[2]
+  Mp.c2 <- matrix(0, nSam2, length(g.c2))
+  rownames(Mp.c2) <- paste("C2_",1:nSam2,sep="")
   colnames(Mp.c2) <- names(g.c2)
   Mobs.c2 <- Mp.c2
-  nSeq2 <- rnbinom(n = nSam, mu = muNB, size = sizeNB)
-  for (i in 1:nSam) {
-    Mp.c2[i, ] <- rdirichlet(1, g.c2)[1, ]
+  nSeq2 <- rnbinom(n = nSam2, mu = muNB, size = sizeNB)
+  for (i in 1:nSam2) {
+    Mp.c2[i, ] <- dirmult::rdirichlet(1, g.c2)[1, ]
     Mobs.c2[i, ] <- rmultinom(1, nSeq2[i], prob=Mp.c2[i, ])[, 1]
   }
 

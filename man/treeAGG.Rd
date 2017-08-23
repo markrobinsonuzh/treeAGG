@@ -30,5 +30,8 @@ This function applies minimum p-value algorithm to find the branch which
 is differentially abundant.
 }
 \examples{
+{
+
+}
 
 }

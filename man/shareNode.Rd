@@ -20,3 +20,29 @@ the label of the shared node
 \code{shareNode} could find the lowest level node which is shared
  by the specified descendants. (the root is the highest level on the tree)
 }
+\examples{
+{
+library(ape)
+n <- 20
+Lab <- paste("Node",1:(n-1),sep="")
+tipLab <- paste("T",1:n,sep="")
+
+# entire tree
+Tree <- rtree(n,tip.label= tipLab)
+Tree <- addNodeLab(treeO = Tree, nodeLab = Lab)
+
+# Subtrees
+sTree <- pruneTree(Tree)
+
+
+# PLOT tree
+ggtree(Tree,branch.length = "none")+
+geom_tiplab()+
+geom_text2(aes(subset=!isTip,label=label),hjust=-0.3)
+
+# find share node
+shareNode(child = c("T11","T4"), wtree =Tree, stree= sTree)
+shareNode(child = c("T11","T4","Node9"), wtree =Tree, stree= sTree)
+
+}
+}

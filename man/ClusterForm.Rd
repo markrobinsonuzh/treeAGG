@@ -19,3 +19,17 @@ In each element, all tips in that cluster are saved.
 \code{ClusterForm} cut tree into a defined number clusters,
 and save tips in each cluster as a list
 }
+\examples{
+\\notrun{
+library(ape)
+n <- 20
+nodeLab <- paste("Node",1:(n-1),sep="")
+tipLab <- paste("T",1:n,sep="")
+# generate an ultrametric tree
+Tree <- rcoal(n,tip.label= tipLab)
+Tree$node.label <- nodeLab
+
+ClusterForm(Tree,3)
+}
+
+}

@@ -151,10 +151,12 @@ tipComp<-function(rList,trueList,stree){
 #' @param Mat a matrix
 #' @return a vector includes the frequency value of each row.
 #' @export
-#' @example
-#'      MM <- cbind(c(1,1,1,3,2,2,3),c(0,0,2,1,0,1,1))
-#'      kk<-FreqMat(MM)
-#'      cbind(MM,kk)
+#' @examples {
+#'  MM <- cbind(c(1,1,1,3,2,2,3),c(0,0,2,1,0,1,1))
+#'  kk<-FreqMat(MM)
+#'  cbind(MM,kk)
+#' }
+#'
 
 FreqMat<-function(Mat){
   cTab <- apply(Mat,MARGIN = 1,FUN = function(z){

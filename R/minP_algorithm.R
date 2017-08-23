@@ -13,7 +13,9 @@
 #' @param VarAGG variable used to do tree aggregation
 #' @return a vector of character shows the labels of tips and nodes which
 #' have filtered by the minimum P-value algorithm
-#' @example
+#' @examples {
+#'
+#' }
 #'
 
 treeAGG<-function(wtree,ResTipNode,stree,P.lim,VarSig,VarAGG){
@@ -48,16 +50,18 @@ treeAGG<-function(wtree,ResTipNode,stree,P.lim,VarSig,VarAGG){
                        ,tree.i$tip.label),
                      node.i)
 
-    # add 1 here to avoid the NA p-value in tips
+    # add 1 here to avoid the NA p-value in tips / nodes
     # (NA might be due to the filteration in DESeq or not observed)
     rank <- ResTipNode[,VarAGG]
     names(rank) <- rownames(ResTipNode)
-    mRank.child <- min(c(rank[child.i],1)
-                    ,na.rm = TRUE)
+    mRank.child <- min(c(rank[child.i],1),
+                    na.rm = TRUE)
+    mRank.node <- min(c(rank[node.i],1),
+                      na.rm = TRUE)
     if(keep[node.i]){
       # if min value occur at nodes, remove their children
       # otherwise remove the nodes and keep their children
-      if(rank[node.i]>mRank.child){
+      if(mRank.node>mRank.child){
         keep[node.i]<-FALSE
       }else{
         keep[child.i]<-FALSE}
