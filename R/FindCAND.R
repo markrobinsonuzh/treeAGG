@@ -49,7 +49,7 @@ FindCAND <- function(iNode, stree, trueN){
   atList <- lapply(stree, FUN = function(x){x$tip.label})
   nt <- setdiff(unlist(atList), unlist(stList))
 
-  # inferred results which include signal
+  # inferred results
   resList <- sapply(iNode, FUN = FindOffspring, stree)
 
   # For each signal branch, find the corresponding inferred results
@@ -65,16 +65,26 @@ FindCAND <- function(iNode, stree, trueN){
   stnList <- lapply(as.list(trueN), FindOffspring, stree,
                       only.Tip = FALSE)
   names(stnList) <- trueN
+  # inferred result & significant & below the target node
   lowList <- lapply(stnList, FUN = function(x, y){ y[y %in% x] },
                     y = iNode) # result with signal & below target nodes
+  # exclusive & below target node & closest to the target node
   udList <- lapply(lowList, FUN = rmMember, stree)
 
-  # start removing inferred node from the top until it reach the highest node
-  # of each signal branch specified in lowList (udList)
+  # start removing inferred node from the top until it (udList)
+
+  # inferred result & significant & above the target node
   exNode <- setdiff(unlist(siG),unlist(lowList)) # this order is perfect
+  # inferred result & significant
   siGNode <- unlist(siG)
-  rmList <- sapply(seq_len(length(exNode)), FUN = function(x){exNode[1:x]})
+  # remove one by one
+  if(length(exNode) > 1){
+    rmList <- sapply(seq_along(exNode), FUN = function(x){exNode[1:x]})
+  }else{rmList <- list(NULL)}
+
   aftList <- lapply(rmList, FUN = function(x, y){setdiff(y, x)}, y = siGNode)
+
+
 
   # non-signal area : take the node in the lowest tree level and remove
   # their super branch (this is to lower the false positive)
