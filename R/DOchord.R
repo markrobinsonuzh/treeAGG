@@ -13,7 +13,7 @@
 #'                   the set (a set is a polygon in the figure) are
 #'                   ordered increasingly so that the large sets are
 #'                   arranged on the top (the size comparision is
-#'                   made within sets w/wo signal.
+#'                   made within sets w/wo signal).
 #' @param spPCT.r  a numeric value between 0 and 1. The percentage of the
 #'                 space in the right part of the figure. A high value
 #'                 would lead to a wide gap between polygons in the figure
