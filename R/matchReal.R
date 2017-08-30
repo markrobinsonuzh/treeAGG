@@ -9,7 +9,7 @@
 #' @param stree a list of phylo object
 #' @param decreasing logical value; indicate the sort order
 #'
-#' @result a list with each element including the inferred nodes / tips which are
+#' @return a list with each element including the inferred nodes / tips which are
 #' assigned to a true node
 #'
 #' @examples {

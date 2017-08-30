@@ -4,7 +4,8 @@
 \alias{Redge}
 \title{Differential analysis using edgeR package}
 \usage{
-Redge(countTab, nSam, isTip, isAnalyze, prior.count, normalize = TRUE)
+Redge(countTab, nSam, isTip, isAnalyze, prior.count, normalize = TRUE,
+  method = "TMM")
 }
 \arguments{
 \item{countTab}{a numeric matrix indicates the count table of units (eg. genes or OTUs)

@@ -15,6 +15,10 @@ matchReal(infN, trueN, stree, decreasing = FALSE)
 
 \item{decreasing}{logical value; indicate the sort order}
 }
+\value{
+a list with each element including the inferred nodes / tips which are
+assigned to a true node
+}
 \description{
 \code{matchReal} assigns the inferred nodes (or tips) to the corresponding true
 signal nodes. For each true signal nodes, the assigned inferred nodes are sorted

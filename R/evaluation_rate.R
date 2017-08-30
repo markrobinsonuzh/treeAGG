@@ -9,7 +9,7 @@
 #' @param type a charactor vector. Select from "TPR" / "FPR" / "FDR" to show which value would be
 #' calculated."TPR" (true positive rate), "FPR" (false positive rate), "FDR" (false discovery rate)
 #' @return a list for TPR, FPR, or FDR (depends on the type selected.)
-#' @
+#'
 #'
 
 
