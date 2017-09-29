@@ -4,7 +4,7 @@
 \alias{calcRate}
 \title{Calculate TPR, FPR, FDR on tips level}
 \usage{
-calcRate(InfMat, TrueLab, type)
+calcRate(InfMat, TrueLab, type, level, mean)
 }
 \arguments{
 \item{InfMat}{a matrix (rows: tree tips; columns: simulations.)
@@ -15,9 +15,13 @@ or 0 (real negative)}
 
 \item{type}{a charactor vector. Select from "TPR" / "FPR" / "FDR" to show which value would be
 calculated."TPR" (true positive rate), "FPR" (false positive rate), "FDR" (false discovery rate)}
+
+\item{level}{a numeric value as the threshold value of adjusted p-value. Results with value
+above this level are categorized as non-significant}
 }
 \value{
-a list for TPR, FPR, or FDR (depends on the type selected.)
+a matrix with columns for TPR, FPR, or FDR (depends on the type selected.) and rows
+for simulations
 }
 \description{
 Calculate TPR (true positive rate), FPR (false positive rate), FDR (false discovery rate)

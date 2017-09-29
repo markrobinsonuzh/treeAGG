@@ -64,7 +64,9 @@ branchPlot <- function(nodeBranch,stree,CladeLab,CladeCol,
   df[,"colGroup"] <- tail(CladeLab1,1)
 
   selClade <- head(CladeLab1, -1)
-  # check whether selected clades exist in this branch
+  # check whether selected clades exist in the branch
+  # with nodeBranch as root node
+
   ind.m <- match(selClade, df$label)
   if(sum(!is.na(ind.m)) ==0) {
     stop("None of selected clades are in this branch")

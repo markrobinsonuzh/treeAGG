@@ -39,7 +39,7 @@
 #'
 #' }
 
-groupMat <- function(vectNT, stree ){
+groupMat <- function(vectNT, stree, extend = FALSE ){
 
   if(!is.atomic(vectNT)){
     stop("vectNT need to be an atomic vector")
@@ -71,7 +71,14 @@ groupMat <- function(vectNT, stree ){
   vectClus <- unlist(clusList)
   names(vectClus) <- unlist(allList)
 
-  ff <- vectClus[allTip]
-  return(ff)
+  if(extend){
+    return(vectClus)
+  }else{
+    ff <- vectClus[allTip]
+    return(ff)
   }
 
+  }
+
+
+groupMat

@@ -4,16 +4,18 @@
 \alias{calcRateP}
 \title{Calculate TPR, FPR, FDR after applying min P-value algorithm}
 \usage{
-calcRateP(wtree, ResTipNode, stree, P.lim, VarCol, TrueLab, type)
+calcRateP(wtree, stree, resModel, P.lim, TrueLab, type, VarSig, VarAGG,
+  mean = FALSE)
 }
 \arguments{
 \item{wtree}{phylo object; the entire tree for all OTUs}
 
-\item{ResTipNode}{A list of data frame;  (each data frame includes at least :
+\item{stree}{a list of all the subtrees of a phylogenetic tree (wtree)}
+
+\item{resModel}{A list of data frame;  (each data frame includes at least :
        1. the label of tree nodes and tips as row names
        2. adjusted-p value in one column)#' @param TrueLab numerical vector. Tips as names; value only include 1 (real positive)
-or 0 (real negative)
-#' @param stree a list of all the subtrees of a phylogenetic tree (wtree)}
+or 0 (real negative)}
 
 \item{P.lim}{: the threshold value for adjusted-P}
 
@@ -23,10 +25,14 @@ or 0 (real negative)}
 \item{type}{a charactor vector. Select from "TPR" / "FPR" / "FDR" to show which value would be
 calculated."TPR" (true positive rate), "FPR" (false positive rate), "FDR" (false discovery rate)}
 
-\item{VarCol:}{column name for adjusted-P}
-}
-\value{
-a list of vectors for TPR, FPR, or FDR (depends on the type selected.)
+\item{VarSig}{a character specifys the name of the column which is used to do statistical
+significance test.}
+
+\item{VarAGG}{na character specifys the name of the column which is used to do tree aggregation}
+
+\item{mean}{a logical value. If TRUE, then the mean of "TPR" / "FPR" / "FDR" on the same FDR
+level are returned.
+ @return a list of vectors for TPR, FPR, or FDR (depends on the type selected.)}
 }
 \description{
 Calculate TPR (true positive rate), FPR (false positive rate), FDR (false discovery rate)

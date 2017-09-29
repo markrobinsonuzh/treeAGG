@@ -4,7 +4,7 @@
 \alias{addRank}
 \title{create rank variable}
 \usage{
-addRank(ModOutp, varEst, varSE, ...)
+addRank(ModOutp, varEst, varSE, symmetry = TRUE, ...)
 }
 \arguments{
 \item{ModOutp}{a dataframe output from differenetial analysis package (such as: edgeR)}

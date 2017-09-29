@@ -4,7 +4,7 @@
 \alias{groupMat}
 \title{convert inferred results into clusters}
 \usage{
-groupMat(vectNT, stree)
+groupMat(vectNT, stree, extend = FALSE)
 }
 \arguments{
 \item{vectNT}{a vector includes inferred nodes (represent branch) and inferred tips}

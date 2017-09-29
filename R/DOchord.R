@@ -54,7 +54,7 @@ DOchord <- function(infN, trueN, stree, decreasing = FALSE,
                     color.group = c("coral","cornflowerblue","gray48"),
                     color.sig = c("TRUE"="lightseagreen",
                                   "FALSE"="lightblue4"),
-                    RI){
+                    score, scoreLab){
 
   # Data for plot
   df <- choreData(infN, trueN, stree, decreasing)
@@ -108,7 +108,7 @@ DOchord <- function(infN, trueN, stree, decreasing = FALSE,
                         y = c(0, 0, hy.1, hy.2, - rOut+1.5*ds ),
                         lab = c("Real", "Estimated", "Differential",
                                 "Non-differential",
-                                paste("RI : ", RI, sep = " ")),
+                                paste(scoreLab, ":", score, sep = " ")),
                         colGrp = c("black", "black",
                                    color.sig[names(color.sig)=="TRUE"],
                                    color.sig[names(color.sig)=="FALSE"],
@@ -147,7 +147,7 @@ DOchord <- function(infN, trueN, stree, decreasing = FALSE,
     ggplot2::scale_fill_manual(values = color.scale)+
     ggplot2::geom_vline(xintercept = 0)+
     ggplot2::geom_label(data = df.labM, aes(x, y, label = lab,
-                                  colour = I(colGrp)))+
+                                  colour = I(colGrp)), label.size = 1)+
     ggplot2::geom_text(data = df.labL,
               aes(x, y, label = lab,
                   angle = angle),
