@@ -35,7 +35,7 @@
 #' #' }
 
 
-addRank <- function(ModOutp,varEst, varSE, ...){
+addRank <- function(ModOutp,varEst, varSE, symmetry = TRUE, ...){
 
   if(is.null(rownames(ModOutp))){
     stop("rownames of the count table ModOutp need to be specified")
@@ -44,16 +44,33 @@ addRank <- function(ModOutp,varEst, varSE, ...){
   # a data frame with the first column containing the main estimates
   # and the second column containing the nuisance terms (like SE)
   Est0 <- ModOutp[,c(varEst,varSE)]
-  Est1 <- Est0[!is.na(Est0[,varEst]),]
+  Est1A <- Est0[!is.na(Est0[,varEst]),]
+
+  # make mirror
+  if(symmetry){
+    Est1B <- Est1A
+    Est1B$estimate <- -Est1A$estimate
+    rownames(Est1B) <- paste(rownames(Est1A), "_mirror", sep = "")
+    Est1 <- rbind(Est1A, Est1B)
+  }else{
+    Est1 <- Est1A
+    }
 
   # use rvalues package to calculate the r values
-  rRank0 <- rvalues::rvalues(Est1)$rvalues
+  rRank0 <- rvalues::rvalues(Est1, ...)$rvalues
   names(rRank0) <- rownames(Est1)
+
+  if(symmetry){
+    rRank1 <- sort(rRank0)[1:(0.5*length(rRank0))]
+    names(rRank1) <- gsub("_mirror", "", names(rRank1))
+    }else{
+    rRank1 <- rRank0
+    }
 
   # units with NA p-value have NA rvalues
   rRank <- rep(NA, nrow(Est0))
   names(rRank) <- rownames(Est0)
-  rRank[names(rRank0)] <- rRank0
+  rRank[names(rRank1)] <- rRank1
 
   # include rvalues as a new column
   df <- cbind.data.frame(ModOutp, rvalue = rRank)
