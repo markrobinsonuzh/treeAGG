@@ -92,7 +92,7 @@ calcRate<-function(InfMat, TrueLab, type, level, mean){
   })
 
   rvv <- do.call(rbind, lvv)
-  mvv <- c(apply(rvv[, type], 2, mean, na.rm = TRUE),
+  mvv <- c(apply(rvv[, type, drop=FALSE], 2, mean, na.rm = TRUE),
            "level" = level)
   if(mean){
     return(mvv)

@@ -54,7 +54,7 @@ DOchord <- function(infN, trueN, stree, decreasing = FALSE,
                     color.group = c("coral","cornflowerblue","gray48"),
                     color.sig = c("TRUE"="lightseagreen",
                                   "FALSE"="lightblue4"),
-                    score, scoreLab){
+                    score, scoreLab, title = NULL){
 
   # Data for plot
   df <- choreData(infN, trueN, stree, decreasing)
@@ -96,8 +96,10 @@ DOchord <- function(infN, trueN, stree, decreasing = FALSE,
 
   # add Labels
   df.labL <- labelValue(DF = df.both, r = rOut + 0.1, ds = ds, left = TRUE)
+  df.labL$lab[df.labL$lab=="NoSignal"]<- NA
   df.labR <- labelValue(DF = df.both, r = rOut + 0.11, ds = ds, left = FALSE)
-
+  df.labR$lab[df.labR$lab=="NoSignal"]<- NA
+  
   hy.1 <- min(df.trueI$y[df.trueI$isSig])*((rOut+0.02)/(rIn))
   hx.1 <- sqrt((rOut+0.02)^2 - hy.1^2)
   hy.2 <- max(df.trueI$y[!df.trueI$isSig])*((rOut-ds+0.02)/(rOut-ds))
@@ -147,7 +149,7 @@ DOchord <- function(infN, trueN, stree, decreasing = FALSE,
     ggplot2::scale_fill_manual(values = color.scale)+
     ggplot2::geom_vline(xintercept = 0)+
     ggplot2::geom_label(data = df.labM, aes(x, y, label = lab,
-                                  colour = I(colGrp)), label.size = 1)+
+                                  colour = I(colGrp)), size = 6)+
     ggplot2::geom_text(data = df.labL,
               aes(x, y, label = lab,
                   angle = angle),
@@ -156,5 +158,6 @@ DOchord <- function(infN, trueN, stree, decreasing = FALSE,
               aes(x, y, label = lab, angle = angle),
               size = size.labR)+
     ggplot2::theme(legend.position = "none")+
-    theme_blank
+    theme_blank+
+    ggplot2::ggtitle(title)
 }

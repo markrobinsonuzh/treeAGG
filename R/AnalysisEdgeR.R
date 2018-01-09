@@ -86,7 +86,7 @@ Redge<-function(countTab,nSam,isTip,isAnalyze,prior.count
   # construct design matrix
   design <- model.matrix(~grp)
   # estimate dispersion
-  y <- edgeR::estimateDisp(y, design = design)
+  y <- edgeR::estimateGLMRobustDisp(y, design = design)
   fit <- edgeR::glmFit(y, design = design)
   lrt <- edgeR::glmLRT(fit)
   tt <- edgeR::topTags(lrt,n = Inf, adjust.method="BH", sort.by = "none")

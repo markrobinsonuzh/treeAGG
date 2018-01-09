@@ -5,7 +5,7 @@
 \title{Plot a tree branch}
 \usage{
 branchPlot(nodeBranch, stree, CladeLab, CladeCol, nodeLab = NULL, sizeNode,
-  add.Lab = TRUE, colNode, LegendName, ...)
+  add.Lab = TRUE, colNode, LegendName, title = NULL, ...)
 }
 \arguments{
 \item{nodeBranch}{root node of a selected branch to be plotted (phylo object)}
@@ -27,6 +27,8 @@ which indicates no node is annotated in the plot.}
 \item{colNode}{colour specified for the nodes annotated (nodeLab)}
 
 \item{LegendName}{the name of the legend title.}
+
+\item{title}{plot title}
 }
 \value{
 a plot

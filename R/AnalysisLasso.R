@@ -4,7 +4,10 @@ glmnet <- function(countTab, nSam, isTip, isAnalyze,
 
   # define y response, site 1 as 0; site 2 as 1.
   y <- rep(c(0,1), nSam)
-
+  if(!class(countTab) %in% c("data.frame", "matrix")){
+    stop("countTab must be a data.frame or matrix")
+  }else{countTab <- as.matrix(countTab)}
+  
   # normalisation
   if(normalize){
     nFact <- calcNormFactors(countTab[isTip,], method = method)

@@ -35,46 +35,70 @@
 #' }
 
 
-elementFind <- function(ancestor,stree, only.Tip = TRUE){
 
-  # check whether all ancestor specified exist in the tree
-  UnitAll <- unique(unlist(lapply(stree,
-                                  FUN = function(x){c(x$tip.label,
-                                                      x$node.label)})))
-  notIn <- setdiff(ancestor,UnitAll)
-
-   if(length(notIn) > 0){
-    stop(cat(notIn,"cann't be found from the tree"))
-   }
-
-  # find offsprings; tips themselves are returned as their offsprings
-  node.name <- names(stree)
-  nod.res<-ancestor[ancestor %in% node.name]
-
-  if(only.Tip){
-    des.res<-unlist(lapply(stree[nod.res]
-                           ,FUN = function(x){x$tip.label}))
-  }else{
-    des.res<-unlist(lapply(stree[nod.res]
-                           ,FUN = function(x){c(x$tip.label,x$node.label)}))
-  }
-
-
-  des.final<-c(des.res,setdiff(ancestor,nod.res))
-  names(des.final) <- NULL
-
-  return(des.final)
-}
-
-FindOffspring <- function(ancestor,stree, only.Tip = TRUE){
+FindOffspring <- function(ancestor,stree, only.Tip = TRUE, 
+                          self.include = TRUE, only.node = FALSE){
 
   a.List <- as.list(ancestor)
   osList <- lapply(a.List, FUN = elementFind, stree = stree,
-                   only.Tip = only.Tip)
+                   only.Tip = only.Tip, self.include = self.include,
+                   only.node = only.node)
   if(length(osList) == 1){
     osList <- unlist(osList)
   }else{ osList <- osList }
 
   return(osList)
 
+}
+
+elementFind <- function(ancestor,stree, only.Tip = TRUE, self.include = TRUE,
+                        only.node = FALSE){
+  
+  # check whether all ancestor specified exist in the tree
+  UnitAll <- unique(unlist(lapply(stree,
+                                  FUN = function(x){c(x$tip.label,
+                                                      x$node.label)})))
+  notIn <- setdiff(ancestor,UnitAll)
+  
+  if(length(notIn) > 0){
+    stop(cat(notIn,"cann't be found from the tree"))
+  }
+  
+  # find offsprings; tips themselves are returned as their offsprings
+  node.name <- names(stree)
+  nod.res<-ancestor[ancestor %in% node.name]
+  
+  if(only.Tip){
+    des.res<-unlist(lapply(stree[nod.res]
+                           ,FUN = function(x){c(x$tip.label)}))
+    }else{
+# new add      
+      if(only.node){
+        des.res<-unlist(lapply(stree[nod.res]
+                               ,FUN = function(x){c(x$node.label)}))
+      }else{
+#        
+        if(self.include){
+          des.res<-unlist(lapply(seq_along(nod.res),
+                                 FUN = function(x){
+                                   aa <- c(stree[[nod.res[x]]]$tip.label,
+                                           stree[[nod.res[x]]]$node.label)
+                                   return(aa)}))
+        }else{
+          des.res<-unlist(lapply(seq_along(nod.res),
+                                 FUN = function(x){
+                                   aa <- c(stree[[nod.res[x]]]$tip.label,
+                                           stree[[nod.res[x]]]$node.label)
+                                   ab <- setdiff(aa, nod.res[x])
+                                   return(ab)}))
+        }
+      }
+      
+  }
+  
+  
+  des.final<-c(des.res,setdiff(ancestor,nod.res))
+  names(des.final) <- NULL
+  
+  return(des.final)
 }

@@ -16,6 +16,7 @@
 #' Lab <- paste("Node",1:(n-1),sep="")
 #' tipLab <- paste("T",1:n,sep="")
 #' # entire tree
+#' set.seed(1)
 #' Tree <- rtree(n,tip.label= tipLab)
 #' Tree <- addNodeLab(treeO = Tree, nodeLab = Lab)
 #'
@@ -30,7 +31,7 @@
 #'
 #' # Differential tips (expect to get "Node4" "Node8" "T1")
 #' # find the shared nodes from the tree plot
-#' DiffTip <- c("T7","T15","T1","T9","T19")
+#' DiffTip <- c("T7","T19","T1","T18","T12")
 #'
 #' # final result
 #' rn <- signalFind(DiffTip, Tree, sTree)

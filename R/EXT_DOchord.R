@@ -55,6 +55,7 @@ choreData <- function(infN, trueN, stree, decreasing){
 # calculate the location of each polygon item
 axisValue <- function(df, rIn, rOut, itv, spPCT,
                       gap.a, gap.b, ds, left = TRUE){
+  df <- df[rowSums(df)>0,, drop=FALSE]
   # row / colum sum
   rNum <- apply(df, 1, sum)
   cNum <- apply(df, 2, sum)
@@ -120,7 +121,8 @@ axisValue <- function(df, rIn, rOut, itv, spPCT,
 # calculate the end location of the link (end at the left)
 
 linkEnd <- function(df, spPCT.l, gap.a, gap.b){
-
+  
+  df <- df[rowSums(df)>0,, drop=FALSE]
   # row sum (plot : left part of link)
   Num <- apply(df, 1, sum)
   vSig <- names(Num) != "NoSignal"
@@ -190,6 +192,7 @@ linkEnd <- function(df, spPCT.l, gap.a, gap.b){
 # calculate the start location of the each link (start from the right)
 linkStart <- function(df, spPCT.r, gap.a, gap.b){
 
+  df <- df[rowSums(df)>0,, drop=FALSE]
   # column sum
   Num <- apply(df, 2, sum)
   vSig <- names(Num) != "NoSignal"
@@ -387,6 +390,7 @@ labelValue <- function(DF, r, ds , left = TRUE){
 outSig <- function(df, rIn, rOut, itv, spPCT.r,
                    spPCT.l, gap.a, gap.b, ds){
 
+  df <- df[rowSums(df)>0,, drop=FALSE]
   # Data for plot
   Num.l <- apply(df, 1, sum) # row -- left
   Num.r <- apply(df, 2, sum) # column -- right

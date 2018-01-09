@@ -20,7 +20,8 @@
 #' ari <- randIndex(truth, estimate, adjust = TRUE)
 #' }
 #'
-randIndex <- function(truth, estimate, adjust = FALSE){
+randIndex <- function(truth, estimate, adjust = FALSE
+                      ){
   rlen <- length(table(truth))
   ru <- unique(truth)
   clen <- length(table(estimate))
