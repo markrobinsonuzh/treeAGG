@@ -21,7 +21,7 @@
 #' @details treePlot is created based on the \pkg{ggtree} and \pkg{ggplot2}. So other geoms from these two packages could be combined with \code{treePlot} to add geoms in the figure created by \code{treePlot}.
 #'
 #' @export
-#'
+#' @import ggplot2 ggtree
 #' @return a tree plot
 #'
 #' @examples
