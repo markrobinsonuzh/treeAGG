@@ -20,23 +20,23 @@
 
 
 findAncestor <- function(tree, node, level, treeMat = NULL) {
-    
+
     if (!inherits(tree, "phylo")) {
         stop("tree: should be a phylo object")
     }
-    
+
     if (is.null(treeMat)) {
         treeMat <- matTree(tree)
     } else {
         treeMat <- treeMat
     }
-    
+
     if (inherits(node, "character")) {
         aggNod <- tx_node(tree = tree, input = node)
     } else {
         aggNod <- node
     }
-    
+
     if (length(level) == 1) {
         level <- rep(level, length(node))
     } else {
@@ -46,7 +46,7 @@ findAncestor <- function(tree, node, level, treeMat = NULL) {
             stop("the length of level is not equal to the length of node")
         }
     }
-    
+
     selNod <- lapply(seq_along(aggNod), FUN = function(x) {
         # find rows with selected nodes
         ind <- which(treeMat == aggNod[x], arr.ind = TRUE)
@@ -54,17 +54,17 @@ findAncestor <- function(tree, node, level, treeMat = NULL) {
             max(which(!is.na(x)))
         })
         selP <- valP[ind[, 1]]
-        
+
         # move up levels as specified until the root
         vv <- ind[, 2] + level[x]
-        if (all(vv < ncol(treeMat))) {
+        if (all(vv < selP)) {
             ind.f <- cbind(ind[, 1], vv)
         } else {
-            vv <- ifelse(vv <= ncol(treeMat), vv, selP)
-            cat("The level specified for nodes ", node[vv > ncol(treeMat)], " exceed the root level; the root level is used.")
-            ind.f <- cbind(ind[, 1], vv)
+            # v2 <- ifelse(vv <= selP, vv, selP)
+            stop("The level specified for nodes ", node[x], " exceed the root level; try a small level value. \n")
+            # ind.f <- cbind(ind[, 1], v2)
         }
-        
+
         # there is only one path to go to the root when the starting point is fixed
         vu <- unique(treeMat[ind.f])
         if (length(vu) > 1) {
@@ -73,7 +73,7 @@ findAncestor <- function(tree, node, level, treeMat = NULL) {
             return(vu)
         }
     })
-    
+
     final <- unlist(selNod)
     return(final)
 }

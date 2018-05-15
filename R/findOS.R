@@ -2,9 +2,12 @@
 #'
 #' \code{findOS} is to find descendants of an internal node.
 #'
-#' @param ancestor a
+#' @param ancestor an internal node. It could be the node number or the node label.
+#' @param tree a phylo object.
+#' @param only.Tip a logical value, TRUE or FALSE. The default is TRUE. If default, only the leaf nodes in the descendant nodes would be returned.
+#' @param self.include a logical value, TRUE or FALSE. The default is TRUE. If default, the node specified in \strong{ancestor} is included. The leaf node itself is returned as its descendant.
 #'
-#'
+#' @export
 #'
 #' @examples
 #' data(tinyTree)
@@ -17,18 +20,18 @@
 #' (tips <- findOS(15, tinyTree, only.Tip = TRUE))
 #'
 
+findOS <- function(ancestor, tree,
+                   only.Tip = TRUE,
+                   self.include = TRUE) {
 
-
-findOS <- function(ancestor, tree, only.Tip = TRUE, self.include = TRUE) {
-    
     if (length(ancestor) > 1) {
         stop("check whether the argument ancestor is one internal node")
     }
     if (!inherits(tree, "phylo")) {
         stop("tree: should be a phylo object")
     }
-    
-    if (!(inherits(ancestor, "character") | inherits(ancestor, "numeric") | inherits(ancestor, 
+
+    if (!(inherits(ancestor, "character") | inherits(ancestor, "numeric") | inherits(ancestor,
         "integer"))) {
         stop("ancestor should be character or numeric")
     }
@@ -47,14 +50,14 @@ findOS <- function(ancestor, tree, only.Tip = TRUE, self.include = TRUE) {
         i <- i + 1
     }
     rownames(matN) <- colnames(matN) <- NULL
-    
+
     if (inherits(ancestor, "character")) {
         numA <- tx_node(tree = tree, input = ancestor)
     } else {
         numA <- ancestor
     }
-    
-    
+
+
     # convert to a list.  each element in the list is one path
     desA <- lapply(seq_len(nrow(matN)), FUN = function(x) {
         xx <- match(numA, matN[x, ])
@@ -63,11 +66,11 @@ findOS <- function(ancestor, tree, only.Tip = TRUE, self.include = TRUE) {
     })
     # descendants: internal nodes & tips
     desA <- unique(unlist(desA))
-    
+
     # descendants: tips
     tipA <- unique(setdiff(desA, mat[, 1]))
-    
-    
+
+
     res <- if (self.include) {
         if (only.Tip) {
             tipA
@@ -81,9 +84,9 @@ findOS <- function(ancestor, tree, only.Tip = TRUE, self.include = TRUE) {
             setdiff(desA, numA)
         }
     }
-    
+
     # final output (node number)
     return(res)
-    
+
 }
 

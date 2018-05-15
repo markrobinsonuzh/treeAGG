@@ -21,6 +21,8 @@
 #'  if TRUE, TMM( weighted trimmed mean of M-values is applied); otherwise, raw library size
 #'  is used.
 #'
+#' @export
+#'
 #' @return a data frame containing the elements
 #'  logFC, the log-abundance ratio, i.e. fold change, for each tag in the two groups being compared
 #'
@@ -68,23 +70,23 @@
 #'
 
 
-Redge <- function(countTab, nSam, isTip, isAnalyze, prior.count, normalize = TRUE, 
+Redge <- function(countTab, nSam, isTip, isAnalyze, prior.count, normalize = TRUE,
     method = "TMM") {
     # define conditions
     grp <- factor(rep(1:2, nSam))
-    
+
     # correct sample size
     SampSize.c <- colSums(countTab[isTip, ])
     y <- edgeR::DGEList(countTab[isAnalyze, ], group = grp, remove.zeros = TRUE)
     y$samples$lib.size <- SampSize.c
-    
+
     # normalisation
     if (normalize) {
         y <- edgeR::calcNormFactors(y, method)
     } else {
         y <- y
     }
-    
+
     # construct design matrix
     design <- model.matrix(~grp)
     # estimate dispersion
@@ -92,12 +94,12 @@ Redge <- function(countTab, nSam, isTip, isAnalyze, prior.count, normalize = TRU
     fit <- edgeR::glmFit(y, design = design)
     lrt <- edgeR::glmLRT(fit)
     tt <- edgeR::topTags(lrt, n = Inf, adjust.method = "BH", sort.by = "none")
-    
+
     # estimate the predictive log fold changes
     predlfc <- edgeR::predFC(y, design, prior.count = prior.count)
     rownames(predlfc) <- rownames(y$counts)
     tt$table$predLFC <- predlfc[rownames(tt$table), 2]
-    
+
     # wald test
     X <- fit$design
     coef <- fit$coefficients
@@ -118,13 +120,13 @@ Redge <- function(countTab, nSam, isTip, isAnalyze, prior.count, normalize = TRU
     tt$table$waldAP <- p.adjust(waldP.1, method = "BH")
     tt$table$std.err <- sqrt(vb)[rownames(tt$table), 2]
     tt$table$estimate <- coef[rownames(tt$table), 2]
-    
+
     # tagwise dispersion
     disp <- fit$dispersion
     names(disp) <- rownames(fit$coefficients)
     tt$table$tag.disp <- disp[rownames(tt$table)]
     # colnames(tt$table)[colnames(tt$table)=='logFC']<-'log2FC'
     # colnames(tt$table)[colnames(tt$table)=='PValue']<-'pvalue'
-    
+
     return(tt$table)
 }
