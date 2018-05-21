@@ -19,21 +19,11 @@ Give examples
 
 ### Installing
 
-A step by step series of examples that tell you have to get a development env running
-
-Say what the step will be
+To install treeAGG package, you could run the code below in R
 
 ```
-Give the example
+devtools::install_github("markrobinsonuzh/treeAGG")
 ```
-
-And repeat
-
-```
-until finished
-```
-
-End with an example of getting some data out of the system or using it for a little demo
 
 ## Running the tests
 
