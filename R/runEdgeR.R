@@ -1,0 +1,93 @@
+#' Differential analysis using edgeR package
+#'
+#' \code{runEdgeR} is to do differential analysis for the data using edgeR package
+#'
+#' @param countTab  a numeric matrix indicates the count table of entities (eg. genes or OTUs) in samples under different conditions. Each row represents an entity and each column represents a sample.
+#' @param nSam a numeric vector. Each element represents the number of samples in one condition. For example, if we have n1 samples in condition 1 and n2 samples in condition 2, then the \strong{nSam} is (n1,n2).
+#' @param isTip a logical vector. It has equal length to the number of rows in \strong{countTab}. If TRUE, the corresponding row contributes to the library size of a sample; otherwise, it doesn't. A provided count table might include rows for leaves and internal nodes. Only the counts from leaf nodes are really measured and should be included to do library size normalisation.
+#' @param isAnalyze a logical vector with length equal to the row number of the countTab. This is to indicate the row used for differential analysis.
+#' @param prior.count a numeric value; the average prior count added to each observation to compute estimated coefficients for a NB glm in such a way that the log-fold-changes are shrunk towards zero (see \code{\link[edgeR]{predFC}}.
+#' @param normalize a logical value; indicate whether to do library size normalization. If TRUE, TMM( weighted trimmed mean of M-values is applied); otherwise, raw library size is used.
+#'
+#' @export
+#'
+#' @return a data frame containing the elements
+#'  logFC, the log-abundance ratio, i.e. fold change, for each tag in the two groups being compared logCPM, the log-average concentration/abundance for each tag in the two groups being compared
+#'  PValue, exact p-value for differential expression using the NB model
+#'
+#'  FDR, the p-value adjusted for multiple testing as found using p.adjust using the method BH.
+#'
+#'  predLFC, the predictive log2 fold changes (SEE \code{\link[edgeR]{predFC}})
+#'
+#'  estimate, the estimated coefficient logFC = estimate / log(2)
+#'
+#'  tag.disp, the tagwise dispersion
+#'
+#'  waldAP, the adjusted p-value from Wald test ('BH' method; Benjamini & Hochberg (1995))
+#'
+#'
+#'
+#'
+
+
+runEdgeR <- function(countTab, nSam, isTip, isAnalyze,
+                     prior.count, normalize = TRUE,
+                     method = "TMM") {
+  # define conditions
+  grp <- factor(rep(1:2, nSam))
+
+  # correct sample size
+  SampSize.c <- colSums(countTab[isTip, ])
+  y <- edgeR::DGEList(countTab[isAnalyze, ], group = grp, remove.zeros = TRUE)
+  y$samples$lib.size <- SampSize.c
+
+  # normalisation
+  if (normalize) {
+    y <- edgeR::calcNormFactors(y, method)
+  } else {
+    y <- y
+  }
+
+  # construct design matrix
+  design <- model.matrix(~grp)
+  # estimate dispersion
+  y <- edgeR::estimateGLMRobustDisp(y, design = design)
+  fit <- edgeR::glmFit(y, design = design)
+  lrt <- edgeR::glmLRT(fit)
+  tt <- edgeR::topTags(lrt, n = Inf, adjust.method = "BH", sort.by = "none")
+
+  # estimate the predictive log fold changes
+  predlfc <- edgeR::predFC(y, design, prior.count = prior.count)
+  rownames(predlfc) <- rownames(y$counts)
+  tt$table$predLFC <- predlfc[rownames(tt$table), 2]
+
+  # wald test
+  X <- fit$design
+  coef <- fit$coefficients
+  phi <- fit$dispersion
+  mu <- fit$fitted.values
+  mu <- mu + 1e-06
+  nr <- nrow(mu)
+  vb <- coef
+  for (i in seq(nr)) {
+    W <- diag((mu[i, ]^-1 + phi[i])^-1)
+    xtwx <- t(X) %*% W %*% X
+    xtwxInv <- solve(xtwx)
+    vb[i, ] <- diag(xtwxInv %*% xtwx %*% xtwxInv)
+  }
+  waldStat <- coef/sqrt(vb)
+  waldP <- (1 - apply(abs(waldStat), 2, pnorm)) * 2
+  waldP.1 <- waldP[rownames(tt$table), 2]
+  tt$table$waldAP <- p.adjust(waldP.1, method = "BH")
+  tt$table$std.err <- sqrt(vb)[rownames(tt$table), 2]
+  tt$table$estimate <- coef[rownames(tt$table), 2]
+
+  # tagwise dispersion
+  disp <- fit$dispersion
+  names(disp) <- rownames(fit$coefficients)
+  tt$table$tag.disp <- disp[rownames(tt$table)]
+  # colnames(tt$table)[colnames(tt$table)=='logFC']<-'log2FC'
+  # colnames(tt$table)[colnames(tt$table)=='PValue']<-'pvalue'
+
+  return(tt$table)
+}
