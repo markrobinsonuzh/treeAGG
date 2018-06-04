@@ -12,6 +12,7 @@
 #' @examples
 #'
 #' data(tinyTree)
+#' library(ggtree)
 #' # PLOT tree
 #' ggtree(tinyTree,branch.length = 'none')+
 #' geom_text2(aes(label = label))
@@ -36,24 +37,24 @@
 
 
 shareNode <- function(node, tree, label = FALSE) {
-    
+
     if (!inherits(tree, "phylo")) {
         stop("tree is not a phylo object.")
     }
-    
+
     if (!is.atomic(node)) {
         stop("node is a vector")
     }
-    
+
     # transfer node label to node number
     if (inherits(node, "character")) {
-        node <- tx_node(tree, input = node)
+        node <- transNode(tree, input = node)
     } else {
         node <- node
     }
-    
+
     # path matrix
-    mat <- matTree(tinyTree)
+    mat <- matTree(tree)
     ind <- apply(mat, 1, FUN = function(x) {
         any(x %in% node)
     })
@@ -64,20 +65,20 @@ shareNode <- function(node, tree, label = FALSE) {
     })
     # ancestors
     loc <- Reduce(intersect, path)
-    
+
     # the ancestor on the lowest level (the root has the highest level)
     vec <- as.vector(mat)
     count <- table(vec, useNA = "no")[loc]
     df <- as.data.frame(count, stringsAsFactors = FALSE)
-    
+
     # select the node with the lowest frequency.  closest to the leaf level.
     sNode <- as.numeric(df[df$Freq == min(df$Freq), 1])
-    
+
     if (label) {
-        final <- tx_node(tree = tree, input = sNode)
+        final <- transNode(tree = tree, input = sNode)
     } else {
         final <- sNode
     }
-    
+
     return(final)
 }

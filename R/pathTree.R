@@ -8,23 +8,20 @@
 #'
 #' @examples
 #'
-#' library(ape)
+#' data(tinyTree)
 #' library(ggtree)
+#' ggtree(tinyTree) + geom_text2(aes(label = node))
 #'
-#' # generate a random tree
-#' set.seed(1)
-#' tree <- rcoal(10)
-#' ggtree(tree) + geom_text2(aes(label = node))
-#'
-#' paths <- pathTree(tree)
+#' (paths <- pathTree(tinyTree))
 #'
 
 pathTree <- function(tree) {
-    
-    if (is.null(tree) | class(tree) != "phylo") {
-        stop("tree: should be a phylo object")
-    }
-    
+
+  if (!inherits(tree, "phylo")) {
+    stop("tree: should be a phylo object")
+  }
+
+
     # each path connects a tip with the root.
     i <- 1
     mat <- tree$edge
@@ -40,13 +37,13 @@ pathTree <- function(tree) {
         i <- i + 1
     }
     rownames(matN) <- colnames(matN) <- NULL
-    
+
     # convert to a list.  each element in the list is one path
     listPath <- lapply(seq_len(nrow(matN)), FUN = function(x) {
         y <- matN[x, ]
         y[!is.na(y)]
     })
     return(listPath)
-    
+
 }
 

@@ -3,9 +3,9 @@
 #' \code{nodeCount} is to calculate the counts at internal nodes. The count of an internal node is the sum of counts at its descendant leaves.
 #'
 #' @param tipTable the tip count table
-#' @param wtree a tree (phylo class)
+#' @param tree a tree (phylo class)
 #' @param stree a list of phylo class;
-#'              a list of subtrees cut at internal nodes of the wtree
+#'              a list of subtrees cut at internal nodes of the tree
 #' @param fun a function to create the count of an internal node based on the counts at its descendant leaf nodes. The default is sum
 #' @return a count table (matrix class) with a row representing a node and
 #' a column representing a sample.
@@ -14,6 +14,7 @@
 #'
 #' @examples
 #' data("tinyTree")
+#' library(ggtree)
 #' (p <- ggtree(tinyTree) + geom_text(aes(label = label)))
 #'
 #' count <- matrix(rpois(100, 10), nrow =10)
@@ -22,33 +23,33 @@
 #' c(1:5, 1:5), sep = "")
 #'
 #' count_tinyTree <- nodeCount(tipTable = count,
-#' wtree = tinyTree, fun = mean)
+#' tree = tinyTree, fun = mean)
 #'
 #' # check to see whether the count of an internal node is the sum
 #' # of counts of its descendant leaves.
 #' # here, check the first sample as an example
 #'
-#' nod <- tx_node(tree = tinyTree, input = rownames(count_tinyTree))
+#' nod <- transNode(tree = tinyTree, input = rownames(count_tinyTree))
 #' d <- cbind.data.frame(node = nod, count = count_tinyTree[, 1])
 #'
 #' ggtree(tinyTree) %<+% d + geom_text2(aes(label = count))
 
 
 
-nodeCount <- function(tipTable, wtree,
+nodeCount <- function(tipTable, tree,
                       stree = NULL, fun = sum) {
 
     if (is.null(tipTable)) {
         stop("tipTable is missing")
     }
-    if (!inherits(wtree, "phylo")) {
-      stop("wtree: should be a phylo object")
+    if (!inherits(tree, "phylo")) {
+      stop("tree: should be a phylo object")
     }
 
     # if stree is not provided, generate it using pruneTree
     if (is.null(stree)) {
-        cat("stree is not provided and will be generated automatically")
-        stree <- pruneTree(tree = wtree)
+        # cat("stree is not provided and will be generated automatically")
+        stree <- pruneTree(tree = tree)
     } else {
         stree <- stree
     }
@@ -61,14 +62,14 @@ nodeCount <- function(tipTable, wtree,
     }
 
     # check whether each row of a count table is a tip in the tree
-    if (!all(rownames(tipTable) %in% wtree$tip.label)) {
-        chx <- sum(!rownames(tipTable) %in% wtree$tip.label)
+    if (!all(rownames(tipTable) %in% tree$tip.label)) {
+        chx <- sum(!rownames(tipTable) %in% tree$tip.label)
         warning(chx, " rows could not be found on the tree; only those rows matching the tree tip labels are used")
-        tipTable <- tipTable[rownames(tipTable) %in% wtree$tip.label, ]
+        tipTable <- tipTable[rownames(tipTable) %in% tree$tip.label, ]
     }
 
     ## calculate counts for nodes
-    nN <- wtree$Nnode
+    nN <- tree$Nnode
     nNam <- names(stree)
 
     # calculate counts at nodes

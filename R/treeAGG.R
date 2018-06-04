@@ -1,17 +1,17 @@
 #' tree aggregation
 #'
-#' \code{treeAGG} applies minimum p-value algorithm to do tree aggregation
+#' \code{treeAGG} combines the p values with the tree structure and decide the which nodes to be aggregated to based on the min-p algorithm.
 #'
-#' @param wtree  a phylo object;
+#' @param tree  a phylo object;
 #' @param data data frame (include at least :
 #'        1. the label of tree nodes and tips as row names
 #'        2. a column of p value
 #'        3. a column of adjusted p value
-#' @param stree a list of phylo object. The subtrees of \strong{wtree}.
+#' @param stree a list of phylo object. The subtrees of \strong{tree}.
 #' @param P.lim the threshold value (for the adjusted p values) to reject a null hypothesis. By default, NULL. If NULL, the algorithm only compares the value provided by \strong{varAGG} and doesn't decide whether to reject a null hypothesis.
 #' @param varSIG the name of column for testing significance
-#' @param varAGG the name of column used to do tree aggregation
-#' @return a vector of character shows the labels of tips and nodes which
+#' @param varAGG the name of column used to do tree aggregation, eg. the name of the p value or adjusted p value column
+#' @return a vector of character. It returns the labels of tips and nodes which
 #' have selected by the minimum P-value algorithm
 #'
 #' @export
@@ -20,18 +20,18 @@
 
 
 
-treeAGG <- function(wtree, data, stree = NULL,
+treeAGG <- function(tree, data, stree = NULL,
                     P.lim = NULL, varSIG = NULL,
                     varAGG) {
 
-    if (!inherits(wtree, "phylo")) {
+    if (!inherits(tree, "phylo")) {
         stop("object tree is not of class phylo.")
     }
 
     # if stree is not provided, generate it using pruneTree
     if (is.null(stree)) {
         cat("stree is not provided and will be generated automatically")
-        stree <- pruneTree(tree = wtree)
+        stree <- pruneTree(tree = tree)
     } else {
         stree <- stree
     }
@@ -56,8 +56,8 @@ treeAGG <- function(wtree, data, stree = NULL,
     }
     # tips & nodes from the whole tree
     all.node <- names(stree)
-    num.node <- wtree$Nnode
-    all.tip <- wtree$tip.label
+    num.node <- tree$Nnode
+    all.tip <- tree$tip.label
     num.tip <- length(all.tip)
 
     ## ----------- tree aggregation----------- firstly, set all tips and nodes as TRUE

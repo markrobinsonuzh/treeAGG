@@ -2,33 +2,31 @@
 #'
 #' \code{pruneTree} prune the tree at each node.
 #'
-#' @param wtree an object of phylo class
-#'
-#' @return a list of phylo object. If the tree ('wtree') provides node and tip labels, the labels are passed to its subtrees; otherwise, the labels are generated automatically with a prefix 'Node_' for internal nodes and 'Tip_' for leaves with the corresponding numbers in the edge component of phylo object. (wtree$edge)
+#' @param tree an object of phylo class
+#' @param message a logical value, TRUE or FALSE. If default (FALSE), the process isn't printed out.
+#' @return a list of phylo object. If the tree ('tree') provides node and tip labels, the labels are passed to its subtrees; otherwise, the labels are generated automatically with a prefix 'Node_' for internal nodes and 'Tip_' for leaves with the corresponding numbers in the edge component of phylo object. (tree$edge)
 #'
 #' @export
 #'
 #' @examples
 #'
-#' library(ape)
-#' n <- 20
-#' tree<- rtree(n)
-#' small <- pruneTree(tree, message = TRUE)
+#' data(tinyTree)
+#' small <- pruneTree(tree = tinyTree, message = TRUE)
 
 
 pruneTree <- function(tree, message = FALSE) {
-    
+
     if (!inherits(tree, "phylo")) {
         stop("object tree is not of class phylo")
     }
     # paths
     listPath <- pathTree(tree = tree)
-    
+
     # node number & tip number
     mat <- tree$edge
     nod <- sort(unique(mat[, 1]))
     tip <- sort(setdiff(mat[, 2], mat[, 1]))
-    
+
     # tip label
     if (is.null(tree$tip.label)) {
         tipLab <- paste("Tip_", tip, sep = "")
@@ -63,7 +61,8 @@ pruneTree <- function(tree, message = FALSE) {
         tip.x <- sort(intersect(mat[m.x, 2], tip))
         nod.x <- sort(intersect(mat[m.x, 1], nod))
         # create phylo object
-        list.x <- list(edge = mat.x, tip.label = tipLab[tip.x], edge.length = tree$edge.length[m.x], 
+        list.x <- list(edge = mat.x, tip.label = tipLab[tip.x],
+                       edge.length = tree$edge.length[m.x],
             node.label = nodLab[nod.x - max(tip)], Nnode = length(nod.x))
         class(list.x) <- "phylo"
         list.x

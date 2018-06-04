@@ -25,7 +25,7 @@
 #' @return a tree plot
 #'
 #' @examples
-#'
+#' library(ggtree)
 #' data(exTree)
 #' ggtree(bigTree, layout = "circular", branch.length = "none")
 #'
@@ -114,7 +114,7 @@ treePlot <- function(tree, branch = NULL,
 
     # transformation from node label to node number
     if (inherits(point, "character")) {
-      point <- tx_node(tree = tree, input = point)
+      point <- transNode(tree = tree, input = point)
     } else {
       point <- point
     }
@@ -129,10 +129,10 @@ treePlot <- function(tree, branch = NULL,
     colG <- col.point
 
     # create a data frame to store the information for points
-    d$Estimate <- ifelse(d$node %in% point, names(col.point),
+    Estimate <- ifelse(d$node %in% point, names(col.point),
                          "NO_Found")
-    d$show <- ifelse(d$node %in% point, TRUE, FALSE)
-
+    show <- ifelse(d$node %in% point, TRUE, FALSE)
+    d <- cbind.data.frame(d, Estimate = Estimate, show = show)
     # legend title
     if(is.na(legend.title["point"])){
       legend.title["point"] <- ""
@@ -160,7 +160,7 @@ treePlot <- function(tree, branch = NULL,
 
     # transformation from node label to node number
     if (inherits(branch, "character")) {
-      branch <- tx_node(tree = tree, input = branch)
+      branch <- transNode(tree = tree, input = branch)
     } else {
       branch <- branch
     }
@@ -207,9 +207,9 @@ treePlot <- function(tree, branch = NULL,
     }
 
     # create a data frame to include the selection information for edges
-    d$Truth <- rep(names(col.other), nrow(d))
-    d$Truth[match(df.1$node, d$node)] <- df.1$group
-
+    Truth <- rep(names(col.other), nrow(d))
+    Truth[match(df.1$node, d$node)] <- df.1$group
+    d <- cbind.data.frame(d, Truth = Truth, stringsAsFactors = FALSE)
     # integrate with tree
     if(is.na(legend.title["branch"])){
       legend.title["branch"] <- ""
@@ -241,7 +241,7 @@ treePlot <- function(tree, branch = NULL,
   if(!is.null(zoomNode)){
 
     if (inherits(point, "character")) {
-      zoomNode <- tx_node(tree = tree, input = zoomNode)
+      zoomNode <- transNode(tree = tree, input = zoomNode)
     } else {
       zoomNode <- zoomNode
     }
@@ -276,7 +276,7 @@ treePlot <- function(tree, branch = NULL,
     nodZ <- findAncestor(tree = tree, node = zoomNode, level = zoomLevel)
     names(nodZ) <- names(zoomScale) <- zoomNode
     # remove nodes which are the descendants of the others
-    nodZW <- rmMember(node = nodZ, tree = tree)
+    nodZW <- rmDesc(node = nodZ, tree = tree)
     zoomScale[!names(zoomScale) %in% names(nodZW)] <- 1
 
     # zoom the selected nodes

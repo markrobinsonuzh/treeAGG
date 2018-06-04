@@ -3,14 +3,14 @@
 #' \code{rmDesc} is to remove branches, which are the subbranch of the others.
 #'
 #'@param node a vector of node labels or node numbers
-#'@param stree a list of phylo object.
+#'@param tree a list of phylo object.
 #'
 #'@export
 #'
 #'@return a vector of node numbers
 #'@examples {
 #' data(tinyTree)
-#'
+#' library(ggtree)
 #' # PLOT
 #' ggtree(tinyTree,branch.length = 'none') +
 #'   geom_text2(aes(label=node), hjust=-.3)

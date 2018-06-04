@@ -6,23 +6,26 @@
 #'
 #' @return a matrix
 #'
+#' @export
+#'
 #' @examples
 #'
 #' library(ggtree)
-#' data(exTree)
+#'
 #' ggtree(exTree, branch.length = 'none') +
 #'  geom_text2(aes(label = node))
 #'
+#' data(exTree)
 #' # each row of the matrix representing a path.
 #' # the first column is leaf nodes; the last non-NA value in a row is the root
-#' mat <- matTree(exTree)
+#' mat <- matTree(tree = exTree)
 #'
 matTree <- function(tree) {
-    
+
     if (!inherits(tree, "phylo")) {
         stop("tree: should be a phylo object")
     }
-    
+
     # each path connects a tip with the root.
     i <- 1
     mat <- tree$edge
@@ -38,7 +41,7 @@ matTree <- function(tree) {
         i <- i + 1
     }
     rownames(matN) <- colnames(matN) <- NULL
-    
+
     return(matN)
 }
 

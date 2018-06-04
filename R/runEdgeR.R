@@ -8,8 +8,11 @@
 #' @param isAnalyze a logical vector with length equal to the row number of the countTab. This is to indicate the row used for differential analysis.
 #' @param prior.count a numeric value; the average prior count added to each observation to compute estimated coefficients for a NB glm in such a way that the log-fold-changes are shrunk towards zero (see \code{\link[edgeR]{predFC}}.
 #' @param normalize a logical value; indicate whether to do library size normalization. If TRUE, TMM( weighted trimmed mean of M-values is applied); otherwise, raw library size is used.
+#' @param method see \strong{method} in \code{\link[edgeR]{calcNormFactors}}
 #'
 #' @export
+#' @importFrom edgeR DGEList calcNormFactors estimateGLMRobustDisp glmFit glmLRT topTags predFC
+#' @importFrom stats model.matrix p.adjust pnorm
 #'
 #' @return a data frame containing the elements
 #'  logFC, the log-abundance ratio, i.e. fold change, for each tag in the two groups being compared logCPM, the log-average concentration/abundance for each tag in the two groups being compared

@@ -25,13 +25,14 @@ findOS <- function(ancestor, tree,
                    self.include = TRUE) {
 
     if (length(ancestor) > 1) {
-        stop("check whether the argument ancestor is one internal node")
+        stop("ancestor should have length equal to one")
     }
     if (!inherits(tree, "phylo")) {
         stop("tree: should be a phylo object")
     }
 
-    if (!(inherits(ancestor, "character") | inherits(ancestor, "numeric") | inherits(ancestor,
+    if (!(inherits(ancestor, "character") |
+          inherits(ancestor, "numeric") | inherits(ancestor,
         "integer"))) {
         stop("ancestor should be character or numeric")
     }
@@ -52,7 +53,7 @@ findOS <- function(ancestor, tree,
     rownames(matN) <- colnames(matN) <- NULL
 
     if (inherits(ancestor, "character")) {
-        numA <- tx_node(tree = tree, input = ancestor)
+        numA <- transNode(tree = tree, input = ancestor)
     } else {
         numA <- ancestor
     }

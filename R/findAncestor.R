@@ -32,7 +32,7 @@ findAncestor <- function(tree, node, level, treeMat = NULL) {
     }
 
     if (inherits(node, "character")) {
-        aggNod <- tx_node(tree = tree, input = node)
+        aggNod <- transNode(tree = tree, input = node)
     } else {
         aggNod <- node
     }

@@ -12,6 +12,8 @@
 #' @examples
 #'
 #' data(tinyTree)
+#' library(ggtree)
+#'
 #' # PLOT tree
 #' ggtree(tinyTree,branch.length = 'none')+
 #' geom_text2(aes(label = label))
@@ -29,7 +31,7 @@
 #'
 #' ## find the node shared by provided node numbers
 #' signalNode(node = c(2, 3), tree = tinyTree)
-#' signalNode(node = c(2, 3, 116), tree = tinyTree)
+#' signalNode(node = c(2, 3, 16), tree = tinyTree)
 #'
 
 signalNode <- function(node, tree, label = FALSE) {
@@ -44,7 +46,7 @@ signalNode <- function(node, tree, label = FALSE) {
 
   # transfer node label to node number
   if (inherits(node, "character")) {
-    node <- tx_node(tree, input = node)
+    node <- transNode(tree, input = node)
   } else {
     node <- node
   }
@@ -63,10 +65,10 @@ signalNode <- function(node, tree, label = FALSE) {
   # select nodes which only exist in the selected paths
   selN <- setdiff(as.vector(mat[ind, ]), as.vector(mat[!ind, ]))
   # remove nodes which are descendants of any others
-  sNode <- rmMember(node = selN, tree = tree)
+  sNode <- rmDesc(node = selN, tree = tree)
 
   if (label) {
-    final <- tx_node(tree = tree, input = sNode)
+    final <- transNode(tree = tree, input = sNode)
   } else {
     final <- sNode
   }
