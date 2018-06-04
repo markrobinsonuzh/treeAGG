@@ -4,15 +4,15 @@
 \alias{nodeCount}
 \title{Calculate the counts at internal nodes}
 \usage{
-nodeCount(tipTable, wtree, stree = NULL, fun = sum)
+nodeCount(tipTable, tree, stree = NULL, fun = sum)
 }
 \arguments{
 \item{tipTable}{the tip count table}
 
-\item{wtree}{a tree (phylo class)}
+\item{tree}{a tree (phylo class)}
 
 \item{stree}{a list of phylo class;
-a list of subtrees cut at internal nodes of the wtree}
+a list of subtrees cut at internal nodes of the tree}
 
 \item{fun}{a function to create the count of an internal node based on the counts at its descendant leaf nodes. The default is sum}
 }
@@ -25,6 +25,7 @@ a column representing a sample.
 }
 \examples{
 data("tinyTree")
+library(ggtree)
 (p <- ggtree(tinyTree) + geom_text(aes(label = label)))
 
 count <- matrix(rpois(100, 10), nrow =10)
@@ -33,13 +34,13 @@ colnames(count) <- paste(c("C1_", "C2_"),
 c(1:5, 1:5), sep = "")
 
 count_tinyTree <- nodeCount(tipTable = count,
-wtree = tinyTree, fun = mean)
+tree = tinyTree, fun = mean)
 
 # check to see whether the count of an internal node is the sum
 # of counts of its descendant leaves.
 # here, check the first sample as an example
 
-nod <- tx_node(tree = tinyTree, input = rownames(count_tinyTree))
+nod <- transNode(tree = tinyTree, input = rownames(count_tinyTree))
 d <- cbind.data.frame(node = nod, count = count_tinyTree[, 1])
 
 ggtree(tinyTree) \%<+\% d + geom_text2(aes(label = count))

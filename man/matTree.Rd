@@ -18,12 +18,13 @@ a matrix
 \examples{
 
 library(ggtree)
-data(exTree)
+
 ggtree(exTree, branch.length = 'none') +
  geom_text2(aes(label = node))
 
+data(exTree)
 # each row of the matrix representing a path.
 # the first column is leaf nodes; the last non-NA value in a row is the root
-mat <- matTree(exTree)
+mat <- matTree(tree = exTree)
 
 }

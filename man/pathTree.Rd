@@ -14,14 +14,10 @@ pathTree(tree)
 }
 \examples{
 
-library(ape)
+data(tinyTree)
 library(ggtree)
+ggtree(tinyTree) + geom_text2(aes(label = node))
 
-# generate a random tree
-set.seed(1)
-tree <- rcoal(10)
-ggtree(tree) + geom_text2(aes(label = node))
-
-paths <- pathTree(tree)
+(paths <- pathTree(tinyTree))
 
 }

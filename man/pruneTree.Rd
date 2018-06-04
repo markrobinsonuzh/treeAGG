@@ -7,18 +7,18 @@
 pruneTree(tree, message = FALSE)
 }
 \arguments{
-\item{wtree}{an object of phylo class}
+\item{tree}{an object of phylo class}
+
+\item{message}{a logical value, TRUE or FALSE. If default (FALSE), the process isn't printed out.}
 }
 \value{
-a list of phylo object. If the tree ('wtree') provides node and tip labels, the labels are passed to its subtrees; otherwise, the labels are generated automatically with a prefix 'Node_' for internal nodes and 'Tip_' for leaves with the corresponding numbers in the edge component of phylo object. (wtree$edge)
+a list of phylo object. If the tree ('tree') provides node and tip labels, the labels are passed to its subtrees; otherwise, the labels are generated automatically with a prefix 'Node_' for internal nodes and 'Tip_' for leaves with the corresponding numbers in the edge component of phylo object. (tree$edge)
 }
 \description{
 \code{pruneTree} prune the tree at each node.
 }
 \examples{
 
-library(ape)
-n <- 20
-tree<- rtree(n)
-small <- pruneTree(tree, message = TRUE)
+data(tinyTree)
+small <- pruneTree(tree = tinyTree, message = TRUE)
 }

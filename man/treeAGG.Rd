@@ -4,28 +4,28 @@
 \alias{treeAGG}
 \title{tree aggregation}
 \usage{
-treeAGG(wtree, data, stree = NULL, P.lim = NULL, varSIG = NULL, varAGG)
+treeAGG(tree, data, stree = NULL, P.lim = NULL, varSIG = NULL, varAGG)
 }
 \arguments{
-\item{wtree}{a phylo object;}
+\item{tree}{a phylo object;}
 
 \item{data}{data frame (include at least :
 1. the label of tree nodes and tips as row names
 2. a column of p value
 3. a column of adjusted p value}
 
-\item{stree}{a list of phylo object. The subtrees of \strong{wtree}.}
+\item{stree}{a list of phylo object. The subtrees of \strong{tree}.}
 
 \item{P.lim}{the threshold value (for the adjusted p values) to reject a null hypothesis. By default, NULL. If NULL, the algorithm only compares the value provided by \strong{varAGG} and doesn't decide whether to reject a null hypothesis.}
 
 \item{varSIG}{the name of column for testing significance}
 
-\item{varAGG}{the name of column used to do tree aggregation}
+\item{varAGG}{the name of column used to do tree aggregation, eg. the name of the p value or adjusted p value column}
 }
 \value{
-a vector of character shows the labels of tips and nodes which
+a vector of character. It returns the labels of tips and nodes which
 have selected by the minimum P-value algorithm
 }
 \description{
-\code{treeAGG} applies minimum p-value algorithm to do tree aggregation
+\code{treeAGG} combines the p values with the tree structure and decide the which nodes to be aggregated to based on the min-p algorithm.
 }
