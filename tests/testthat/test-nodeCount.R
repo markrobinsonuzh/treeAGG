@@ -1,7 +1,7 @@
 context("nodeCount")
 
 
-test_that("nodeCount requires correct input argument", {
+test_that("nodeCount works correctly", {
 
   data("tinyTree")
   count <- matrix(1:100, nrow =10)
