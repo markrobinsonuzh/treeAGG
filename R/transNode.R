@@ -37,6 +37,13 @@ transNode <- function(tree, input) {
   nod <- sort(unique(mat[, 1]))
   tip <- sort(setdiff(mat[, 2], mat[, 1]))
 
+  # check whether the input node number exists in the provided tree
+  if(is.numeric(input)){
+    if(!all(input %in% mat)){
+      stop("Node ", input, " can't be found in the ", deparse(substitute(tree)), "\n")
+    }
+  }
+
   # tip label
   if (is.null(tree$tip.label)) {
     tipLab <- paste("Tip_", tip, sep = "")
