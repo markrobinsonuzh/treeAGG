@@ -6,6 +6,7 @@
 #' @param tree a phylo object.
 #' @param only.Tip a logical value, TRUE or FALSE. The default is TRUE. If default, only the leaf nodes in the descendant nodes would be returned.
 #' @param self.include a logical value, TRUE or FALSE. The default is TRUE. If default, the node specified in \strong{ancestor} is included. The leaf node itself is returned as its descendant.
+#' @param return "number" (return the node number) or "label" (return the node label).
 #'
 #' @export
 #'
@@ -24,7 +25,7 @@ findOS <- function(ancestor,
                    tree,
                    only.Tip = TRUE,
                    self.include = TRUE,
-                   return = c("node", "label")) {
+                   return = c("number", "label")) {
   if (length(ancestor) > 1) {
     stop("ancestor should have length equal to one")
   }
@@ -103,7 +104,7 @@ findOS <- function(ancestor,
   # final output (node number or label)
   return <- match.arg(return)
   switch(return,
-         node = res,
+         number = res,
          label = transNode(tree = tree, input = res))
 
 

@@ -34,7 +34,7 @@
 #' signalNode(node = c(2, 3, 16), tree = tinyTree)
 #'
 
-signalNode <- function(node, tree, label = FALSE) {
+ signalNode <- function(node, tree, label = FALSE) {
 
   if (!inherits(tree, "phylo")) {
     stop("tree is not a phylo object.")

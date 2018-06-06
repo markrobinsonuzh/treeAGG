@@ -4,7 +4,8 @@
 \alias{findOS}
 \title{find descendants (or offsprings)}
 \usage{
-findOS(ancestor, tree, only.Tip = TRUE, self.include = TRUE)
+findOS(ancestor, tree, only.Tip = TRUE, self.include = TRUE,
+  return = c("number", "label"))
 }
 \arguments{
 \item{ancestor}{an internal node. It could be the node number or the node label.}
@@ -14,6 +15,8 @@ findOS(ancestor, tree, only.Tip = TRUE, self.include = TRUE)
 \item{only.Tip}{a logical value, TRUE or FALSE. The default is TRUE. If default, only the leaf nodes in the descendant nodes would be returned.}
 
 \item{self.include}{a logical value, TRUE or FALSE. The default is TRUE. If default, the node specified in \strong{ancestor} is included. The leaf node itself is returned as its descendant.}
+
+\item{return}{"number" (return the node number) or "label" (return the node label).}
 }
 \description{
 \code{findOS} is to find descendants of an internal node.

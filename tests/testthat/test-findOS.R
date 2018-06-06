@@ -38,7 +38,7 @@ test_that("findOS could find offspring correctly", {
       tree = tinyTree,
       only.Tip = FALSE,
       self.include = TRUE,
-      return = "node"
+      return = "number"
     ),
     c(4, 18, 5)
   )
