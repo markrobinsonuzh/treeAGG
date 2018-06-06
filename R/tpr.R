@@ -36,22 +36,13 @@
 #'
 #'  # make sure the direction order in the list for truth and found is the          same
 #' (tpr3 <- tpr(tree = tinyTree, truth = list(16, 13),
-#'             found = list(17, 14), level = "leaf",
+#'             found = list(16, 13), level = "leaf",
 #'             direction = TRUE))  # correct order
 #'
 #' (tpr4 <- tpr(tree = tinyTree, truth = list(16, 13),
-#'             found = list(14, 17), level = "node",
+#'             found = list(13, 16), level = "node",
 #'             direction = TRUE)) # wrong order
 #'
-#'  # if only one branches is found with signal: node 17 (up)
-#'  (tpr5 <- tpr(tree = tinyTree, truth = list(16, 13),
-#'             found = list(17, NULL), level = "node",
-#'             direction = TRUE))
-#'
-#'
-#'
-#'
-
 
 tpr <- function(tree, truth, found,
                 level = c("node", "leaf"),
@@ -61,6 +52,7 @@ tpr <- function(tree, truth, found,
     stop("tree: should be a phylo object")
   }
 
+
   # if signal direction is taken into account.
   if(direction){
     # it requires list input for both truth and found
@@ -69,7 +61,14 @@ tpr <- function(tree, truth, found,
        inherits(found, "list") &&
        length(truth) == length(found)){
 
+
       tt <- mapply(function(x, y){
+        if(is.character(x)){
+          x <- transNode(tree = tree, input = x)
+        }
+        if(is.character(y)){
+          y <- transNode(tree = tree, input = y)
+        }
          tpr0(tree = tree, truth = x,
                found = y, level = level)
           }, x = truth, y = found)
@@ -83,6 +82,14 @@ tpr <- function(tree, truth, found,
 
     # if signal direction isn't taken into account.
   }else{
+
+    if(is.character(truth)){
+      truth <- transNode(tree = tree, input = truth)
+    }
+    if(is.character(found)){
+      found <- transNode(tree = tree, input = found)
+    }
+
     tt <- tpr0(tree = tree, truth = truth,
                found = found, level = level)
     tpr <- tt[1]/tt[2]

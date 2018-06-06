@@ -156,15 +156,21 @@ The true positive rate at leaf level is the ratio of the number of correctly fou
 
 ```{r}
 # true positive rate at leaf level
-(rateL <- tpr(tree = pTree, truth = trueTip, 
+(tpr.l <- tpr(tree = pTree, truth = trueTip, 
              found = loc_edgeR, level = "leaf"))
+# true positive rate at leaf level
+(tpr.n <- tpr(tree = pTree, truth = trueTip, 
+             found = loc_edgeR, level = "node"))
 
 ```
 The true positive rate at node level is the ratio of the number of correctly found nodes to the number of nodes with true differential abundance.
 
 ```{r}
 # true positive rate at leaf level
-(rateN <- tpr(tree = pTree, truth = trueTip, 
+(fdr.l <- fdr(tree = pTree, truth = trueTip, 
+             found = loc_edgeR, level = "leaf"))
+# true positive rate at leaf level
+(fdr.n <- fdr(tree = pTree, truth = trueTip, 
              found = loc_edgeR, level = "node"))
 
 ```
