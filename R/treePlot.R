@@ -3,17 +3,20 @@
 #' \code{treePlot} is to visualize a phylogenetic tree.
 #'
 #' @param tree a phylo object
-#' @param branch a vector of node numbers or node labels to specify the branches to be colored. Each branch is represented by its root node(node numbers or labels). A leaf node reprents the edge connecting the leaf and its parent.
-#' @param col.branch a vector of colors. Its length should be one or equals to the length of \strong{branch}. If the lengths of col.branch and branch are the same, their corresponding orders are matched. The default is blue.
-#' @param col.other a color for the branches other than those specified in branch
-#' @param point a vector of node numbers or node labels to specify the point locations in the tree
-#' @param col.point the color for the \strong{point}.
-#' @param size.point the size for the \strong{point}.
-#' @param zoomNode a vector of nodes to be zoomed in. If default (null), the tree is not zoomed in.
-#' @param zoomLevel a numeric vector. Its length is equal to 1 or equal to the length of zoomNode. If default (null), a leaf is zoomed in its direct parent level and a internal node is zoomed in its own level.
+#' @param branch a vector of node numbers labels to specify the branches to be colored. Each branch is represented by its branch node. A leaf node reprents the edge connecting the leaf and its parent.
+#' @param col.branch a vector of colors. Its length should be one or equals to the length of \strong{branch}. If \strong{col.branch} has the same length as \strong{branch}, the branches are colored correspondingly with the \strong{col.branch}. The default is blue.
+#' @param col.other a color for the branches other than those specified in \strong{branch}
+#' @param point a vector of node numbers or node labels to specify the locations to add points in the tree
+#' @param col.point a color for the \strong{point}. It has length equal to one.
+#' @param size.point the size for the \strong{point}. It has length equal to one.
+#' @param zoomNode a vector of nodes to be zoomed in. If default (NULL), the tree is not zoomed in.
+#' @param zoomLevel a numeric vector. Its length is equal to 1 or equal to the length of \strong{zoomNode}. If default (NULL), a leaf is zoomed in its direct parent level and an internal node is zoomed in its own level.
 #'
-#' @param zoomScale a scale to zoom in. If default (null), tree is not zoomed in.
+#' @param zoomScale a numeric vector. Its length is equal to one or equal to the length of \strong{zoomNode}. If \strong{zoomScale} has the same length as \strong{zoomNode}, the branches are zoomed in with different scales corresponding to the value of \strong{zoomScale}. If default (NULL), tree is not zoomed in.
+#' @param legend TRUE or FALSE. Default is FALSE. If TRUE, the legend is created.
+#' @param legend.theme a list of arguments used for the theme in ggplot2 package (see \code{\link[ggplot2]{theme}} ) and starting with "legend."
 #' @param legend.title a vector to specify the title of the legend. It must be named with "branch" and "point" to match with the argument \strong{branch} and \strong{point}.
+#' @param legend.label a list with three members: "col.branch", "col.other", and "col.point". The elements order in each member matches with the corresponding argument \strong{col.branch}, \strong{col.other} and \strong{col.point}, and will display in the legend. See Examples.
 #' @param size.line.legend the line size shown in the legend for \strong{branch}
 #' @param size.point.legend the point size shown in the legend for \strong{point}.
 #' @param ... see also \code{\link[ggtree]{ggtree}}
@@ -25,280 +28,533 @@
 #' @return a tree plot
 #'
 #' @examples
-#' library(ggtree)
-#' data(exTree)
-#' ggtree(bigTree, layout = "circular", branch.length = "none")
 #'
-#' # If we want to color two branches with root node 1000 and 1400
-#' p <- treePlot(tree = bigTree, branch = c(1000, 1400))
-#' p
+#' data(bigTree)
 #'
-#' # To use different color
+#' # If we want to color two branches with branch node 1000 and 1400
+#' treePlot(tree = bigTree, branch = c(1000, 1400))
+#'
+#'
+#' # use col.branch and col.other to specify colors
+#' treePlot(tree = bigTree, branch = c(1000, 1400),
+#' col.branch = c("salmon", "blue"), col.other = "grey40")
+#'
+#' # add legend to the colored branches
+#' treePlot(tree = bigTree, branch = c(1000, 1400),
+#' col.branch = c("salmon", "blue"), col.other = "grey40",
+#' legend = TRUE, legend.label = list(col.branch = c("up", "down")))
+#'
+#' # change legend title
 #' p <- treePlot(tree = bigTree, branch = c(1000, 1400),
-#' col.branch = c("red", "blue"), col.other = c("other" = "grey20"))
-#' p
+#' col.branch = c("salmon", "blue"), col.other = "grey40",
+#' legend = TRUE,
+#' legend.label = list(col.branch = c("Go up", "Go down")),
+#' legend.title = c("branch" = "Abundance"))
 #'
-#' # To add legend, we could do it in this way
-#' # the name of col.other would be used as the label in the legend
-#' p + ggplot2::theme(legend.position = "right")
+#' # change legend position (combine with ggplot2 package)
+#' library(ggplot2)
+#'  p + ggplot2::theme(legend.position = "bottom")
 #'
-#' # To change the legend title
-#' p <- treePlot(tree = bigTree, branch = c(1000, 1400),
-#' col.branch = c("red", "blue"), col.other = c("other" = "grey20"),
-#' legend.title = c("branch" = "Truth"))
+#' # change legend position use legend.theme
+#' treePlot(tree = bigTree, branch = c(1000, 1400),
+#' col.branch = c("salmon", "blue"), col.other = "grey40",
+#' legend = TRUE,
+#' legend.label = list(col.branch = c("Go up", "Go down")),
+#' legend.title = c("branch" = "Truth"),
+#' legend.theme = list(legend.position = "bottom"))
 #'
-#' p + ggplot2::theme(legend.position = "right")
 #'
-#' # To zoom in the branch with root node 1400 (by scale 4)
-#' p <- treePlot(tree = bigTree, branch = c(1000, 1400),
-#' col.branch = c("red", "blue"), col.other = c("other" = "grey20"),
-#' legend.title = c("branch" = "Truth"), zoomNode = 1400,
-#' zoomScale = 8)
+#' # add points
+#' treePlot(tree = bigTree, branch = c(1000, 1400),
+#' col.branch = c("salmon", "blue"), col.other = "grey40",
+#' legend = TRUE,
+#' legend.label = list(col.branch = c("Go up", "Go down")),
+#' legend.title = c("branch" = "Truth"),
+#' legend.theme = list(legend.position = "bottom"),
+#' point = c(500, 5, 10))
 #'
-#' p + ggplot2::theme(legend.position = "right")
 #'
-#' # If its sister branch is also interested, we could zoom in their parent level by zoomLevel = 1
+#'# add points label in legend
+#' treePlot(tree = bigTree, branch = c(1000, 1400),
+#' col.branch = c("salmon", "blue"), col.other = "grey40",
+#' legend = TRUE,
+#' legend.label = list(col.branch = c("Go up", "Go down"),
+#' col.point = "Found"),
+#' legend.title = c("branch" = "Truth", "point"= "Estimate"),
+#' legend.theme = list(legend.position = "bottom"),
+#' point = c(500, 5, 10))
 #'
-#' p <- treePlot(tree = bigTree, branch = c(1000, 1400),
-#' col.branch = c("red", "blue"), col.other = c("other" = "grey20"),
-#' legend.title = c("branch" = "Truth"), zoomNode = 1400,
-#' zoomScale = 8, zoomLevel = 1)
 #'
-#' p + ggplot2::theme(legend.position = "right")
+#'# add points label in legend
+#' treePlot(tree = bigTree, branch = c(1000, 1400),
+#' col.branch = c("salmon", "blue"), col.other = "grey40",
+#' legend = TRUE,
+#' legend.label = list(col.branch = c("Go up", "Go down"),
+#' col.point = "Found", col.other = "Same"),
+#' legend.title = c("branch" = "Truth", "point"= "Estimate"),
+#' legend.theme = list(legend.position = "bottom"),
+#' point = c(500, 5, 10))
 #'
-#' # If we want to add some points at some nodes of the tree
-#' p <- treePlot(tree = bigTree, branch = c(1000, 1400),
-#' col.branch = c("red", "blue"), col.other = c("other" = "grey20"),
-#' legend.title = c("branch" = "Truth"), zoomNode = 1400,
-#' zoomScale = 8, zoomLevel = 1, point = c(50, 100, 500, 1200, 1500))
-#'
-#' # To change the legend for the point
-#' p <- treePlot(tree = bigTree, branch = c(1000, 1400),
-#' col.branch = c("coral", "blue"), col.other = c("other" = "darkgrey"),
-#' legend.title = c("branch" = "Truth", "point" = "Estimate"),
-#'  zoomNode = 1400,
-#' zoomScale = 8, zoomLevel = 1, point = c(50, 100, 500, 1200, 1500),
-#' col.point = c("found" = "violet"))
-#'
-#' p + ggplot2::theme(legend.position = "bottom",
-#' legend.text = element_text(size= 10),
-#' legend.key.size = unit(4,"cm"),
-#' legend.key.height = unit(0.4,"cm"),
-#' legend.key.width = unit(0.5, "cm"),
-#' legend.title = element_text(size = 15))
-
-treePlot <- function(tree, branch = NULL,
-                     col.branch = "blue",
+treePlot <- function(tree,
+                     branch = NULL, col.branch = "blue",
                      col.other = "grey",
-                     point = NULL,
-                     col.point = "orange",
+                     point = NULL, col.point = "orange",
                      size.point = 2,
-                     zoomNode = NULL,
-                     zoomLevel = NULL,
+                     zoomNode = NULL, zoomLevel = NULL,
                      zoomScale = NULL,
-                     legend.title = c("branch"= "Title_branch",
-                                      "point" = "Title_point"),
+                     legend = FALSE, legend.theme = NULL,
+                     legend.title = c("point" = "Title_point",
+                                      "branch" = "Title_branch"),
+                     legend.label = NULL,
                      size.line.legend = 2,
-                     size.point.legend = 2,...){
+                     size.point.legend = 3, ...){
+
   # check tree
   if (!inherits(tree, "phylo")) {
     stop("tree: should be a phylo object")
   }
+  p <- ggtree(tree, ...)
+
+  # if legend isn't shown
+  # if(!legend){
+  #legend.title <- c("branch" = NA, "point" = NA)
+  #legend.label <- list(col.branch = NA, col.other = NA,
+  #                     col.point = NA)
+  #size.line.legend <- NA
+  #size.point.legend <- NA
+  #}
+
+
+  # color branch
+  if(!is.null(branch)){
+    p <-  addBranch(tree = tree, branch = branch,
+                    col.branch = col.branch,
+                    col.other = col.other,
+                    addTo = p)
+  }else{
+    p <- p
+  }
+
+  # add points
+  if(!is.null(point)){
+    p <- addPoint(tree = tree, point = point,
+                  col.point = col.point, addTo = p)
+  }else{
+    p <- p
+  }
+
+  # customize the size scale for added points
+  if(!is.null(point)){
+    p <- p + sizeScale(size.point = size.point,
+                       legend.label = legend.label,
+                       legend.title = legend.title["point"],
+                       col.point = col.point,
+                       size.point.legend = size.point.legend,
+                       legend = legend)
+  }else{
+    p <- p
+  }
+
+  # customize the color
+  if(!is.null(branch)){
+    p <- p +
+      colScale(branch = branch, point = point,
+               col.branch = col.branch,
+               col.other = col.other, col.point = col.point,
+               legend.label = legend.label,
+               legend.title = legend.title,
+               size.line.legend = size.line.legend,
+               legend = legend )
+  }else{
+    p <- p
+  }
+
+  # zoom in selected branches
+  if(!is.null(zoomNode)){
+    p <- addZoom(tree = tree, zoomNode = zoomNode,
+                 zoomLevel = zoomLevel, zoomScale = zoomScale,
+                 addTo = p)
+  }else{
+    p <- p
+  }
+
+  # add legend
+  if(legend){
+    p <- p + addLegend(legend.theme)
+  }else{
+    p <- p
+  }
+
+ if(is.null(legend.label$col.point)){
+    p <- p + guides(size = FALSE)
+  }
+
+  if(is.null(legend.label$col.branch)){
+    p <- p + guides(color = FALSE)
+  }
+
+  p
+}
+
+#' color a branch
+#'
+#' \code{addBranch} is to color a branch or some edges.
+#'
+#' @param tree a phylo object
+#' @param branch a vector of node numbers labels to specify the branches to be colored. Each branch is represented by its branch node. A leaf node reprents the edge connecting the leaf and its parent.
+#' @param col.branch a vector of colors. Its length should be one or equals to the length of \strong{branch}. If \strong{col.branch} has the same length as \strong{branch}, the branches are colored correspondingly with the \strong{col.branch}. The default is blue.
+#' @param col.other a color for the branches other than those specified in \strong{branch}
+#' @param addTo NULL or a plot of a phylo object.
+#'
+#' @import ggtree ggplot2
+#'
+#'
+addBranch <- function(tree, branch, col.branch,
+                      col.other, addTo = NULL){
+
+  # node number required
+  if (inherits(branch, "character")) {
+    branch <- transNode(tree = tree, input = branch)
+  } else {
+    branch <- branch
+  }
+
+  # -------------------------------------------------------
+  # create a data frame to indicate the selected edges
+  # -------------------------------------------------------
 
   p <- ggtree(tree)
   d <- p$data[, "node", drop = FALSE]
 
-  # ================== points ===============================
-  # add points on the tree
-  if(!is.null(point)){
+  # The edges selected to be colored
+  eList <- lapply(branch, findOS, tree = tree,
+                  only.Tip = FALSE, self.include = TRUE)
+  el <- unlist(lapply(eList, length))
+  eList <- eList[order(el, decreasing = TRUE)]
+  dList <- mapply(function(x, y) {
+    cbind.data.frame(node = y, group = x,
+                     stringsAsFactors = FALSE)},
+    x = col.branch, y = eList, SIMPLIFY = FALSE,
+    USE.NAMES = FALSE)
+  df <- do.call(rbind, dList)
 
-    # transformation from node label to node number
-    if (inherits(point, "character")) {
-      point <- transNode(tree = tree, input = point)
-    } else {
-      point <- point
-    }
+  Truth <- rep("grp_other", nrow(d))
+  Truth[match(df$node, d$node)] <- df$group
+  d <- cbind.data.frame(d, Truth = Truth, stringsAsFactors = FALSE)
 
-    if (is.null(names(col.point))) {
-      names(col.point) <- "col.point"
-    } else {
-      col.point <- col.point
-    }
+  # return
+  if(is.null(addTo)){
+    fig <- ggtree(tree, ...)
+  }else{ fig <- addTo }
 
-    # color
-    colG <- col.point
+  fig %<+% d + aes(colour = Truth)
 
-    # create a data frame to store the information for points
-    Estimate <- ifelse(d$node %in% point, names(col.point),
-                         "NO_Found")
-    show <- ifelse(d$node %in% point, TRUE, FALSE)
-    d <- cbind.data.frame(d, Estimate = Estimate, show = show)
-    # legend title
-    if(is.na(legend.title["point"])){
-      legend.title["point"] <- ""
-    }
+}
 
-    p1 <- ggtree(tree, ...) %<+% d +
-      geom_point2(aes(subset = show, color = Estimate,
-                      size = Estimate)) +
-      scale_size_manual(values = size.point,
-                        guide = guide_legend(
-                          title = legend.title["point"],
-                          override.aes = list(
-                            shape = 16, color = col.point,
-                            size = size.point.legend)))
+#' add points to the tree plot
+#'
+#' \code{addPoint} is to add points to a plot of phylogenetic tree.
+#'
+#' @param tree a phylo object
+#' @param point a vector of node numbers or node labels to specify the locations to add points in the tree
+#' @param col.point a color for the \strong{point}. It has length equal to one.
+#' @param size.point the size for the \strong{point}. It has length equal to one.
+#' @param addTo NULL or a plot of a phylo object.
+#'
+#' @import ggtree ggplot2
+#'
+addPoint <- function(tree, point, col.point,
+                     addTo = NULL){
+  p <- ggtree(tree)
+  d <- p$data[, "node", drop = FALSE]
 
-  }else{
-    # color
-    colG <- c()
-    p1 <- ggtree(tree, ...)
-
+  # node number required
+  if (inherits(point, "character")) {
+    point <- transNode(tree = tree, input = point)
+  } else {
+    point <- point
   }
 
-  # ================== edges ===============================
-  if(!is.null(branch)){
+  # -------------------------------------------------------
+  # create a data frame to store the information for points
+  # -------------------------------------------------------
+  Estimate <- ifelse(d$node %in% point, "YES_Found",
+                     "NO_Found")
+  show <- ifelse(d$node %in% point, TRUE, FALSE)
+  d <- cbind.data.frame(d, Estimate = Estimate, show = show)
 
-    # transformation from node label to node number
-    if (inherits(branch, "character")) {
-      branch <- transNode(tree = tree, input = branch)
-    } else {
-      branch <- branch
-    }
+  if(is.null(addTo)){
+    fig <- ggtree(tree, ...)
+  }else{ fig <- addTo }
 
-    # check to see if col.branch has propriate length
-    if(length(col.branch) != length(branch) &
-       length(col.branch) != 1) {
-      stop("The length of col.branch should be one
-           or equal to the length of branch")
-    }
+  fig %<+% d +
+    geom_point2(aes(subset = show, color = Estimate,
+                    size = Estimate))
 
-    # organize the color used in the figure
-    if(is.null(names(col.branch))) {
-      if (length(col.branch) != length(branch)) {
-        names(col.branch) <- "col.branch"
-      } else { names(col.branch) <- branch}
-    } else {
-      col.branch <- col.branch }
+}
 
-    if(is.null(names(col.other))) {
-      names(col.other) <- "col.other"
-    } else {
-      col.other <- col.other}
-
-    colG <- c(colG, col.branch, col.other)
-
-
-    # The edges selected to be colored
-    desList <- lapply(branch,
-                      FUN = function(x) {
-                        findOS(ancestor = x, tree = tree,
-                               only.Tip = FALSE, self.include = TRUE)})
-    names(desList) <- branch
-    des_len <- unlist(lapply(desList, length))
-    des.1 <- desList[order(des_len, decreasing = TRUE)]
-    group_var <- lapply(seq_along(des.1), FUN = function(x) {
-      rep(names(des.1)[x], length(des.1[[x]]))})
-    df.1 <- data.frame(node = unlist(des.1, use.names = FALSE),
-                       group = unlist(group_var),
-                       stringsAsFactors = FALSE)
-
-    if (length(col.branch) == 1) {
-      df.1$group <- names(col.branch)
-    }
-
-    # create a data frame to include the selection information for edges
-    Truth <- rep(names(col.other), nrow(d))
-    Truth[match(df.1$node, d$node)] <- df.1$group
-    d <- cbind.data.frame(d, Truth = Truth, stringsAsFactors = FALSE)
-    # integrate with tree
-    if(is.na(legend.title["branch"])){
-      legend.title["branch"] <- ""
-    }
-    p1 <- p1 %<+% d + aes(colour = Truth) +
-      scale_color_manual(values = colG,
-                         labels = ifelse(! names(colG) %in% names(col.point),
-                                         names(colG), ""),
-                         guide = guide_legend(
-                           title = legend.title["branch"],
-                           override.aes =list(
-                             color = colG, linetype = ifelse(
-                               names(colG) %in% names(col.point),
-                               "blank", "solid"),
-                             shape = rep(NA, length(colG)),
-                             size = size.line.legend)))
+#' visualize the phylogenetic tree
+#'
+#' \code{addZoom} is to zoom in a phylogenetic tree.
+#'
+#' @param tree a phylo object
+#' @param zoomNode a vector of nodes to be zoomed in. If default (NULL), the tree is not zoomed in.
+#' @param zoomLevel a numeric vector. Its length is equal to 1 or equal to the length of \strong{zoomNode}. If default (NULL), a leaf is zoomed in its direct parent level and an internal node is zoomed in its own level.
+#'
+#' @param zoomScale a numeric vector. Its length is equal to one or equal to the length of \strong{zoomNode}. If \strong{zoomScale} has the same length as \strong{zoomNode}, the branches are zoomed in with different scales corresponding to the value of \strong{zoomScale}. If default (NULL), tree is not zoomed in.
+#' @param addTo NULL or a plot of a phylo object.
+#'
+#' @import ggtree ggplot2
+#'
 
 
-    }else{
-      p1 <- p1 +
-        scale_color_manual(values = colG,
-                           labels = ifelse(!names(colG) %in% names(col.point),
-                                           names(colG), ""),
-                           guide = FALSE)
-    }
+addZoom <- function(tree, zoomNode = NULL, zoomLevel = NULL,
+                    zoomScale = NULL, addTo = NULL){
 
-  # ================ ZOOM IN ====================
-  #
-  if(!is.null(zoomNode)){
-
-    if (inherits(point, "character")) {
-      zoomNode <- transNode(tree = tree, input = zoomNode)
-    } else {
-      zoomNode <- zoomNode
-    }
-
-    zList <- lapply(zoomNode,
-                    FUN = function(x) {
-                      findOS(ancestor = x, tree = tree,
-                             only.Tip = FALSE, self.include = TRUE)})
-    names(zList) <- zoomNode
-    z_len <- unlist(lapply(zList, length))
-
-    # define zoomLevel
-    if (is.null(zoomLevel)) {
-      zoomLevel <- ifelse(z_len > 1, 0, 1)
-    } else {
-      if (length(zoomLevel) == 1) {
-        zoomLevel <- rep(zoomLevel, length(zoomNode))
-      } else {
-        zoomLevel <- zoomLevel
-      }
-    }
-    names(zoomLevel) <- zoomNode
-
-    # define zoomScale
-    if (is.null(zoomScale)) {
-      zoomScale <- rep(1, length(zoomNode))
-    } else {
-      zoomScale <- rep(zoomScale, length(zoomNode))
-    }
-
-    # the nodes to be zoomed in
-    nodZ <- findAncestor(tree = tree, node = zoomNode, level = zoomLevel)
-    names(nodZ) <- names(zoomScale) <- zoomNode
-    # remove nodes which are the descendants of the others
-    nodZW <- rmDesc(node = nodZ, tree = tree)
-    zoomScale[!names(zoomScale) %in% names(nodZW)] <- 1
-
-    # zoom the selected nodes
-    i <- 1
-    repeat {
-      p1 <- p1 %>% scaleClade(nodZ[i], scale = zoomScale[i])
-      i <- i + 1
-      if (i > length(nodZ)) {
-        break
-      }
-    }
-
-
-    lim <- c(min(p1$data$y), max(p1$data$y))
-
-    ## ggtree function set ylim when layout is circular or radical this would lead to
-    ## issue, like points not displayed when zoom in some branches
-    suppressMessages(p1 <- p1 + scale_y_continuous(limits = lim))
-
+  # node number required
+  if (inherits(zoomNode, "character")) {
+    zoomNode <- transNode(tree = tree, input = zoomNode)
+  } else {
+    zoomNode <- zoomNode
   }
 
-  return(p1)
+  zList <- lapply(zoomNode, findOS, tree = tree,
+                  only.Tip = FALSE, self.include = TRUE)
+  names(zList) <- zoomNode
+  z_len <- unlist(lapply(zList, length))
+
+  # define zoomLevel
+  if (is.null(zoomLevel)) {
+    zoomLevel <- ifelse(z_len > 1, 0, 1)
+  } else {
+    if (length(zoomLevel) == 1) {
+      zoomLevel <- rep(zoomLevel, length(zoomNode))
+    } else {
+      zoomLevel <- zoomLevel
+    }
+  }
+  names(zoomLevel) <- zoomNode
+
+  # define zoomScale
+  if (is.null(zoomScale)) {
+    zoomScale <- rep(1, length(zoomNode))
+  } else {
+    zoomScale <- rep(zoomScale, length(zoomNode))
+  }
+
+  # the nodes to be zoomed in
+  nodZ <- findAncestor(tree = tree, node = zoomNode,
+                       level = zoomLevel)
+  names(nodZ) <- names(zoomScale) <- zoomNode
+  # remove nodes which are the descendants of the others
+  nodZW <- rmDesc(node = nodZ, tree = tree)
+  zoomScale[!names(zoomScale) %in% names(nodZW)] <- 1
+
+  if(is.null(addTo)){
+    fig <- ggtree(tree, ...)
+  }else{ fig <- addTo }
+
+  # zoom the selected nodes
+  i <- 1
+  repeat {
+    fig <- fig %>% scaleClade(nodZ[i], scale = zoomScale[i])
+    i <- i + 1
+    if (i > length(nodZ)) {
+      break
+    }
+  }
+
+
+  lim <- c(min(fig$data$y), max(fig$data$y))
+
+  ## ggtree function set ylim when layout is circular or radical this would lead to
+  ## issue, like points not displayed when zoom in some branches
+  suppressMessages(fig <- fig + scale_y_continuous(limits = lim))
+
+  fig
+}
+
+#' add legend
+#' \code{addLegend} is to customized the legend.
+#'
+#' @param legend.theme a list of arguments used for the theme in ggplot2 package (see \code{\link[ggplot2]{theme}} ) and starting with "legend."
+#'
+#'
+#' @import ggtree ggplot2
+#'
+
+addLegend <- function(legend.theme){
+
+  # default way to put legend
+  li1 <- list(legend.position = "right",
+              legend.text = element_text(size= 12),
+              legend.key.size = unit(4,"cm"),
+              legend.key.height = unit(0.4,"cm"),
+              legend.key.width = unit(0.5, "cm"),
+              legend.title = element_text(size = 15)
+              #,
+             # legend.background = element_rect(),
+              #legend.box.background = element_rect()
+             )
+  # user defined
+  if(is.null(legend.theme)){
+    legend.theme <- list(NULL)
+  }
+  li2 <- legend.theme
+  # overwrite the default
+  li <- modifyList(li1, li2)
+  # ggplot2 theme
+  do.call(theme, li)
 }
 
 
+
+#' customized the scale
+#'
+#' \code{sizeScale} is to customized the size scale.
+#'
+#' @param col.point a color for the \strong{point}. It has length equal to one.
+#' @param size.point the size for the \strong{point}. It has length equal to one.
+#' @param legend.label a list with three members: "col.branch", "col.other", and "col.point". The elements order in each member matches with the corresponding argument \strong{col.branch}, \strong{col.other} and \strong{col.point}, and will display in the legend. See Examples.
+#' @param legend.title a vector to specify the title of the legend. It must be named with "branch" and "point" to match with the argument \strong{branch} and \strong{point}.
+#' @param size.point.legend the point size shown in the legend for \strong{point}.
+#' @param legend TRUE or FALSE
+#' @import ggplot2 ggtree
+#'
+#'
+sizeScale <- function(col.point, size.point,
+                      legend.label, legend.title,
+                      size.point.legend, legend ){
+  # if legend is required, correct the label with guide_legend
+  if(legend){
+    ll <- list("branch" = NULL, "point" = NULL)
+    lt <- as.list(legend.title)
+    names(lt) <- names(legend.title)
+    legend.title <- modifyList(ll, lt)
+    scale_size_manual(values = size.point,
+                      labels = legend.label$col.point,
+                      guide = guide_legend(
+                        title = legend.title$point,
+                        override.aes = list(
+                          shape = 16, color = col.point,
+                          size = size.point.legend)))
+  }else{
+    scale_size_manual(values = size.point)
+  }
+
+}
+
+
+
+#' customized the color
+#'
+#' \code{colScale} is to customized the color scale.
+#'
+#' @param branch a vector of node numbers labels to specify the branches to be colored. Each branch is represented by its branch node. A leaf node reprents the edge connecting the leaf and its parent.
+#' @param col.branch a vector of colors. Its length should be one or equals to the length of \strong{branch}. If \strong{col.branch} has the same length as \strong{branch}, the branches are colored correspondingly with the \strong{col.branch}. The default is blue.
+#' @param col.other a color for the branches other than those specified in \strong{branch}
+#' @param col.point a color for the \strong{point}. It has length equal to one.
+#' @param legend.label a list with three members: "col.branch", "col.other", and "col.point". The elements order in each member matches with the corresponding argument \strong{col.branch}, \strong{col.other} and \strong{col.point}, and will display in the legend. See Examples.
+#' @param legend.title a vector to specify the title of the legend. It must be named with "branch" and "point" to match with the argument \strong{branch} and \strong{point}.
+
+#' @param size.line.legend the line size shown in the legend for \strong{branch}
+#' #' @param legend TRUE or FALSE. Default is FALSE. If TRUE, the legend is created.
+#'
+#' @import ggplot2 ggtree
+#'
+#'
+
+colScale <- function(branch,
+                     point,
+                     col.branch,
+                     col.other,
+                     col.point,
+                     legend.label,
+                     legend.title,
+                     size.line.legend,
+                     legend) {
+  # colG is to correct the label
+  # colV is to correct the value
+  # if(is.null(point)){
+  #   colG <- colV <- c(col.branch, col.other)
+  #   names(colV) <- c(col.branch, "grp_other")
+  # }else{
+  #   colG <- colV <- c(col.branch, col.other, col.point)
+  #   names(colV) <- c(col.branch, "grp_other", "YES_Found")
+  # }
+
+  # colG is created to correct the color
+  # vG is created to output the label
+  if(length(legend.label$col.branch) > length(col.branch)){
+    stop("check col.branch: You probably need more than one color")
+  }
+
+  if (is.null(point)) {
+    names(cG) <- c("col.branch", "col.other")
+    colV <- c(col.branch, col.other)
+    names(colV) <- c(col.branch, "grp_other")
+  } else{
+    cG <- list(col.branch, col.other, col.point)
+    names(cG) <- c("col.branch", "col.other", "col.point")
+    colV <- c(col.branch, col.other, col.point)
+    names(colV) <- c(col.branch, "grp_other", "YES_Found")
+  }
+
+  if (legend) {
+    #if legend label is not provided
+    if (is.null(legend.label)) {
+      stop("legend.label isn't provided")
+    }
+
+    # decide the content in the legend (branch, other or point)
+    # ll is a template
+    ll <- list(col.branch = "",
+               col.other = "",
+               col.point = "")
+    listG <- listLab <- ll[names(ll) %in% names(cG)]
+    listG <- modifyList(listG, cG)
+    listLab <- modifyList(listLab, legend.label)
+
+    # match the color and the label
+    namG <- mapply(function(x, y) {
+      names(x) <- y
+      x
+    }, x = listG, y = listLab)
+    colG <- unlist(setNames(namG, NULL))
+
+    # if there are duplicates for the pairs of color and lable,
+    # remove them.
+    colG <- colG[!(duplicated(colG) & duplicated(names(colG)))]
+    lab <- ifelse(names(colG) %in% legend.label$col.point,
+                  "", names(colG))
+    lty <- ifelse(lab %in% "", "blank", "solid")
+    du <- duplicated(colG) & duplicated(names(colG))
+    lab <- ifelse(du, "", lab)
+    lty <- ifelse(du, "blank", lty)
+
+
+    # update legend.title
+    ll <- list("branch" = NULL, "point" = NULL)
+    lt <- as.list(legend.title)
+    names(lt) <- names(legend.title)
+    legend.title <- modifyList(ll, lt)
+
+    scale_color_manual(
+      values = colV,
+      labels = lab,
+      guide = guide_legend(
+        title = legend.title$branch,
+        override.aes = list(
+          color = colV,
+          linetype = lty,
+          shape = rep(NA, length(colG)),
+          size = size.line.legend
+        )
+      )
+    )
+  } else{
+    scale_color_manual(values = colV)
+  }
+
+
+}

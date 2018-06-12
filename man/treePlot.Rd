@@ -50,7 +50,8 @@ treePlot is created based on the \pkg{ggtree} and \pkg{ggplot2}. So other geoms 
 }
 \examples{
 library(ggtree)
-data(exTree)
+library(ggplot2)
+data(bigTree)
 ggtree(bigTree, layout = "circular", branch.length = "none")
 
 # If we want to color two branches with root node 1000 and 1400

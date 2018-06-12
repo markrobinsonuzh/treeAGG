@@ -2,7 +2,7 @@
 % Please edit documentation in R/tpr.R
 \name{tpr}
 \alias{tpr}
-\title{calculate true positive rate (TPR)}
+\title{calculate true positive rate (TPR) on a tree structure}
 \usage{
 tpr(tree, truth, found, level = c("node", "leaf"), direction = FALSE)
 }
@@ -17,6 +17,41 @@ tpr(tree, truth, found, level = c("node", "leaf"), direction = FALSE)
 
 \item{direction}{TRUE or FALSE. Default is FALSE. If TRUE, the signal direction is taken into account; the argument \strong{truth} and \strong{found} should both be a list of two members and the order of directions should match.}
 }
+\value{
+a true positive rate
+}
 \description{
-\code{tpr} is to calculate the true positive rate (TPR) at leaf or node level.
+\code{tpr} is to calculate the true positive rate (TPR) on a tree structure at leaf or node level.
+}
+\examples{
+
+library(ggtree)
+data("tinyTree")
+ggtree(tinyTree) + geom_text2(aes(label = node))
+
+# Assume there are two branches with signal: one with root node 16 (signal direction: up) and the other with root node 13 (signal direction: down)
+
+# ------------ ignore direction -------------------
+ # two branches are found to have signal: node 17 and node 14
+ # TPR at the tip level
+tpr1 <- tpr(tree = tinyTree, truth = c(16, 13),
+            found = c(17, 14), level = "leaf")
+ # TPR at the node level
+tpr2 <- tpr(tree = tinyTree, truth = c(16, 13),
+            found = c(17, 14), level = "node")
+
+
+# ------------ direction matters-------------------
+# two branches have signal: node 16 (up) and node 13 (down)
+# two branches are found to have signal: node 17 (up) and node 14 (down)
+
+ # make sure the direction order in the list for truth and found is the          same
+(tpr3 <- tpr(tree = tinyTree, truth = list(16, 13),
+            found = list(16, 13), level = "leaf",
+            direction = TRUE))  # correct order
+
+(tpr4 <- tpr(tree = tinyTree, truth = list(16, 13),
+            found = list(13, 16), level = "node",
+            direction = TRUE)) # wrong order
+
 }
