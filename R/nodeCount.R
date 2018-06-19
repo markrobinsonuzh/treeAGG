@@ -2,11 +2,10 @@
 #'
 #' \code{nodeCount} is to calculate the counts at internal nodes. The count of an internal node is the sum of counts at its descendant leaves.
 #'
-#' @param tipTable the tip count table
+#' @param data a matrix or data frame. A count table from real data.
 #' @param tree a tree (phylo class)
-#' @param stree a list of phylo class;
-#'              a list of subtrees cut at internal nodes of the tree
 #' @param fun a function to create the count of an internal node based on the counts at its descendant leaf nodes. The default is sum
+#' @importFrom utils head
 #' @return a count table (matrix class) with a row representing a node and
 #' a column representing a sample.
 #'
@@ -22,7 +21,7 @@
 #' colnames(count) <- paste(c("C1_", "C2_"),
 #' c(1:5, 1:5), sep = "")
 #'
-#' count_tinyTree <- nodeCount(tipTable = count,
+#' count_tinyTree <- nodeCount(data = count,
 #' tree = tinyTree, fun = mean)
 #'
 #' # check to see whether the count of an internal node is the sum
@@ -35,51 +34,42 @@
 #' ggtree(tinyTree) %<+% d + geom_text2(aes(label = count))
 
 
+nodeCount <- function(data, tree, fun = sum) {
 
-nodeCount <- function(tipTable, tree,
-                      stree = NULL, fun = sum) {
+  if (!(inherits(data, "data.frame") |
+        inherits(data, "matrix"))) {
+    stop("data should be a matrix or data.frame")
+  }
 
-    if (is.null(tipTable)) {
-        stop("tipTable is missing")
-    }
-    if (!inherits(tree, "phylo")) {
-      stop("tree: should be a phylo object")
-    }
+  if (!inherits(tree, "phylo")) {
+    stop("tree: should be a phylo object")
+  }
 
-    # if stree is not provided, generate it using pruneTree
-    if (is.null(stree)) {
-        # cat("stree is not provided and will be generated automatically")
-        stree <- pruneTree(tree = tree)
-    } else {
-        stree <- stree
-    }
+  if(!setequal(rownames(data), tree$tip.label)){
+    chx <- setdiff(rownames(data), tree$tip.label)
+    chs <- head(chx)
+    stop(cat("The rownames of data doesn't match the tree tip labels:", chs, "\n"))
+  }
 
-    isPhy <- unlist(lapply(stree, FUN = function(x) {
-      inherits(x, "phylo")
-    }))
-    if (!all(isPhy)) {
-      stop("object stree is not a list of phylo objects.")
-    }
+  emat <- tree$edge
+  leaf <- setdiff(emat[, 2], emat[, 1])
+  nodeI <- setdiff(emat[, 1], leaf)
 
-    # check whether each row of a count table is a tip in the tree
-    if (!all(rownames(tipTable) %in% tree$tip.label)) {
-        chx <- sum(!rownames(tipTable) %in% tree$tip.label)
-        warning(chx, " rows could not be found on the tree; only those rows matching the tree tip labels are used")
-        tipTable <- tipTable[rownames(tipTable) %in% tree$tip.label, ]
-    }
 
-    ## calculate counts for nodes
-    nN <- tree$Nnode
-    nNam <- names(stree)
+  ## calculate counts for nodes
+  nN <- length(nodeI)
+  nNam <- transNode(tree = tree, input = nodeI)
 
-    # calculate counts at nodes
-    cNode <- matrix(NA, nrow = nN, ncol = ncol(tipTable))
-    rownames(cNode) <- nNam
-    for (i in 1:nN) {
-        node.i <- nNam[i]
-        tips.i <- (stree[[node.i]])$tip.label
-        cNode[i, ] <- apply(tipTable[tips.i, ], 2, fun)
-    }
-    colnames(cNode) <- colnames(tipTable)
-    return(rbind(tipTable, cNode))
+  # calculate counts at nodes
+  cNode <- matrix(NA, nrow = nN, ncol = ncol(data))
+  rownames(cNode) <- nNam
+  for (i in seq_len(nN)) {
+    node.i <- nodeI[i]
+    tips.i <- findOS(ancestor = node.i, tree = tree,
+                     only.Tip = TRUE, self.include = TRUE,
+                     return = "label")
+    cNode[i, ] <- apply(data[tips.i, ], 2, fun)
+  }
+  colnames(cNode) <- colnames(data)
+  return(rbind(data, cNode))
 }
