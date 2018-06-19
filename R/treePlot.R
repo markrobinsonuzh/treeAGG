@@ -23,8 +23,9 @@
 #'
 #' @details treePlot is created based on the \pkg{ggtree} and \pkg{ggplot2}. So other geoms from these two packages could be combined with \code{treePlot} to add geoms in the figure created by \code{treePlot}.
 #'
-#' @export
+#'
 #' @import ggplot2 ggtree
+#' @export
 #' @return a tree plot
 #'
 #' @examples
@@ -205,12 +206,13 @@ treePlot <- function(tree,
 #' @param col.branch a vector of colors. Its length should be one or equals to the length of \strong{branch}. If \strong{col.branch} has the same length as \strong{branch}, the branches are colored correspondingly with the \strong{col.branch}. The default is blue.
 #' @param col.other a color for the branches other than those specified in \strong{branch}
 #' @param addTo NULL or a plot of a phylo object.
+#' @param ... see also \code{\link[ggtree]{ggtree}}
 #'
 #' @import ggtree ggplot2
 #'
 #'
 addBranch <- function(tree, branch, col.branch,
-                      col.other, addTo = NULL){
+                      col.other, addTo = NULL, ...){
 
   # node number required
   if (inherits(branch, "character")) {
@@ -258,13 +260,13 @@ addBranch <- function(tree, branch, col.branch,
 #' @param tree a phylo object
 #' @param point a vector of node numbers or node labels to specify the locations to add points in the tree
 #' @param col.point a color for the \strong{point}. It has length equal to one.
-#' @param size.point the size for the \strong{point}. It has length equal to one.
 #' @param addTo NULL or a plot of a phylo object.
+#' @param ... see also \code{\link[ggtree]{ggtree}}
 #'
 #' @import ggtree ggplot2
 #'
 addPoint <- function(tree, point, col.point,
-                     addTo = NULL){
+                     addTo = NULL, ...){
   p <- ggtree(tree)
   d <- p$data[, "node", drop = FALSE]
 
@@ -303,13 +305,14 @@ addPoint <- function(tree, point, col.point,
 #'
 #' @param zoomScale a numeric vector. Its length is equal to one or equal to the length of \strong{zoomNode}. If \strong{zoomScale} has the same length as \strong{zoomNode}, the branches are zoomed in with different scales corresponding to the value of \strong{zoomScale}. If default (NULL), tree is not zoomed in.
 #' @param addTo NULL or a plot of a phylo object.
+#' @param ... see also \code{\link[ggtree]{ggtree}}
 #'
 #' @import ggtree ggplot2
 #'
 
 
 addZoom <- function(tree, zoomNode = NULL, zoomLevel = NULL,
-                    zoomScale = NULL, addTo = NULL){
+                    zoomScale = NULL, addTo = NULL, ...){
 
   # node number required
   if (inherits(zoomNode, "character")) {
@@ -381,6 +384,7 @@ addZoom <- function(tree, zoomNode = NULL, zoomLevel = NULL,
 #'
 #'
 #' @import ggtree ggplot2
+#' @importFrom utils modifyList
 #'
 
 addLegend <- function(legend.theme){
@@ -420,6 +424,7 @@ addLegend <- function(legend.theme){
 #' @param size.point.legend the point size shown in the legend for \strong{point}.
 #' @param legend TRUE or FALSE
 #' @import ggplot2 ggtree
+#' @importFrom utils modifyList
 #'
 #'
 sizeScale <- function(col.point, size.point,
@@ -451,6 +456,7 @@ sizeScale <- function(col.point, size.point,
 #' \code{colScale} is to customized the color scale.
 #'
 #' @param branch a vector of node numbers labels to specify the branches to be colored. Each branch is represented by its branch node. A leaf node reprents the edge connecting the leaf and its parent.
+#' @param point a vector of node numbers or node labels to specify the locations to add points in the tree.
 #' @param col.branch a vector of colors. Its length should be one or equals to the length of \strong{branch}. If \strong{col.branch} has the same length as \strong{branch}, the branches are colored correspondingly with the \strong{col.branch}. The default is blue.
 #' @param col.other a color for the branches other than those specified in \strong{branch}
 #' @param col.point a color for the \strong{point}. It has length equal to one.
@@ -458,10 +464,11 @@ sizeScale <- function(col.point, size.point,
 #' @param legend.title a vector to specify the title of the legend. It must be named with "branch" and "point" to match with the argument \strong{branch} and \strong{point}.
 
 #' @param size.line.legend the line size shown in the legend for \strong{branch}
-#' #' @param legend TRUE or FALSE. Default is FALSE. If TRUE, the legend is created.
+#' @param legend TRUE or FALSE. Default is FALSE. If TRUE, the legend is created.
 #'
 #' @import ggplot2 ggtree
-#'
+#' @importFrom utils modifyList
+#' @importFrom stats setNames
 #'
 
 colScale <- function(branch,
@@ -490,6 +497,7 @@ colScale <- function(branch,
   }
 
   if (is.null(point)) {
+    cG <- list(col.branch, col.other)
     names(cG) <- c("col.branch", "col.other")
     colV <- c(col.branch, col.other)
     names(colV) <- c(col.branch, "grp_other")
