@@ -29,10 +29,13 @@ library(ggtree)
 data("tinyTree")
 ggtree(tinyTree) + geom_text2(aes(label = node))
 
-# Assume there are two branches with signal: one with root node 16 (signal direction: up) and the other with root node 13 (signal direction: down)
+# Truth: two branches have differential
+# abundance under different conditions.
+# branch with node 16 (direction: increase)
+# branch with node 13 (direction: decrease)
 
 # ------------ ignore direction -------------------
- # two branches are found to have signal: node 17 and node 14
+# Found: branches with node 17 and node 14
  # TPR at the tip level
 tpr1 <- tpr(tree = tinyTree, truth = c(16, 13),
             found = c(17, 14), level = "leaf")
@@ -42,10 +45,9 @@ tpr2 <- tpr(tree = tinyTree, truth = c(16, 13),
 
 
 # ------------ direction matters-------------------
-# two branches have signal: node 16 (up) and node 13 (down)
-# two branches are found to have signal: node 17 (up) and node 14 (down)
+# Found: branches with node 17 (up) and node 14 (down)
 
- # make sure the direction order in the list for truth and found is the          same
+ # the order of direction for truth and found should be the same
 (tpr3 <- tpr(tree = tinyTree, truth = list(16, 13),
             found = list(16, 13), level = "leaf",
             direction = TRUE))  # correct order

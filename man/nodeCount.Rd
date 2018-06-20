@@ -4,15 +4,12 @@
 \alias{nodeCount}
 \title{Calculate the counts at internal nodes}
 \usage{
-nodeCount(tipTable, tree, stree = NULL, fun = sum)
+nodeCount(data, tree, fun = sum)
 }
 \arguments{
-\item{tipTable}{the tip count table}
+\item{data}{a matrix or data frame. A count table from real data.}
 
 \item{tree}{a tree (phylo class)}
-
-\item{stree}{a list of phylo class;
-a list of subtrees cut at internal nodes of the tree}
 
 \item{fun}{a function to create the count of an internal node based on the counts at its descendant leaf nodes. The default is sum}
 }
@@ -33,7 +30,7 @@ rownames(count) <- tinyTree$tip.label
 colnames(count) <- paste(c("C1_", "C2_"),
 c(1:5, 1:5), sep = "")
 
-count_tinyTree <- nodeCount(tipTable = count,
+count_tinyTree <- nodeCount(data = count,
 tree = tinyTree, fun = mean)
 
 # check to see whether the count of an internal node is the sum

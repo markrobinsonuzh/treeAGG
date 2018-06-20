@@ -6,32 +6,39 @@
 \usage{
 treePlot(tree, branch = NULL, col.branch = "blue", col.other = "grey",
   point = NULL, col.point = "orange", size.point = 2, zoomNode = NULL,
-  zoomLevel = NULL, zoomScale = NULL, legend.title = c(branch =
-  "Title_branch", point = "Title_point"), size.line.legend = 2,
-  size.point.legend = 2, ...)
+  zoomLevel = NULL, zoomScale = NULL, legend = FALSE,
+  legend.theme = NULL, legend.title = c(point = "Title_point", branch =
+  "Title_branch"), legend.label = NULL, size.line.legend = 2,
+  size.point.legend = 3, ...)
 }
 \arguments{
 \item{tree}{a phylo object}
 
-\item{branch}{a vector of node numbers or node labels to specify the branches to be colored. Each branch is represented by its root node(node numbers or labels). A leaf node reprents the edge connecting the leaf and its parent.}
+\item{branch}{a vector of node numbers labels to specify the branches to be colored. Each branch is represented by its branch node. A leaf node reprents the edge connecting the leaf and its parent.}
 
-\item{col.branch}{a vector of colors. Its length should be one or equals to the length of \strong{branch}. If the lengths of col.branch and branch are the same, their corresponding orders are matched. The default is blue.}
+\item{col.branch}{a vector of colors. Its length should be one or equals to the length of \strong{branch}. If \strong{col.branch} has the same length as \strong{branch}, the branches are colored correspondingly with the \strong{col.branch}. The default is blue.}
 
-\item{col.other}{a color for the branches other than those specified in branch}
+\item{col.other}{a color for the branches other than those specified in \strong{branch}}
 
-\item{point}{a vector of node numbers or node labels to specify the point locations in the tree}
+\item{point}{a vector of node numbers or node labels to specify the locations to add points in the tree}
 
-\item{col.point}{the color for the \strong{point}.}
+\item{col.point}{a color for the \strong{point}. It has length equal to one.}
 
-\item{size.point}{the size for the \strong{point}.}
+\item{size.point}{the size for the \strong{point}. It has length equal to one.}
 
-\item{zoomNode}{a vector of nodes to be zoomed in. If default (null), the tree is not zoomed in.}
+\item{zoomNode}{a vector of nodes to be zoomed in. If default (NULL), the tree is not zoomed in.}
 
-\item{zoomLevel}{a numeric vector. Its length is equal to 1 or equal to the length of zoomNode. If default (null), a leaf is zoomed in its direct parent level and a internal node is zoomed in its own level.}
+\item{zoomLevel}{a numeric vector. Its length is equal to 1 or equal to the length of \strong{zoomNode}. If default (NULL), a leaf is zoomed in its direct parent level and an internal node is zoomed in its own level.}
 
-\item{zoomScale}{a scale to zoom in. If default (null), tree is not zoomed in.}
+\item{zoomScale}{a numeric vector. Its length is equal to one or equal to the length of \strong{zoomNode}. If \strong{zoomScale} has the same length as \strong{zoomNode}, the branches are zoomed in with different scales corresponding to the value of \strong{zoomScale}. If default (NULL), tree is not zoomed in.}
+
+\item{legend}{TRUE or FALSE. Default is FALSE. If TRUE, the legend is created.}
+
+\item{legend.theme}{a list of arguments used for the theme in ggplot2 package (see \code{\link[ggplot2]{theme}} ) and starting with "legend."}
 
 \item{legend.title}{a vector to specify the title of the legend. It must be named with "branch" and "point" to match with the argument \strong{branch} and \strong{point}.}
+
+\item{legend.label}{a list with three members: "col.branch", "col.other", and "col.point". The elements order in each member matches with the corresponding argument \strong{col.branch}, \strong{col.other} and \strong{col.point}, and will display in the legend. See Examples.}
 
 \item{size.line.legend}{the line size shown in the legend for \strong{branch}}
 
@@ -49,66 +56,71 @@ a tree plot
 treePlot is created based on the \pkg{ggtree} and \pkg{ggplot2}. So other geoms from these two packages could be combined with \code{treePlot} to add geoms in the figure created by \code{treePlot}.
 }
 \examples{
-library(ggtree)
-library(ggplot2)
+
 data(bigTree)
-ggtree(bigTree, layout = "circular", branch.length = "none")
 
-# If we want to color two branches with root node 1000 and 1400
-p <- treePlot(tree = bigTree, branch = c(1000, 1400))
-p
+# If we want to color two branches with branch node 1000 and 1400
+treePlot(tree = bigTree, branch = c(1000, 1400))
 
-# To use different color
+
+# use col.branch and col.other to specify colors
+treePlot(tree = bigTree, branch = c(1000, 1400),
+col.branch = c("salmon", "blue"), col.other = "grey40")
+
+# add legend to the colored branches
+treePlot(tree = bigTree, branch = c(1000, 1400),
+col.branch = c("salmon", "blue"), col.other = "grey40",
+legend = TRUE, legend.label = list(col.branch = c("up", "down")))
+
+# change legend title
 p <- treePlot(tree = bigTree, branch = c(1000, 1400),
-col.branch = c("red", "blue"), col.other = c("other" = "grey20"))
-p
+col.branch = c("salmon", "blue"), col.other = "grey40",
+legend = TRUE,
+legend.label = list(col.branch = c("Go up", "Go down")),
+legend.title = c("branch" = "Abundance"))
 
-# To add legend, we could do it in this way
-# the name of col.other would be used as the label in the legend
-p + ggplot2::theme(legend.position = "right")
+# change legend position (combine with ggplot2 package)
+library(ggplot2)
+ p + ggplot2::theme(legend.position = "bottom")
 
-# To change the legend title
-p <- treePlot(tree = bigTree, branch = c(1000, 1400),
-col.branch = c("red", "blue"), col.other = c("other" = "grey20"),
-legend.title = c("branch" = "Truth"))
+# change legend position use legend.theme
+treePlot(tree = bigTree, branch = c(1000, 1400),
+col.branch = c("salmon", "blue"), col.other = "grey40",
+legend = TRUE,
+legend.label = list(col.branch = c("Go up", "Go down")),
+legend.title = c("branch" = "Truth"),
+legend.theme = list(legend.position = "bottom"))
 
-p + ggplot2::theme(legend.position = "right")
 
-# To zoom in the branch with root node 1400 (by scale 4)
-p <- treePlot(tree = bigTree, branch = c(1000, 1400),
-col.branch = c("red", "blue"), col.other = c("other" = "grey20"),
-legend.title = c("branch" = "Truth"), zoomNode = 1400,
-zoomScale = 8)
+# add points
+treePlot(tree = bigTree, branch = c(1000, 1400),
+col.branch = c("salmon", "blue"), col.other = "grey40",
+legend = TRUE,
+legend.label = list(col.branch = c("Go up", "Go down")),
+legend.title = c("branch" = "Truth"),
+legend.theme = list(legend.position = "bottom"),
+point = c(500, 5, 10))
 
-p + ggplot2::theme(legend.position = "right")
 
-# If its sister branch is also interested, we could zoom in their parent level by zoomLevel = 1
+# add points label in legend
+treePlot(tree = bigTree, branch = c(1000, 1400),
+col.branch = c("salmon", "blue"), col.other = "grey40",
+legend = TRUE,
+legend.label = list(col.branch = c("Go up", "Go down"),
+col.point = "Found"),
+legend.title = c("branch" = "Truth", "point"= "Estimate"),
+legend.theme = list(legend.position = "bottom"),
+point = c(500, 5, 10))
 
-p <- treePlot(tree = bigTree, branch = c(1000, 1400),
-col.branch = c("red", "blue"), col.other = c("other" = "grey20"),
-legend.title = c("branch" = "Truth"), zoomNode = 1400,
-zoomScale = 8, zoomLevel = 1)
 
-p + ggplot2::theme(legend.position = "right")
+# add points label in legend
+treePlot(tree = bigTree, branch = c(1000, 1400),
+col.branch = c("salmon", "blue"), col.other = "grey40",
+legend = TRUE,
+legend.label = list(col.branch = c("Go up", "Go down"),
+col.point = "Found", col.other = "Same"),
+legend.title = c("branch" = "Truth", "point"= "Estimate"),
+legend.theme = list(legend.position = "bottom"),
+point = c(500, 5, 10))
 
-# If we want to add some points at some nodes of the tree
-p <- treePlot(tree = bigTree, branch = c(1000, 1400),
-col.branch = c("red", "blue"), col.other = c("other" = "grey20"),
-legend.title = c("branch" = "Truth"), zoomNode = 1400,
-zoomScale = 8, zoomLevel = 1, point = c(50, 100, 500, 1200, 1500))
-
-# To change the legend for the point
-p <- treePlot(tree = bigTree, branch = c(1000, 1400),
-col.branch = c("coral", "blue"), col.other = c("other" = "darkgrey"),
-legend.title = c("branch" = "Truth", "point" = "Estimate"),
- zoomNode = 1400,
-zoomScale = 8, zoomLevel = 1, point = c(50, 100, 500, 1200, 1500),
-col.point = c("found" = "violet"))
-
-p + ggplot2::theme(legend.position = "bottom",
-legend.text = element_text(size= 10),
-legend.key.size = unit(4,"cm"),
-legend.key.height = unit(0.4,"cm"),
-legend.key.width = unit(0.5, "cm"),
-legend.title = element_text(size = 15))
 }
