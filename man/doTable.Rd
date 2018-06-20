@@ -6,15 +6,15 @@
 \usage{
 doTable(tree, data, scene = "S1", from.A = NULL, minTip.A = 0,
   maxTip.A = Inf, minTip.B = 0, maxTip.B = Inf, minPr.A = 0,
-  maxPr.A = 1, ratio = 1, pct = 0.6, nSam = c(50, 50), mu = 50,
+  maxPr.A = 1, ratio = 2, pct = 0.6, nSam = c(50, 50), mu = 50,
   size = 10000, n = 1, fun = sum)
 }
 \arguments{
 \item{tree}{a phylo object}
 
-\item{data}{count table (a matrix or a data frame). It is a real data. It has tree leaves in rows and samples from different conditions in  columns.}
+\item{data}{a matrix. A count table from real data. It has the entities corresponding to tree leaves in the row and samples in the column.}
 
-\item{scene}{"S1", "S2", or "S3". Different scenarios see \bold{Details}.}
+\item{scene}{\dQuote{S1}, \dQuote{S2}, or \dQuote{S3} (see \bold{Details}). Default is \dQuote{S1}.}
 
 \item{from.A}{the branch node label of branch A. In simulation, we select two branches (A & B) to have differential abundance under different conditions. If from.A is specified, then branch A is fixed. If from.A is NULL, one can find a suitable branch which meets the criteria specified in \code{minTip.A}, \code{maxTip.A}, \code{minPr.A} and \code{maxPr.A}.}
 
@@ -42,14 +42,6 @@ doTable(tree, data, scene = "S1", from.A = NULL, minTip.A = 0,
 
 \item{fun}{a function to derive the count at each internal node based on its descendant leaves, e.g. sum, mean. The argument of the function is a numeric vector including the counts of an internal node's descendant leaves .}
 }
-\value{
-a list of objects:
-\describe{
-\item{FC}{the fold change of entities correspondint to the tree leaves.}
-\item{Count}{a list of count table or a count table. Entities on the row and samples in the column. Each count table includes entities corresponding to all nodes on the tree structure.}
-\item{Branch}{the information about two selected branches.}
-}
-}
 \description{
 \code{doTable} is to create a count table for all nodes of a tree under two different groups such that the tree would have different abundance patterns under different conditions.
 }
@@ -61,4 +53,17 @@ a list of objects:
 \item S3: two branches are selected. One branch has its proportion swapped with the proportion of some leaves from the other branch.
 }
 \code{doTable} could select the two branches automatically based on the criteria specified by \code{minTip.A}, \code{maxTip.A}, \code{minPr.A}, \code{maxPr.A}, \code{minTip.B}, \code{maxTip.B} and \code{ratio}. or find one branch when the other is fixed via \code{from.A}.
+}
+\examples{
+{
+
+data("throat.otu.tab")
+data("throat.tree")
+
+dat <- doTable(tree = throat.tree,
+data = as.matrix(t(throat.otu.tab)),
+ratio = 2)
+
+
+}
 }
