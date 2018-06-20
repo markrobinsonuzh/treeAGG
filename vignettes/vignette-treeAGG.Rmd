@@ -24,12 +24,12 @@ library(ape)
 library(treeAGG)
 ```
 
-
-# Data preparation
+# Real data
+## Data preparation
 
 To use package **treeAGG**, two data structures are required: a count table of entities (e.g., cell clusters or micobes) and a hiearchical structure of entities. Here, we show an example of cytometry data. In this example, we would like to investigate on which hiearchical level the cell clusters are differentially abundant between healthy and cancer subjects.
 
-## Tree 
+### Tree 
 
 The tree we use here is the hiearchical structure of cell clusters. It's a *hclust* object. To use treeAGG, we need to transform it into a phylo object using *as.phylo* from **ape** package.
 
@@ -41,7 +41,8 @@ pTree <- as.phylo(simTree)
 class(pTree)
 
 ```
-## Count table
+
+### Count table
 
 ```{r}
 data("simCount")
@@ -66,10 +67,7 @@ dim(count)
 ```
 
 
-
-
-
-# Data analysis
+## Data analysis
 
 We arrange the hypothesis in a tree-like structure and test hypotheses
 $H_0 : \text{There is not differential abundance}$ at each node (interal node and leaf node) of the tree.
@@ -89,14 +87,14 @@ head(mod)
 
 The output has multiple columns, one of which is the adjusted p value named \textit{FDR}. The adjusted p value is obtained via Benjamin-Hochberg method. We could directly use the *mod* to do the tree aggregation in the next section or extract only the column *FDR*.
 
-# Tree aggregation
+## Tree aggregation
 
 To do tree aggregation, we need a hiearchical tree ($ptree$), and a matrix or data frame with a column of adjusted p values at each node of the tree ($mod$). *P.lim* is the threshold for the adjusted p value to reject null hypothesis. *varSIG* is the name of the column in *data* which has the adjusted p value, and *varAGG* is the name of the colum which is used to do aggregation (here is also adjusted p value).
 
 
 ```{r}
 # min - P
-loc <- treeAGG(tree = pTree , data = mod,
+loc <- treeAGG(tree = pTree, data = mod,
                P.lim = 0.05, varSIG = "FDR",
                varAGG = "FDR")
 loc
@@ -104,8 +102,8 @@ loc
 ```
 
 
-# Results
-## visualisation
+## Results
+### visualisation
 
 The information about the differential abundance of cell clusters is stored in data called *simTruth* (More details could be seen via \code{?simTruth})
 
@@ -124,7 +122,7 @@ trueTip <-simTruth$cluster[simTruth$true]
 real <- signalNode(node = trueTip, tree = pTree, label = TRUE)
 ```
 
-Compare the result found with the truth. The branches with blue edges are truly dierential abundant. The results obtained from the minP algorithm are shown as orange points. If an internal node is labelled with an orange point, it means that all its descendant nodes are found to be differentially abundant. In other words, that whole branch is found to have signal. 
+Compare the result found with the truth. The branches with blue edges are truly differentially abundant. The results obtained from the minP algorithm are shown as orange points. If an internal node is labelled with an orange point, it means that all its descendant nodes are found to be differentially abundant. In other words, that whole branch is found to have signal. 
 
 ```{r}
 p <- treePlot(tree = pTree ,  
@@ -133,13 +131,28 @@ p <- treePlot(tree = pTree ,
               zoomNode = real,
               layout = "circular")
 p
+```
 
-
+To add legend to the figure, we could use \code{legend = TRUE} and specify the labels and title for the legend.
+```{r}
+p <- treePlot(tree = pTree,  
+         branch = real,
+         point = loc,
+         zoomNode = real,
+         layout = "circular",
+         legend = TRUE, 
+         legend.label = list(
+           col.branch = "Diff",
+           col.other = "Non-diff",
+           col.point = "Diff"), 
+         legend.title = c(branch = "Truth",
+                          point = "Found"))
+p
 
 ```
 
 
-## Evaluation
+### Evaluation
 
 The true positive rate at leaf level is the ratio of the number of correctly found leaves to the number of true leaves.
 
