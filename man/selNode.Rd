@@ -38,8 +38,9 @@ data("simCount")
 set.seed(1)
 library(ape)
 tree <- as.phylo(simTree)
-sN <- selNode(tree = tree, minTip = 20, maxTip = 50,
-minPr = 0, maxPr = 0.3, skip = NULL, data = simCount)
+sN <- selNode(tree = tree, minTip = 20,
+maxTip = 50, minPr = 0.02, maxPr = 0.03,
+skip = NULL, data = simCount)
 
 }
 

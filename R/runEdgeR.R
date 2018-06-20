@@ -2,10 +2,10 @@
 #'
 #' \code{runEdgeR} is to do differential analysis for the data using edgeR package
 #'
-#' @param countTab  a numeric matrix indicates the count table of entities (eg. genes or OTUs) in samples under different conditions. Each row represents an entity and each column represents a sample.
+#' @param data  a numeric matrix indicates the count table of entities (eg. genes, microbes or cell clusters) in samples under different conditions. Each row represents an entity and each column represents a sample.
 #' @param nSam a numeric vector. Each element represents the number of samples in one condition. For example, if we have n1 samples in condition 1 and n2 samples in condition 2, then the \strong{nSam} is (n1,n2).
-#' @param isTip a logical vector. It has equal length to the number of rows in \strong{countTab}. If TRUE, the corresponding row contributes to the library size of a sample; otherwise, it doesn't. A provided count table might include rows for leaves and internal nodes. Only the counts from leaf nodes are really measured and should be included to do library size normalisation.
-#' @param isAnalyze a logical vector with length equal to the row number of the countTab. This is to indicate the row used for differential analysis.
+#' @param isTip a logical vector. It has equal length to the number of rows in \strong{data}. If TRUE, the corresponding row contributes to the library size of a sample; otherwise, it doesn't. A provided count table might include rows for leaves and internal nodes. Only the counts from leaf nodes are really measured and should be included to do library size normalisation.
+#' @param isAnalyze a logical vector with length equal to the row number of the data. This is to indicate the row used for differential analysis. Default is to use all rows.
 #' @param prior.count a numeric value; the average prior count added to each observation to compute estimated coefficients for a NB glm in such a way that the log-fold-changes are shrunk towards zero (see \code{\link[edgeR]{predFC}}.
 #' @param normalize a logical value; indicate whether to do library size normalization. If TRUE, TMM( weighted trimmed mean of M-values is applied); otherwise, raw library size is used.
 #' @param method see \strong{method} in \code{\link[edgeR]{calcNormFactors}}
@@ -33,15 +33,20 @@
 #'
 
 
-runEdgeR <- function(countTab, nSam, isTip, isAnalyze,
+runEdgeR <- function(data, nSam, isTip,
+                     isAnalyze = NULL,
                      prior.count, normalize = TRUE,
                      method = "TMM") {
+  # use all rows to do analysis
+  if(is.null(isAnalyze)){
+    isAnalyze <- rep(TRUE, nrow(data))
+  }else{isAnalyze <- isAnalyze}
   # define conditions
   grp <- factor(rep(1:2, nSam))
 
   # correct sample size
-  SampSize.c <- colSums(countTab[isTip, ])
-  y <- edgeR::DGEList(countTab[isAnalyze, ], group = grp, remove.zeros = TRUE)
+  SampSize.c <- colSums(data[isTip, ])
+  y <- edgeR::DGEList(data[isAnalyze, ], group = grp, remove.zeros = TRUE)
   y$samples$lib.size <- SampSize.c
 
   # normalisation

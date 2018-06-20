@@ -4,17 +4,17 @@
 \alias{runEdgeR}
 \title{Differential analysis using edgeR package}
 \usage{
-runEdgeR(countTab, nSam, isTip, isAnalyze, prior.count, normalize = TRUE,
+runEdgeR(data, nSam, isTip, isAnalyze = NULL, prior.count, normalize = TRUE,
   method = "TMM")
 }
 \arguments{
-\item{countTab}{a numeric matrix indicates the count table of entities (eg. genes or OTUs) in samples under different conditions. Each row represents an entity and each column represents a sample.}
+\item{data}{a numeric matrix indicates the count table of entities (eg. genes, microbes or cell clusters) in samples under different conditions. Each row represents an entity and each column represents a sample.}
 
 \item{nSam}{a numeric vector. Each element represents the number of samples in one condition. For example, if we have n1 samples in condition 1 and n2 samples in condition 2, then the \strong{nSam} is (n1,n2).}
 
-\item{isTip}{a logical vector. It has equal length to the number of rows in \strong{countTab}. If TRUE, the corresponding row contributes to the library size of a sample; otherwise, it doesn't. A provided count table might include rows for leaves and internal nodes. Only the counts from leaf nodes are really measured and should be included to do library size normalisation.}
+\item{isTip}{a logical vector. It has equal length to the number of rows in \strong{data}. If TRUE, the corresponding row contributes to the library size of a sample; otherwise, it doesn't. A provided count table might include rows for leaves and internal nodes. Only the counts from leaf nodes are really measured and should be included to do library size normalisation.}
 
-\item{isAnalyze}{a logical vector with length equal to the row number of the countTab. This is to indicate the row used for differential analysis.}
+\item{isAnalyze}{a logical vector with length equal to the row number of the data. This is to indicate the row used for differential analysis. Default is to use all rows.}
 
 \item{prior.count}{a numeric value; the average prior count added to each observation to compute estimated coefficients for a NB glm in such a way that the log-fold-changes are shrunk towards zero (see \code{\link[edgeR]{predFC}}.}
 

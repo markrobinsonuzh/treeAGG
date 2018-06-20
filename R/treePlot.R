@@ -101,9 +101,11 @@ treePlot <- function(tree,
                      col.other = "grey",
                      point = NULL, col.point = "orange",
                      size.point = 2,
-                     zoomNode = NULL, zoomLevel = NULL,
-                     zoomScale = NULL,
-                     legend = FALSE, legend.theme = NULL,
+                     zoomNode = NULL,
+                     zoomLevel = NULL,
+                     zoomScale = 8,
+                     legend = FALSE,
+                     legend.theme = NULL,
                      legend.title = c("point" = "Title_point",
                                       "branch" = "Title_branch"),
                      legend.label = NULL,
@@ -566,3 +568,4 @@ colScale <- function(branch,
 
 
 }
+
