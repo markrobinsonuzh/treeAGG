@@ -3,7 +3,7 @@ title: "Tree Aggregation"
 author: 
 - name: Ruizhu HUANG
   affiliation: 
-  - Institute of Molecular Life Science, University of Zurich.
+  - Institute of Molecular Life Sciences, University of Zurich.
   - SIB Swiss Institute of Bioinformatics.
 package: treeAGG
 output: 
@@ -27,21 +27,22 @@ library(treeAGG)
 
 # Data preparation
 
-To use package **treeAGG**, two data structures are required: a count table of entities (e.g., cell clusters or micobes) and a hiearchical structure of entities. Here, we show an example of cytometry data. In this example, we would like to investigate on which hiearchical level the cell clusters are differentially abundant between healthy and cancer subjects.
+To use the **treeAGG** package, two data structures are required: a table of counts of entities (e.g., cell clusters or microbes) across multiple samples, and a hierarchical structure of these entities. Here, we show an example of cytometry data, where the entities are cell clusters and the counts represent the number of cells included in each cluster across a number of biological samples. In this example, we would like to investigate on which hierarchical level the cell clusters are differentially abundant between healthy and cancer subjects.
 
 ## Tree 
 
-The tree we use here is the hiearchical structure of cell clusters. It's a *hclust* object. To use treeAGG, we need to transform it into a phylo object using *as.phylo* from **ape** package.
-
+The tree we use here is the hierarchical structure of cell clusters, obtained by hierarchical clustering of the individual clusters. It's a *hclust* object. To use treeAGG, we need to transform it into a phylo object, using the *as.phylo* function from the **ape** package.
 
 ```{r}
 data("simTree")
 class(simTree)
 pTree <- as.phylo(simTree)
 class(pTree)
-
 ```
+
 ## Count table
+
+The count table contains the number of cells in each of the cell clusters across 10 samples, five from healthy subjects and five representing samples from cancer subjects. It's a semi-simulated data set, where one cell population has been spiked in [cite Lukas's paper]. More details are in the data help page.
 
 ```{r}
 data("simCount")
@@ -49,32 +50,22 @@ data("simCount")
 head(simCount)
 ```
 
-The count table includes 10 samples, five from healthy subjects and five representing samples from cancer subjects. It's a semi-simulated data. More details are in the data help page.
-
-```{r eval=FALSE}
-?simCount
-```
-
-In the count table, each row represents a cell cluster that corresponds to a leaf node in the tree structure, and each column represents a sample. To do tree signal aggregation, we also need couts of the tree internal nodes, which indicates different resolutions at which data can be viewed. As *simCount* only provides counts at leaf level, we could generate counts for internal nodes using the codes below.
+In the count table, each row represents a cell cluster that corresponds to a leaf node in the tree structure, and each column represents a sample. To do tree signal aggregation, we also need counts of the tree internal nodes, representing different resolutions at which data can be interpreted. As *simCount* only provides counts at the leaf level, we generate counts for internal nodes using the code below.
 
 ```{r}
 # the count of an internal node is the sum of its descendant leaves counts.
 # the output table has counts for all nodes (both leaf and internal).
 count <- nodeCount(data = simCount, tree = pTree,
-                      fun = sum)
+                   fun = sum)
 dim(count)
 ```
 
-
-
-
-
 # Data analysis
 
-We arrange the hypothesis in a tree-like structure and test hypotheses
-$H_0 : \text{There is not differential abundance}$ at each node (interal node and leaf node) of the tree.
+We arrange the hypotheses in a tree-like structure and test the hypothesis
+$$H_0 : \text{There is not differential abundance}$$ at each node (internal node and leaf node) of the tree.
 
-R package **edgeR** is used here to investigate whether an entity has differential abundance among conditions. Users are free to choose other R packages to do the analysis. What we need is to obtain a p value at each tree node and further use them to do aggregation.
+The Bioconductor package **edgeR** is used here to investigate whether an entity shows differential abundance between conditions, but users are free to perform the testing using any suitable software. The only requirement is that the differential testing outputs a multiple testing-adjusted p-value at each tree node, which can be further used to do the aggregation.
  
 ```{r}
 # rows for internal nodes
@@ -87,11 +78,11 @@ mod <- runEdgeR(data = count,
 head(mod)
 ```
 
-The output has multiple columns, one of which is the adjusted p value named \textit{FDR}. The adjusted p value is obtained via Benjamin-Hochberg method. We could directly use the *mod* to do the tree aggregation in the next section or extract only the column *FDR*.
+The output of **edgeR** has multiple columns, one of which is the adjusted p-value (named \textit{FDR}). The adjusted p-value is obtained via the Benjamin-Hochberg method. We could directly use the *mod* table to do the tree aggregation in the next section, or we could extract only the column *FDR*.
 
 # Tree aggregation
 
-To do tree aggregation, we need a hiearchical tree ($ptree$), and a matrix or data frame with a column of adjusted p values at each node of the tree ($mod$). *P.lim* is the threshold for the adjusted p value to reject null hypothesis. *varSIG* is the name of the column in *data* which has the adjusted p value, and *varAGG* is the name of the colum which is used to do aggregation (here is also adjusted p value).
+To do the tree aggregation, we need a hiearchical tree ($ptree$), and a matrix or data frame with a column of adjusted p-values at each node of the tree ($mod$). *P.lim* is the threshold for the adjusted p-value to reject the null hypothesis. *varSIG* is the name of the column in *data* which contains the adjusted p-values, and *varAGG* is the name of the colum which is used to do the aggregation (here it is also the adjusted p-value).
 
 
 ```{r}
@@ -100,31 +91,30 @@ loc <- treeAGG(tree = pTree , data = mod,
                P.lim = 0.05, varSIG = "FDR",
                varAGG = "FDR")
 loc
-
 ```
 
 
 # Results
 ## visualisation
 
-The information about the differential abundance of cell clusters is stored in data called *simTruth* (More details could be seen via \code{?simTruth})
+The information about the true differential abundance of cell clusters in our semi-simulated data set is stored in the *simTruth* data (More details could be seen via \code{?simTruth})
 
 ```{r}
 data("simTruth")
 head(simTruth)
 ```
 
-Extract the clusters that are truly differentially abundant. *simTruth* only provides the information on the leaf level. If a branch has all its leaves differentially abundant, we would like to find its branch node, the node connecting this branch and the other part of the tree, as a representative.
+We extract the clusters that are truly differentially abundant. *simTruth* only provides the information on the leaf level. If a branch has all its leaves differentially abundant, we would ideally like to aggregate the leaves to the top node of the branch, that is, the node connecting this branch and the other part of the tree.
 
 ```{r}
 # leaves are differentially abundant (true leaves)
-trueTip <-simTruth$cluster[simTruth$true]
+trueTip <- simTruth$cluster[simTruth$true]
 
 # find branch nodes shared by true leaves.
 real <- signalNode(node = trueTip, tree = pTree, label = TRUE)
 ```
 
-Compare the result found with the truth. The branches with blue edges are truly dierential abundant. The results obtained from the minP algorithm are shown as orange points. If an internal node is labelled with an orange point, it means that all its descendant nodes are found to be differentially abundant. In other words, that whole branch is found to have signal. 
+Next, we compare the result found with the truth. The branches with blue edges are truly differentially abundant. The results obtained from the minP algorithm are shown as orange points. If an internal node is labelled with an orange point, it means that all its descendant nodes are found to be differentially abundant. In other words, that whole branch is found to have signal. 
 
 ```{r}
 p <- treePlot(tree = pTree ,  
@@ -133,15 +123,12 @@ p <- treePlot(tree = pTree ,
               zoomNode = real,
               layout = "circular")
 p
-
-
-
 ```
 
 
 ## Evaluation
 
-The true positive rate at leaf level is the ratio of the number of correctly found leaves to the number of true leaves.
+The true positive rate at the leaf level is the ratio of the number of correctly found leaves to the number of truly differentially abundant leaves.
 
 ```{r}
 # true positive rate at leaf level
@@ -150,10 +137,9 @@ The true positive rate at leaf level is the ratio of the number of correctly fou
 # true positive rate at leaf level
 (tpr.n <- tpr(tree = pTree, truth = trueTip, 
              found = loc, level = "node"))
-
 ```
 
-The true positive rate at node level is the ratio of the number of correctly found nodes to the number of true nodes.
+The true positive rate at the node level is the ratio of the number of correctly found nodes to the number of true nodes.
 
 ```{r}
 # true positive rate at leaf level
@@ -162,5 +148,5 @@ The true positive rate at node level is the ratio of the number of correctly fou
 # true positive rate at leaf level
 (fdr.n <- fdr(tree = pTree, truth = trueTip, 
              found = loc, level = "node"))
-
 ```
+
