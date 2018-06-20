@@ -3,8 +3,8 @@
 #' \code{doTable} is to create a count table for all nodes of a tree under two different groups such that the tree would have different abundance patterns under different conditions.
 #'
 #' @param tree a phylo object
-#' @param data count table (a matrix or a data frame). It is a real data. It has tree leaves in rows and samples from different conditions in  columns.
-#' @param scene "S1", "S2", or "S3". Different scenarios see \bold{Details}.
+#' @param data a matrix. A count table from real data. It has the entities corresponding to tree leaves in the row and samples in the column.
+#' @param scene \dQuote{S1}, \dQuote{S2}, or \dQuote{S3} (see \bold{Details}). Default is \dQuote{S1}.
 #' @param from.A the branch node label of branch A. In simulation, we select two branches (A & B) to have differential abundance under different conditions. If from.A is specified, then branch A is fixed. If from.A is NULL, one can find a suitable branch which meets the criteria specified in \code{minTip.A}, \code{maxTip.A}, \code{minPr.A} and \code{maxPr.A}.
 #' @param minTip.A the minimum number of leaves in branch A
 #' @param maxTip.A the maximum number of leaves in branch A
@@ -33,18 +33,50 @@
 #' \describe{
 #' \item{FC}{the fold change of entities correspondint to the tree leaves.}
 #' \item{Count}{a list of count table or a count table. Entities on the row and samples in the column. Each count table includes entities corresponding to all nodes on the tree structure.}
-#' \item{Branch}{the information about two selected branches.}
+#' \item{Branch}{the information about two selected branches.
+#' \describe{
+#' \item{A}{the branch node label of branch A}
+#' \item{B}{the branch node label of branch B}
+#' \item{ratio}{the count proportion ratio of branch B to branch A}
+#' \item{A_tips}{the number of leaves on branch A}
+#' \item{B_tips}{the number of leaves on branch B}
+#' \item{A_prop(%)}{the count proportion of branch A (in percentage)}
+#' \item{B_prop(%)}{the count proportion of branch B (in percentage)}
+#'  }}
+#'  }
 #' }
 #'
+#'@examples{
+#'
+#' data("throat.otu.tab")
+#' data("throat.tree")
+#'
+#' dat <- doTable(tree = throat.tree,
+#' data = as.matrix(t(throat.otu.tab)),
+#' ratio = 2)
+#'
+#'
+#'}
 
 doTable  <- function(tree, data, scene = "S1",
-                       from.A  = NULL,
-                       minTip.A=0, maxTip.A= Inf,
-                       minTip.B=0, maxTip.B= Inf,
-                       minPr.A=0, maxPr.A=1, ratio = 1,
-                       pct = 0.6, nSam = c(50, 50),
-                       mu = 50, size = 10000,
-                       n = 1, fun = sum){
+                     from.A  = NULL,
+                     minTip.A=0, maxTip.A= Inf,
+                     minTip.B=0, maxTip.B= Inf,
+                     minPr.A=0, maxPr.A=1, ratio = 2,
+                     pct = 0.6, nSam = c(50, 50),
+                     mu = 50, size = 10000,
+                     n = 1, fun = sum){
+  # ---check input is in correct format --------
+  if(!inherits(tree, "phylo")){
+    stop("tree should be a phylo object")
+  }
+
+  if(!inherits(data, "matrix")){
+    stop("data should be a matrix")
+  }
+  if(!setequal(rownames(data), tree$tip.label)){
+    stop("The rownames of data do not match with tree leaf labels")
+  }
   # estimate parameters for Dirichlet-multinomial distribution
   data <- parEstimate(data = data)
 
@@ -68,7 +100,8 @@ doTable  <- function(tree, data, scene = "S1",
                       fun = fun)
   }
 
-  obj <- list(Count = full, FC = beta, Branch = pk)
+  obj <- list(Count = full, FC = beta,
+              Branch = pk, Scenario = scene)
   return(obj)
 }
 
