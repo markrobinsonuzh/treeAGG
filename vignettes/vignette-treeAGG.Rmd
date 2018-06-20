@@ -31,7 +31,7 @@ To use package **treeAGG**, two data structures are required: a count table of e
 
 ### Tree 
 
-The tree we use here is the hiearchical structure of cell clusters. It's a *hclust* object. To use treeAGG, we need to transform it into a phylo object using *as.phylo* from **ape** package.
+The tree we use here is the hiearchical structure of cell clusters. It's a `hclust` object. To use treeAGG, we need to transform it into a phylo object using `as.phylo` from **ape** package.
 
 
 ```{r}
@@ -56,7 +56,7 @@ The count table includes 10 samples, five from healthy subjects and five represe
 ?simCount
 ```
 
-In the count table, each row represents a cell cluster that corresponds to a leaf node in the tree structure, and each column represents a sample. To do tree signal aggregation, we also need couts of the tree internal nodes, which indicates different resolutions at which data can be viewed. As *simCount* only provides counts at leaf level, we could generate counts for internal nodes using the codes below.
+In the count table, each row represents a cell cluster that corresponds to a leaf node in the tree structure, and each column represents a sample. To do tree signal aggregation, we also need couts of the tree internal nodes, which indicates different resolutions at which data can be viewed. As `simCount` only provides counts at leaf level, we could generate counts for internal nodes using the codes below.
 
 ```{r}
 # the count of an internal node is the sum of its descendant leaves counts.
@@ -85,11 +85,11 @@ mod <- runEdgeR(data = count,
 head(mod)
 ```
 
-The output has multiple columns, one of which is the adjusted p value named \textit{FDR}. The adjusted p value is obtained via Benjamin-Hochberg method. We could directly use the *mod* to do the tree aggregation in the next section or extract only the column *FDR*.
+The output has multiple columns, one of which is the adjusted p value named `FDR`. The adjusted p value is obtained via Benjamin-Hochberg method. We could directly use the `mod` to do the tree aggregation in the next section or extract only the column `FDR`.
 
 ## Tree aggregation
 
-To do tree aggregation, we need a hiearchical tree ($ptree$), and a matrix or data frame with a column of adjusted p values at each node of the tree ($mod$). *P.lim* is the threshold for the adjusted p value to reject null hypothesis. *varSIG* is the name of the column in *data* which has the adjusted p value, and *varAGG* is the name of the colum which is used to do aggregation (here is also adjusted p value).
+To do tree aggregation, we need a hiearchical tree (`ptree`), and a matrix or data frame with a column of adjusted p values at each node of the tree (`mod`). `P.lim` is the threshold for the adjusted p value to reject null hypothesis. `varSIG` is the name of the column in `data` storing the adjusted p value, and `varAGG` is the name of the colum for aggregation (here is also adjusted p value).
 
 
 ```{r}
@@ -105,14 +105,14 @@ loc
 ## Results
 ### visualisation
 
-The information about the differential abundance of cell clusters is stored in data called *simTruth* (More details could be seen via \code{?simTruth})
+The information about the differential abundance of cell clusters is stored in data called `simTruth` (More details could be seen via `?simTruth`)
 
 ```{r}
 data("simTruth")
 head(simTruth)
 ```
 
-Extract the clusters that are truly differentially abundant. *simTruth* only provides the information on the leaf level. If a branch has all its leaves differentially abundant, we would like to find its branch node, the node connecting this branch and the other part of the tree, as a representative.
+Extract the clusters that are truly differentially abundant. `simTruth` only provides the information on the leaf level. If a branch has all its leaves differentially abundant, we would like to find its branch node, the node connecting this branch and the other part of the tree, as a representative.
 
 ```{r}
 # leaves are differentially abundant (true leaves)
@@ -133,7 +133,7 @@ p <- treePlot(tree = pTree ,
 p
 ```
 
-To add legend to the figure, we could use \code{legend = TRUE} and specify the labels and title for the legend.
+To add legend to the figure, we could use `legend = TRUE` and specify the labels and title for the legend.
 ```{r}
 p <- treePlot(tree = pTree,  
          branch = real,
@@ -177,3 +177,103 @@ The true positive rate at node level is the ratio of the number of correctly fou
              found = loc, level = "node"))
 
 ```
+
+
+# Simulation
+
+**treeAGG** provides the function `doTable` to simulate different signal patterns.
+
+* scenario one (S1): full signal on two selected branches. Signals within each of the two branches (or clusters) have the same sign and strength.
+* scenario two (S2): full signal on two selected branches. Signals within each of the two branches (or clusters) have the same sign but different strength.
+* scenario three (S3): one branch have full signal, but the other only have partial signal. Signals within each of the two branches (or clusters) have the same sign and strength.
+
+Full signal means that all leaves on the branch have signal. Partial signal means that only some leaves evenly distributed on that branch have signal.
+
+To simulated a count table using `doTable`, one needs to provide a real hiearchical structure and a real count table of entities. Here, we use a real throat microbiome data set that includes a count table of 856 OTUs (operational taxonomic units) from 60 samples and a phylogenetic tree with 856 leaves and 855 internal nodes. More details about the data could be seen via `?throat.tree` and `?throat.otu.tab`.
+
+
+```{r}
+data("throat.tree")
+data("throat.otu.tab")
+```
+
+
+We feed the `doTable` the real data via two arguments `tree` and `data`. `throat.otu.tab` has the samples in the row and entities in the column, so we need to tranpose it before input to `daTable`.
+
+```{r}
+set.seed(1)
+dat1 <- doTable(tree = throat.tree,
+               data = as.matrix(t(throat.otu.tab)),
+               ratio = 2)
+```
+
+The result, `dat` is a list including a simulated count table (`Count`), a vector of fold change for all entities on tree leaf level (`FC`), and the information of branches where signals are given (`Branch`). 
+
+```{r}
+str(dat1)
+```
+
+To visualize signal pattern on the tree structure, we could do it as below. 
+
+```{r}
+bb1 <- c(dat1$Branch$A, dat1$Branch$B)
+treePlot(tree = throat.tree, branch = bb1, 
+         col.branch = c("orange", "blue"), 
+         zoomNode = bb1, layout = "circular", 
+         zoomScale = 50, legend = TRUE, 
+         legend.label = list(
+           col.branch = c("increase", "decrease")),
+         legend.title = c(branch = "Truth")
+         )
+```
+
+If we want to put signal on larger branch, it could be achieved by changing the value of arguments `minTip.A`, `maxTip.A`, `minTip.B`, `maxTip.B`.
+
+```{r}
+dat2 <- doTable(tree = throat.tree,
+               data = as.matrix(t(throat.otu.tab)), 
+               minTip.A = 20, maxTip.A = 40,
+               minTip.B = 20, maxTip.B = 100,
+               ratio = 2)
+```
+
+```{r}
+bb2 <- c(dat2$Branch$A, dat2$Branch$B)
+treePlot(tree = throat.tree, branch = bb2, 
+         col.branch = c("orange", "blue"), 
+         zoomNode = bb2, layout = "circular", 
+         zoomScale = 10, legend = TRUE, 
+         legend.label = list(
+           col.branch = c("increase", "decrease")),
+         legend.title = c(branch = "Truth")
+         )
+```
+
+If one would like to further restrict the abundance level of the selected branches, it could be done by changing the value for the arguments `minPr.A` and `maxPr.A`. These two arguments directly restrict the branch A. One could combine using these two arguments and `ratio` to restrict the branch B.
+
+```{r}
+dat3 <- doTable(tree = throat.tree,
+               data = as.matrix(t(throat.otu.tab)), 
+               minTip.A = 20, maxTip.A = 40,
+               minTip.B = 20, maxTip.B = 100, 
+               maxPr.A = 0.01,
+               ratio = 2)
+rbind(dat2$Branch, dat3$Branch)
+```
+
+
+```{r}
+bb3<- c(dat3$Branch$A, dat3$Branch$B)
+treePlot(tree = throat.tree, branch = bb3, 
+         col.branch = c("orange", "blue"), 
+         zoomNode = bb3, layout = "circular", 
+         zoomScale = 10, legend = TRUE, 
+         legend.label = list(
+           col.branch = c("increase", "decrease")),
+         legend.title = c(branch = "Truth")
+         )
+```
+
+If one is satisfied with one of the two branches and want to change another branch, then it could be done by using `from.A`.
+
+One could also change different scenarios.... more to be updated.
