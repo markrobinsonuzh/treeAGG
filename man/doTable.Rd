@@ -56,13 +56,15 @@ doTable(tree, data, scene = "S1", from.A = NULL, minTip.A = 0,
 }
 \examples{
 {
-
+if(require(GUniFrac)){
 data("throat.otu.tab")
 data("throat.tree")
 
 dat <- doTable(tree = throat.tree,
 data = as.matrix(t(throat.otu.tab)),
 ratio = 2)
+}
+
 
 
 }

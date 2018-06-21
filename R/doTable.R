@@ -47,13 +47,15 @@
 #' }
 #'
 #'@examples{
-#'
+#' if(require(GUniFrac)){
 #' data("throat.otu.tab")
 #' data("throat.tree")
 #'
 #' dat <- doTable(tree = throat.tree,
 #' data = as.matrix(t(throat.otu.tab)),
 #' ratio = 2)
+#' }
+#'
 #'
 #'
 #'}
@@ -71,12 +73,17 @@ doTable  <- function(tree, data, scene = "S1",
     stop("tree should be a phylo object")
   }
 
-  if(!inherits(data, "matrix")){
-    stop("data should be a matrix")
+  if (!inherits(data, "list")) {
+    if (!inherits(data, "matrix")) {
+      stop("data should be a matrix")
+    } else{
+      if (!setequal(rownames(data), tree$tip.label)) {
+        stop("The rownames of data do not match with tree leaf labels")
+      }
+    }
   }
-  if(!setequal(rownames(data), tree$tip.label)){
-    stop("The rownames of data do not match with tree leaf labels")
-  }
+
+
   # estimate parameters for Dirichlet-multinomial distribution
   data <- parEstimate(data = data)
 
@@ -105,38 +112,6 @@ doTable  <- function(tree, data, scene = "S1",
   return(obj)
 }
 
-#' estimate parameters for dirichlet distribution
-#'
-#' \code{parEstimate} is to estimate parameters for dirichlet distribution from a real data.
-#'
-#' @param data a count table. Samples in the column and entities in the row.
-#' @importFrom dirmult dirmult
-#' @details use the default setting from \code{dirmult} (see \code{\link[dirmult]{dirmult}})
-#' @return a list including \dQuote{pi} and \dQuote{theta}
-
-parEstimate <- function(data){
-
-  if(inherits(data, "list")){
-    ind <- setequal(names(data), c("pi", "theta"))
-    if(!ind){
-      stop("Error: data is a list;
-           it should provide pi and theta")
-    }
-    parList <- data
-    }else{
-
-      DirMultOutput<- dirmult::dirmult(data = t(data))
-      # tip proportion
-      estP<-DirMultOutput$pi
-      names(estP) <- names(DirMultOutput$pi)
-
-      # parameter alpha for dirichlet distribution
-      theta <- DirMultOutput$theta
-      parList <-  list(pi = estP, theta = theta)
-    }
-
-  return(parList)
-}
 
 #' select branches
 #'
