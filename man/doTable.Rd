@@ -4,10 +4,10 @@
 \alias{doTable}
 \title{simulate a count table}
 \usage{
-doTable(tree, data, scene = "S1", from.A = NULL, minTip.A = 0,
-  maxTip.A = Inf, minTip.B = 0, maxTip.B = Inf, minPr.A = 0,
-  maxPr.A = 1, ratio = 2, pct = 0.6, nSam = c(50, 50), mu = 50,
-  size = 10000, n = 1, fun = sum)
+doTable(tree, data, scene = "S1", from.A = NULL, from.B = NULL,
+  minTip.A = 0, maxTip.A = Inf, minTip.B = 0, maxTip.B = Inf,
+  minPr.A = 0, maxPr.A = 1, ratio = 2, pct = 0.6, nSam = c(50, 50),
+  mu = 50, size = 10000, n = 1, fun = sum)
 }
 \arguments{
 \item{tree}{a phylo object}
@@ -16,7 +16,7 @@ doTable(tree, data, scene = "S1", from.A = NULL, minTip.A = 0,
 
 \item{scene}{\dQuote{S1}, \dQuote{S2}, or \dQuote{S3} (see \bold{Details}). Default is \dQuote{S1}.}
 
-\item{from.A}{the branch node label of branch A. In simulation, we select two branches (A & B) to have differential abundance under different conditions. If from.A is specified, then branch A is fixed. If from.A is NULL, one can find a suitable branch which meets the criteria specified in \code{minTip.A}, \code{maxTip.A}, \code{minPr.A} and \code{maxPr.A}.}
+\item{from.A, from.B}{the branch node label of branch A,B. Default, both are NULL. In simulation, we select two branches (A & B) to have differential abundance under different conditions. One could specify these two branches or let \code{doTable} choose. (Note: If \code{from.A} is NULL, \code{from.B} is set to NULL).}
 
 \item{minTip.A}{the minimum number of leaves in branch A}
 
