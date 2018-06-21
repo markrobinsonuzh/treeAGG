@@ -186,7 +186,7 @@ data("throat.otu.tab")
 ```
 
 
-We feed the `doTable` the real data via two arguments `tree` and `data`. `throat.otu.tab` has the samples in the row and entities in the column, so we need to tranpose it before input to `daTable`.
+We feed the `doTable` the real data via two arguments `tree` and `data`. `throat.otu.tab` has the samples in the row and entities in the column, so we need to tranpose it before input to `doTable`.
 
 ```{r}
 set.seed(1)
