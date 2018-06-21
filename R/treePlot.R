@@ -240,6 +240,9 @@ addBranch <- function(tree, branch, col.branch,
                   only.Tip = FALSE, self.include = TRUE)
   el <- unlist(lapply(eList, length))
   eList <- eList[order(el, decreasing = TRUE)]
+   if(length(col.branch) == length(branch)){
+     col.branch <- col.branch[order(el, decreasing = TRUE)]
+   }
   dList <- mapply(function(x, y) {
     cbind.data.frame(node = y, group = x,
                      stringsAsFactors = FALSE)},
@@ -554,11 +557,11 @@ colScale <- function(branch,
 
     # if there are duplicates for the pairs of color and lable,
     # remove them.
-    colG <- colG[!(duplicated(colG) & duplicated(names(colG)))]
+    #colG <- colG[!(duplicated(colG) & duplicated(names(colG)))]
    # lab <- ifelse(names(colG) %in% legend.label$col.point, "", names(colG))
-    lab <- names(colG)
-    lab[3] <- ifelse(lab[3] %in% legend.label$col.point,
-                     "", lab[3] )
+    #lab <- names(colG)
+    #lab[3] <- ifelse(lab[3] %in% legend.label$col.point,
+     #                "", lab[3] )
     lty <- ifelse(lab %in% "", "blank", "solid")
     du <- duplicated(colG) & duplicated(names(colG))
     lab <- ifelse(du, "", lab)
@@ -577,7 +580,7 @@ colScale <- function(branch,
       guide = guide_legend(
         title = legend.title$branch,
         override.aes = list(
-          color = colV,
+          color = colG,
           linetype = lty,
           shape = rep(NA, length(colG)),
           size = size.line.legend
