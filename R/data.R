@@ -99,13 +99,5 @@
 #' @format A hclust object with 900 leaves. Each leaf is a cell cluster.
 "simTree"
 
-#' OTU count table from 16S sequencing of the throat microbiome samples.
-#'
-#' @format More details could be found in \code{\link[GUniFrac]{throat.otu.tab}}
-"throat.otu.tab"
 
-#' UPGMA tree of the OTUs from 16S sequencing of the throat microbiome samples.
-#'
-#' @format More details could be found in \code{\link[GUniFrac]{throat.tree}}
-"throat.tree"
 
