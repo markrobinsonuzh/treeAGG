@@ -97,17 +97,20 @@
 #' point = c(500, 5, 10))
 #'
 treePlot <- function(tree,
-                     branch = NULL, col.branch = "blue",
+                     branch = NULL,
+                     col.branch = "blue",
                      col.other = "grey",
-                     point = NULL, col.point = "orange",
+                     point = NULL,
+                     col.point = "orange",
                      size.point = 2,
                      zoomNode = NULL,
                      zoomLevel = NULL,
                      zoomScale = 8,
                      legend = FALSE,
                      legend.theme = NULL,
-                     legend.title = c("point" = "Title_point",
-                                      "branch" = "Title_branch"),
+                     legend.title = c(
+                       "point" = "Title_point",
+                       "branch" = "Title_branch"),
                      legend.label = NULL,
                      size.line.legend = 2,
                      size.point.legend = 3, ...){
@@ -161,9 +164,11 @@ treePlot <- function(tree,
   # customize the color
   if(!is.null(branch)){
     p <- p +
-      colScale(branch = branch, point = point,
+      colScale(branch = branch,
+               point = point,
                col.branch = col.branch,
-               col.other = col.other, col.point = col.point,
+               col.other = col.other,
+               col.point = col.point,
                legend.label = legend.label,
                legend.title = legend.title,
                size.line.legend = size.line.legend,
@@ -469,7 +474,7 @@ sizeScale <- function(col.point, size.point,
 #' @param legend TRUE or FALSE. Default is FALSE. If TRUE, the legend is created.
 #'
 #' @import ggplot2 ggtree
-#' @importFrom utils modifyList
+#' @importFrom utils modifyList tail
 #' @importFrom stats setNames
 #'
 
@@ -495,7 +500,7 @@ colScale <- function(branch,
   # colG is created to correct the color
   # vG is created to output the label
   if(length(legend.label$col.branch) > length(col.branch)){
-    stop("check col.branch: You probably need more than one color")
+    stop("Same color with different labels. You probably need more colors")
   }
 
   if (is.null(point)) {
@@ -526,17 +531,34 @@ colScale <- function(branch,
     listLab <- modifyList(listLab, legend.label)
 
     # match the color and the label
-    namG <- mapply(function(x, y) {
-      names(x) <- y
-      x
-    }, x = listG, y = listLab)
-    colG <- unlist(setNames(namG, NULL))
+     namG <- mapply(function(x, y) {
+        names(x) <- y
+        x
+      }, x = setNames(listG, NULL),
+      y = setNames(listLab, NULL))
+
+     if(is.list(namG)){
+       colG <- unlist(namG)
+     }else{
+       colG <- namG
+     }
+
+      colG <- colG[!(duplicated(colG) &
+                       duplicated(names(colG)))]
+      lab <- names(colG)
+      ww <- tail(which(lab %in% legend.label$col.point),1)
+      # lab <- ifelse(names(colG) %in% legend.label$col.point, "", names(colG))
+
+      lab[ww] <- ""
+     #colG <- unlist(setNames(namG, NULL))
 
     # if there are duplicates for the pairs of color and lable,
     # remove them.
     colG <- colG[!(duplicated(colG) & duplicated(names(colG)))]
-    lab <- ifelse(names(colG) %in% legend.label$col.point,
-                  "", names(colG))
+   # lab <- ifelse(names(colG) %in% legend.label$col.point, "", names(colG))
+    lab <- names(colG)
+    lab[3] <- ifelse(lab[3] %in% legend.label$col.point,
+                     "", lab[3] )
     lty <- ifelse(lab %in% "", "blank", "solid")
     du <- duplicated(colG) & duplicated(names(colG))
     lab <- ifelse(du, "", lab)
