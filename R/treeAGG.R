@@ -30,7 +30,7 @@ treeAGG <- function(tree, data, stree = NULL,
 
     # if stree is not provided, generate it using pruneTree
     if (is.null(stree)) {
-        cat("stree is not provided and will be generated automatically")
+        #cat("stree is not provided and will be generated automatically")
         stree <- pruneTree(tree = tree)
     } else {
         stree <- stree
