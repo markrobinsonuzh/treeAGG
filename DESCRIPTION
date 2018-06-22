@@ -19,6 +19,6 @@ Imports:
     dirmult
 RoxygenNote: 6.0.1
 VignetteBuilder: knitr
-Suggests: testthat, BiocStyle, knitr, rmarkdown, GUniFrac
+Suggests: testthat, BiocStyle, knitr, rmarkdown, GUniFrac, cowplot
 
 
