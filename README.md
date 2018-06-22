@@ -2,22 +2,10 @@
 
 # treeAGG
 
-R package to do tree aggregation, which aims to find the optimal level in the tree to interpret signal, such as differential abundance.
+The arrangement of hypotheses in a hierarchical structure appears in many research fields and often indicates different resolutions at which data can be viewed. On which resolution level should the signal be intepreted has arisen researchers' interest. A flexible method to select resolution level, instead of cutting the tree structure at arbitary levels, is desired. Our package `treeAGG`, which uses minP algorithm, is a such tool. It does a bottom-up search for the optimal level of a tree to interpret signal by combining with current available tools, such as `edgeR` or `DESeq2`.
 
 
-## Getting Started
-
-These instructions will get you a copy of the project up and running on your local machine for development and testing purposes. See deployment for notes on how to deploy the project on a live system.
-
-### Prerequisites
-
-What things you need to install the software and how to install them
-
-```
-Give examples
-```
-
-### Installing
+## Installing
 
 To install treeAGG package, you could run the code below in R
 
