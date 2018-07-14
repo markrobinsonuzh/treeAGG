@@ -1,27 +1,30 @@
-#' estimate parameters for dirichlet distribution
+#' Estimate parameters for Dirichlet distribution
 #'
-#' \code{parEstimate} is to estimate parameters for dirichlet distribution from a real data (count table).
+#' \code{parEstimate} estimates parameters for a Dirichlet distribution from a real data (count table).
 #'
-#' @param data a count table. Samples in the column and entities in the row.
+#' @param data A count table. Samples in the column and entities in the row.
+#' 
 #' @importFrom dirmult dirmult
+#' 
 #' @export
-#' @details use the default setting from \code{dirmult} (see \code{\link[dirmult]{dirmult}})
-#' @return a list including \dQuote{pi} and \dQuote{theta}
+#' 
+#' @details Use the default setting from \code{dirmult} (see \code{\link[dirmult]{dirmult}})
+#' 
+#' @return A list including \dQuote{pi} and \dQuote{theta}
 
-parEstimate <- function(data){
+parEstimate <- function(data) {
 
-  if(inherits(data, "list")){
+  if (inherits(data, "list")) {
     ind <- setequal(names(data), c("pi", "theta"))
-    if(!ind){
+    if (!ind) {
       stop("Error: data is a list;
            it should provide pi and theta")
     }
     parList <- data
-    }else{
-
-      DirMultOutput<- dirmult::dirmult(data = t(data))
+    } else {
+      DirMultOutput <- dirmult::dirmult(data = t(data))
       # tip proportion
-      estP<-DirMultOutput$pi
+      estP <- DirMultOutput$pi
       names(estP) <- names(DirMultOutput$pi)
 
       # parameter alpha for dirichlet distribution
