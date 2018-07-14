@@ -1,20 +1,21 @@
-#' select a branch
+#' Select a branch
 #'
-#' \code{selNode} is to select a branch meeting the specified criteria in the number of leaves and the count proportion.
+#' \code{selNode} selects a branch meeting the specified criteria in the number of leaves and the count proportion.
 #'
-#' @param tree a phylo object
-#' @param data a count table from the real data or a list output from \code{parEstimate}.
+#' @param tree A phylo object
+#' @param data A count table from the real data or a list output from \code{parEstimate}.
 #' @param minTip the minimum number of leaves in the selected branch
-#' @param maxTip the maximum number of leaves in the selected branch
-#' @param minPr the minimum count proportion of the selected branch in a sample
-#' @param maxPr the maximum count proportion of the selected branch in a sample
-#' @param skip a character vector of node labels. These nodes are not the descendants or the ancestors of the selected branch.
+#' @param maxTip The maximum number of leaves in the selected branch
+#' @param minPr The minimum count proportion of the selected branch in a sample
+#' @param maxPr The maximum count proportion of the selected branch in a sample
+#' @param skip A character vector of node labels. These nodes are not the descendants or the ancestors of the selected branch.
 #' @param all TRUE or FALSE. Default is FALSE. If FALSE, the branch node of a branch, which meet the requirements and has the minimum count proportion, is returned; otherwise branch nodes of all branches meeting the requirements are returned.
 #'
 #' @export
-#' @return the node whose descendant branch has the lowest proportion
+#' 
+#' @return The node whose descendant branch has the lowest proportion
+#' 
 #' @examples{
-#'
 #' data("simTree")
 #' data("simCount")
 #' set.seed(1)
@@ -23,7 +24,6 @@
 #' sN <- selNode(tree = tree, minTip = 20,
 #' maxTip = 50, minPr = 0.02, maxPr = 0.03,
 #' skip = NULL, data = simCount)
-#'
 #' }
 #'
 
@@ -62,7 +62,7 @@ selNode <- function(tree, data, minTip = 0, maxTip = Inf,
                          numTip = numI,
                          stringsAsFactors =FALSE)
 
-  if(maxPr < min(tt$proportion)){
+  if (maxPr < min(tt$proportion)) {
     stop("maxPr defined is even lower than the minimum value of
          node proportion", signif(min(tt$proportion),2), "\n")
   }
@@ -72,13 +72,13 @@ selNode <- function(tree, data, minTip = 0, maxTip = Inf,
              tt$numTip <= maxTip &
              tt$proportion >= minPr &
              tt$proportion <= maxPr,]
-  if(nrow(st)==0){
+  if (nrow(st) == 0) {
     stop("No nodes fullfill the requirements;
          try other settings
          for tip numbers or proportions")
   }
   # remove those overlapped
-  if(!is.null(skip)){
+  if (!is.null(skip)) {
     tipS <- lapply(skip, findOS, tree = tree,
                    only.Tip = TRUE, self.include = TRUE)
     tipS <- unlist(tipS)
@@ -87,19 +87,21 @@ selNode <- function(tree, data, minTip = 0, maxTip = Inf,
       tx <- findOS(ancestor = x, tree = tree, only.Tip = TRUE,
                    self.include = TRUE)
       ix <- intersect(tipS, tx)
-      length(ix)==0
+      length(ix) == 0
     })
 
-    new.st <- st[rmp,]
-  }else{new.st <- st}
+    new.st <- st[rmp, ]
+  } else {
+    new.st <- st
+  }
 
   # return the one has the lowest proportion
   #ind <- which.min(abs(new.st$proportion - minPr))
   #final <- new.st[ind,]
-  if(all){
+  if (all) {
     final <- new.st
-  }else{
-    final <- new.st[which.min(new.st$proportion),]
+  } else {
+    final <- new.st[which.min(new.st$proportion), ]
   }
 
   return(final)

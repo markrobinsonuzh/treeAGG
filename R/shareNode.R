@@ -1,12 +1,12 @@
-#' find the node shared by the specified nodes
+#' Find the node shared by the specified nodes
 #'
 #' \code{shareNode} could find the node which is shared by the specified nodes and has the minimum number of leaves. (the root is the highest level on the tree)
 #'
-#' @param node a vector of node numbers or node labels
-#' @param tree a tree (phylo object)
-#' @param label a logical value. If TRUE, the selected node label is output; otherwise the node number is output
+#' @param node A vector of node numbers or node labels
+#' @param tree A tree (phylo object)
+#' @param label A logical value. If TRUE, the selected node label is output; otherwise the node number is output
 #'
-#' @return the label of the shared node
+#' @return The label of the shared node
 #' @export
 #'
 #' @examples
@@ -30,11 +30,6 @@
 #'
 #' ## find the node shared by provided node numbers
 #' shareNode(node = c(2, 3), tree = tinyTree)
-#'
-#'
-
-
-
 
 shareNode <- function(node, tree, label = FALSE) {
 
