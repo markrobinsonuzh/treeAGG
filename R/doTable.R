@@ -1,24 +1,29 @@
-#' simulate a count table
+#' Simulate a count table
 #'
-#' \code{doTable} is to create a count table for all nodes of a tree under two different groups such that the tree would have different abundance patterns under different conditions.
+#' \code{doTable} creates a count table for all nodes of a tree under two different groups such that the tree would have different abundance patterns in the different conditions.
 #'
-#' @param tree a phylo object
-#' @param data a matrix. A count table from real data. It has the entities corresponding to tree leaves in the row and samples in the column.
+#' @param tree A phylo object
+#' @param data A matrix, representing a count table from real data. It has the entities corresponding to tree leaves in the row and samples in the column.
 #' @param scene \dQuote{S1}, \dQuote{S2}, or \dQuote{S3} (see \bold{Details}). Default is \dQuote{S1}.
-#' @param from.A,from.B the branch node label of branch A,B. Default, both are NULL. In simulation, we select two branches (A & B) to have differential abundance under different conditions. One could specify these two branches or let \code{doTable} choose. (Note: If \code{from.A} is NULL, \code{from.B} is set to NULL).
-#' @param minTip.A the minimum number of leaves in branch A
-#' @param maxTip.A the maximum number of leaves in branch A
-#' @param minPr.A the minimum abundance proportion of leaves in branch A
-#' @param maxPr.A the maximum abundance proportion of leaves in branch A
-#' @param minTip.B the minimum number of leaves in branch B
-#' @param maxTip.B the maximum number of leaves in branch B
-#' @param ratio the proportion ratio of branch B to branch A. This value is used to select branches(see \bold{Details}). If there are not branches exactly having this ratio, the pair with the value closest to \code{ratio} would be selected.
-#' @param pct the percentage of leaves in branch A has the differential abundance under different conditions (only for scenario \dQuote{S3})
-#' @param nSam a numeric vector with 2 length. the sample size for two different conditons
-#' @param mu,size the parameters of negative binomial distribution. (see mu and size in \code{\link[stats]{rnbinom}}). Parameters used to generate library size for each sample.
-#' @param n a numeric value to specify how many count tables would be generated with the same setting. Default is one and one count table would be obtained at the end. If above one, the output of \code{doTable} is a list of matrices (count tables). This is useful, when one needs multiple simulations.
-#' @param fun a function to derive the count at each internal node based on its descendant leaves, e.g. sum, mean. The argument of the function is a numeric vector including the counts of an internal node's descendant leaves.
+#' @param from.A,from.B The branch node labels of branches A and B for which the signal is swapped. Default, both are NULL. In simulation, we select two branches (A & B) to have differential abundance under different conditions. One could specify these two branches or let \code{doTable} choose. (Note: If \code{from.A} is NULL, \code{from.B} is set to NULL).
+#' @param minTip.A The minimum number of leaves in branch A
+#' @param maxTip.A The maximum number of leaves in branch A
+#' @param minPr.A The minimum abundance proportion of leaves in branch A
+#' @param maxPr.A The maximum abundance proportion of leaves in branch A
+#' @param minTip.B The minimum number of leaves in branch B
+#' @param maxTip.B The maximum number of leaves in branch B
+#' @param ratio The proportion ratio of branch B to branch A. This value is used to select branches(see \bold{Details}). If there are no branches having exactly this ratio, the pair with the value closest to \code{ratio} would be selected.
+#' @param pct The percentage of leaves in branch B that have differential abundance under different conditions (only for scenario \dQuote{S3})
+#' @param nSam A numeric vector of length 2, containing the sample size for two different conditions
+#' @param mu,size The parameters of the Negative Binomial distribution. (see mu and size in \code{\link[stats]{rnbinom}}). Parameters used to generate the library size for each simulated sample.
+#' @param n A numeric value to specify how many count tables would be generated with the same settings. Default is one and one count table would be obtained at the end. If above one, the output of \code{doTable} is a list of matrices (count tables). This is useful, when one needs multiple simulations.
+#' @param fun A function to derive the count at each internal node based on its descendant leaves, e.g. sum, mean. The argument of the function is a numeric vector with the counts of an internal node's descendant leaves.
 #' @param adjB a numeric value between 0 and 1 (only for \code{scene} is \dQuote{S3}). Default is NULL. If NULL, branch A and branch B swap their proportions. If a numeric value, e.g. 0.1, then branch B decreases to its one tenth proportion and the decrease in branch B is added to branch A. For example, assume there are two experimental conditions (C1 & C2), branch A has 10 and branch B has 40 in C1. If adjB is set to 0.1, then in C2 branch B becomes 4 and branch A 46 so that the total proportion stays the same.
+#'
+#'
+#' @importFrom dirmult dirmult
+#' @export
+#'
 #' @return a list of objects
 #' \item{FC}{the fold change of entities correspondint to the tree leaves.}
 #' \item{Count}{a list of count table or a count table. Entities on the row and samples in the column. Each count table includes entities corresponding to all nodes on the tree structure.}
@@ -31,20 +36,14 @@
 #' \item{B_tips}{the number of leaves on branch B}
 #' \item{A_prop(\%)}{the count proportion of branch A (in percentage)}
 #' \item{B_prop(\%)}{the count proportion of branch B (in percentage)}
-#'  }}
-#' @details \code{doTable} is to simulate a count table for entities which are corresponding to the nodes of a tree. The entities are in rows and the samples from different groups or conditions are in columns. The library size of each sample is sampled from a negative binomial distribution with mean and size specified by the arguments \code{mu} and \code{size} above. The counts of entities, which are located on the tree leaves, in the same sample are assumed to follow dirichlet-multinomial distribution. The parameters for the dirichlet-multinomial distribution are estimated from a real data specified by the argument \code{data} via the function \code{dirmult}(see \code{\link[dirmult]{dirmult}}). To generate different abundance patterns under different conditions, we provide three different scenarios, \dQuote{S1}, \dQuote{S2}, and \dQuote{S3} (specified via \code{scene}).
+#'
+#' @details \code{doTable} simulates a count table for entities which are corresponding to the nodes of a tree. The entities are in rows and the samples from different groups or conditions are in columns. The library size of each sample is sampled from a Negative Binomial distribution with mean and size specified by the arguments \code{mu} and \code{size}. The counts of entities, which are located on the tree leaves, in the same sample are assumed to follow a Dirichlet-Multinomial distribution. The parameters for the Dirichlet-Multinomial distribution are estimated from a real data set specified by the argument \code{data} via the function \code{dirmult}(see \code{\link[dirmult]{dirmult}}). To generate different abundance patterns under different conditions, we provide three different scenarios, \dQuote{S1}, \dQuote{S2}, and \dQuote{S3} (specified via \code{scene}).
 #' \itemize{
 #' \item S1: two branches are selected to swap their proportions, and leaves on the same branch have the same fold change.
-#' \item S2: two branches are selected to swap their proportions. Leaves in the same branch have different fold changes but same direction (either ncrease or decrease).
+#' \item S2: two branches are selected to swap their proportions. Leaves in the same branch have different fold changes but same direction (either increase or decrease).
 #' \item S3: two branches are selected. One branch has its proportion swapped with the proportion of some leaves from the other branch.
 #' }
-#' \code{doTable} could select the two branches automatically based on the criteria specified by \code{minTip.A}, \code{maxTip.A}, \code{minPr.A}, \code{maxPr.A}, \code{minTip.B}, \code{maxTip.B} and \code{ratio}. or find one branch when the other is fixed via \code{from.A}.
-#'
-#' @importFrom dirmult dirmult
-#' @export
-#'
-#'
-#'
+#' \code{doTable} could select the two branches automatically based on the criteria specified by \code{minTip.A}, \code{maxTip.A}, \code{minPr.A}, \code{maxPr.A}, \code{minTip.B}, \code{maxTip.B} and \code{ratio}, or find one branch when the other is fixed via \code{from.A}.
 #'
 #'@examples{
 #' if(require(GUniFrac)){
@@ -55,16 +54,13 @@
 #' data = as.matrix(t(throat.otu.tab)),
 #' ratio = 2)
 #' }
-#'
-#'
-#'
 #'}
 
 doTable <- function(tree, data, scene = "S1",
-                    from.A  = NULL, from.B = NULL,
-                    minTip.A=0, maxTip.A= Inf,
-                    minTip.B=0, maxTip.B= Inf,
-                    minPr.A=0, maxPr.A=1, ratio = 2,
+                    from.A = NULL, from.B = NULL,
+                    minTip.A = 0, maxTip.A = Inf,
+                    minTip.B = 0, maxTip.B = Inf,
+                    minPr.A = 0, maxPr.A = 1, ratio = 2,
                     pct = 0.6, nSam = c(50, 50),
                     mu = 50, size = 10000,
                     n = 1, fun = sum, adjB = NULL){
