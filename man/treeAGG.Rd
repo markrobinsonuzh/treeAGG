@@ -2,28 +2,28 @@
 % Please edit documentation in R/treeAGG.R
 \name{treeAGG}
 \alias{treeAGG}
-\title{tree aggregation}
+\title{Tree aggregation}
 \usage{
 treeAGG(tree, data, stree = NULL, P.lim = NULL, varSIG = NULL, varAGG)
 }
 \arguments{
-\item{tree}{a phylo object;}
+\item{tree}{A phylo object;}
 
-\item{data}{data frame (include at least :
+\item{data}{A data frame (include at least :
 1. the label of tree nodes and tips as row names
 2. a column of p value
 3. a column of adjusted p value}
 
-\item{stree}{a list of phylo object. The subtrees of \strong{tree}.}
+\item{stree}{A list of phylo object. The subtrees of \strong{tree}.}
 
-\item{P.lim}{the threshold value (for the adjusted p values) to reject a null hypothesis. By default, NULL. If NULL, the algorithm only compares the value provided by \strong{varAGG} and doesn't decide whether to reject a null hypothesis.}
+\item{P.lim}{The threshold value (for the adjusted p values) to reject a null hypothesis. By default, NULL. If NULL, the algorithm only compares the value provided by \strong{varAGG} and doesn't decide whether to reject a null hypothesis.}
 
-\item{varSIG}{the name of column for testing significance}
+\item{varSIG}{The name of column for testing significance}
 
-\item{varAGG}{the name of column used to do tree aggregation, eg. the name of the p value or adjusted p value column}
+\item{varAGG}{The name of column used to do tree aggregation, eg. the name of the p value or adjusted p value column}
 }
 \value{
-a vector of character. It returns the labels of tips and nodes which
+A character vector, containing the labels of tips and nodes which
 have selected by the minimum P-value algorithm
 }
 \description{

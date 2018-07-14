@@ -3,12 +3,12 @@
 \docType{data}
 \name{simTree}
 \alias{simTree}
-\title{The hiearchical tree of the cells}
+\title{The hierarchical tree of the cells in the AML-sim data}
 \format{A hclust object with 900 leaves. Each leaf is a cell cluster.}
 \usage{
 simTree
 }
 \description{
-A hclust object which records the hiearchical structure of the cells.
+A hclust object which records the hierarchical structure of the cells in the AML-sim data.
 }
 \keyword{datasets}

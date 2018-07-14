@@ -24,7 +24,7 @@
 #'
 #' @import ggplot2 ggtree
 #' @export
-#' @return a tree plot
+#' @return A tree plot
 #'
 #' @examples
 #'

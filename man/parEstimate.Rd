@@ -2,19 +2,19 @@
 % Please edit documentation in R/parEstimate.R
 \name{parEstimate}
 \alias{parEstimate}
-\title{estimate parameters for dirichlet distribution}
+\title{Estimate parameters for Dirichlet distribution}
 \usage{
 parEstimate(data)
 }
 \arguments{
-\item{data}{a count table. Samples in the column and entities in the row.}
+\item{data}{A count table. Samples in the column and entities in the row.}
 }
 \value{
-a list including \dQuote{pi} and \dQuote{theta}
+A list including \dQuote{pi} and \dQuote{theta}
 }
 \description{
-\code{parEstimate} is to estimate parameters for dirichlet distribution from a real data (count table).
+\code{parEstimate} estimates parameters for a Dirichlet distribution from a real data (count table).
 }
 \details{
-use the default setting from \code{dirmult} (see \code{\link[dirmult]{dirmult}})
+Use the default setting from \code{dirmult} (see \code{\link[dirmult]{dirmult}})
 }

@@ -1,6 +1,7 @@
 #' Tree aggregation
 #'
-#' \code{treeAGG} combines the p values with the tree structure and decide the which nodes to be aggregated to based on the min-p algorithm.
+#' \code{treeAGG} combines the p values with the tree structure and decide the
+#' which nodes to be aggregated to based on the min-p algorithm.
 #'
 #' @param tree  A phylo object;
 #' @param data A data frame (include at least :
@@ -8,9 +9,13 @@
 #'        2. a column of p value
 #'        3. a column of adjusted p value
 #' @param stree A list of phylo object. The subtrees of \strong{tree}.
-#' @param P.lim The threshold value (for the adjusted p values) to reject a null hypothesis. By default, NULL. If NULL, the algorithm only compares the value provided by \strong{varAGG} and doesn't decide whether to reject a null hypothesis.
+#' @param P.lim The threshold value (for the adjusted p values) to reject a null
+#'   hypothesis. By default, NULL. If NULL, the algorithm only compares the
+#'   value provided by \strong{varAGG} and doesn't decide whether to reject a
+#'   null hypothesis.
 #' @param varSIG The name of column for testing significance
-#' @param varAGG The name of column used to do tree aggregation, eg. the name of the p value or adjusted p value column
+#' @param varAGG The name of column used to do tree aggregation, eg. the name of
+#'   the p value or adjusted p value column
 #' 
 #' @return A character vector, containing the labels of tips and nodes which
 #' have selected by the minimum P-value algorithm

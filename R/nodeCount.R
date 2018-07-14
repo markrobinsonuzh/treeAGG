@@ -1,14 +1,16 @@
 #' Calculate the counts at internal nodes
 #'
-#' \code{nodeCount} calculates the counts at internal nodes. The count of an internal node is the sum of counts at its descendant leaves.
+#' \code{nodeCount} calculates the counts at internal nodes. The count of an
+#' internal node is the sum of counts at its descendant leaves.
 #'
 #' @param data A matrix or data frame. A count table from real data.
 #' @param tree A phylo object
-#' @param fun A function to create the count of an internal node based on the counts at its descendant leaf nodes. The default is sum
+#' @param fun A function to create the count of an internal node based on the
+#'   counts at its descendant leaf nodes. The default is sum
 #' 
 #' @importFrom utils head
-#' @return A count table (matrix class) with a row representing a node and
-#' a column representing a sample.
+#' @return A count table (matrix class) with a row representing a node and a
+#'   column representing a sample.
 #'
 #' @export
 #'

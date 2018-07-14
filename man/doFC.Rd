@@ -2,30 +2,32 @@
 % Please edit documentation in R/doTable.R
 \name{doFC}
 \alias{doFC}
-\title{generate the fold change}
+\title{Generate the fold change}
 \usage{
 doFC(scene, BranchA, BranchB, tree, ratio, data, pct, adjB = NULL)
 }
 \arguments{
 \item{scene}{Scenarios (\dQuote{S1}, \dQuote{S2}, \dQuote{S3})}
 
-\item{BranchA}{the branch node label of branch A.}
+\item{BranchA}{The branch node label of branch A.}
 
-\item{BranchB}{the branh node label of branch B.}
+\item{BranchB}{The branh node label of branch B.}
 
-\item{tree}{a phylo object}
+\item{tree}{A phylo object}
 
-\item{ratio}{the proportion ratio between \code{BranchB} and \code{BranchA} (B/A)}
+\item{ratio}{The proportion ratio between \code{BranchB} and \code{BranchA} (B/A)}
 
-\item{data}{the real data (count table)}
+\item{data}{The real data (count table)}
+
 
 \item{pct}{the percentage (in number) of the leaves in BranchA that will swap with BranchB.}
 
 \item{adjB}{a numeric value between 0 and 1 (only for \code{scene} is \dQuote{S3}). Default is NULL. If NULL, branch A and branch B swap their proportions. If a numeric value, e.g. 0.1, then branch B decreases to its one tenth proportion and the decrease in branch B is added to branch A. For example, assume there are two experimental conditions (C1 & C2), branch A has 10 and branch B has 40 in C1. If adjB is set to 0.1, then in C2 branch B becomes 4 and branch A 46 so that the total proportion stays the same.}
+
 }
 \value{
-a numeric vector
+T numeric vector
 }
 \description{
-\code{doFC} is to generate a fold change for different scenarios
+\code{doFC} generates fold changes for different scenarios
 }

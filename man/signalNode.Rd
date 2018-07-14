@@ -2,19 +2,19 @@
 % Please edit documentation in R/signalNode.R
 \name{signalNode}
 \alias{signalNode}
-\title{find the node shared by the specified nodes}
+\title{Find the node shared by the specified nodes}
 \usage{
 signalNode(node, tree, label = FALSE)
 }
 \arguments{
-\item{node}{a vector of node numbers or node labels}
+\item{node}{A vector of node numbers or node labels}
 
-\item{tree}{a tree (phylo object)}
+\item{tree}{A tree (phylo object)}
 
-\item{label}{a logical value. If TRUE, the selected node label is output; otherwise the node number is output}
+\item{label}{A logical value. If TRUE, the selected node label is output; otherwise the node number is output}
 }
 \value{
-the label of the shared node
+The label of the shared node
 }
 \description{
 \code{signalNode} is to find nodes which are the ancestors shared by the specified nodes.  The descendant leaves of the found nodes are also the descendant leaves of the specified nodes.

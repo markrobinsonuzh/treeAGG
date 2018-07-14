@@ -2,20 +2,20 @@
 % Please edit documentation in R/rmDesc.R
 \name{rmDesc}
 \alias{rmDesc}
-\title{remove nodes which are the descendants of other nodes}
+\title{Remove nodes which are the descendants of other nodes}
 \usage{
 rmDesc(node, tree)
 }
 \arguments{
-\item{node}{a vector of node labels or node numbers}
+\item{node}{A vector of node labels or node numbers}
 
-\item{tree}{a list of phylo object.}
+\item{tree}{A list of phylo objects.}
 }
 \value{
-a vector of node numbers
+A vector of node numbers
 }
 \description{
-\code{rmDesc} is to remove branches, which are the subbranch of the others.
+\code{rmDesc} removes branches, which are the subbranches of the others.
 }
 \examples{
 {

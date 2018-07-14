@@ -2,37 +2,36 @@
 % Please edit documentation in R/selNode.R
 \name{selNode}
 \alias{selNode}
-\title{select a branch}
+\title{Select a branch}
 \usage{
 selNode(tree, data, minTip = 0, maxTip = Inf, minPr = 0, maxPr = Inf,
   skip = NULL, all = FALSE)
 }
 \arguments{
-\item{tree}{a phylo object}
+\item{tree}{A phylo object}
 
-\item{data}{a count table from the real data or a list output from \code{parEstimate}.}
+\item{data}{A count table from the real data or a list output from \code{parEstimate}.}
 
 \item{minTip}{the minimum number of leaves in the selected branch}
 
-\item{maxTip}{the maximum number of leaves in the selected branch}
+\item{maxTip}{The maximum number of leaves in the selected branch}
 
-\item{minPr}{the minimum count proportion of the selected branch in a sample}
+\item{minPr}{The minimum count proportion of the selected branch in a sample}
 
-\item{maxPr}{the maximum count proportion of the selected branch in a sample}
+\item{maxPr}{The maximum count proportion of the selected branch in a sample}
 
-\item{skip}{a character vector of node labels. These nodes are not the descendants or the ancestors of the selected branch.}
+\item{skip}{A character vector of node labels. These nodes are not the descendants or the ancestors of the selected branch.}
 
 \item{all}{TRUE or FALSE. Default is FALSE. If FALSE, the branch node of a branch, which meet the requirements and has the minimum count proportion, is returned; otherwise branch nodes of all branches meeting the requirements are returned.}
 }
 \value{
-the node whose descendant branch has the lowest proportion
+The node whose descendant branch has the lowest proportion
 }
 \description{
-\code{selNode} is to select a branch meeting the specified criteria in the number of leaves and the count proportion.
+\code{selNode} selects a branch meeting the specified criteria in the number of leaves and the count proportion.
 }
 \examples{
 {
-
 data("simTree")
 data("simCount")
 set.seed(1)
@@ -41,7 +40,6 @@ tree <- as.phylo(simTree)
 sN <- selNode(tree = tree, minTip = 20,
 maxTip = 50, minPr = 0.02, maxPr = 0.03,
 skip = NULL, data = simCount)
-
 }
 
 }

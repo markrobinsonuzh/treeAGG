@@ -2,19 +2,19 @@
 % Please edit documentation in R/doTable.R
 \name{infLoc}
 \alias{infLoc}
-\title{provide the information of two branches}
+\title{Provide the information of two branches}
 \usage{
 infLoc(tree, data, from.A, from.B)
 }
 \arguments{
-\item{tree}{a phylo object}
+\item{tree}{A phylo object}
 
-\item{data}{count table (a matrix or a data frame). It is a real data. It has tree leaves in rows and samples from different conditions in  columns.}
+\item{data}{A count table (a matrix or a data frame). It has tree leaves in rows and samples from different conditions in  columns.}
 
-\item{from.A, from.B}{the branch node labels of Branch A, B.}
+\item{from.A, from.B}{The branch node labels of Branch A, B.}
 }
 \value{
-a data frame of one row
+A data frame of one row
 }
 \description{
 \code{infLoc} is to give information of two branches about the count proportion and the number of leaves

@@ -10,7 +10,7 @@ pathTree(tree)
 \item{tree}{a phylo object}
 }
 \description{
-\code{treePath} convert a phylo object tree into multiple paths. Each starts with a tip, connects all internal nodes, and end with the root.
+\code{treePath} converts a phylo object tree into multiple paths. Each starts with a tip, connects all internal nodes, and end with the root.
 }
 \examples{
 
@@ -19,5 +19,4 @@ library(ggtree)
 ggtree(tinyTree) + geom_text2(aes(label = node))
 
 (paths <- pathTree(tinyTree))
-
 }

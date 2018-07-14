@@ -7,18 +7,18 @@
 nodeCount(data, tree, fun = sum)
 }
 \arguments{
-\item{data}{a matrix or data frame. A count table from real data.}
+\item{data}{A matrix or data frame. A count table from real data.}
 
-\item{tree}{a tree (phylo class)}
+\item{tree}{A phylo object}
 
-\item{fun}{a function to create the count of an internal node based on the counts at its descendant leaf nodes. The default is sum}
+\item{fun}{A function to create the count of an internal node based on the counts at its descendant leaf nodes. The default is sum}
 }
 \value{
-a count table (matrix class) with a row representing a node and
+A count table (matrix class) with a row representing a node and
 a column representing a sample.
 }
 \description{
-\code{nodeCount} is to calculate the counts at internal nodes. The count of an internal node is the sum of counts at its descendant leaves.
+\code{nodeCount} calculates the counts at internal nodes. The count of an internal node is the sum of counts at its descendant leaves.
 }
 \examples{
 data("tinyTree")

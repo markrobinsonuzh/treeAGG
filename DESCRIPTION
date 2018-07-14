@@ -20,5 +20,3 @@ Imports:
 RoxygenNote: 6.0.1
 VignetteBuilder: knitr
 Suggests: testthat, BiocStyle, knitr, rmarkdown, GUniFrac, cowplot
-
-

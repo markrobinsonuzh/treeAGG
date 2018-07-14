@@ -2,21 +2,21 @@
 % Please edit documentation in R/treePlot.R
 \name{addPoint}
 \alias{addPoint}
-\title{add points to the tree plot}
+\title{Add points to the tree plot}
 \usage{
 addPoint(tree, point, col.point, addTo = NULL, ...)
 }
 \arguments{
-\item{tree}{a phylo object}
+\item{tree}{A phylo object}
 
-\item{point}{a vector of node numbers or node labels to specify the locations to add points in the tree}
+\item{point}{A vector of node numbers or node labels to specify the locations to add points in the tree}
 
-\item{col.point}{a color for the \strong{point}. It has length equal to one.}
+\item{col.point}{A color for the \strong{point}. It has length equal to one.}
 
 \item{addTo}{NULL or a plot of a phylo object.}
 
 \item{...}{see also \code{\link[ggtree]{ggtree}}}
 }
 \description{
-\code{addPoint} is to add points to a plot of phylogenetic tree.
+\code{addPoint} adds points to a plot of phylogenetic tree.
 }

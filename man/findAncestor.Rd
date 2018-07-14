@@ -2,24 +2,24 @@
 % Please edit documentation in R/findAncestor.R
 \name{findAncestor}
 \alias{findAncestor}
-\title{find the ancestors of specified nodes}
+\title{Find the ancestors of specified nodes}
 \usage{
 findAncestor(tree, node, level, treeMat = NULL)
 }
 \arguments{
-\item{tree}{a phylo object}
+\item{tree}{A phylo object}
 
-\item{node}{a vector of node numbers or node labels}
+\item{node}{A vector of node numbers or node labels}
 
-\item{level}{a vector of numbers to define n generation before the specified nodes}
+\item{level}{A vector of numbers to define nth generation before the specified nodes}
 
-\item{treeMat}{a matrix with each row representing a path. The entry is node number. The first column is leave node numbers. The columns are organized as the order of nodes in the paths connecting leaves and the root. Default is null, treeMat is generated automatically. The treeMat is provided when the tree is very large to save running time.}
+\item{treeMat}{A matrix with each row representing a path. The entry is node number. The first column is leaf node numbers. The columns are organized as the order of nodes in the paths connecting leaves and the root. Default is null, treeMat is generated automatically. The treeMat is provided when the tree is very large to save running time.}
 }
 \value{
 a vector of node numbers
 }
 \description{
-\code{findAncestor} is to find the ancestor in the n generation before specified nodes.
+\code{findAncestor} finds the ancestor in the nth generation before specified nodes.
 }
 \examples{
 library(ggtree)

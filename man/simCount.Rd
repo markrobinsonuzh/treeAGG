@@ -3,19 +3,19 @@
 \docType{data}
 \name{simCount}
 \alias{simCount}
-\title{the count table of AML-sim data}
+\title{Count table of the AML-sim data}
 \format{A data frame of cell counts collected from healthy and cytogenetically normal (CN) samples:
 \describe{
-  \item{healthy_H1}{The counts gained from the first healthy sample}
-  \item{healthy_H2}{The counts gained from the second healthy sample}
-  \item{healthy_H3}{The counts gained from the third healthy sample}
-  \item{healthy_H4}{The counts gained from the forth healthy sample}
-  \item{healthy_H5}{The counts gained from the fifth healthy sample}
-  \item{CN_H1}{The counts gained from the first CN sample}
-  \item{CN_H2}{The counts gained from the second CN sample}
-  \item{CN_H3}{The counts gained from the third CN sample}
-  \item{CN_H4}{The counts gained from the forth CN sample}
-  \item{CN_H5}{The counts gained from the fifth CN sample}
+  \item{healthy_H1}{The counts from the first healthy sample}
+  \item{healthy_H2}{The counts from the second healthy sample}
+  \item{healthy_H3}{The counts from the third healthy sample}
+  \item{healthy_H4}{The counts from the forth healthy sample}
+  \item{healthy_H5}{The counts from the fifth healthy sample}
+  \item{CN_H1}{The counts from the first CN sample}
+  \item{CN_H2}{The counts from the second CN sample}
+  \item{CN_H3}{The counts from the third CN sample}
+  \item{CN_H4}{The counts from the forth CN sample}
+  \item{CN_H5}{The counts from the fifth CN sample}
 }}
 \usage{
 simCount

@@ -2,20 +2,19 @@
 % Please edit documentation in R/transNode.R
 \name{transNode}
 \alias{transNode}
-\title{transfer between node number and node label}
+\title{Transfer between node number and node label}
 \usage{
 transNode(tree, input)
 }
 \arguments{
-\item{tree}{a phylo object}
+\item{tree}{A phylo object}
 
-\item{input}{a tree node label or a tree node number}
+\item{input}{A tree node label or a tree node number}
 }
 \description{
-\code{transNode} is to do the transfermation between the number and the label of a node on a tree
+\code{transNode} does the transfermation between the number and the label of a node on a tree
 }
 \examples{
-
 
 library(ggtree)
 
@@ -30,6 +29,5 @@ hjust = -0.3, color = 'blue')
 transNode(tinyTree, input = c(11, 2, 4))
 
 transNode(tinyTree, input = c('Node_16', 'Node_11'))
-
 
 }

@@ -2,11 +2,16 @@
 #'
 #' \code{findOS} finds descendants of an internal node.
 #'
-#' @param ancestor An internal node. It could be the node number or the node label.
+#' @param ancestor An internal node. It could be the node number or the node
+#'   label.
 #' @param tree A phylo object.
-#' @param only.Tip A logical value, TRUE or FALSE. The default is TRUE. If default, only the leaf nodes in the descendant nodes would be returned.
-#' @param self.include A logical value, TRUE or FALSE. The default is TRUE. If default, the node specified in \strong{ancestor} is included. The leaf node itself is returned as its descendant.
-#' @param return "number" (return the node number) or "label" (return the node label).
+#' @param only.Tip A logical value, TRUE or FALSE. The default is TRUE. If
+#'   default, only the leaf nodes in the descendant nodes would be returned.
+#' @param self.include A logical value, TRUE or FALSE. The default is TRUE. If
+#'   default, the node specified in \strong{ancestor} is included. The leaf node
+#'   itself is returned as its descendant.
+#' @param return "number" (return the node number) or "label" (return the node
+#'   label).
 #'
 #' @export
 #'
@@ -69,7 +74,6 @@ findOS <- function(ancestor,
 
   }
 
-
   # convert to a list.  each element in the list is one path
   desA <- lapply(
     seq_len(nrow(matN)),
@@ -84,7 +88,6 @@ findOS <- function(ancestor,
 
   # descendants: tips
   tipA <- unique(setdiff(desA, mat[, 1]))
-
 
   res <- if (self.include) {
     if (only.Tip) {

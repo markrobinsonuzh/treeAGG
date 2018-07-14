@@ -6,23 +6,23 @@
 \title{AML-sim data}
 \format{A data frame of cell counts collected from healthy and cytogenetically normal (CN) samples:
 \describe{
-  \item{cluster}{The label of cluster}
-  \item{p_vals}{The original p value}
-  \item{p_adj}{The adjusted p value}
-  \item{n_cells}{The number of cells in the cluster}
+  \item{cluster}{The cluster labels}
+  \item{p_vals}{The nominal p values}
+  \item{p_adj}{The adjusted p values}
+  \item{n_cells}{The number of cells in the clusters}
   \item{n_spikein}{The number of spike-in cells}
-  \item{prop_spikein}{The proportion of the spike-in cell}
-  \item{true}{whether the cluster is truly differential abundant}
-  \item{healthy_H1}{The counts gained from the first healthy sample}
-  \item{healthy_H2}{The counts gained from the second healthy sample}
-  \item{healthy_H3}{The counts gained from the third healthy sample}
-  \item{healthy_H4}{The counts gained from the forth healthy sample}
-  \item{healthy_H5}{The counts gained from the fifth healthy sample}
-  \item{CN_H1}{The counts gained from the first CN sample}
-  \item{CN_H2}{The counts gained from the second CN sample}
-  \item{CN_H3}{The counts gained from the third CN sample}
-  \item{CN_H4}{The counts gained from the forth CN sample}
-  \item{CN_H5}{The counts gained from the fifth CN sample}
+  \item{prop_spikein}{The proportion of spike-in cells}
+  \item{true}{Whether the cluster is truly differential abundant}
+  \item{healthy_H1}{The counts from the first healthy sample}
+  \item{healthy_H2}{The counts from the second healthy sample}
+  \item{healthy_H3}{The counts from the third healthy sample}
+  \item{healthy_H4}{The counts from the forth healthy sample}
+  \item{healthy_H5}{The counts from the fifth healthy sample}
+  \item{CN_H1}{The counts from the first CN sample}
+  \item{CN_H2}{The counts from the second CN sample}
+  \item{CN_H3}{The counts from the third CN sample}
+  \item{CN_H4}{The counts from the forth CN sample}
+  \item{CN_H5}{The counts from the fifth CN sample}
 }}
 \usage{
 res_table

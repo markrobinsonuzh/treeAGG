@@ -13,6 +13,6 @@
 tinyTree
 }
 \description{
-A phlo object randomly created by using the function \code{\link[ape]{rtree}}
+A random phylo object created using the function \code{\link[ape]{rtree}}
 }
 \keyword{datasets}

@@ -1,12 +1,34 @@
 #' Calculate true positive rate (TPR) on a tree structure
 #'
-#' \code{tpr} calculates the true positive rate (TPR) on a tree structure at leaf or node level.
+#' \code{tpr} calculates the true positive rate (TPR) on a tree structure at
+#' leaf or node level.
 #'
 #' @param tree A phylo object
-#' @param truth Nodes that have signals (eg. differentally abundant at different experimental conditions.). If the signals are in different directions (up and down), then provide the nodes as a list of two members (one up and one down). One could provide either node number or node label. \strong{Note:} When TPR at node level is required and only leaf nodes with signal are provided, then the internal nodes which are shared and only shared by the provied leaf nodes (signal in the same direction) will be found out and used with the leaf nodes in the TPR calculation; when TPR at leaf level is required and the given nodes have internal nodes, then the descendant leaf nodes will be found out and used in the TPR calculation.
-#' @param found Nodes that have been found to have signal (eg. differentally abundant at different experimental conditions). If the signals are in different directions (up and down), then provide the nodes as a list of two members (one up and one down). One could provide either node number or node label. \strong{Note:} When TPR at node level is required, then the descendant nodes of the provied nodes (include themselves) will be found out and used in the TPR calculation; when TPR at leaf level is required, then the descendant leaf nodes will be found out and used in the TPR calculation.
-#' @param level If "leaf", true positive rate is calculated at leaf level; if "node", it is calculated at node level.
-#' @param direction TRUE or FALSE. Default is FALSE. If TRUE, the signal direction is taken into account; the argument \strong{truth} and \strong{found} should both be a list of two members and the order of directions should match.
+#' @param truth Nodes that have signals (eg. differentally abundant at different
+#'   experimental conditions.). If the signals are in different directions (up
+#'   and down), then provide the nodes as a list of two members (one up and one
+#'   down). One could provide either node number or node label. \strong{Note:}
+#'   When TPR at node level is required and only leaf nodes with signal are
+#'   provided, then the internal nodes which are shared and only shared by the
+#'   provied leaf nodes (signal in the same direction) will be found out and
+#'   used with the leaf nodes in the TPR calculation; when TPR at leaf level is
+#'   required and the given nodes have internal nodes, then the descendant leaf
+#'   nodes will be found out and used in the TPR calculation.
+#' @param found Nodes that have been found to have signal (eg. differentally
+#'   abundant at different experimental conditions). If the signals are in
+#'   different directions (up and down), then provide the nodes as a list of two
+#'   members (one up and one down). One could provide either node number or node
+#'   label. \strong{Note:} When TPR at node level is required, then the
+#'   descendant nodes of the provied nodes (include themselves) will be found
+#'   out and used in the TPR calculation; when TPR at leaf level is required,
+#'   then the descendant leaf nodes will be found out and used in the TPR
+#'   calculation.
+#' @param level If "leaf", true positive rate is calculated at leaf level; if
+#'   "node", it is calculated at node level.
+#' @param direction TRUE or FALSE. Default is FALSE. If TRUE, the signal
+#'   direction is taken into account; the argument \strong{truth} and
+#'   \strong{found} should both be a list of two members and the order of
+#'   directions should match.
 #'
 #' @export
 #' @return A true positive rate

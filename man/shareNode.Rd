@@ -2,19 +2,19 @@
 % Please edit documentation in R/shareNode.R
 \name{shareNode}
 \alias{shareNode}
-\title{find the node shared by the specified nodes}
+\title{Find the node shared by the specified nodes}
 \usage{
 shareNode(node, tree, label = FALSE)
 }
 \arguments{
-\item{node}{a vector of node numbers or node labels}
+\item{node}{A vector of node numbers or node labels}
 
-\item{tree}{a tree (phylo object)}
+\item{tree}{A tree (phylo object)}
 
-\item{label}{a logical value. If TRUE, the selected node label is output; otherwise the node number is output}
+\item{label}{A logical value. If TRUE, the selected node label is output; otherwise the node number is output}
 }
 \value{
-the label of the shared node
+The label of the shared node
 }
 \description{
 \code{shareNode} could find the node which is shared by the specified nodes and has the minimum number of leaves. (the root is the highest level on the tree)
@@ -40,6 +40,4 @@ geom_text2(aes(label = node))
 
 ## find the node shared by provided node numbers
 shareNode(node = c(2, 3), tree = tinyTree)
-
-
 }

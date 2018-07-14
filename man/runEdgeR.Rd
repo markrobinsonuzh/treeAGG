@@ -8,22 +8,22 @@ runEdgeR(data, nSam, isTip, isAnalyze = NULL, prior.count, normalize = TRUE,
   method = "TMM")
 }
 \arguments{
-\item{data}{a numeric matrix indicates the count table of entities (eg. genes, microbes or cell clusters) in samples under different conditions. Each row represents an entity and each column represents a sample.}
+\item{data}{A numeric matrix corresponding to the count table of entities (eg. genes, microbes or cell clusters) in samples under different conditions. Each row represents an entity and each column represents a sample.}
 
-\item{nSam}{a numeric vector. Each element represents the number of samples in one condition. For example, if we have n1 samples in condition 1 and n2 samples in condition 2, then the \strong{nSam} is (n1,n2).}
+\item{nSam}{A numeric vector. Each element represents the number of samples in one condition. For example, if we have n1 samples in condition 1 and n2 samples in condition 2, then \strong{nSam} is (n1,n2).}
 
-\item{isTip}{a logical vector. It has equal length to the number of rows in \strong{data}. If TRUE, the corresponding row contributes to the library size of a sample; otherwise, it doesn't. A provided count table might include rows for leaves and internal nodes. Only the counts from leaf nodes are really measured and should be included to do library size normalisation.}
+\item{isTip}{A logical vector. It has equal length to the number of rows in \strong{data}. If TRUE, the corresponding row contributes to the library size of a sample; otherwise, it doesn't. A provided count table might include rows for leaves and internal nodes. Only the counts from leaf nodes are really measured and should be included to do library size normalisation.}
 
-\item{isAnalyze}{a logical vector with length equal to the row number of the data. This is to indicate the row used for differential analysis. Default is to use all rows.}
+\item{isAnalyze}{A logical vector with length equal to the row number of the data. This is to indicate the row used for differential analysis. Default is to use all rows.}
 
-\item{prior.count}{a numeric value; the average prior count added to each observation to compute estimated coefficients for a NB glm in such a way that the log-fold-changes are shrunk towards zero (see \code{\link[edgeR]{predFC}}.}
+\item{prior.count}{A numeric value; the average prior count added to each observation to compute estimated coefficients for a NB glm in such a way that the log-fold-changes are shrunk towards zero (see \code{\link[edgeR]{predFC}}.}
 
-\item{normalize}{a logical value; indicate whether to do library size normalization. If TRUE, TMM( weighted trimmed mean of M-values is applied); otherwise, raw library size is used.}
+\item{normalize}{A logical value; indicating whether to correct for compositionality when estimating size factors. If TRUE, TMM (weighted trimmed mean of M-values) is applied; otherwise, raw library size is used.}
 
-\item{method}{see \strong{method} in \code{\link[edgeR]{calcNormFactors}}}
+\item{method}{See \strong{method} in \code{\link[edgeR]{calcNormFactors}}}
 }
 \value{
-a data frame containing the elements
+A data frame containing the elements
  logFC, the log-abundance ratio, i.e. fold change, for each tag in the two groups being compared logCPM, the log-average concentration/abundance for each tag in the two groups being compared
  PValue, exact p-value for differential expression using the NB model
 
@@ -38,5 +38,5 @@ a data frame containing the elements
  waldAP, the adjusted p-value from Wald test ('BH' method; Benjamini & Hochberg (1995))
 }
 \description{
-\code{runEdgeR} is to do differential analysis for the data using edgeR package
+\code{runEdgeR} performs differential analysis for the data using the edgeR package
 }

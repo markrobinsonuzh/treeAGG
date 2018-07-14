@@ -2,35 +2,35 @@
 % Please edit documentation in R/doTable.R
 \name{pickLoc}
 \alias{pickLoc}
-\title{select branches}
+\title{Select branches}
 \usage{
 pickLoc(tree, data, from.A, minTip.A, maxTip.A, minTip.B, maxTip.B, minPr.A,
   maxPr.A, ratio)
 }
 \arguments{
-\item{tree}{a phylo object}
+\item{tree}{A phylo object}
 
-\item{data}{count table (a matrix or a data frame). It is a real data. It has tree leaves in rows and samples from different conditions in  columns.}
+\item{data}{A count table (a matrix or a data frame). It has tree leaves in rows and samples from different conditions in columns.}
 
-\item{from.A}{the branch node label of branch A. In simulation, we select two branches (A & B) to have differential abundance under different conditions. If from.A is specified, then branch A is fixed. If from.A is NULL, one can find a suitable branch which meets the criteria specified in \code{minTip.A}, \code{maxTip.A}, \code{minPr.A} and \code{maxPr.A}.}
+\item{from.A}{The branch node label of branch A. In simulation, we select two branches (A & B) to have differential abundance under different conditions. If from.A is specified, then branch A is fixed. If from.A is NULL, one can find a suitable branch which meets the criteria specified in \code{minTip.A}, \code{maxTip.A}, \code{minPr.A} and \code{maxPr.A}.}
 
-\item{minTip.A}{the minimum number of leaves in branch A}
+\item{minTip.A}{The minimum number of leaves in branch A}
 
-\item{maxTip.A}{the maximum number of leaves in branch A}
+\item{maxTip.A}{The maximum number of leaves in branch A}
 
-\item{minTip.B}{the minimum number of leaves in branch B}
+\item{minTip.B}{The minimum number of leaves in branch B}
 
-\item{maxTip.B}{the maximum number of leaves in branch B}
+\item{maxTip.B}{The maximum number of leaves in branch B}
 
-\item{minPr.A}{the minimum abundance proportion of leaves in branch A}
+\item{minPr.A}{The minimum abundance proportion of leaves in branch A}
 
-\item{maxPr.A}{the maximum abundance proportion of leaves in branch A}
+\item{maxPr.A}{The maximum abundance proportion of leaves in branch A}
 
-\item{ratio}{the proportion ratio of branch B to branch A. This value is used to select branches(see \bold{Details}). If there are not branches exactly having this ratio, the pair with the value closest to \code{ratio} would be selected.}
+\item{ratio}{The proportion ratio of branch B to branch A. This value is used to select branches(see \bold{Details}). If there are no branches having exactly this ratio, the pair with the value closest to \code{ratio} would be selected.}
 }
 \value{
 a data frame of one row
 }
 \description{
-\code{pickLoc} is to select two branches which meets the criteria specified by the arguments
+\code{pickLoc} selects two branches which meet the criteria specified by the arguments
 }

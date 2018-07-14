@@ -1,6 +1,7 @@
 #' Convert a tree into multiple paths
 #'
-#' \code{treePath} converts a phylo object tree into multiple paths. Each starts with a tip, connects all internal nodes, and end with the root.
+#' \code{treePath} converts a phylo object tree into multiple paths. Each starts
+#' with a tip, connects all internal nodes, and end with the root.
 #'
 #' @param tree a phylo object
 #'

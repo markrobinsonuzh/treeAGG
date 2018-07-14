@@ -1,15 +1,21 @@
 #' Select a branch
 #'
-#' \code{selNode} selects a branch meeting the specified criteria in the number of leaves and the count proportion.
+#' \code{selNode} selects a branch meeting the specified criteria in the number
+#' of leaves and the count proportion.
 #'
 #' @param tree A phylo object
-#' @param data A count table from the real data or a list output from \code{parEstimate}.
+#' @param data A count table from the real data or a list output from
+#'   \code{parEstimate}.
 #' @param minTip the minimum number of leaves in the selected branch
 #' @param maxTip The maximum number of leaves in the selected branch
 #' @param minPr The minimum count proportion of the selected branch in a sample
 #' @param maxPr The maximum count proportion of the selected branch in a sample
-#' @param skip A character vector of node labels. These nodes are not the descendants or the ancestors of the selected branch.
-#' @param all TRUE or FALSE. Default is FALSE. If FALSE, the branch node of a branch, which meet the requirements and has the minimum count proportion, is returned; otherwise branch nodes of all branches meeting the requirements are returned.
+#' @param skip A character vector of node labels. These nodes are not the
+#'   descendants or the ancestors of the selected branch.
+#' @param all TRUE or FALSE. Default is FALSE. If FALSE, the branch node of a
+#'   branch, which meet the requirements and has the minimum count proportion,
+#'   is returned; otherwise branch nodes of all branches meeting the
+#'   requirements are returned.
 #'
 #' @export
 #' 

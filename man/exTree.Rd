@@ -4,7 +4,7 @@
 \name{exTree}
 \alias{exTree}
 \title{A simulated phylogenetic tree with 50 tips and 49 internal nodes}
-\format{A phylo object with 10 tips and 9 internal nodes:
+\format{A phylo object with 50 tips and 49 internal nodes:
 \describe{
   \item{Tip labels}{t1, t2, ..., t50.}
   \item{Node labels}{NULL}
@@ -13,6 +13,6 @@
 exTree
 }
 \description{
-A phlo object randomly created by using the function \code{\link[ape]{rtree}}
+A random phylo object created using the function \code{\link[ape]{rtree}}
 }
 \keyword{datasets}

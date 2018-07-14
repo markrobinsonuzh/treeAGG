@@ -2,23 +2,23 @@
 % Please edit documentation in R/treePlot.R
 \name{addBranch}
 \alias{addBranch}
-\title{color a branch}
+\title{Color a branch}
 \usage{
 addBranch(tree, branch, col.branch, col.other, addTo = NULL, ...)
 }
 \arguments{
-\item{tree}{a phylo object}
+\item{tree}{A phylo object}
 
-\item{branch}{a vector of node numbers labels to specify the branches to be colored. Each branch is represented by its branch node. A leaf node reprents the edge connecting the leaf and its parent.}
+\item{branch}{A vector of node numbers labels to specify the branches to be colored. Each branch is represented by its branch node. A leaf node reprents the edge connecting the leaf and its parent.}
 
-\item{col.branch}{a vector of colors. Its length should be one or equals to the length of \strong{branch}. If \strong{col.branch} has the same length as \strong{branch}, the branches are colored correspondingly with the \strong{col.branch}. The default is blue.}
+\item{col.branch}{A vector of colors. Its length should be one or equals to the length of \strong{branch}. If \strong{col.branch} has the same length as \strong{branch}, the branches are colored correspondingly with the \strong{col.branch}. The default is blue.}
 
-\item{col.other}{a color for the branches other than those specified in \strong{branch}}
+\item{col.other}{A color for the branches other than those specified in \strong{branch}}
 
 \item{addTo}{NULL or a plot of a phylo object.}
 
 \item{...}{see also \code{\link[ggtree]{ggtree}}}
 }
 \description{
-\code{addBranch} is to color a branch or some edges.
+\code{addBranch} colors a branch or some edges.
 }

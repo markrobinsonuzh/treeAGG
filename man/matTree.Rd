@@ -2,18 +2,18 @@
 % Please edit documentation in R/matTree.R
 \name{matTree}
 \alias{matTree}
-\title{transform a phylo tree into a matrix.}
+\title{Transform a phylo object into a matrix.}
 \usage{
 matTree(tree)
 }
 \arguments{
-\item{tree}{a phylo object}
+\item{tree}{A phylo object}
 }
 \value{
-a matrix
+A matrix
 }
 \description{
-\code{matTree} is to transform a phylo tree into a matrix. The entry of the matrix is node number. Each row represents a path connecting a leaf node and the root. The columns are arranged in the order as the path passing the nodes to reach the root.
+\code{matTree} transforms a phylo tree into a matrix. The entry of the matrix is node number. Each row represents a path connecting a leaf node and the root. The columns are arranged in the order as the path passing the nodes to reach the root.
 }
 \examples{
 

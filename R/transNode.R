@@ -1,6 +1,7 @@
 #' Transfer between node number and node label
 #'
-#' \code{transNode} does the transfermation between the number and the label of a node on a tree
+#' \code{transNode} does the transformation between the number and the label of
+#' a node on a tree
 #'
 #' @param tree A phylo object
 #' @param input A tree node label or a tree node number

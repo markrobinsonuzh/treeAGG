@@ -1,10 +1,13 @@
 #' Find the node shared by the specified nodes
 #'
-#' \code{shareNode} could find the node which is shared by the specified nodes and has the minimum number of leaves. (the root is the highest level on the tree)
+#' \code{shareNode} could find the node which is shared by the specified nodes
+#' and has the minimum number of leaves. (the root is the highest level on the
+#' tree)
 #'
 #' @param node A vector of node numbers or node labels
 #' @param tree A tree (phylo object)
-#' @param label A logical value. If TRUE, the selected node label is output; otherwise the node number is output
+#' @param label A logical value. If TRUE, the selected node label is output;
+#'   otherwise the node number is output
 #'
 #' @return The label of the shared node
 #' @export

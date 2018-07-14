@@ -3,16 +3,16 @@
 \docType{data}
 \name{simTruth}
 \alias{simTruth}
-\title{The true signal in AML-sim data}
+\title{The true signal in the AML-sim data}
 \format{A data frame of two columns:
 \describe{
-  \item{cluster}{The label of cluster}
-   \item{true}{whether the cluster is truly differential abundant}
+  \item{cluster}{The cluster label}
+   \item{true}{Whether the cluster is truly differential abundant}
 }}
 \usage{
 simTruth
 }
 \description{
-This data provides the differential abundance information of clusters in AML-sim data
+This data provides the differential abundance information of clusters in the AML-sim data
 }
 \keyword{datasets}

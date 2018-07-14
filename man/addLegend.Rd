@@ -2,15 +2,15 @@
 % Please edit documentation in R/treePlot.R
 \name{addLegend}
 \alias{addLegend}
-\title{add legend
-\code{addLegend} is to customized the legend.}
+\title{Add legend
+\code{addLegend} customizes the legend.}
 \usage{
 addLegend(legend.theme)
 }
 \arguments{
-\item{legend.theme}{a list of arguments used for the theme in ggplot2 package (see \code{\link[ggplot2]{theme}} ) and starting with "legend."}
+\item{legend.theme}{A list of arguments used for the theme in ggplot2 package (see \code{\link[ggplot2]{theme}} ) and starting with "legend."}
 }
 \description{
-add legend
-\code{addLegend} is to customized the legend.
+Add legend
+\code{addLegend} customizes the legend.
 }
