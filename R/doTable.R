@@ -24,6 +24,7 @@
 #' @importFrom dirmult dirmult
 #' @export
 #'
+#'
 #' @return a list of objects
 #' \item{FC}{the fold change of entities correspondint to the tree leaves.}
 #' \item{Count}{a list of count table or a count table. Entities on the row and samples in the column. Each count table includes entities corresponding to all nodes on the tree structure.}
@@ -37,13 +38,15 @@
 #' \item{A_prop(\%)}{the count proportion of branch A (in percentage)}
 #' \item{B_prop(\%)}{the count proportion of branch B (in percentage)}
 #'
-#' @details \code{doTable} simulates a count table for entities which are corresponding to the nodes of a tree. The entities are in rows and the samples from different groups or conditions are in columns. The library size of each sample is sampled from a Negative Binomial distribution with mean and size specified by the arguments \code{mu} and \code{size}. The counts of entities, which are located on the tree leaves, in the same sample are assumed to follow a Dirichlet-Multinomial distribution. The parameters for the Dirichlet-Multinomial distribution are estimated from a real data set specified by the argument \code{data} via the function \code{dirmult}(see \code{\link[dirmult]{dirmult}}). To generate different abundance patterns under different conditions, we provide three different scenarios, \dQuote{S1}, \dQuote{S2}, and \dQuote{S3} (specified via \code{scene}).
+#'  @details \code{doTable} simulates a count table for entities which are corresponding to the nodes of a tree. The entities are in rows and the samples from different groups or conditions are in columns. The library size of each sample is sampled from a Negative Binomial distribution with mean and size specified by the arguments \code{mu} and \code{size}. The counts of entities, which are located on the tree leaves, in the same sample are assumed to follow a Dirichlet-Multinomial distribution. The parameters for the Dirichlet-Multinomial distribution are estimated from a real data set specified by the argument \code{data} via the function \code{dirmult}(see \code{\link[dirmult]{dirmult}}). To generate different abundance patterns under different conditions, we provide three different scenarios, \dQuote{S1}, \dQuote{S2}, and \dQuote{S3} (specified via \code{scene}).
 #' \itemize{
 #' \item S1: two branches are selected to swap their proportions, and leaves on the same branch have the same fold change.
 #' \item S2: two branches are selected to swap their proportions. Leaves in the same branch have different fold changes but same direction (either increase or decrease).
-#' \item S3: two branches are selected. One branch has its proportion swapped with the proportion of some leaves from the other branch.
-#' }
-#' \code{doTable} could select the two branches automatically based on the criteria specified by \code{minTip.A}, \code{maxTip.A}, \code{minPr.A}, \code{maxPr.A}, \code{minTip.B}, \code{maxTip.B} and \code{ratio}, or find one branch when the other is fixed via \code{from.A}.
+#' \item S3: two branches are selected. One branch has its proportion swapped with the proportion of some leaves from the other branch.}
+#'
+#'
+#'
+#'
 #'
 #'@examples{
 #' if(require(GUniFrac)){
