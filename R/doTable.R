@@ -72,7 +72,7 @@ doTable <- function(tree, data, scene = "S1",
   if (!inherits(data, "list")) {
     if (!inherits(data, "matrix")) {
       stop("data should be a matrix")
-    } else{
+    } else {
       if (!setequal(rownames(data), tree$tip.label)) {
         stop("The rownames of data do not match with tree leaf labels")
       }
@@ -82,14 +82,14 @@ doTable <- function(tree, data, scene = "S1",
 
   # estimate parameters for Dirichlet-multinomial distribution
   data <- parEstimate(data = data)
-  if(!is.null(from.A) && !is.null(from.B)){
+  if (!is.null(from.A) && !is.null(from.B)) {
     pk <- infLoc(tree = tree, data = data,
                  from.A = from.A, from.B = from.B)
-  }else{
+  } else {
     pk <- pickLoc(from.A  = from.A, tree = tree,
                   data = data, minTip.A = minTip.A,
                   maxTip.A = maxTip.A, minTip.B = minTip.B,
-                  maxTip.B= maxTip.B, minPr.A = minPr.A,
+                  maxTip.B = maxTip.B, minPr.A = minPr.A,
                   maxPr.A = maxPr.A, ratio = ratio)
   }
 
@@ -98,17 +98,14 @@ doTable <- function(tree, data, scene = "S1",
                ratio = pk$`ratio`, data = data,
                pct = pct, adjB = adjB)
 
-
   count <- doCount(FC = beta, data = data, nSam = nSam,
                    mu, size, n)
 
-
-
-  if(inherits(count, "list")){
+  if(inherits(count, "list")) {
     full <- lapply(count, nodeCount, tree = tree,
                    fun = fun)
   }
-  if(inherits(count, "matrix")){
+  if(inherits(count, "matrix")) {
     full <- nodeCount(data = count, tree = tree,
                       fun = fun)
   }
@@ -119,28 +116,27 @@ doTable <- function(tree, data, scene = "S1",
 }
 
 
-#' select branches
+#' Select branches
 #'
-#' \code{pickLoc} is to select two branches which meets the criteria specified by the arguments
+#' \code{pickLoc} selects two branches which meet the criteria specified by the arguments
 #'
-#' @param tree a phylo object
-#' @param data count table (a matrix or a data frame). It is a real data. It has tree leaves in rows and samples from different conditions in  columns.
-#' @param from.A the branch node label of branch A. In simulation, we select two branches (A & B) to have differential abundance under different conditions. If from.A is specified, then branch A is fixed. If from.A is NULL, one can find a suitable branch which meets the criteria specified in \code{minTip.A}, \code{maxTip.A}, \code{minPr.A} and \code{maxPr.A}.
-#' @param minTip.A the minimum number of leaves in branch A
-#' @param maxTip.A the maximum number of leaves in branch A
-#' @param minPr.A the minimum abundance proportion of leaves in branch A
-#' @param maxPr.A the maximum abundance proportion of leaves in branch A
-#' @param minTip.B the minimum number of leaves in branch B
-#' @param maxTip.B the maximum number of leaves in branch B
-#' @param ratio the proportion ratio of branch B to branch A. This value is used to select branches(see \bold{Details}). If there are not branches exactly having this ratio, the pair with the value closest to \code{ratio} would be selected.
+#' @param tree A phylo object
+#' @param data A count table (a matrix or a data frame). It has tree leaves in rows and samples from different conditions in columns.
+#' @param from.A The branch node label of branch A. In simulation, we select two branches (A & B) to have differential abundance under different conditions. If from.A is specified, then branch A is fixed. If from.A is NULL, one can find a suitable branch which meets the criteria specified in \code{minTip.A}, \code{maxTip.A}, \code{minPr.A} and \code{maxPr.A}.
+#' @param minTip.A The minimum number of leaves in branch A
+#' @param maxTip.A The maximum number of leaves in branch A
+#' @param minPr.A The minimum abundance proportion of leaves in branch A
+#' @param maxPr.A The maximum abundance proportion of leaves in branch A
+#' @param minTip.B The minimum number of leaves in branch B
+#' @param maxTip.B The maximum number of leaves in branch B
+#' @param ratio The proportion ratio of branch B to branch A. This value is used to select branches(see \bold{Details}). If there are no branches having exactly this ratio, the pair with the value closest to \code{ratio} would be selected.
 #'
 #' @return a data frame of one row
-
 
 pickLoc <- function(tree, data, from.A,
                     minTip.A, maxTip.A,
                     minTip.B, maxTip.B,
-                    minPr.A, maxPr.A, ratio){
+                    minPr.A, maxPr.A, ratio) {
 
   # tip proportions estimated from real data
   pars <- parEstimate(data = data)$pi
@@ -152,7 +148,7 @@ pickLoc <- function(tree, data, from.A,
                  only.Tip = TRUE,
                  self.include = TRUE,
                  return = "label")
-  nodP <- mapply(function(x, y){
+  nodP <- mapply(function(x, y) {
     sum(x[y])
   }, x = list(pars), y = desI)
 
@@ -164,65 +160,63 @@ pickLoc <- function(tree, data, from.A,
   # return error when the given limits for
   # proportion are outside
   # the range estimated from the real data.
-  if(maxPr.A < min(tt[,1])){
+  if (maxPr.A < min(tt[, 1])) {
     stop("maxPr.A is lower than the minimum value of
-         node proportion", signif(min(tt[,1]),2), "\n")
+         node proportion", signif(min(tt[, 1]), 2), "\n")
   }
-  if(minPr.A*ratio > max(tt[,1])){
+  if (minPr.A*ratio > max(tt[, 1])) {
     stop("minPr.A*ratio is above the maximum value of
-         node proportion; try lower ratio", signif(min(tt[,1]),2), "\n")
+         node proportion; try lower ratio", signif(min(tt[, 1]), 2), "\n")
   }
 
   # only consider nodes with enough tips and
   # desired proportion level
-  if(is.null(from.A)){
+  if (is.null(from.A)) {
     tt.sel <- tt
-  }else{
-
+  } else {
     # if node numbers, change them to node labels
-    if(inherits(from.A, "character")){
+    if (inherits(from.A, "character")) {
       from.A <- from.A
-    }else{
+    } else {
       from.A <- transNode(tree = tree, input = from.A)
     }
-
-    tt.sel <- tt[match(from.A, rownames(tt)),,drop = FALSE]
+    tt.sel <- tt[match(from.A, rownames(tt)), , drop = FALSE]
   }
 
-  st <- tt.sel[tt.sel[,2] >= minTip.A &
-                 tt.sel[,2] <= maxTip.A &
-                 tt.sel[,1] >= minPr.A &
-                 tt.sel[,1] <= maxPr.A,, drop = FALSE]
-  if(nrow(st)==0){
+  st <- tt.sel[tt.sel[, 2] >= minTip.A &
+                 tt.sel[, 2] <= maxTip.A &
+                 tt.sel[, 1] >= minPr.A &
+                 tt.sel[, 1] <= maxPr.A, , drop = FALSE]
+  if (nrow(st) == 0) {
     stop("No nodes fullfill the requirements;
          try other values for minTip.A, maxTip.A,
          minPr.A, or maxPr.A")
   }
-  st2 <- tt[tt[,2] >= minTip.B &
-              tt[,2] <= maxTip.B,,drop = FALSE]
+  st2 <- tt[tt[, 2] >= minTip.B &
+              tt[, 2] <= maxTip.B, , drop = FALSE]
 
   # fold change between any two nodes (large/small)
-  mm <- (1/st[,1]) %o% st2[,1]
+  mm <- (1/st[, 1]) %o% st2[, 1]
   rownames(mm) <- rownames(st)
 
   maxM <- max(mm, na.rm = TRUE)
-  minM <- min(mm, na.rm= TRUE)
+  minM <- min(mm, na.rm = TRUE)
 
-  if(ratio>=1 & ratio > maxM){
+  if (ratio >= 1 & ratio > maxM) {
     stop("could not find any two branches which fullfill
          these requirement;
          try lower ratio, lower minTip.A, or higher maxTip.B",
          "\n")
   }
 
-  if(ratio <= 1 & ratio < minM){
+  if (ratio <= 1 & ratio < minM) {
     stop("could not find any two branches which fullfill
          these requirement; try higher ratio or lower minTip.B",
          "\n")
   }
 
   # An entry in mm is set to NA if one node is the descendant of the other
-  nm <- matrix(sapply(1:ncol(mm), FUN = function(x){
+  nm <- matrix(sapply(1:ncol(mm), FUN = function(x) {
     # each column
     cn <- colnames(mm)
     cx <- cn[x]
@@ -231,13 +225,13 @@ pickLoc <- function(tree, data, from.A,
     rn <- rownames(mm)
     tx <- desI[rn]
 
-    cs <- lapply(tx,FUN = function(x){
-      length(intersect(x,desI[[cx]]))>0
+    cs <- lapply(tx,FUN = function(x) {
+      length(intersect(x, desI[[cx]])) > 0
     })
     cv <- unlist(cs)
-    fm <- mm[,x]
+    fm <- mm[, x]
     fm[cv] <- NA
-    fm}), nrow=nrow(mm))
+    fm}), nrow = nrow(mm))
 
   colnames(nm) <- colnames(mm)
   rownames(nm) <- rownames(mm)
@@ -256,11 +250,11 @@ pickLoc <- function(tree, data, from.A,
   #   iter <-  iter+1
   # }
   # select the pair with the value closest to the ratio
-  dif <- abs(nm-ratio)
+  dif <- abs(nm - ratio)
   wi <- which(dif == min(dif), arr.ind = TRUE)
   si <- sample(seq_len(nrow(wi)), 1)
-  an <- rownames(nm)[wi[si,1]]
-  bn <- colnames(nm)[wi[si,2]]
+  an <- rownames(nm)[wi[si, 1]]
+  bn <- colnames(nm)[wi[si, 2]]
 
   du <- cbind.data.frame(
     "A" = an,
@@ -280,17 +274,17 @@ pickLoc <- function(tree, data, from.A,
 
   }
 
-#' provide the information of two branches
+#' Provide the information of two branches
 #'
 #' \code{infLoc} is to give information of two branches about the count proportion and the number of leaves
 #'
-#' @param tree a phylo object
-#' @param data count table (a matrix or a data frame). It is a real data. It has tree leaves in rows and samples from different conditions in  columns.
-#' @param from.A,from.B the branch node labels of Branch A, B.
-#' @return a data frame of one row
+#' @param tree A phylo object
+#' @param data A count table (a matrix or a data frame). It has tree leaves in rows and samples from different conditions in  columns.
+#' @param from.A,from.B The branch node labels of Branch A, B.
+#' @return A data frame of one row
 
 infLoc <- function(tree, data, from.A,
-                   from.B){
+                   from.B) {
 
   # tip proportions estimated from real data
   pars <- parEstimate(data = data)$pi
@@ -302,7 +296,7 @@ infLoc <- function(tree, data, from.A,
                  only.Tip = TRUE,
                  self.include = TRUE,
                  return = "label")
-  nodP <- mapply(function(x, y){
+  nodP <- mapply(function(x, y) {
     sum(x[y])
   }, x = list(pars), y = desI)
 
@@ -333,28 +327,25 @@ infLoc <- function(tree, data, from.A,
   return(du)
 }
 
-#' generate the fold change
+#' Generate the fold change
 #'
-#' \code{doFC} is to generate a fold change for different scenarios
+#' \code{doFC} generates fold changes for different scenarios
 #'
 #' @param scene Scenarios (\dQuote{S1}, \dQuote{S2}, \dQuote{S3})
-#' @param BranchA the branch node label of branch A.
-#' @param BranchB the branh node label of branch B.
-#' @param tree a phylo object
-#' @param ratio the proportion ratio between \code{BranchB} and \code{BranchA} (B/A)
-#' @param data the real data (count table)
-#' @param pct the percentage (in number) of the leaves in BranchA that will swap with BranchB.
-#' @param adjB a numeric value between 0 and 1 (only for \code{scene} is \dQuote{S3}). Default is NULL. If NULL, branch A and branch B swap their proportions. If a numeric value, e.g. 0.1, then branch B decreases to its one tenth proportion and the decrease in branch B is added to branch A. For example, assume there are two experimental conditions (C1 & C2), branch A has 10 and branch B has 40 in C1. If adjB is set to 0.1, then in C2 branch B becomes 4 and branch A 46 so that the total proportion stays the same.
-#'
+#' @param BranchA The branch node label of branch A.
+#' @param BranchB The branh node label of branch B.
+#' @param tree A phylo object
+#' @param ratio The proportion ratio between \code{BranchB} and \code{BranchA} (B/A)
+#' @param data The real data (count table)
+#' @param pct The percentage (in number) of the leaves in BranchA that will swap with BranchB.
+#' @param adjB A numeric value between 0 and 1 (only for \code{scene} is \dQuote{S3}). Default is NULL. If NULL, branch A and branch B swap their proportions. If a numeric value, e.g. 0.1, then branch B decreases to its one tenth proportion and the decrease in branch B is added to branch A. For example, assume there are two experimental conditions (C1 & C2), branch A has 10 and branch B has 40 in C1. If adjB is set to 0.1, then in C2 branch B becomes 4 and branch A 46 so that the total proportion stays the same.
+
 #'
 #' @importFrom stats runif
-#' @return a numeric vector
-
-
+#' @return T numeric vector
 
 doFC <- function(scene, BranchA, BranchB, tree,
-                 ratio, data, pct, adjB = NULL){
-
+ratio, data, pct) {
 
   # beta: fold change for tips
   tips <- tree$tip.label
@@ -364,7 +355,8 @@ doFC <- function(scene, BranchA, BranchB, tree,
   # tips on two branches
   tipA <- findOS(ancestor = BranchA, tree = tree,
                  only.Tip = TRUE, self.include = TRUE,
-                 return = "label" )
+                 return = "label")
+
   nod <- findOS(ancestor = BranchA, tree = tree,
                 only.Tip = FALSE, self.include = TRUE,
                 return = "label")
@@ -375,7 +367,7 @@ doFC <- function(scene, BranchA, BranchB, tree,
 
   # swap proportion of two branches: tips in the same branch
   # have the same fold change
-  if(scene == "S1"){
+  if (scene == "S1") {
     tipB <- findOS(ancestor = BranchB, tree = tree,
                    only.Tip = TRUE, self.include = TRUE)
 
@@ -386,9 +378,9 @@ doFC <- function(scene, BranchA, BranchB, tree,
   # swap proportion of two branches: tips in the same branch
   # have different fold changes but same direction (either
   # increase or decrease)
-  if(scene == "S2"){
-    tipB <-  findOS(ancestor = BranchB, tree = tree,
-                    only.Tip = TRUE, self.include = TRUE)
+  if (scene == "S2") {
+    tipB <- findOS(ancestor = BranchB, tree = tree,
+                   only.Tip = TRUE, self.include = TRUE)
 
     beta[tipA] <- 1 + runif(length(tipA))*(ratio-1)
     beta[tipB] <- 1 - runif(length(tipB))*((ratio-1)/ratio)
@@ -398,13 +390,13 @@ doFC <- function(scene, BranchA, BranchB, tree,
   # another branch
   # tip proportions estimated from real data
   pars <- parEstimate(data = data)$pi
-  if(scene == "S3"){
+  if (scene == "S3") {
     iter <- 1
     while (iter <= 200) {
       # select only some tips
       selA <- sample(tipA, ceiling(length(tipA)*pct))
       # to make the selected tips disperse evenly in the branch
-      subA <- lapply(desA, FUN = function(x){
+      subA <- lapply(desA, FUN = function(x) {
         ix <- intersect(x, selA)
         length(ix)/length(x)
       })
@@ -436,7 +428,7 @@ doFC <- function(scene, BranchA, BranchB, tree,
     BranchL = BranchB
     #}
 
-    if(length(BranchL)==0){
+    if (length(BranchL) == 0) {
       stop("No suitable branches. Try another branchA or another max of ratio... \n")
     }
     tipL <-  findOS(ancestor = BranchL, tree = tree,
@@ -451,7 +443,7 @@ doFC <- function(scene, BranchA, BranchB, tree,
     #           a vector so that the random tips selected would stay the same")
     # }
 
-    # dicide beta
+    # decide beta
     # beta <- sapply(ratio, FUN = function(x, y){
     #   y[selA] <- x
     #   xl <- (sumL-(x-1)*sumA)/sumL
@@ -476,23 +468,22 @@ doFC <- function(scene, BranchA, BranchB, tree,
 }
 
 
-
 #' generate a count table
 #'
-#'  \code{doCount} is to generate a count table given some available information. Here, the information includes the fold change between two conditions, the parameters of negative binomial distritubion (which the sample library size follows), a data table from real data (to estimate the proportion of each entity in the sample), and the number of samples in two different groups or conditions.
+#' \code{doCount} generates a count table given some available information. Here, the information includes the fold change between two conditions, the parameters of Negative Binomial distritubion (which the sample library size follows), a data table from real data (to estimate the proportion of each entity in the sample), and the number of samples in two different groups or conditions.
 #'
-#' @param FC a numeric vector. Fold change
-#' @param data a matrix or data frame. the count table from real data
-#' @param nSam a vector of length two. The number of samples in two different groups or conditions.
-#' @param mu,size the parameters of negative binomial distribution (see mu and size in \code{\link[stats]{rnbinom}}.)
-#' @param n a numeric value. the number of count table generated. If above one, the output is a list of matrice.
+#' @param FC A numeric vector, representing the fold changes
+#' @param data A matrix or data frame, representing the count table from real data
+#' @param nSam A vector of length two containing the number of samples in two different groups or conditions.
+#' @param mu,size The parameters of the Negative Binomial distribution (see mu and size in \code{\link[stats]{rnbinom}}.)
+#' @param n A numeric value, representing the number of count tables generated. If above one, the output is a list of matrices.
 #'
 #' @importFrom dirmult rdirichlet
 #' @importFrom stats rmultinom rnbinom
-#' @return a matrix or a list of matrice
+#' @return a matrix or a list of matrices
 #'
 doCount <- function(FC, data, nSam, mu,
-                    size, n){
+                    size, n) {
   # parameters
   pars <- parEstimate(data = data)
   theta <- pars$theta
@@ -507,40 +498,40 @@ doCount <- function(FC, data, nSam, mu,
   g.c1 <- p.c1 * gplus
   g.c2 <- p.c2 * gplus
 
-  resList <- lapply(seq_len(n), FUN = function(j){
+  resList <- lapply(seq_len(n), FUN = function(j) {
     # condition 1
     n1 <- nSam[1]
-    Mp.c1 <- matrix(0, nrow = n1, ncol=length(g.c1))
-    rownames(Mp.c1) <- paste("C1_",1:n1,sep="")
+    Mp.c1 <- matrix(0, nrow = n1, ncol = length(g.c1))
+    rownames(Mp.c1) <- paste("C1_", 1:n1, sep = "")
     colnames(Mp.c1) <- names(p.c1)
     Mobs.c1 <- Mp.c1
     nSeq1 <- rnbinom(n = n1, mu = mu, size = size)
     for (i in 1:n1) {
       Mp.c1[i, ] <- rdirichlet(1, g.c1)[1, ]
-      Mobs.c1[i, ] <- rmultinom(1, nSeq1[i], prob=Mp.c1[i, ])[, 1]
+      Mobs.c1[i, ] <- rmultinom(1, nSeq1[i], prob = Mp.c1[i, ])[, 1]
 
     }
 
     # condition 2
     n2 <- nSam[2]
-    Mp.c2 <- matrix(0, nrow = n2, ncol=length(g.c2))
-    rownames(Mp.c2) <- paste("C2_",1:n2,sep="")
+    Mp.c2 <- matrix(0, nrow = n2, ncol = length(g.c2))
+    rownames(Mp.c2) <- paste("C2_", 1:n2, sep = "")
     colnames(Mp.c2) <- names(p.c2)
     Mobs.c2 <- Mp.c2
     nSeq2 <- rnbinom(n = n2, mu = mu, size = size)
     for (i in 1:n2) {
       Mp.c2[i, ] <- rdirichlet(1, g.c2)[1, ]
-      Mobs.c2[i, ] <- rmultinom(1, nSeq2[i], prob=Mp.c2[i, ])[, 1]
+      Mobs.c2[i, ] <- rmultinom(1, nSeq2[i], prob = Mp.c2[i, ])[, 1]
     }
 
-    cb <- t(rbind(Mobs.c1,Mobs.c2))
+    cb <- t(rbind(Mobs.c1, Mobs.c2))
 
     return(cb)}
   )
 
-  if(n == 1){
+  if (n == 1) {
     count <-  do.call(rbind, resList)
-  }else{
+  } else {
     count <- resList
   }
 
