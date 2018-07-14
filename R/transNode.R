@@ -1,14 +1,13 @@
-#' transfer between node number and node label
+#' Transfer between node number and node label
 #'
-#' \code{transNode} is to do the transfermation between the number and the label of a node on a tree
+#' \code{transNode} does the transfermation between the number and the label of a node on a tree
 #'
-#' @param tree a phylo object
-#' @param input a tree node label or a tree node number
+#' @param tree A phylo object
+#' @param input A tree node label or a tree node number
 #'
 #' @export
 #'
 #' @examples
-#'
 #'
 #' library(ggtree)
 #'
@@ -24,7 +23,6 @@
 #'
 #' transNode(tinyTree, input = c('Node_16', 'Node_11'))
 #'
-#'
 
 transNode <- function(tree, input) {
 
@@ -38,8 +36,8 @@ transNode <- function(tree, input) {
   tip <- sort(setdiff(mat[, 2], mat[, 1]))
 
   # check whether the input node number exists in the provided tree
-  if(is.numeric(input)){
-    if(!all(input %in% mat)){
+  if (is.numeric(input)) {
+    if (!all(input %in% mat)) {
       stop("Node ", input, " can't be found in the ", deparse(substitute(tree)), "\n")
     }
   }
