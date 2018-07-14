@@ -1,12 +1,13 @@
 #' Calculate the counts at internal nodes
 #'
-#' \code{nodeCount} is to calculate the counts at internal nodes. The count of an internal node is the sum of counts at its descendant leaves.
+#' \code{nodeCount} calculates the counts at internal nodes. The count of an internal node is the sum of counts at its descendant leaves.
 #'
-#' @param data a matrix or data frame. A count table from real data.
-#' @param tree a tree (phylo class)
-#' @param fun a function to create the count of an internal node based on the counts at its descendant leaf nodes. The default is sum
+#' @param data A matrix or data frame. A count table from real data.
+#' @param tree A phylo object
+#' @param fun A function to create the count of an internal node based on the counts at its descendant leaf nodes. The default is sum
+#' 
 #' @importFrom utils head
-#' @return a count table (matrix class) with a row representing a node and
+#' @return A count table (matrix class) with a row representing a node and
 #' a column representing a sample.
 #'
 #' @export
@@ -33,7 +34,6 @@
 #'
 #' ggtree(tinyTree) %<+% d + geom_text2(aes(label = count))
 
-
 nodeCount <- function(data, tree, fun = sum) {
 
   if (!(inherits(data, "data.frame") |
@@ -45,16 +45,15 @@ nodeCount <- function(data, tree, fun = sum) {
     stop("tree: should be a phylo object")
   }
 
-  if(!setequal(rownames(data), tree$tip.label)){
+  if (!setequal(rownames(data), tree$tip.label)) {
     chx <- setdiff(rownames(data), tree$tip.label)
     chs <- head(chx)
-    stop(cat("The rownames of data doesn't match the tree tip labels:", chs, "\n"))
+    stop(cat("The rownames of data don't match the tree tip labels:", chs, "\n"))
   }
 
   emat <- tree$edge
   leaf <- setdiff(emat[, 2], emat[, 1])
   nodeI <- setdiff(emat[, 1], leaf)
-
 
   ## calculate counts for nodes
   nN <- length(nodeI)
