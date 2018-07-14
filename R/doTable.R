@@ -18,6 +18,7 @@
 #' @param mu,size The parameters of the Negative Binomial distribution. (see mu and size in \code{\link[stats]{rnbinom}}). Parameters used to generate the library size for each simulated sample.
 #' @param n A numeric value to specify how many count tables would be generated with the same settings. Default is one and one count table would be obtained at the end. If above one, the output of \code{doTable} is a list of matrices (count tables). This is useful, when one needs multiple simulations.
 #' @param fun A function to derive the count at each internal node based on its descendant leaves, e.g. sum, mean. The argument of the function is a numeric vector with the counts of an internal node's descendant leaves.
+
 #' @param adjB a numeric value between 0 and 1 (only for \code{scene} is \dQuote{S3}). Default is NULL. If NULL, branch A and branch B swap their proportions. If a numeric value, e.g. 0.1, then branch B decreases to its one tenth proportion and the decrease in branch B is added to branch A. For example, assume there are two experimental conditions (C1 & C2), branch A has 10 and branch B has 40 in C1. If adjB is set to 0.1, then in C2 branch B becomes 4 and branch A 46 so that the total proportion stays the same.
 #'
 #'
@@ -44,9 +45,7 @@
 #' \item S2: two branches are selected to swap their proportions. Leaves in the same branch have different fold changes but same direction (either increase or decrease).
 #' \item S3: two branches are selected. One branch has its proportion swapped with the proportion of some leaves from the other branch.}
 #'
-#'
-#'
-#'
+#
 #'
 #'@examples{
 #' if(require(GUniFrac)){
