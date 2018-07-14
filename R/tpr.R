@@ -1,16 +1,15 @@
-#' calculate true positive rate (TPR) on a tree structure
+#' Calculate true positive rate (TPR) on a tree structure
 #'
-#' \code{tpr} is to calculate the true positive rate (TPR) on a tree structure at leaf or node level.
+#' \code{tpr} calculates the true positive rate (TPR) on a tree structure at leaf or node level.
 #'
-#' @param tree a phylo object
-#' @param truth Nodes have signals (eg. differentally abundant at different experimental conditions.). If the signals are in different directions (up and down), then provide the nodes as a list of two members (one up and one down). One could provide either node number or node label. \strong{Note:} When TPR at node level is required and only leaf nodes with signal are provided, then the internal nodes which are shared and only shared by the provied leaf nodes (signal in the same direction) will be found out and used with the leaf nodes in the TPR calculation; when TPR at leaf level is required and the given nodes have internal nodes, then the descendant leaf nodes will be found out and used in the TPR calculation.
-#' @param found Nodes have been found to have signal (eg. differentally abundant at different experimental conditions). If the signals are in different directions (up and down), then provide the nodes as a list of two members (one up and one down). One could provide either node number or node label. \strong{Note:} When TPR at node level is required, then the descendant nodes of the provied nodes (include themselves) will be found out and used in the TPR calculation; when TPR at leaf level is required, then the descendant leaf nodes will be found out and used in the TPR calculation.
-#'
-#' @param level if "leaf", true positive rate is calculated at leaf level; if "node", it is calculated at node level.
+#' @param tree A phylo object
+#' @param truth Nodes that have signals (eg. differentally abundant at different experimental conditions.). If the signals are in different directions (up and down), then provide the nodes as a list of two members (one up and one down). One could provide either node number or node label. \strong{Note:} When TPR at node level is required and only leaf nodes with signal are provided, then the internal nodes which are shared and only shared by the provied leaf nodes (signal in the same direction) will be found out and used with the leaf nodes in the TPR calculation; when TPR at leaf level is required and the given nodes have internal nodes, then the descendant leaf nodes will be found out and used in the TPR calculation.
+#' @param found Nodes that have been found to have signal (eg. differentally abundant at different experimental conditions). If the signals are in different directions (up and down), then provide the nodes as a list of two members (one up and one down). One could provide either node number or node label. \strong{Note:} When TPR at node level is required, then the descendant nodes of the provied nodes (include themselves) will be found out and used in the TPR calculation; when TPR at leaf level is required, then the descendant leaf nodes will be found out and used in the TPR calculation.
+#' @param level If "leaf", true positive rate is calculated at leaf level; if "node", it is calculated at node level.
 #' @param direction TRUE or FALSE. Default is FALSE. If TRUE, the signal direction is taken into account; the argument \strong{truth} and \strong{found} should both be a list of two members and the order of directions should match.
 #'
 #' @export
-#' @return a true positive rate
+#' @return A true positive rate
 #'
 #' @examples
 #'
@@ -54,41 +53,39 @@ tpr <- function(tree, truth, found,
     stop("tree: should be a phylo object")
   }
 
-
   # if signal direction is taken into account.
-  if(direction){
+  if (direction) {
     # it requires list input for both truth and found
     # the length of list should equal to 2 (direction up & down)
-    if(inherits(truth, "list") &&
-       inherits(found, "list") &&
-       length(truth) == length(found)){
+    if (inherits(truth, "list") &&
+        inherits(found, "list") &&
+        length(truth) == length(found)) {
 
-
-      tt <- mapply(function(x, y){
-        if(is.character(x)){
+      tt <- mapply(function(x, y) {
+        if (is.character(x)) {
           x <- transNode(tree = tree, input = x)
         }
-        if(is.character(y)){
+        if (is.character(y)) {
           y <- transNode(tree = tree, input = y)
         }
-         tpr0(tree = tree, truth = x,
-               found = y, level = level)
-          }, x = truth, y = found)
-
+        tpr0(tree = tree, truth = x,
+             found = y, level = level)
+      }, x = truth, y = found)
+      
       tpr <- rowSums(tt)[1]/rowSums(tt)[2]
-    }else{
+    } else {
       stop("check: \n
             truth is a list of two members? \n
             found is a list of two members? \n ")
     }
-
+    
+  } else {
     # if signal direction isn't taken into account.
-  }else{
-
-    if(is.character(truth)){
+    
+    if (is.character(truth)) {
       truth <- transNode(tree = tree, input = truth)
     }
-    if(is.character(found)){
+    if (is.character(found)) {
       found <- transNode(tree = tree, input = found)
     }
 
@@ -103,16 +100,14 @@ tpr <- function(tree, truth, found,
 }
 
 
-#' calculate the number of true positive and positive on a tree structure
+#' Calculate the number of true positives and the total number of positives on a tree structure
 #'
-#' \code{tpr0} is to calculate the number of true positive and positive on a tree structure at leaf or node level.
+#' \code{tpr0} calculates the number of true positives and the total number of positives on a tree structure at leaf or node level.
 #'
-#' @param tree a phylo object
-#' @param truth Nodes have signals (eg. differentally abundant at different experimental conditions.).
-#' @param found Nodes have been found to have signal
-#' @param level if "leaf", true positive rate is calculated at leaf level; if "node", it is calculated at node level.
-#'
-#'
+#' @param tree A phylo object
+#' @param truth Nodes that have signals (eg. differentally abundant at different experimental conditions.).
+#' @param found Nodes that have been found to have signal
+#' @param level If "leaf", true positive rate is calculated at leaf level; if "node", it is calculated at node level.
 #'
 
 tpr0 <- function(tree,
@@ -123,17 +118,16 @@ tpr0 <- function(tree,
   # if no signal (truth = NULL), the true positive is 0 and the positive is 0
   if (is.null(truth)) {
     c(tp = 0, pos = 0)
-  } else{
-
-  # if signal exists, check whether the truth has correct input format
-      if (!(
-        inherits(truth, "character") |
-        inherits(truth, "numeric") |
-        inherits(truth, "integer")
-      )){
+  } else {
+    # if signal exists, check whether the truth has correct input format
+    if (!(
+      inherits(truth, "character") |
+      inherits(truth, "numeric") |
+      inherits(truth, "integer")
+    )) {
       stop("truth should include character or numeric")
     }
-
+    
     # if signal exists and has correct input format, but found is null
     # the true positive is 0, and the positive depends on the level
     if (is.null(found)) {
@@ -166,8 +160,7 @@ tpr0 <- function(tree,
                nod <- unlist(nodeT)
                c(tp = 0, pos = length(nod))
              })
-    } else{
-
+    } else {
       # if signal exists and has correct input format, but found isn't null
       # check whether the input format of found is correct
       if (!(
@@ -178,7 +171,7 @@ tpr0 <- function(tree,
         stop("found should include character or numeric")
       }
 
-      # if there is signal and also something found, the true positive and the        positive could be calculated after their input formats are correct.
+      # if there is signal and also something found, the true positive and the positive could be calculated after their input formats are correct.
       level <- match.arg(level)
       switch(level,
              leaf = {
@@ -228,7 +221,6 @@ tpr0 <- function(tree,
                nod <- unlist(nodeT)
                c(tp = length(TP), pos = length(nod))
              })
-
     }
   }
 }
