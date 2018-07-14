@@ -1,10 +1,11 @@
-#' prune tree at each node
+#' Prune tree at each node
 #'
-#' \code{pruneTree} prune the tree at each node.
+#' \code{pruneTree} prunes the tree at each node.
 #'
-#' @param tree an object of phylo class
-#' @param message a logical value, TRUE or FALSE. If default (FALSE), the process isn't printed out.
-#' @return a list of phylo object. If the tree ('tree') provides node and tip labels, the labels are passed to its subtrees; otherwise, the labels are generated automatically with a prefix 'Node_' for internal nodes and 'Tip_' for leaves with the corresponding numbers in the edge component of phylo object. (tree$edge)
+#' @param tree A phylo object
+#' @param message A logical value, TRUE or FALSE. If default (FALSE), the process isn't printed out.
+#' 
+#' @return A list of phylo objects. If the tree ('tree') provides node and tip labels, the labels are passed to its subtrees; otherwise, the labels are generated automatically with a prefix 'Node_' for internal nodes and 'Tip_' for leaves with the corresponding numbers in the edge component of phylo object. (tree$edge)
 #'
 #' @export
 #'
@@ -13,9 +14,7 @@
 #' data(tinyTree)
 #' small <- pruneTree(tree = tinyTree, message = TRUE)
 
-
 pruneTree <- function(tree, message = FALSE) {
-
     if (!inherits(tree, "phylo")) {
         stop("object tree is not of class phylo")
     }

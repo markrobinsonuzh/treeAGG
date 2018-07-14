@@ -1,14 +1,14 @@
-#' remove nodes which are the descendants of other nodes
+#' Remove nodes which are the descendants of other nodes
 #'
-#' \code{rmDesc} is to remove branches, which are the subbranch of the others.
+#' \code{rmDesc} removes branches, which are the subbranches of the others.
 #'
-#'@param node a vector of node labels or node numbers
-#'@param tree a list of phylo object.
+#' @param node A vector of node labels or node numbers
+#' @param tree A list of phylo objects.
 #'
-#'@export
+#' @export
 #'
-#'@return a vector of node numbers
-#'@examples {
+#' @return A vector of node numbers
+#' @examples {
 #' data(tinyTree)
 #' library(ggtree)
 #' # PLOT
@@ -17,7 +17,6 @@
 #'
 #' # find the shared nodes from the tree plot
 #' aV <- c(5, 4, 18, 3, 2)
-
 #' # final result
 #' (rn <- rmDesc(node = aV, tree = tinyTree))
 #'}
