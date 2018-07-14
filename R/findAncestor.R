@@ -1,11 +1,11 @@
-#' find the ancestors of specified nodes
+#' Find the ancestors of specified nodes
 #'
-#' \code{findAncestor} is to find the ancestor in the n generation before specified nodes.
+#' \code{findAncestor} finds the ancestor in the nth generation before specified nodes.
 #'
-#' @param tree a phylo object
-#' @param node a vector of node numbers or node labels
-#' @param level a vector of numbers to define n generation before the specified nodes
-#' @param treeMat a matrix with each row representing a path. The entry is node number. The first column is leave node numbers. The columns are organized as the order of nodes in the paths connecting leaves and the root. Default is null, treeMat is generated automatically. The treeMat is provided when the tree is very large to save running time.
+#' @param tree A phylo object
+#' @param node A vector of node numbers or node labels
+#' @param level A vector of numbers to define nth generation before the specified nodes
+#' @param treeMat A matrix with each row representing a path. The entry is node number. The first column is leaf node numbers. The columns are organized as the order of nodes in the paths connecting leaves and the root. Default is null, treeMat is generated automatically. The treeMat is provided when the tree is very large to save running time.
 #'
 #'@export
 #'@return a vector of node numbers
@@ -17,7 +17,6 @@
 #'  geom_text2(aes(label = node))
 #'
 #'  findAncestor(tree = exTree, node = c(53, 61), level = 1)
-
 
 findAncestor <- function(tree, node, level, treeMat = NULL) {
 

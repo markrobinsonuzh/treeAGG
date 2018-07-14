@@ -1,11 +1,11 @@
-#' find descendants (or offsprings)
+#' Find descendants (or offsprings)
 #'
-#' \code{findOS} is to find descendants of an internal node.
+#' \code{findOS} finds descendants of an internal node.
 #'
-#' @param ancestor an internal node. It could be the node number or the node label.
-#' @param tree a phylo object.
-#' @param only.Tip a logical value, TRUE or FALSE. The default is TRUE. If default, only the leaf nodes in the descendant nodes would be returned.
-#' @param self.include a logical value, TRUE or FALSE. The default is TRUE. If default, the node specified in \strong{ancestor} is included. The leaf node itself is returned as its descendant.
+#' @param ancestor An internal node. It could be the node number or the node label.
+#' @param tree A phylo object.
+#' @param only.Tip A logical value, TRUE or FALSE. The default is TRUE. If default, only the leaf nodes in the descendant nodes would be returned.
+#' @param self.include A logical value, TRUE or FALSE. The default is TRUE. If default, the node specified in \strong{ancestor} is included. The leaf node itself is returned as its descendant.
 #' @param return "number" (return the node number) or "label" (return the node label).
 #'
 #' @export
@@ -19,7 +19,6 @@
 #' geom_hilight(node = 15, fill = 'steelblue', alpha = 0.5)
 #'
 #' (tips <- findOS(15, tinyTree, only.Tip = TRUE))
-#'
 
 findOS <- function(ancestor,
                    tree,
@@ -75,7 +74,7 @@ findOS <- function(ancestor,
   desA <- lapply(
     seq_len(nrow(matN)),
     FUN = function(x) {
-      xx <- match(numA, matN[x,])
+      xx <- match(numA, matN[x, ])
       yy <- ifelse(is.na(xx), 0, xx)
       matN[x, seq_len(yy)]
     }
@@ -106,6 +105,5 @@ findOS <- function(ancestor,
   switch(return,
          number = res,
          label = transNode(tree = tree, input = res))
-
 
 }
