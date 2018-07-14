@@ -14,6 +14,7 @@ vignette: >
   %\VignetteEngine{knitr::rmarkdown}
 editor_options: 
   chunk_output_type: console
+bibliography: treeAGG.bib
 ---
 
 
@@ -33,18 +34,18 @@ library(treeAGG)
 
 ## Data preparation
 
-To use the **treeAGG** package, two data structures are required: a table of counts of entities (e.g., cell clusters or microbes) across multiple samples, and a hierarchical structure of these entities. Here, we show an example of cytometry data, where the entities are cell clusters and the counts represent the number of cells included in each cluster across a number of biological samples. In this example, we would like to investigate on which hierarchical level the cell clusters are differentially abundant between healthy and cancer subjects.
+To use the **treeAGG** package, two data structures are required: a table of counts of entities (e.g., cell clusters or microbes) across multiple samples, and a hierarchical structure of these entities (e.g., a hierarchical organization of cell clusters or a phylogenetic tree of microbes). Here, we show an example of mass cytometry data, where the entities are cell clusters and the counts represent the number of cells included in each cluster across a number of biological samples. In this example, we would like to investigate on which hierarchical level the cell clusters are differentially abundant between healthy and cancer subjects.
 
 ### Tree 
 
-The tree we use here is the hierarchical structure of cell clusters, obtained by hierarchical clustering of the individual clusters. It's a *hclust* object. 
+The tree we use here is the hierarchical structure of cell clusters, obtained by hierarchical clustering of the individual clusters. It's a *hclust* object, provided as part of the **treeAGG** package. 
 
 ```{r}
 data("simTree")
 class(simTree)
 ```
 
-To use treeAGG, we need to transform it into a phylo object, using the *as.phylo* function from the **ape** package.
+To use **treeAGG**, we need to transform the *hclust* object into a *phylo* object, using the *as.phylo* function from the **ape** package.
 
 ```{r}
 pTree <- as.phylo(simTree)
@@ -59,7 +60,7 @@ dim(simCount)
 head(simCount)
 ```
 
-The count table contains the number of cells in each of the cell clusters across 10 samples, five from healthy subjects and five representing samples from cancer subjects. It's a semi-simulated data set, where one cell population has been spiked in [cite Lukas's paper]. More details are in the help page (`?simCount`).
+The count table contains the number of cells in each of the cell clusters across 10 samples, five from healthy subjects and five representing samples from cancer subjects. It's a semi-simulated data set, where one cell population has been spiked in [@Weber2018-xc]. More details are in the help page (`?simCount`).
 
 For count table, each row represents a cell cluster that corresponds to a tree leaf node, and each column represents a sample. To do tree signal aggregation, we also need couts of the tree internal nodes, which indicates different resolutions at which data can be viewed. As *simCount* only provides counts at leaf level, we generate counts of internal nodes as below.
 
@@ -387,3 +388,5 @@ p2 <- treePlot(tree = throat.tree,
 library(cowplot)
 plot_grid(p1, p2, labels = c("S3", "S1"))
 ```
+
+## References
