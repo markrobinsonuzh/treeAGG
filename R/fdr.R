@@ -1,16 +1,15 @@
-#' calculate false discovery rate (fdr) on a tree structure
+#' Calculate false discovery rate (fdr) on a tree structure
 #'
-#' \code{fdr} is to calculate the false discovery rate (fdr) on a tree structure at leaf or node level.
+#' \code{fdr} calculates the false discovery rate (fdr) on a tree structure at the leaf or node level.
 #'
-#' @param tree a phylo object
-#' @param truth Nodes have signals (eg. differentally abundant at different experimental conditions.). If the signals are in different directions (up and down), then provide the nodes as a list of two members (one up and one down). One could provide either node number or node label. \strong{Note:} When fdr at node level is required and only leaf nodes with signal are provided, then the internal nodes which are shared and only shared by the provied leaf nodes (signal in the same direction) will be found out and used with the leaf nodes in the fdr calculation; when fdr at leaf level is required and the given nodes have internal nodes, then the descendant leaf nodes will be found out and used in the fdr calculation.
-#' @param found Nodes have been found to have signal (eg. differentally abundant at different experimental conditions). If the signals are in different directions (up and down), then provide the nodes as a list of two members (one up and one down). One could provide either node number or node label. \strong{Note:} When fdr at node level is required, then the descendant nodes of the provied nodes (include themselves) will be found out and used in the fdr calculation; when fdr at leaf level is required, then the descendant leaf nodes will be found out and used in the fdr calculation.
-#'
-#' @param level if "leaf", false discovery rate is calculated at leaf level; if "node", it is calculated at node level.
+#' @param tree A phylo object
+#' @param truth Nodes that have signals (eg. differentally abundant at different experimental conditions.). If the signals are in different directions (up and down), then provide the nodes as a list of two members (one up and one down). One could provide either node number or node label. \strong{Note:} When fdr at node level is required and only leaf nodes with signal are provided, then the internal nodes which are shared and only shared by the provied leaf nodes (signal in the same direction) will be found out and used with the leaf nodes in the fdr calculation; when fdr at leaf level is required and the given nodes have internal nodes, then the descendant leaf nodes will be found out and used in the fdr calculation.
+#' @param found Nodes that have been found to have signal (eg. differentally abundant at different experimental conditions). If the signals are in different directions (up and down), then provide the nodes as a list of two members (one up and one down). One could provide either node number or node label. \strong{Note:} When fdr at node level is required, then the descendant nodes of the provied nodes (include themselves) will be found out and used in the fdr calculation; when fdr at leaf level is required, then the descendant leaf nodes will be found out and used in the fdr calculation.
+#' @param level If "leaf", false discovery rate is calculated at leaf level; if "node", it is calculated at node level.
 #' @param direction TRUE or FALSE. Default is FALSE. If TRUE, the signal direction is taken into account; the argument \strong{truth} and \strong{found} should both be a list of two members and the order of directions should match.
 #'
 #' @export
-#' @return a false discovery rate
+#' @return A false discovery rate
 #'
 #' @examples
 #'
@@ -49,7 +48,6 @@
 #'
 #'
 
-
 fdr <- function(tree, truth, found,
                 level = c("node", "leaf"),
                 direction = FALSE) {
@@ -59,19 +57,19 @@ fdr <- function(tree, truth, found,
   }
 
   # if signal direction is taken into account.
-  if(direction){
+  if (direction) {
     # it requires list input for both truth and found
     # the length of list should equal to 2 (direction up & down)
-    if(inherits(truth, "list") &&
-       inherits(found, "list") &&
-       length(truth) == length(found)){
+    if (inherits(truth, "list") &&
+        inherits(found, "list") &&
+        length(truth) == length(found)) {
 
-      tt <- mapply(function(x, y){
+      tt <- mapply(function(x, y) {
         # transfer node label to node number
-        if(is.character(x)){
+        if (is.character(x)) {
           x <- transNode(tree = tree, input = x)
         }
-        if(is.character(y)){
+        if (is.character(y)) {
           y <- transNode(tree = tree, input = y)
         }
 
@@ -80,22 +78,21 @@ fdr <- function(tree, truth, found,
       }, x = truth, y = found)
 
       fdr <- rowSums(tt)[1]/rowSums(tt)[2]
-    }else{
+    } else {
       stop("check: \n
            truth is a list of two members? \n
            found is a list of two members? \n ")
     }
 
     # if signal direction isn't taken into account.
-    }else{
+    } else {
       # transfer node label to node number
-      if(is.character(truth)){
+      if (is.character(truth)) {
         truth <- transNode(tree = tree, input = truth)
       }
-      if(is.character(found)){
+      if (is.character(found)) {
         found <- transNode(tree = tree, input = found)
       }
-
       tt <- fdr0(tree = tree, truth = truth,
                  found = found, level = level)
       fdr <- tt[1]/tt[2]
@@ -104,20 +101,17 @@ fdr <- function(tree, truth, found,
   # return final results
   names(fdr) <- "fdr"
   return(fdr)
-  }
+}
 
 
-#' calculate the number of false discovery and discovery on a tree structure
+#' Calculate the number of false discoveries and the total number of discoveries on a tree structure
 #'
-#' \code{fdr0} is to calculate the number of false discovery and the number of  discovery at leaf or node level on a tree structure .
+#' \code{fdr0} calculates the number of false discoveries and the total number of discoveries at leaf or node level on a tree structure .
 #'
-#' @param tree a phylo object
-#' @param truth Nodes have signals (eg. differentally abundant at different experimental conditions.).
-#' @param found Nodes have been found to have signal
-#' @param level if "leaf", false discovery rate is calculated at leaf level; if "node", it is calculated at node level.
-#'
-#'
-#'
+#' @param tree A phylo object
+#' @param truth Nodes that have signals (eg. differentally abundant at different experimental conditions.).
+#' @param found Nodes that have been found to have signal
+#' @param level If "leaf", false discovery rate is calculated at leaf level; if "node", it is calculated at node level.
 
 fdr0 <- function(tree,
                  truth = NULL,
@@ -127,14 +121,13 @@ fdr0 <- function(tree,
   # if no discovery (found = NULL), the false discovery is 0 and the discovery is 0
   if (is.null(found)) {
     c(fd = 0, disc = 0)
-  } else{
-
+  } else {
     # if discovery exists, check whether the discovery has correct input format
     if (!(
       inherits(found, "character") |
       inherits(found, "numeric") |
       inherits(found, "integer")
-    )){
+    )) {
       stop("found should include character or numeric")
     }
 
@@ -167,7 +160,7 @@ fdr0 <- function(tree,
                nod <- unlist(nodeF)
                c(fp = length(nod), disc = length(nod))
              })
-    } else{
+    } else {
 
       # if discovery (found) exists and has correct input format, and truth isn't null
       # check whether the input format of truth is correct
@@ -229,7 +222,6 @@ fdr0 <- function(tree,
                nod <- unlist(nodeF)
                c(fp = length(fp), disc = length(nod))
              })
-
     }
   }
 }
