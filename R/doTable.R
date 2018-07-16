@@ -13,12 +13,25 @@
 #' @param minTip.B the minimum number of leaves in branch B
 #' @param maxTip.B the maximum number of leaves in branch B
 #' @param ratio the proportion ratio of branch B to branch A. This value is used to select branches(see \bold{Details}). If there are not branches exactly having this ratio, the pair with the value closest to \code{ratio} would be selected.
-#' @param pct the percentage of leaves in branch B has the differential abundance under different conditions (only for scenario \dQuote{S3})
+#' @param pct the percentage of leaves in branch A has the differential abundance under different conditions (only for scenario \dQuote{S3})
 #' @param nSam a numeric vector with 2 length. the sample size for two different conditons
 #' @param mu,size the parameters of negative binomial distribution. (see mu and size in \code{\link[stats]{rnbinom}}). Parameters used to generate library size for each sample.
 #' @param n a numeric value to specify how many count tables would be generated with the same setting. Default is one and one count table would be obtained at the end. If above one, the output of \code{doTable} is a list of matrices (count tables). This is useful, when one needs multiple simulations.
-#' @param fun a function to derive the count at each internal node based on its descendant leaves, e.g. sum, mean. The argument of the function is a numeric vector including the counts of an internal node's descendant leaves .
-#'
+#' @param fun a function to derive the count at each internal node based on its descendant leaves, e.g. sum, mean. The argument of the function is a numeric vector including the counts of an internal node's descendant leaves.
+#' @param adjB a numeric value between 0 and 1 (only for \code{scene} is \dQuote{S3}). Default is NULL. If NULL, branch A and branch B swap their proportions. If a numeric value, e.g. 0.1, then branch B decreases to its one tenth proportion and the decrease in branch B is added to branch A. For example, assume there are two experimental conditions (C1 & C2), branch A has 10 and branch B has 40 in C1. If adjB is set to 0.1, then in C2 branch B becomes 4 and branch A 46 so that the total proportion stays the same.
+#' @return a list of objects
+#' \item{FC}{the fold change of entities correspondint to the tree leaves.}
+#' \item{Count}{a list of count table or a count table. Entities on the row and samples in the column. Each count table includes entities corresponding to all nodes on the tree structure.}
+#' \item{Branch}{the information about two selected branches.
+#' \describe{
+#' \item{A}{the branch node label of branch A}
+#' \item{B}{the branch node label of branch B}
+#' \item{ratio}{the count proportion ratio of branch B to branch A}
+#' \item{A_tips}{the number of leaves on branch A}
+#' \item{B_tips}{the number of leaves on branch B}
+#' \item{A_prop(\%)}{the count proportion of branch A (in percentage)}
+#' \item{B_prop(\%)}{the count proportion of branch B (in percentage)}
+#'  }}
 #' @details \code{doTable} is to simulate a count table for entities which are corresponding to the nodes of a tree. The entities are in rows and the samples from different groups or conditions are in columns. The library size of each sample is sampled from a negative binomial distribution with mean and size specified by the arguments \code{mu} and \code{size} above. The counts of entities, which are located on the tree leaves, in the same sample are assumed to follow dirichlet-multinomial distribution. The parameters for the dirichlet-multinomial distribution are estimated from a real data specified by the argument \code{data} via the function \code{dirmult}(see \code{\link[dirmult]{dirmult}}). To generate different abundance patterns under different conditions, we provide three different scenarios, \dQuote{S1}, \dQuote{S2}, and \dQuote{S3} (specified via \code{scene}).
 #' \itemize{
 #' \item S1: two branches are selected to swap their proportions, and leaves on the same branch have the same fold change.
@@ -29,22 +42,9 @@
 #'
 #' @importFrom dirmult dirmult
 #' @export
-#' @return a list of objects:
-#' \describe{
-#' \item{FC}{the fold change of entities correspondint to the tree leaves.}
-#' \item{Count}{a list of count table or a count table. Entities on the row and samples in the column. Each count table includes entities corresponding to all nodes on the tree structure.}
-#' \item{Branch}{the information about two selected branches.
-#' \describe{
-#' \item{A}{the branch node label of branch A}
-#' \item{B}{the branch node label of branch B}
-#' \item{ratio}{the count proportion ratio of branch B to branch A}
-#' \item{A_tips}{the number of leaves on branch A}
-#' \item{B_tips}{the number of leaves on branch B}
-#' \item{A_prop(%)}{the count proportion of branch A (in percentage)}
-#' \item{B_prop(%)}{the count proportion of branch B (in percentage)}
-#'  }}
-#'  }
-#' }
+#'
+#'
+#'
 #'
 #'@examples{
 #' if(require(GUniFrac)){
@@ -67,7 +67,7 @@ doTable <- function(tree, data, scene = "S1",
                     minPr.A=0, maxPr.A=1, ratio = 2,
                     pct = 0.6, nSam = c(50, 50),
                     mu = 50, size = 10000,
-                    n = 1, fun = sum){
+                    n = 1, fun = sum, adjB = NULL){
   # ---check input is in correct format --------
   if(!inherits(tree, "phylo")){
     stop("tree should be a phylo object")
@@ -100,11 +100,11 @@ doTable <- function(tree, data, scene = "S1",
   beta <- doFC(scene = scene, BranchA = pk$A,
                BranchB = pk$B, tree = tree,
                ratio = pk$`ratio`, data = data,
-               pct = pct)
+               pct = pct, adjB = adjB)
 
 
   count <- doCount(FC = beta, data = data, nSam = nSam,
-                     mu, size, n)
+                   mu, size, n)
 
 
 
@@ -282,7 +282,7 @@ pickLoc <- function(tree, data, from.A,
   rownames(du) <- NULL
   return(du)
 
-}
+  }
 
 #' provide the information of two branches
 #'
@@ -294,7 +294,7 @@ pickLoc <- function(tree, data, from.A,
 #' @return a data frame of one row
 
 infLoc <- function(tree, data, from.A,
-                    from.B){
+                   from.B){
 
   # tip proportions estimated from real data
   pars <- parEstimate(data = data)$pi
@@ -316,22 +316,22 @@ infLoc <- function(tree, data, from.A,
   rownames(tt) <- transNode(tree = tree, input = nodI)
 
   # if both branches are given
-    labA <- ifelse(is.character(from.A), from.A,
-                   transNode(tree = tree, input = from.A))
-    labB <- ifelse(is.character(from.B), from.B,
-                   transNode(tree = tree, input = from.B))
-    rAB <- tt[labB, 1]/tt[labA, 1]
-    du <- cbind.data.frame(
-      "A" = from.A,
-      "B" = from.B,
-      "ratio" = round(rAB, digits = 2),
-      "A_tips" = tt[labA, 2],
-      "B_tips" = tt[labB, 2],
-      "A_prop(%)" = round(tt[labA, 1] * 100,
-                          digits = 2),
-      "B_prop(%)" = round(tt[labB, 1] * 100,
-                          digits = 2),
-      stringsAsFactors =  FALSE)
+  labA <- ifelse(is.character(from.A), from.A,
+                 transNode(tree = tree, input = from.A))
+  labB <- ifelse(is.character(from.B), from.B,
+                 transNode(tree = tree, input = from.B))
+  rAB <- tt[labB, 1]/tt[labA, 1]
+  du <- cbind.data.frame(
+    "A" = from.A,
+    "B" = from.B,
+    "ratio" = round(rAB, digits = 2),
+    "A_tips" = tt[labA, 2],
+    "B_tips" = tt[labB, 2],
+    "A_prop(%)" = round(tt[labA, 1] * 100,
+                        digits = 2),
+    "B_prop(%)" = round(tt[labB, 1] * 100,
+                        digits = 2),
+    stringsAsFactors =  FALSE)
 
   rownames(du) <- NULL
   return(du)
@@ -348,6 +348,8 @@ infLoc <- function(tree, data, from.A,
 #' @param ratio the proportion ratio between \code{BranchB} and \code{BranchA} (B/A)
 #' @param data the real data (count table)
 #' @param pct the percentage (in number) of the leaves in BranchA that will swap with BranchB.
+#' @param adjB a numeric value between 0 and 1 (only for \code{scene} is \dQuote{S3}). Default is NULL. If NULL, branch A and branch B swap their proportions. If a numeric value, e.g. 0.1, then branch B decreases to its one tenth proportion and the decrease in branch B is added to branch A. For example, assume there are two experimental conditions (C1 & C2), branch A has 10 and branch B has 40 in C1. If adjB is set to 0.1, then in C2 branch B becomes 4 and branch A 46 so that the total proportion stays the same.
+#'
 #'
 #' @importFrom stats runif
 #' @return a numeric vector
@@ -355,7 +357,7 @@ infLoc <- function(tree, data, from.A,
 
 
 doFC <- function(scene, BranchA, BranchB, tree,
-                 ratio, data, pct){
+                 ratio, data, pct, adjB = NULL){
 
 
   # beta: fold change for tips
@@ -365,7 +367,7 @@ doFC <- function(scene, BranchA, BranchB, tree,
 
   # tips on two branches
   tipA <- findOS(ancestor = BranchA, tree = tree,
-                  only.Tip = TRUE, self.include = TRUE,
+                 only.Tip = TRUE, self.include = TRUE,
                  return = "label" )
   nod <- findOS(ancestor = BranchA, tree = tree,
                 only.Tip = FALSE, self.include = TRUE,
@@ -379,7 +381,7 @@ doFC <- function(scene, BranchA, BranchB, tree,
   # have the same fold change
   if(scene == "S1"){
     tipB <- findOS(ancestor = BranchB, tree = tree,
-                    only.Tip = TRUE, self.include = TRUE)
+                   only.Tip = TRUE, self.include = TRUE)
 
     beta[tipA] <- ratio
     beta[tipB] <- 1/ratio
@@ -435,8 +437,8 @@ doFC <- function(scene, BranchA, BranchB, tree,
     #                      skip = BranchA,
     #                      data = data)$node
     # }else{
-      BranchL = BranchB
-      #}
+    BranchL = BranchB
+    #}
 
     if(length(BranchL)==0){
       stop("No suitable branches. Try another branchA or another max of ratio... \n")
@@ -461,9 +463,17 @@ doFC <- function(scene, BranchA, BranchB, tree,
     #   return(y)
     # }, y=beta)
     # colnames(beta) <- ratio
+    if(is.null(adjB)){
+      beta[selA] <- ratio
+      beta[tipL] <- (sumL-(ratio-1)*sumA)/sumL
+    }else{
+      if(!is.numeric(adjB)){
+        stop("adjB should be numeric")
+      }
+      beta[tipL] <- adjB
+      beta[selA] <- (sumL*(1-adjB)+sumA)/sumA
+    }
 
-    beta[selA] <- ratio
-    beta[tipL] <- (sumL-(ratio-1)*sumA)/sumL
   }
 
   return(beta)

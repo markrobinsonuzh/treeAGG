@@ -1,6 +1,6 @@
 context("doTable")
 
-test_that("doTable could give correct errors or warnings", {
+test_that("doTable could work correctly", {
   data("throat.otu.tab")
   data("throat.tree")
 

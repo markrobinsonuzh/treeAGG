@@ -7,7 +7,7 @@
 doTable(tree, data, scene = "S1", from.A = NULL, from.B = NULL,
   minTip.A = 0, maxTip.A = Inf, minTip.B = 0, maxTip.B = Inf,
   minPr.A = 0, maxPr.A = 1, ratio = 2, pct = 0.6, nSam = c(50, 50),
-  mu = 50, size = 10000, n = 1, fun = sum)
+  mu = 50, size = 10000, n = 1, fun = sum, adjB = NULL)
 }
 \arguments{
 \item{tree}{a phylo object}
@@ -32,7 +32,7 @@ doTable(tree, data, scene = "S1", from.A = NULL, from.B = NULL,
 
 \item{ratio}{the proportion ratio of branch B to branch A. This value is used to select branches(see \bold{Details}). If there are not branches exactly having this ratio, the pair with the value closest to \code{ratio} would be selected.}
 
-\item{pct}{the percentage of leaves in branch B has the differential abundance under different conditions (only for scenario \dQuote{S3})}
+\item{pct}{the percentage of leaves in branch A has the differential abundance under different conditions (only for scenario \dQuote{S3})}
 
 \item{nSam}{a numeric vector with 2 length. the sample size for two different conditons}
 
@@ -40,7 +40,24 @@ doTable(tree, data, scene = "S1", from.A = NULL, from.B = NULL,
 
 \item{n}{a numeric value to specify how many count tables would be generated with the same setting. Default is one and one count table would be obtained at the end. If above one, the output of \code{doTable} is a list of matrices (count tables). This is useful, when one needs multiple simulations.}
 
-\item{fun}{a function to derive the count at each internal node based on its descendant leaves, e.g. sum, mean. The argument of the function is a numeric vector including the counts of an internal node's descendant leaves .}
+\item{fun}{a function to derive the count at each internal node based on its descendant leaves, e.g. sum, mean. The argument of the function is a numeric vector including the counts of an internal node's descendant leaves.}
+
+\item{adjB}{a numeric value between 0 and 1 (only for \code{scene} is \dQuote{S3}). Default is NULL. If NULL, branch A and branch B swap their proportions. If a numeric value, e.g. 0.1, then branch B decreases to its one tenth proportion and the decrease in branch B is added to branch A. For example, assume there are two experimental conditions (C1 & C2), branch A has 10 and branch B has 40 in C1. If adjB is set to 0.1, then in C2 branch B becomes 4 and branch A 46 so that the total proportion stays the same.}
+}
+\value{
+a list of objects
+\item{FC}{the fold change of entities correspondint to the tree leaves.}
+\item{Count}{a list of count table or a count table. Entities on the row and samples in the column. Each count table includes entities corresponding to all nodes on the tree structure.}
+\item{Branch}{the information about two selected branches.
+\describe{
+\item{A}{the branch node label of branch A}
+\item{B}{the branch node label of branch B}
+\item{ratio}{the count proportion ratio of branch B to branch A}
+\item{A_tips}{the number of leaves on branch A}
+\item{B_tips}{the number of leaves on branch B}
+\item{A_prop(\%)}{the count proportion of branch A (in percentage)}
+\item{B_prop(\%)}{the count proportion of branch B (in percentage)}
+ }}
 }
 \description{
 \code{doTable} is to create a count table for all nodes of a tree under two different groups such that the tree would have different abundance patterns under different conditions.
