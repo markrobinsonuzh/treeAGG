@@ -1,6 +1,6 @@
-#' Select a branch
+#' Select branches
 #'
-#' \code{selNode} selects a branch meeting the specified criteria in the number
+#' \code{selNode} selects branches meeting the specified criteria in the number
 #' of leaves and the count proportion.
 #'
 #' @param tree A phylo object
@@ -29,7 +29,7 @@
 #' tree <- as.phylo(cytofTree)
 #' sN <- selNode(tree = tree, minTip = 20,
 #' maxTip = 50, minPr = 0.02, maxPr = 0.03,
-#' skip = NULL, data = cytofCount)
+#' skip = NULL, data = cytofCount, all = TRUE)
 #' }
 #'
 

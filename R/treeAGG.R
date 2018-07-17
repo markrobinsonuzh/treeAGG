@@ -9,11 +9,11 @@
 #'        2. a column of p value
 #'        3. a column of adjusted p value
 #' @param stree A list of phylo object. The subtrees of \strong{tree}.
-#' @param pLim The threshold value (for the adjusted p values) to reject a null
+#' @param pLim The threshold value (for \strong{varSIG}) to reject a null
 #'   hypothesis. By default, NULL. If NULL, the algorithm only compares the
 #'   value provided by \strong{varAGG} and doesn't decide whether to reject a
 #'   null hypothesis.
-#' @param varSIG The name of column for testing significance
+#' @param varSIG The name of column storing adjusted p values.
 #' @param varAGG The name of column used to do tree aggregation, eg. the name of
 #'   the p value or adjusted p value column
 #'

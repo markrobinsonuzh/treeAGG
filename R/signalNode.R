@@ -1,8 +1,7 @@
-#' Find the node shared by the specified nodes
+#' find the optimal nodes to short result.
 #'
-#' \code{signalNode} is to find nodes which are the ancestors shared by the
-#' specified nodes.  The descendant leaves of the found nodes are also the
-#' descendant leaves of the specified nodes.
+#' \code{signalNode} is to replace nodes with their ancestors
+#' to make result shorter.
 #'
 #' @param tree A tree (phylo object)
 #' @param node A vector of node numbers or node labels
