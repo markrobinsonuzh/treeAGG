@@ -4,8 +4,8 @@
 #' specified nodes.  The descendant leaves of the found nodes are also the
 #' descendant leaves of the specified nodes.
 #'
-#' @param node A vector of node numbers or node labels
 #' @param tree A tree (phylo object)
+#' @param node A vector of node numbers or node labels
 #' @param label A logical value. If TRUE, the selected node label is output;
 #'   otherwise the node number is output
 #'
@@ -37,7 +37,7 @@
 #' signalNode(node = c(2, 3, 16), tree = tinyTree)
 #'
 
- signalNode <- function(node, tree, label = FALSE) {
+ signalNode <- function(tree, node, label = FALSE) {
 
   if (!inherits(tree, "phylo")) {
     stop("tree is not a phylo object.")

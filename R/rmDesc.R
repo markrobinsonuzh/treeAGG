@@ -22,7 +22,7 @@
 #'}
 #'
 
-rmDesc <- function(node, tree) {
+rmDesc <- function(tree, node) {
 
   if (!inherits(tree, "phylo")) {
     stop("tree: should be a phylo object")

@@ -1,6 +1,6 @@
 #' Find descendants (or offsprings)
 #'
-#' \code{findOS} finds descendants of an internal node.
+#' \code{findOS} finds descendants of a node.
 #'
 #' @param ancestor An internal node. It could be the node number or the node
 #'   label.
@@ -25,8 +25,8 @@
 #'
 #' (tips <- findOS(15, tinyTree, only.Tip = TRUE))
 
-findOS <- function(ancestor,
-                   tree,
+findOS <- function(tree,
+                   ancestor,
                    only.Tip = TRUE,
                    self.include = TRUE,
                    return = c("number", "label")) {
@@ -74,7 +74,7 @@ findOS <- function(ancestor,
 
   }
 
-  # convert to a list.  each element in the list is one path
+  # convert to a list. (each element in the list is one path)
   desA <- lapply(
     seq_len(nrow(matN)),
     FUN = function(x) {

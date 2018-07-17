@@ -4,8 +4,8 @@
 #' and has the minimum number of leaves. (the root is the highest level on the
 #' tree)
 #'
-#' @param node A vector of node numbers or node labels
 #' @param tree A tree (phylo object)
+#' @param node A vector of node numbers or node labels
 #' @param label A logical value. If TRUE, the selected node label is output;
 #'   otherwise the node number is output
 #'
@@ -34,7 +34,7 @@
 #' ## find the node shared by provided node numbers
 #' shareNode(node = c(2, 3), tree = tinyTree)
 
-shareNode <- function(node, tree, label = FALSE) {
+shareNode <- function(tree, node, label = FALSE) {
 
     if (!inherits(tree, "phylo")) {
         stop("tree is not a phylo object.")
