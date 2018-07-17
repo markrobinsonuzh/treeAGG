@@ -3,7 +3,7 @@
 #' \code{treePath} converts a phylo object tree into multiple paths. Each starts
 #' with a tip, connects all internal nodes, and end with the root.
 #'
-#' @param tree a phylo object
+#' @param tree A phylo object
 #'
 #' @export
 #'
@@ -36,7 +36,7 @@ pathTree <- function(tree) {
     i <- i + 1
   }
   rownames(matN) <- colnames(matN) <- NULL
-  
+
   # convert to a list.  each element in the list is one path
   listPath <- lapply(seq_len(nrow(matN)), FUN = function(x) {
     y <- matN[x, ]
