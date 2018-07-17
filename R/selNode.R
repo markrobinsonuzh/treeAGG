@@ -18,18 +18,18 @@
 #'   requirements are returned.
 #'
 #' @export
-#' 
+#'
 #' @return The node whose descendant branch has the lowest proportion
-#' 
+#'
 #' @examples{
-#' data("simTree")
-#' data("simCount")
+#' data("cytofTree")
+#' data("cytofCount")
 #' set.seed(1)
 #' library(ape)
-#' tree <- as.phylo(simTree)
+#' tree <- as.phylo(cytofTree)
 #' sN <- selNode(tree = tree, minTip = 20,
 #' maxTip = 50, minPr = 0.02, maxPr = 0.03,
-#' skip = NULL, data = simCount)
+#' skip = NULL, data = cytofCount)
 #' }
 #'
 
