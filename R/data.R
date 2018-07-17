@@ -82,7 +82,7 @@
 #'   \item{CN_H4}{The counts from the forth CN sample}
 #'   \item{CN_H5}{The counts from the fifth CN sample}
 #' }
-"simCount"
+"cytofCount"
 
 
 #' The true signal in the AML-sim data
@@ -95,7 +95,7 @@
 #'   \item{cluster}{The cluster label}
 #'    \item{true}{Whether the cluster is truly differential abundant}
 #' }
-"simTruth"
+"cytofTruth"
 
 #' The hierarchical tree of the cells in the AML-sim data
 #'
@@ -103,7 +103,7 @@
 #' AML-sim data.
 #'
 #' @format A hclust object with 900 leaves. Each leaf is a cell cluster.
-"simTree"
+"cytofTree"
 
 
 
