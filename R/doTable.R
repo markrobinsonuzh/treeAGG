@@ -218,7 +218,7 @@ pickLoc <- function(tree, data, from.A,
   }
 
   # An entry in mm is set to NA if one node is the descendant of the other
-  nm <- matrix(sapply(1:ncol(mm), FUN = function(x) {
+  nm <- matrix(sapply(seq_len(ncol(mm)), FUN = function(x) {
     # each column
     cn <- colnames(mm)
     cx <- cn[x]
@@ -505,11 +505,11 @@ doCount <- function(data, FC, nSam, mu,
     # condition 1
     n1 <- nSam[1]
     Mp.c1 <- matrix(0, nrow = n1, ncol = length(g.c1))
-    rownames(Mp.c1) <- paste("C1_", 1:n1, sep = "")
+    rownames(Mp.c1) <- paste("C1_", seq_len(n1), sep = "")
     colnames(Mp.c1) <- names(p.c1)
     Mobs.c1 <- Mp.c1
     nSeq1 <- rnbinom(n = n1, mu = mu, size = size)
-    for (i in 1:n1) {
+    for (i in seq_len(n1)) {
       Mp.c1[i, ] <- rdirichlet(1, g.c1)[1, ]
       Mobs.c1[i, ] <- rmultinom(1, nSeq1[i], prob = Mp.c1[i, ])[, 1]
 
@@ -518,11 +518,11 @@ doCount <- function(data, FC, nSam, mu,
     # condition 2
     n2 <- nSam[2]
     Mp.c2 <- matrix(0, nrow = n2, ncol = length(g.c2))
-    rownames(Mp.c2) <- paste("C2_", 1:n2, sep = "")
+    rownames(Mp.c2) <- paste("C2_", seq_len(n2), sep = "")
     colnames(Mp.c2) <- names(p.c2)
     Mobs.c2 <- Mp.c2
     nSeq2 <- rnbinom(n = n2, mu = mu, size = size)
-    for (i in 1:n2) {
+    for (i in seq_len(n2)) {
       Mp.c2[i, ] <- rdirichlet(1, g.c2)[1, ]
       Mobs.c2[i, ] <- rmultinom(1, nSeq2[i], prob = Mp.c2[i, ])[, 1]
     }
