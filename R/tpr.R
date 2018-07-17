@@ -93,17 +93,17 @@ tpr <- function(tree, truth, found,
         tpr0(tree = tree, truth = x,
              found = y, level = level)
       }, x = truth, y = found)
-      
+
       tpr <- rowSums(tt)[1]/rowSums(tt)[2]
     } else {
       stop("check: \n
             truth is a list of two members? \n
             found is a list of two members? \n ")
     }
-    
+
   } else {
     # if signal direction isn't taken into account.
-    
+
     if (is.character(truth)) {
       truth <- transNode(tree = tree, input = truth)
     }
@@ -130,7 +130,7 @@ tpr <- function(tree, truth, found,
 #' @param truth Nodes that have signals (eg. differentally abundant at different experimental conditions.).
 #' @param found Nodes that have been found to have signal
 #' @param level If "leaf", true positive rate is calculated at leaf level; if "node", it is calculated at node level.
-#'
+#' @return
 
 tpr0 <- function(tree,
                  truth = NULL,
@@ -149,7 +149,7 @@ tpr0 <- function(tree,
     )) {
       stop("truth should include character or numeric")
     }
-    
+
     # if signal exists and has correct input format, but found is null
     # the true positive is 0, and the positive depends on the level
     if (is.null(found)) {

@@ -134,6 +134,7 @@ fdr <- function(tree, truth, found,
 #' @param truth Nodes that have signals (eg. differentally abundant at different experimental conditions.).
 #' @param found Nodes that have been found to have signal
 #' @param level If "leaf", false discovery rate is calculated at leaf level; if "node", it is calculated at node level.
+#' @return
 
 fdr0 <- function(tree,
                  truth = NULL,

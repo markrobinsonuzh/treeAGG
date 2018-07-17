@@ -213,7 +213,7 @@ treePlot <- function(tree,
 #' @param ... see also \code{\link[ggtree]{ggtree}}
 #'
 #' @import ggtree ggplot2
-#'
+#' @return
 
 addBranch <- function(tree, branch, col.branch,
                       col.other, addTo = NULL, ...) {
@@ -254,8 +254,8 @@ addBranch <- function(tree, branch, col.branch,
   # return
   if (is.null(addTo)) {
     fig <- ggtree(tree, ...)
-  } else { 
-    fig <- addTo 
+  } else {
+    fig <- addTo
   }
 
   fig %<+% d + aes(colour = Truth)
@@ -273,6 +273,7 @@ addBranch <- function(tree, branch, col.branch,
 #' @param ... see also \code{\link[ggtree]{ggtree}}
 #'
 #' @import ggtree ggplot2
+#' @return
 
 addPoint <- function(tree, point, col.point,
                      addTo = NULL, ...) {
@@ -296,8 +297,8 @@ addPoint <- function(tree, point, col.point,
 
   if (is.null(addTo)) {
     fig <- ggtree(tree, ...)
-  } else { 
-    fig <- addTo 
+  } else {
+    fig <- addTo
   }
 
   fig %<+% d +
@@ -319,7 +320,7 @@ addPoint <- function(tree, point, col.point,
 #' @param ... see also \code{\link[ggtree]{ggtree}}
 #'
 #' @import ggtree ggplot2
-#'
+#' @return
 
 addZoom <- function(tree, zoomNode = NULL, zoomLevel = NULL,
                     zoomScale = NULL, addTo = NULL, ...) {
@@ -365,7 +366,7 @@ addZoom <- function(tree, zoomNode = NULL, zoomLevel = NULL,
 
   if (is.null(addTo)) {
     fig <- ggtree(tree, ...)
-  } else { 
+  } else {
     fig <- addTo
   }
 
@@ -396,7 +397,7 @@ addZoom <- function(tree, zoomNode = NULL, zoomLevel = NULL,
 #'
 #' @import ggtree ggplot2
 #' @importFrom utils modifyList
-#'
+#' @return
 
 addLegend <- function(legend.theme) {
 
@@ -433,10 +434,10 @@ addLegend <- function(legend.theme) {
 #' @param legend.title A vector to specify the title of the legend. It must be named with "branch" and "point" to match with the argument \strong{branch} and \strong{point}.
 #' @param size.point.legend the point size shown in the legend for \strong{point}.
 #' @param legend TRUE or FALSE
-#' 
+#'
 #' @import ggplot2 ggtree
 #' @importFrom utils modifyList
-#'
+#' @return
 
 sizeScale <- function(col.point, size.point,
                       legend.label, legend.title,
@@ -476,7 +477,7 @@ sizeScale <- function(col.point, size.point,
 #' @import ggplot2 ggtree
 #' @importFrom utils modifyList tail
 #' @importFrom stats setNames
-#'
+#' @return
 
 colScale <- function(branch,
                      point,
@@ -520,7 +521,7 @@ colScale <- function(branch,
     if (is.null(legend.label)) {
       stop("legend.label isn't provided")
     }
-    
+
     # decide the content in the legend (branch, other or point)
     # ll is a template
     ll <- list(col.branch = "",
@@ -529,29 +530,29 @@ colScale <- function(branch,
     listG <- listLab <- ll[names(ll) %in% names(cG)]
     listG <- modifyList(listG, cG)
     listLab <- modifyList(listLab, legend.label)
-    
+
     # match the color and the label
     namG <- mapply(function(x, y) {
       names(x) <- y
       x
     }, x = setNames(listG, NULL),
     y = setNames(listLab, NULL))
-    
+
     if (is.list(namG)) {
       colG <- unlist(namG)
     } else {
       colG <- namG
     }
-    
+
     colG <- colG[!(duplicated(colG) &
                      duplicated(names(colG)))]
     lab <- names(colG)
     ww <- tail(which(lab %in% legend.label$col.point),1)
     # lab <- ifelse(names(colG) %in% legend.label$col.point, "", names(colG))
-    
+
     lab[ww] <- ""
     #colG <- unlist(setNames(namG, NULL))
-    
+
     # if there are duplicates for the pairs of color and lable,
     # remove them.
     #colG <- colG[!(duplicated(colG) & duplicated(names(colG)))]
@@ -563,14 +564,14 @@ colScale <- function(branch,
     du <- duplicated(colG) & duplicated(names(colG))
     lab <- ifelse(du, "", lab)
     lty <- ifelse(du, "blank", lty)
-    
-    
+
+
     # update legend.title
     ll <- list("branch" = NULL, "point" = NULL)
     lt <- as.list(legend.title)
     names(lt) <- names(legend.title)
     legend.title <- modifyList(ll, lt)
-    
+
     scale_color_manual(
       values = colV,
       labels = lab,

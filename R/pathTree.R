@@ -6,6 +6,7 @@
 #' @param tree A phylo object
 #'
 #' @export
+#' @return
 #'
 #' @examples
 #'

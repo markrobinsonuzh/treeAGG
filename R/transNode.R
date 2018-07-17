@@ -7,6 +7,7 @@
 #' @param input A tree node label or a tree node number
 #'
 #' @export
+#' @return
 #'
 #' @examples
 #'

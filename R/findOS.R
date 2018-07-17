@@ -14,6 +14,7 @@
 #'   label).
 #'
 #' @export
+#' @return
 #'
 #' @examples
 #' data(tinyTree)
@@ -23,7 +24,7 @@
 #' geom_text2(aes(label = node)) +
 #' geom_hilight(node = 15, fill = 'steelblue', alpha = 0.5)
 #'
-#' (tips <- findOS(15, tinyTree, only.Tip = TRUE))
+#' (tips <- findOS(tree = tinyTree, ancestor = 15, only.Tip = TRUE))
 
 findOS <- function(tree,
                    ancestor,
