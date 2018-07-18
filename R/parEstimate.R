@@ -20,23 +20,23 @@
 
 parEstimate <- function(data) {
 
-  if (inherits(data, "list")) {
-    ind <- setequal(names(data), c("pi", "theta"))
-    if (!ind) {
-      stop("Error: data is a list;
+    if (inherits(data, "list")) {
+        ind <- setequal(names(data), c("pi", "theta"))
+        if (!ind) {
+            stop("Error: data is a list;
            it should provide pi and theta")
-    }
-    parList <- data
+        }
+        parList <- data
     } else {
-      DirMultOutput <- dirmult::dirmult(data = t(data))
-      # tip proportion
-      estP <- DirMultOutput$pi
-      names(estP) <- names(DirMultOutput$pi)
+        DirMultOutput <- dirmult::dirmult(data = t(data))
+        # tip proportion
+        estP <- DirMultOutput$pi
+        names(estP) <- names(DirMultOutput$pi)
 
-      # parameter alpha for dirichlet distribution
-      theta <- DirMultOutput$theta
-      parList <-  list(pi = estP, theta = theta)
+        # parameter alpha for dirichlet distribution
+        theta <- DirMultOutput$theta
+        parList <-  list(pi = estP, theta = theta)
     }
 
-  return(parList)
+    return(parList)
 }

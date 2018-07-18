@@ -24,30 +24,30 @@
 
 rmDesc <- function(tree, node) {
 
-  if (!inherits(tree, "phylo")) {
-    stop("tree: should be a phylo object")
-  }
+    if (!inherits(tree, "phylo")) {
+        stop("tree: should be a phylo object")
+    }
 
-  if (inherits(node, "character")) {
-    node <- transNode(tree = tree, input = node)
-  } else {
-    node <- node
-  }
+    if (inherits(node, "character")) {
+        node <- transNode(tree = tree, input = node)
+    } else {
+        node <- node
+    }
 
-  ListTip <- lapply(as.list(node), FUN = function(x) {
-    findOS(ancestor = x, tree = tree, only.Tip = TRUE, self.include = TRUE)
-  })
-  ListTip1 <- ListTip[!duplicated(ListTip)]
-  indList <- lapply(ListTip1, FUN = function(x) {
-    aa <- lapply(ListTip1, FUN = function(y, z) {
-      all(z %in% y)
-    }, z = x)
-    atf <- sum(unlist(aa)) == 1
-    return(atf)
-  })
+    ListTip <- lapply(as.list(node), FUN = function(x) {
+        findOS(ancestor = x, tree = tree, only.Tip = TRUE, self.include = TRUE)
+    })
+    ListTip1 <- ListTip[!duplicated(ListTip)]
+    indList <- lapply(ListTip1, FUN = function(x) {
+        aa <- lapply(ListTip1, FUN = function(y, z) {
+            all(z %in% y)
+        }, z = x)
+        atf <- sum(unlist(aa)) == 1
+        return(atf)
+    })
 
-  ind <- unlist(indList)
-  fNT <- node[!duplicated(ListTip)][ind]
+    ind <- unlist(indList)
+    fNT <- node[!duplicated(ListTip)][ind]
 
-  return(fNT)
+    return(fNT)
 }

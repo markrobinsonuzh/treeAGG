@@ -108,57 +108,58 @@ doTable <- function(tree, data, scenario = "S1",
                     pct = 0.6, nSam = c(50, 50),
                     mu = 50, size = 10000,
                     n = 1, fun = sum){
-  # ---check input is in correct format --------
-  if(!inherits(tree, "phylo")){
-    stop("tree should be a phylo object")
-  }
 
-  if (!inherits(data, "list")) {
-    if (!inherits(data, "matrix")) {
-      stop("data should be a matrix")
-    } else {
-      if (!setequal(rownames(data), tree$tip.label)) {
-        stop("The rownames of data do not match with tree leaf labels")
-      }
+    # ---check input is in correct format --------
+    if(!inherits(tree, "phylo")){
+        stop("tree should be a phylo object")
     }
-  }
+
+    if (!inherits(data, "list")) {
+        if (!inherits(data, "matrix")) {
+            stop("data should be a matrix")
+        } else {
+            if (!setequal(rownames(data), tree$tip.label)) {
+                stop("The rownames of data do not match with tree leaf labels")
+            }
+        }
+    }
 
 
-  # estimate parameters for Dirichlet-multinomial distribution
-  data <- parEstimate(data = data)
-  if (!is.null(from.A) && !is.null(from.B)) {
-    pk <- infLoc(tree = tree, data = data,
-                 from.A = from.A, from.B = from.B)
-  } else {
-    pk <- pickLoc(tree = tree, data = data,
-                  from.A  = from.A, minTip.A = minTip.A,
-                  maxTip.A = maxTip.A, minTip.B = minTip.B,
-                  maxTip.B = maxTip.B, minPr.A = minPr.A,
-                  maxPr.A = maxPr.A, ratio = ratio)
-  }
+    # estimate parameters for Dirichlet-multinomial distribution
+    data <- parEstimate(data = data)
+    if (!is.null(from.A) && !is.null(from.B)) {
+        pk <- infLoc(tree = tree, data = data,
+        from.A = from.A, from.B = from.B)
+    } else {
+        pk <- pickLoc(tree = tree, data = data,
+                      from.A  = from.A, minTip.A = minTip.A,
+                      maxTip.A = maxTip.A, minTip.B = minTip.B,
+                      maxTip.B = maxTip.B, minPr.A = minPr.A,
+                      maxPr.A = maxPr.A, ratio = ratio)
+    }
 
-  beta <- doFC(tree = tree, data = data,
-               scenario = scenario,
-               branchA = pk$A,
-               branchB = pk$B,
-               ratio = pk$`ratio`,
-               adjB = adjB, pct = pct)
+    beta <- doFC(tree = tree, data = data,
+                 scenario = scenario,
+                 branchA = pk$A,
+                 branchB = pk$B,
+                 ratio = pk$`ratio`,
+                 adjB = adjB, pct = pct)
 
-  count <- doCount(data = data, FC = beta,
-                   nSam = nSam, mu, size, n)
+    count <- doCount(data = data, FC = beta,
+                     nSam = nSam, mu, size, n)
 
-  if(inherits(count, "list")) {
-    full <- lapply(count, nodeCount, tree = tree,
-                   fun = fun)
-  }
-  if(inherits(count, "matrix")) {
-    full <- nodeCount(tree = tree, data = count,
-                      fun = fun)
-  }
+    if(inherits(count, "list")) {
+        full <- lapply(count, nodeCount, tree = tree,
+                       fun = fun)
+    }
+    if(inherits(count, "matrix")) {
+        full <- nodeCount(tree = tree, data = count,
+                          fun = fun)
+    }
 
-  obj <- list(Count = full, FC = beta,
-              Branch = pk, Scenario = scenario)
-  return(obj)
+    obj <- list(Count = full, FC = beta,
+                Branch = pk, Scenario = scenario)
+    return(obj)
 }
 
 
@@ -194,167 +195,167 @@ pickLoc <- function(tree, data, from.A,
                     minTip.B, maxTip.B,
                     minPr.A, maxPr.A, ratio) {
 
-  # tip proportions estimated from real data
-  pars <- parEstimate(data = data)$pi
+    # tip proportions estimated from real data
+    pars <- parEstimate(data = data)$pi
 
-  # proportion of internal nodes
-  leaf <- setdiff(tree$edge[, 2], tree$edge[, 1])
-  nodI <- setdiff(tree$edge[, 1], leaf)
-  desI <- lapply(nodI, findOS, tree = tree,
-                 only.Tip = TRUE,
-                 self.include = TRUE,
-                 return = "label")
-  nodP <- mapply(function(x, y) {
-    sum(x[y])
-  }, x = list(pars), y = desI)
+    # proportion of internal nodes
+    leaf <- setdiff(tree$edge[, 2], tree$edge[, 1])
+    nodI <- setdiff(tree$edge[, 1], leaf)
+    desI <- lapply(nodI, findOS, tree = tree,
+                   only.Tip = TRUE,
+                   self.include = TRUE,
+                   return = "label")
+    nodP <- mapply(function(x, y) {
+        sum(x[y])
+    }, x = list(pars), y = desI)
 
-  # matrix: abundance proprotion & the number of descendant leaves
-  lenI <- unlist(lapply(desI, length))
-  tt <- cbind(nodP, lenI)
-  rownames(tt) <- transNode(tree = tree, input = nodI)
+    # matrix: abundance proprotion & the number of descendant leaves
+    lenI <- unlist(lapply(desI, length))
+    tt <- cbind(nodP, lenI)
+    rownames(tt) <- transNode(tree = tree, input = nodI)
 
-  # return error when the given limits for
-  # proportion are outside
-  # the range estimated from the real data.
-  if (maxPr.A < min(tt[, 1])) {
-    stop("maxPr.A is lower than the minimum value of
+    # return error when the given limits for
+    # proportion are outside
+    # the range estimated from the real data.
+    if (maxPr.A < min(tt[, 1])) {
+        stop("maxPr.A is lower than the minimum value of
          node proportion", signif(min(tt[, 1]), 2), "\n")
-  }
-  if (minPr.A*ratio > max(tt[, 1])) {
-    stop("minPr.A*ratio is above the maximum value of
-         node proportion; try lower ratio", signif(min(tt[, 1]), 2), "\n")
-  }
-
-  # only consider nodes with enough tips and
-  # desired proportion level
-  if (is.null(from.A)) {
-    tt.sel <- tt
-  } else {
-    # if node numbers, change them to node labels
-    if (inherits(from.A, "character")) {
-      from.A <- from.A
-    } else {
-      from.A <- transNode(tree = tree, input = from.A)
     }
-    tt.sel <- tt[match(from.A, rownames(tt)), , drop = FALSE]
-  }
+    if (minPr.A*ratio > max(tt[, 1])) {
+        stop("minPr.A*ratio is above the maximum value of
+         node proportion; try lower ratio", signif(min(tt[, 1]), 2), "\n")
+    }
 
-  st <- tt.sel[tt.sel[, 2] >= minTip.A &
-                 tt.sel[, 2] <= maxTip.A &
-                 tt.sel[, 1] >= minPr.A &
-                 tt.sel[, 1] <= maxPr.A, , drop = FALSE]
-  if (nrow(st) == 0) {
-    stop("No nodes fullfill the requirements;
+    # only consider nodes with enough tips and
+    # desired proportion level
+    if (is.null(from.A)) {
+        tt.sel <- tt
+    } else {
+        # if node numbers, change them to node labels
+        if (inherits(from.A, "character")) {
+            from.A <- from.A
+        } else {
+            from.A <- transNode(tree = tree, input = from.A)
+        }
+        tt.sel <- tt[match(from.A, rownames(tt)), , drop = FALSE]
+    }
+
+    st <- tt.sel[tt.sel[, 2] >= minTip.A &
+                     tt.sel[, 2] <= maxTip.A &
+                     tt.sel[, 1] >= minPr.A &
+                     tt.sel[, 1] <= maxPr.A, , drop = FALSE]
+    if (nrow(st) == 0) {
+        stop("No nodes fullfill the requirements;
          try other values for minTip.A, maxTip.A,
          minPr.A, or maxPr.A")
-  }
-  st2 <- tt[tt[, 2] >= minTip.B &
-              tt[, 2] <= maxTip.B, , drop = FALSE]
+    }
+    st2 <- tt[tt[, 2] >= minTip.B &
+                  tt[, 2] <= maxTip.B, , drop = FALSE]
 
-  # fold change between any two nodes (large/small)
-  mm <- (1/st[, 1]) %o% st2[, 1]
-  rownames(mm) <- rownames(st)
+    # fold change between any two nodes (large/small)
+    mm <- (1/st[, 1]) %o% st2[, 1]
+    rownames(mm) <- rownames(st)
 
-  maxM <- max(mm, na.rm = TRUE)
-  minM <- min(mm, na.rm = TRUE)
+    maxM <- max(mm, na.rm = TRUE)
+    minM <- min(mm, na.rm = TRUE)
 
-  if (ratio >= 1 & ratio > maxM) {
-    stop("could not find any two branches which fullfill
+    if (ratio >= 1 & ratio > maxM) {
+        stop("could not find any two branches which fullfill
          these requirement;
          try lower ratio, lower minTip.A, or higher maxTip.B",
-         "\n")
-  }
+             "\n")
+    }
 
-  if (ratio <= 1 & ratio < minM) {
-    stop("could not find any two branches which fullfill
+    if (ratio <= 1 & ratio < minM) {
+        stop("could not find any two branches which fullfill
          these requirement; try higher ratio or lower minTip.B",
-         "\n")
-  }
+             "\n")
+    }
 
-  # An entry in mm is set to NA if one node is the descendant of the other
-  # nm <- matrix(sapply(seq_len(ncol(mm)), FUN = function(x) {
-  #   # each column
-  #   cn <- colnames(mm)
-  #   cx <- cn[x]
-  #
-  #   # all rows
-  #   rn <- rownames(mm)
-  #   tx <- desI[rn]
-  #
-  #   cs <- lapply(tx,FUN = function(x) {
-  #     length(intersect(x, desI[[cx]])) > 0
-  #   })
-  #   cv <- unlist(cs)
-  #   fm <- mm[, x]
-  #   fm[cv] <- NA
-  #   fm}), nrow = nrow(mm))
-  # preserve attributes of mm
-  nm <- mm
-  nm[] <- vapply(
-    seq_len(ncol(mm)),
-    FUN = function(x) {
-      # each column
-      cn <- colnames(mm)
-      cx <- cn[x]
-
-      # all rows
-      rn <- rownames(mm)
-      tx <- desI[rn]
-
-      cs <- lapply(
-        tx,
+    # An entry in mm is set to NA if one node is the descendant of the other
+    # nm <- matrix(sapply(seq_len(ncol(mm)), FUN = function(x) {
+    #   # each column
+    #   cn <- colnames(mm)
+    #   cx <- cn[x]
+    #
+    #   # all rows
+    #   rn <- rownames(mm)
+    #   tx <- desI[rn]
+    #
+    #   cs <- lapply(tx,FUN = function(x) {
+    #     length(intersect(x, desI[[cx]])) > 0
+    #   })
+    #   cv <- unlist(cs)
+    #   fm <- mm[, x]
+    #   fm[cv] <- NA
+    #   fm}), nrow = nrow(mm))
+    # preserve attributes of mm
+    nm <- mm
+    nm[] <- vapply(
+        seq_len(ncol(mm)),
         FUN = function(x) {
-          length(intersect(x, desI[[cx]])) > 0
-        }
-      )
-      cv <- unlist(cs)
-      fm <- mm[, x]
-      fm[cv] <- NA
-      fm
-    },
-    FUN.VALUE = numeric(nrow(mm))
-  )
+            # each column
+            cn <- colnames(mm)
+            cx <- cn[x]
 
-  colnames(nm) <- colnames(mm)
-  rownames(nm) <- rownames(mm)
+            # all rows
+            rn <- rownames(mm)
+            tx <- desI[rn]
 
-  # iter <- 1
-  # while (iter <= 200) {
-  #   fs <- sample(rownames(nm),1)
-  #   np <- nm[fs,]
-  #
-  #   ab <- abs(np-ratio)
-  #   ind <- which( ab < 0.5 & ab==min(ab, na.rm = TRUE) )
-  #   ind
-  #   up <- np[ind[1]]
-  #   up <- up[!is.na(up)]
-  #   if( length(up) == 1 ){break}
-  #   iter <-  iter+1
-  # }
-  # select the pair with the value closest to the ratio
-  dif <- abs(nm - ratio)
-  wi <- which(dif == min(dif), arr.ind = TRUE)
-  si <- sample(seq_len(nrow(wi)), 1)
-  an <- rownames(nm)[wi[si, 1]]
-  bn <- colnames(nm)[wi[si, 2]]
+            cs <- lapply(
+                tx,
+                FUN = function(x) {
+                    length(intersect(x, desI[[cx]])) > 0
+                }
+            )
+            cv <- unlist(cs)
+            fm <- mm[, x]
+            fm[cv] <- NA
+            fm
+        },
+        FUN.VALUE = numeric(nrow(mm))
+    )
 
-  du <- cbind.data.frame(
-    "A" = an,
-    "B" = bn,
-    "ratio" = round(nm[wi], digits = 2),
-    "A_tips" = tt[an, 2],
-    "B_tips" = tt[bn, 2],
-    "A_prop(%)" = round(tt[an, 1] * 100,
-                        digits = 2),
-    "B_prop(%)" = round(tt[bn, 1] * 100,
-                        digits = 2),
-    stringsAsFactors =  FALSE
-  )
+    colnames(nm) <- colnames(mm)
+    rownames(nm) <- rownames(mm)
 
-  rownames(du) <- NULL
-  return(du)
+    # iter <- 1
+    # while (iter <= 200) {
+    #   fs <- sample(rownames(nm),1)
+    #   np <- nm[fs,]
+    #
+    #   ab <- abs(np-ratio)
+    #   ind <- which( ab < 0.5 & ab==min(ab, na.rm = TRUE) )
+    #   ind
+    #   up <- np[ind[1]]
+    #   up <- up[!is.na(up)]
+    #   if( length(up) == 1 ){break}
+    #   iter <-  iter+1
+    # }
+    # select the pair with the value closest to the ratio
+    dif <- abs(nm - ratio)
+    wi <- which(dif == min(dif), arr.ind = TRUE)
+    si <- sample(seq_len(nrow(wi)), 1)
+    an <- rownames(nm)[wi[si, 1]]
+    bn <- colnames(nm)[wi[si, 2]]
 
-  }
+    du <- cbind.data.frame(
+        "A" = an,
+        "B" = bn,
+        "ratio" = round(nm[wi], digits = 2),
+        "A_tips" = tt[an, 2],
+        "B_tips" = tt[bn, 2],
+        "A_prop(%)" = round(tt[an, 1] * 100,
+                            digits = 2),
+        "B_prop(%)" = round(tt[bn, 1] * 100,
+                            digits = 2),
+        stringsAsFactors =  FALSE
+    )
+
+    rownames(du) <- NULL
+    return(du)
+
+}
 
 #' Provide the information of two branches
 #'
@@ -371,45 +372,45 @@ pickLoc <- function(tree, data, from.A,
 infLoc <- function(tree, data, from.A,
                    from.B) {
 
-  # tip proportions estimated from real data
-  pars <- parEstimate(data = data)$pi
+    # tip proportions estimated from real data
+    pars <- parEstimate(data = data)$pi
 
-  # proportion of internal nodes
-  leaf <- setdiff(tree$edge[, 2], tree$edge[, 1])
-  nodI <- setdiff(tree$edge[, 1], leaf)
-  desI <- lapply(nodI, findOS, tree = tree,
-                 only.Tip = TRUE,
-                 self.include = TRUE,
-                 return = "label")
-  nodP <- mapply(function(x, y) {
-    sum(x[y])
-  }, x = list(pars), y = desI)
+    # proportion of internal nodes
+    leaf <- setdiff(tree$edge[, 2], tree$edge[, 1])
+    nodI <- setdiff(tree$edge[, 1], leaf)
+    desI <- lapply(nodI, findOS, tree = tree,
+                   only.Tip = TRUE,
+                   self.include = TRUE,
+                   return = "label")
+    nodP <- mapply(function(x, y) {
+        sum(x[y])
+    }, x = list(pars), y = desI)
 
-  # matrix: abundance proprotion & the number of descendant leaves
-  lenI <- unlist(lapply(desI, length))
-  tt <- cbind(nodP, lenI)
-  rownames(tt) <- transNode(tree = tree, input = nodI)
+    # matrix: abundance proprotion & the number of descendant leaves
+    lenI <- unlist(lapply(desI, length))
+    tt <- cbind(nodP, lenI)
+    rownames(tt) <- transNode(tree = tree, input = nodI)
 
-  # if both branches are given
-  labA <- ifelse(is.character(from.A), from.A,
-                 transNode(tree = tree, input = from.A))
-  labB <- ifelse(is.character(from.B), from.B,
-                 transNode(tree = tree, input = from.B))
-  rAB <- tt[labB, 1]/tt[labA, 1]
-  du <- cbind.data.frame(
-    "A" = from.A,
-    "B" = from.B,
-    "ratio" = round(rAB, digits = 2),
-    "A_tips" = tt[labA, 2],
-    "B_tips" = tt[labB, 2],
-    "A_prop(%)" = round(tt[labA, 1] * 100,
-                        digits = 2),
-    "B_prop(%)" = round(tt[labB, 1] * 100,
-                        digits = 2),
-    stringsAsFactors =  FALSE)
+    # if both branches are given
+    labA <- ifelse(is.character(from.A), from.A,
+                   transNode(tree = tree, input = from.A))
+    labB <- ifelse(is.character(from.B), from.B,
+                   transNode(tree = tree, input = from.B))
+    rAB <- tt[labB, 1]/tt[labA, 1]
+    du <- cbind.data.frame(
+        "A" = from.A,
+        "B" = from.B,
+        "ratio" = round(rAB, digits = 2),
+        "A_tips" = tt[labA, 2],
+        "B_tips" = tt[labB, 2],
+        "A_prop(%)" = round(tt[labA, 1] * 100,
+                            digits = 2),
+        "B_prop(%)" = round(tt[labB, 1] * 100,
+                            digits = 2),
+        stringsAsFactors =  FALSE)
 
-  rownames(du) <- NULL
-  return(du)
+    rownames(du) <- NULL
+    return(du)
 }
 
 #' Generate the fold change
@@ -442,125 +443,125 @@ doFC <- function(tree, data, scenario,
                  branchA, branchB,
                  ratio, adjB, pct) {
 
-  # beta: fold change for tips
-  tips <- tree$tip.label
-  beta <- rep(1, length(tips))
-  names(beta) <- tips
+    # beta: fold change for tips
+    tips <- tree$tip.label
+    beta <- rep(1, length(tips))
+    names(beta) <- tips
 
-  # tips on two branches
-  tipA <- findOS(tree = tree, ancestor = branchA,
-                 only.Tip = TRUE, self.include = TRUE,
-                 return = "label")
+    # tips on two branches
+    tipA <- findOS(tree = tree, ancestor = branchA,
+                   only.Tip = TRUE, self.include = TRUE,
+                   return = "label")
 
-  nod <- findOS(tree = tree, ancestor = branchA,
-                only.Tip = FALSE, self.include = TRUE,
-                return = "label")
-  nodeA <- setdiff(nod, tipA)
-  desA <- lapply(nodeA, findOS, tree = tree,
-                 only.Tip = TRUE,
-                 self.include = TRUE, return = "label")
+    nod <- findOS(tree = tree, ancestor = branchA,
+                  only.Tip = FALSE, self.include = TRUE,
+                  return = "label")
+    nodeA <- setdiff(nod, tipA)
+    desA <- lapply(nodeA, findOS, tree = tree,
+                   only.Tip = TRUE,
+                   self.include = TRUE, return = "label")
 
-  # swap proportion of two branches: tips in the same branch
-  # have the same fold change
-  if (scenario == "S1") {
-    tipB <- findOS(tree = tree, ancestor = branchB,
-                   only.Tip = TRUE, self.include = TRUE)
+    # swap proportion of two branches: tips in the same branch
+    # have the same fold change
+    if (scenario == "S1") {
+        tipB <- findOS(tree = tree, ancestor = branchB,
+                       only.Tip = TRUE, self.include = TRUE)
 
-    beta[tipA] <- ratio
-    beta[tipB] <- 1/ratio
-  }
-
-  # swap proportion of two branches: tips in the same branch
-  # have different fold changes but same direction (either
-  # increase or decrease)
-  if (scenario == "S2") {
-    tipB <- findOS(tree = tree, ancestor = branchB,
-                   only.Tip = TRUE, self.include = TRUE)
-
-    beta[tipA] <- 1 + runif(length(tipA))*(ratio-1)
-    beta[tipB] <- 1 - runif(length(tipB))*((ratio-1)/ratio)
-  }
-
-  # distribute signal randomly in one branch and evenly in
-  # another branch
-  # tip proportions estimated from real data
-  pars <- parEstimate(data = data)$pi
-  if (scenario == "S3") {
-    iter <- 1
-    while (iter <= 200) {
-      # select only some tips
-      selA <- sample(tipA, ceiling(length(tipA)*pct))
-      # to make the selected tips disperse evenly in the branch
-      subA <- lapply(desA, FUN = function(x) {
-        ix <- intersect(x, selA)
-        length(ix)/length(x)
-      })
-      subA <- unlist(subA)
-      sumA <- sum(pars[selA])
-
-      # the abundance proportion of the selected tips
-      # are roughly equal to its number proportion in the branch
-      # avoid (select all low or high abundance tips in the branch)
-
-      spr <- sumA/sum(pars[tipA])
-      ind.pr <- spr <= (pct + 0.05) & spr >= (pct - 0.05)
-
-      if(all(subA <= 0.6) & ind.pr){break}
-      iter <- iter+1
+        beta[tipA] <- ratio
+        beta[tipB] <- 1/ratio
     }
-    # ==================================================
-    # cancel the random selection using selNode
-    # ==================================================
-    # if(is.null(branchB)){
-    #   BranchL <- selNode(tree = tree,
-    #                      minTip =length(selA),
-    #                      maxTip = Inf,
-    #                      minPr = max(ratio)*sumA,
-    #                      maxPr = max(ratio)*sumA*1.5,
-    #                      skip = branchA,
-    #                      data = data)$node
-    # }else{
-    BranchL = branchB
-    #}
 
-    if (length(BranchL) == 0) {
-      stop("No suitable branches.
+    # swap proportion of two branches: tips in the same branch
+    # have different fold changes but same direction (either
+    # increase or decrease)
+    if (scenario == "S2") {
+        tipB <- findOS(tree = tree, ancestor = branchB,
+                       only.Tip = TRUE, self.include = TRUE)
+
+        beta[tipA] <- 1 + runif(length(tipA))*(ratio-1)
+        beta[tipB] <- 1 - runif(length(tipB))*((ratio-1)/ratio)
+    }
+
+    # distribute signal randomly in one branch and evenly in
+    # another branch
+    # tip proportions estimated from real data
+    pars <- parEstimate(data = data)$pi
+    if (scenario == "S3") {
+        iter <- 1
+        while (iter <= 200) {
+            # select only some tips
+            selA <- sample(tipA, ceiling(length(tipA)*pct))
+            # to make the selected tips disperse evenly in the branch
+            subA <- lapply(desA, FUN = function(x) {
+                ix <- intersect(x, selA)
+                length(ix)/length(x)
+            })
+            subA <- unlist(subA)
+            sumA <- sum(pars[selA])
+
+            # the abundance proportion of the selected tips
+            # are roughly equal to its number proportion in the branch
+            # avoid (select all low or high abundance tips in the branch)
+
+            spr <- sumA/sum(pars[tipA])
+            ind.pr <- spr <= (pct + 0.05) & spr >= (pct - 0.05)
+
+            if(all(subA <= 0.6) & ind.pr){break}
+            iter <- iter+1
+        }
+        # ==================================================
+        # cancel the random selection using selNode
+        # ==================================================
+        # if(is.null(branchB)){
+        #   BranchL <- selNode(tree = tree,
+        #                      minTip =length(selA),
+        #                      maxTip = Inf,
+        #                      minPr = max(ratio)*sumA,
+        #                      maxPr = max(ratio)*sumA*1.5,
+        #                      skip = branchA,
+        #                      data = data)$node
+        # }else{
+        BranchL = branchB
+        #}
+
+        if (length(BranchL) == 0) {
+            stop("No suitable branches.
            Try another branchA or another max of ratio... \n")
+        }
+        tipL <-  findOS(tree = tree, ancestor = BranchL,
+                        only.Tip = TRUE, self.include = TRUE,
+                        return = "label")
+        sumL <- sum(pars[tipL])
+
+        # ratio : 2, 5, 7, 8
+        # if(length(ratio)==1){
+        #   warning("For scenario S3, if multiple fold changes would be tried later
+        #   to compare their results, it would be better to specify ratio as
+        #           a vector so that the random tips selected would stay the same")
+        # }
+
+        # decide beta
+        # beta <- sapply(ratio, FUN = function(x, y){
+        #   y[selA] <- x
+        #   xl <- (sumL-(x-1)*sumA)/sumL
+        #   y[tipL] <- xl
+        #   return(y)
+        # }, y=beta)
+        # colnames(beta) <- ratio
+        if(is.null(adjB)){
+            beta[selA] <- ratio
+            beta[tipL] <- (sumL-(ratio-1)*sumA)/sumL
+        }else{
+            if(!is.numeric(adjB)){
+                stop("adjB should be numeric")
+            }
+            beta[tipL] <- adjB
+            beta[selA] <- (sumL*(1-adjB)+sumA)/sumA
+        }
+
     }
-    tipL <-  findOS(tree = tree, ancestor = BranchL,
-                    only.Tip = TRUE, self.include = TRUE,
-                    return = "label")
-    sumL <- sum(pars[tipL])
 
-    # ratio : 2, 5, 7, 8
-    # if(length(ratio)==1){
-    #   warning("For scenario S3, if multiple fold changes would be tried later
-    #   to compare their results, it would be better to specify ratio as
-    #           a vector so that the random tips selected would stay the same")
-    # }
-
-    # decide beta
-    # beta <- sapply(ratio, FUN = function(x, y){
-    #   y[selA] <- x
-    #   xl <- (sumL-(x-1)*sumA)/sumL
-    #   y[tipL] <- xl
-    #   return(y)
-    # }, y=beta)
-    # colnames(beta) <- ratio
-    if(is.null(adjB)){
-      beta[selA] <- ratio
-      beta[tipL] <- (sumL-(ratio-1)*sumA)/sumL
-    }else{
-      if(!is.numeric(adjB)){
-        stop("adjB should be numeric")
-      }
-      beta[tipL] <- adjB
-      beta[selA] <- (sumL*(1-adjB)+sumA)/sumA
-    }
-
-  }
-
-  return(beta)
+    return(beta)
 }
 
 
@@ -590,58 +591,58 @@ doFC <- function(tree, data, scenario,
 #'
 doCount <- function(data, FC, nSam, mu,
                     size, n) {
-  # parameters
-  pars <- parEstimate(data = data)
-  theta <- pars$theta
-  gplus <- (1 - theta) / theta
+    # parameters
+    pars <- parEstimate(data = data)
+    theta <- pars$theta
+    gplus <- (1 - theta) / theta
 
-  # tip proportion
-  pr <- pars$pi
-  p.c1 <- pr
-  p.c2 <- pr * FC[names(p.c1)]
+    # tip proportion
+    pr <- pars$pi
+    p.c1 <- pr
+    p.c2 <- pr * FC[names(p.c1)]
 
-  # parameters for dirichlet distribution
-  g.c1 <- p.c1 * gplus
-  g.c2 <- p.c2 * gplus
+    # parameters for dirichlet distribution
+    g.c1 <- p.c1 * gplus
+    g.c2 <- p.c2 * gplus
 
-  resList <- lapply(seq_len(n), FUN = function(j) {
-    # condition 1
-    n1 <- nSam[1]
-    Mp.c1 <- matrix(0, nrow = n1, ncol = length(g.c1))
-    rownames(Mp.c1) <- paste("C1_", seq_len(n1), sep = "")
-    colnames(Mp.c1) <- names(p.c1)
-    Mobs.c1 <- Mp.c1
-    nSeq1 <- rnbinom(n = n1, mu = mu, size = size)
-    for (i in seq_len(n1)) {
-      Mp.c1[i, ] <- rdirichlet(1, g.c1)[1, ]
-      Mobs.c1[i, ] <- rmultinom(1, nSeq1[i], prob = Mp.c1[i, ])[, 1]
+    resList <- lapply(seq_len(n), FUN = function(j) {
+        # condition 1
+        n1 <- nSam[1]
+        Mp.c1 <- matrix(0, nrow = n1, ncol = length(g.c1))
+        rownames(Mp.c1) <- paste("C1_", seq_len(n1), sep = "")
+        colnames(Mp.c1) <- names(p.c1)
+        Mobs.c1 <- Mp.c1
+        nSeq1 <- rnbinom(n = n1, mu = mu, size = size)
+        for (i in seq_len(n1)) {
+            Mp.c1[i, ] <- rdirichlet(1, g.c1)[1, ]
+            Mobs.c1[i, ] <- rmultinom(1, nSeq1[i], prob = Mp.c1[i, ])[, 1]
 
+        }
+
+        # condition 2
+        n2 <- nSam[2]
+        Mp.c2 <- matrix(0, nrow = n2, ncol = length(g.c2))
+        rownames(Mp.c2) <- paste("C2_", seq_len(n2), sep = "")
+        colnames(Mp.c2) <- names(p.c2)
+        Mobs.c2 <- Mp.c2
+        nSeq2 <- rnbinom(n = n2, mu = mu, size = size)
+        for (i in seq_len(n2)) {
+            Mp.c2[i, ] <- rdirichlet(1, g.c2)[1, ]
+            Mobs.c2[i, ] <- rmultinom(1, nSeq2[i], prob = Mp.c2[i, ])[, 1]
+        }
+
+        cb <- t(rbind(Mobs.c1, Mobs.c2))
+
+        return(cb)}
+    )
+
+    if (n == 1) {
+        count <-  do.call(rbind, resList)
+    } else {
+        count <- resList
     }
 
-    # condition 2
-    n2 <- nSam[2]
-    Mp.c2 <- matrix(0, nrow = n2, ncol = length(g.c2))
-    rownames(Mp.c2) <- paste("C2_", seq_len(n2), sep = "")
-    colnames(Mp.c2) <- names(p.c2)
-    Mobs.c2 <- Mp.c2
-    nSeq2 <- rnbinom(n = n2, mu = mu, size = size)
-    for (i in seq_len(n2)) {
-      Mp.c2[i, ] <- rdirichlet(1, g.c2)[1, ]
-      Mobs.c2[i, ] <- rmultinom(1, nSeq2[i], prob = Mp.c2[i, ])[, 1]
-    }
-
-    cb <- t(rbind(Mobs.c1, Mobs.c2))
-
-    return(cb)}
-  )
-
-  if (n == 1) {
-    count <-  do.call(rbind, resList)
-  } else {
-    count <- resList
-  }
-
-  return(count)
+    return(count)
 }
 
 

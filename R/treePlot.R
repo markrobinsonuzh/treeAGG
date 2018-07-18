@@ -132,98 +132,98 @@ treePlot <- function(tree,
                      legend = FALSE,
                      legend.theme = NULL,
                      legend.title = c(
-                       "point" = "Title_point",
-                       "branch" = "Title_branch"),
+                         "point" = "Title_point",
+                         "branch" = "Title_branch"),
                      legend.label = NULL,
                      size.line.legend = 2,
                      size.point.legend = 3, ...) {
 
-  # check tree
-  if (!inherits(tree, "phylo")) {
-    stop("tree: should be a phylo object")
-  }
-  p <- ggtree(tree, ...)
+    # check tree
+    if (!inherits(tree, "phylo")) {
+        stop("tree: should be a phylo object")
+    }
+    p <- ggtree(tree, ...)
 
-  # if legend isn't shown
-  # if(!legend){
-  #legend.title <- c("branch" = NA, "point" = NA)
-  #legend.label <- list(col.branch = NA, col.other = NA,
-  #                     col.point = NA)
-  #size.line.legend <- NA
-  #size.point.legend <- NA
-  #}
+    # if legend isn't shown
+    # if(!legend){
+    #legend.title <- c("branch" = NA, "point" = NA)
+    #legend.label <- list(col.branch = NA, col.other = NA,
+    #                     col.point = NA)
+    #size.line.legend <- NA
+    #size.point.legend <- NA
+    #}
 
-  # color branch
-  if (!is.null(branch)) {
-    p <-  addBranch(tree = tree, branch = branch,
-                    col.branch = col.branch,
-                    col.other = col.other,
-                    addTo = p)
-  } else {
-    p <- p
-  }
+    # color branch
+    if (!is.null(branch)) {
+        p <-  addBranch(tree = tree, branch = branch,
+                        col.branch = col.branch,
+                        col.other = col.other,
+                        addTo = p)
+    } else {
+        p <- p
+    }
 
-  # add points
-  if (!is.null(point)) {
-    p <- addPoint(tree = tree, point = point,
-                  col.point = col.point, addTo = p)
-  } else {
-    p <- p
-  }
+    # add points
+    if (!is.null(point)) {
+        p <- addPoint(tree = tree, point = point,
+                      col.point = col.point, addTo = p)
+    } else {
+        p <- p
+    }
 
-  # customize the size scale for added points
-  if (!is.null(point)) {
-    p <- p + sizeScale(size.point = size.point,
-                       legend.label = legend.label,
-                       legend.title = legend.title["point"],
-                       col.point = col.point,
-                       size.point.legend = size.point.legend,
-                       legend = legend)
-  } else {
-    p <- p
-  }
+    # customize the size scale for added points
+    if (!is.null(point)) {
+        p <- p + sizeScale(size.point = size.point,
+                           legend.label = legend.label,
+                           legend.title = legend.title["point"],
+                           col.point = col.point,
+                           size.point.legend = size.point.legend,
+                           legend = legend)
+    } else {
+        p <- p
+    }
 
-  # customize the color
-  if (!is.null(branch)) {
-    p <- p +
-      colScale(branch = branch,
-               point = point,
-               col.branch = col.branch,
-               col.other = col.other,
-               col.point = col.point,
-               legend.label = legend.label,
-               legend.title = legend.title,
-               size.line.legend = size.line.legend,
-               legend = legend )
-  } else {
-    p <- p
-  }
+    # customize the color
+    if (!is.null(branch)) {
+        p <- p +
+            colScale(branch = branch,
+                     point = point,
+                     col.branch = col.branch,
+                     col.other = col.other,
+                     col.point = col.point,
+                     legend.label = legend.label,
+                     legend.title = legend.title,
+                     size.line.legend = size.line.legend,
+                     legend = legend )
+    } else {
+        p <- p
+    }
 
-  # zoom in selected branches
-  if (!is.null(zoomNode)) {
-    p <- addZoom(tree = tree, zoomNode = zoomNode,
-                 zoomLevel = zoomLevel, zoomScale = zoomScale,
-                 addTo = p)
-  } else {
-    p <- p
-  }
+    # zoom in selected branches
+    if (!is.null(zoomNode)) {
+        p <- addZoom(tree = tree, zoomNode = zoomNode,
+                     zoomLevel = zoomLevel, zoomScale = zoomScale,
+                     addTo = p)
+    } else {
+        p <- p
+    }
 
-  # add legend
-  if (legend) {
-    p <- p + addLegend(legend.theme)
-  } else {
-    p <- p
-  }
+    # add legend
+    if (legend) {
+        p <- p + addLegend(legend.theme)
+    } else {
+        p <- p
+    }
 
- if (is.null(legend.label$col.point)) {
-    p <- p + guides(size = FALSE)
-  }
+    if (is.null(legend.label$col.point)) {
+        p <- p + guides(size = FALSE)
+    }
 
-  if (is.null(legend.label$col.branch)) {
-    p <- p + guides(color = FALSE)
-  }
+    if (is.null(legend.label$col.branch)) {
+        p <- p + guides(color = FALSE)
+    }
 
-  p
+    p
 }
 
 #' Color a branch
@@ -251,47 +251,47 @@ treePlot <- function(tree,
 addBranch <- function(tree, branch, col.branch,
                       col.other, addTo = NULL, ...) {
 
-  # node number required
-  if (inherits(branch, "character")) {
-    branch <- transNode(tree = tree, input = branch)
-  } else {
-    branch <- branch
-  }
+    # node number required
+    if (inherits(branch, "character")) {
+        branch <- transNode(tree = tree, input = branch)
+    } else {
+        branch <- branch
+    }
 
-  # -------------------------------------------------------
-  # create a data frame to indicate the selected edges
-  # -------------------------------------------------------
+    # -------------------------------------------------------
+    # create a data frame to indicate the selected edges
+    # -------------------------------------------------------
 
-  p <- ggtree(tree)
-  d <- p$data[, "node", drop = FALSE]
+    p <- ggtree(tree)
+    d <- p$data[, "node", drop = FALSE]
 
-  # The edges selected to be colored
-  eList <- lapply(branch, findOS, tree = tree,
-                  only.Tip = FALSE, self.include = TRUE)
-  el <- unlist(lapply(eList, length))
-  eList <- eList[order(el, decreasing = TRUE)]
-   if (length(col.branch) == length(branch)) {
-     col.branch <- col.branch[order(el, decreasing = TRUE)]
-   }
-  dList <- mapply(function(x, y) {
-    cbind.data.frame(node = y, group = x,
-                     stringsAsFactors = FALSE)},
-    x = col.branch, y = eList, SIMPLIFY = FALSE,
-    USE.NAMES = FALSE)
-  df <- do.call(rbind, dList)
+    # The edges selected to be colored
+    eList <- lapply(branch, findOS, tree = tree,
+                    only.Tip = FALSE, self.include = TRUE)
+    el <- unlist(lapply(eList, length))
+    eList <- eList[order(el, decreasing = TRUE)]
+    if (length(col.branch) == length(branch)) {
+        col.branch <- col.branch[order(el, decreasing = TRUE)]
+    }
+    dList <- mapply(function(x, y) {
+        cbind.data.frame(node = y, group = x,
+                         stringsAsFactors = FALSE)},
+        x = col.branch, y = eList, SIMPLIFY = FALSE,
+        USE.NAMES = FALSE)
+    df <- do.call(rbind, dList)
 
-  Truth <- rep("grp_other", nrow(d))
-  Truth[match(df$node, d$node)] <- df$group
-  d <- cbind.data.frame(d, Truth = Truth, stringsAsFactors = FALSE)
+    Truth <- rep("grp_other", nrow(d))
+    Truth[match(df$node, d$node)] <- df$group
+    d <- cbind.data.frame(d, Truth = Truth, stringsAsFactors = FALSE)
 
-  # return
-  if (is.null(addTo)) {
-    fig <- ggtree(tree, ...)
-  } else {
-    fig <- addTo
-  }
+    # return
+    if (is.null(addTo)) {
+        fig <- ggtree(tree, ...)
+    } else {
+        fig <- addTo
+    }
 
-  fig %<+% d + aes(colour = Truth)
+    fig %<+% d + aes(colour = Truth)
 
 }
 
@@ -313,33 +313,33 @@ addBranch <- function(tree, branch, col.branch,
 
 addPoint <- function(tree, point, col.point,
                      addTo = NULL, ...) {
-  p <- ggtree(tree)
-  d <- p$data[, "node", drop = FALSE]
+    p <- ggtree(tree)
+    d <- p$data[, "node", drop = FALSE]
 
-  # node number required
-  if (inherits(point, "character")) {
-    point <- transNode(tree = tree, input = point)
-  } else {
-    point <- point
-  }
+    # node number required
+    if (inherits(point, "character")) {
+        point <- transNode(tree = tree, input = point)
+    } else {
+        point <- point
+    }
 
-  # -------------------------------------------------------
-  # create a data frame to store the information for points
-  # -------------------------------------------------------
-  Estimate <- ifelse(d$node %in% point, "YES_Found",
-                     "NO_Found")
-  show <- ifelse(d$node %in% point, TRUE, FALSE)
-  d <- cbind.data.frame(d, Estimate = Estimate, show = show)
+    # -------------------------------------------------------
+    # create a data frame to store the information for points
+    # -------------------------------------------------------
+    Estimate <- ifelse(d$node %in% point, "YES_Found",
+                       "NO_Found")
+    show <- ifelse(d$node %in% point, TRUE, FALSE)
+    d <- cbind.data.frame(d, Estimate = Estimate, show = show)
 
-  if (is.null(addTo)) {
-    fig <- ggtree(tree, ...)
-  } else {
-    fig <- addTo
-  }
+    if (is.null(addTo)) {
+        fig <- ggtree(tree, ...)
+    } else {
+        fig <- addTo
+    }
 
-  fig %<+% d +
-    geom_point2(aes(subset = show, color = Estimate,
-                    size = Estimate))
+    fig %<+% d +
+        geom_point2(aes(subset = show, color = Estimate,
+                        size = Estimate))
 
 }
 
@@ -370,69 +370,69 @@ addPoint <- function(tree, point, col.point,
 addZoom <- function(tree, zoomNode = NULL, zoomLevel = NULL,
                     zoomScale = NULL, addTo = NULL, ...) {
 
-  # node number required
-  if (inherits(zoomNode, "character")) {
-    zoomNode <- transNode(tree = tree, input = zoomNode)
-  } else {
-    zoomNode <- zoomNode
-  }
-
-  zList <- lapply(zoomNode, findOS, tree = tree,
-                  only.Tip = FALSE, self.include = TRUE)
-  names(zList) <- zoomNode
-  z_len <- unlist(lapply(zList, length))
-
-  # define zoomLevel
-  if (is.null(zoomLevel)) {
-    zoomLevel <- ifelse(z_len > 1, 0, 1)
-  } else {
-    if (length(zoomLevel) == 1) {
-      zoomLevel <- rep(zoomLevel, length(zoomNode))
+    # node number required
+    if (inherits(zoomNode, "character")) {
+        zoomNode <- transNode(tree = tree, input = zoomNode)
     } else {
-      zoomLevel <- zoomLevel
+        zoomNode <- zoomNode
     }
-  }
-  names(zoomLevel) <- zoomNode
 
-  # define zoomScale
-  if (is.null(zoomScale)) {
-    zoomScale <- rep(1, length(zoomNode))
-  } else {
-    zoomScale <- rep(zoomScale, length(zoomNode))
-  }
+    zList <- lapply(zoomNode, findOS, tree = tree,
+                    only.Tip = FALSE, self.include = TRUE)
+    names(zList) <- zoomNode
+    z_len <- unlist(lapply(zList, length))
 
-  # the nodes to be zoomed in
-  nodZ <- findAncestor(tree = tree, node = zoomNode,
-                       level = zoomLevel)
-  names(nodZ) <- names(zoomScale) <- zoomNode
-  # remove nodes which are the descendants of the others
-  nodZW <- rmDesc(node = nodZ, tree = tree)
-  zoomScale[!names(zoomScale) %in% names(nodZW)] <- 1
-
-  if (is.null(addTo)) {
-    fig <- ggtree(tree, ...)
-  } else {
-    fig <- addTo
-  }
-
-  # zoom the selected nodes
-  i <- 1
-  repeat {
-    fig <- fig %>% scaleClade(nodZ[i], scale = zoomScale[i])
-    i <- i + 1
-    if (i > length(nodZ)) {
-      break
+    # define zoomLevel
+    if (is.null(zoomLevel)) {
+        zoomLevel <- ifelse(z_len > 1, 0, 1)
+    } else {
+        if (length(zoomLevel) == 1) {
+            zoomLevel <- rep(zoomLevel, length(zoomNode))
+        } else {
+            zoomLevel <- zoomLevel
+        }
     }
-  }
+    names(zoomLevel) <- zoomNode
+
+    # define zoomScale
+    if (is.null(zoomScale)) {
+        zoomScale <- rep(1, length(zoomNode))
+    } else {
+        zoomScale <- rep(zoomScale, length(zoomNode))
+    }
+
+    # the nodes to be zoomed in
+    nodZ <- findAncestor(tree = tree, node = zoomNode,
+                         level = zoomLevel)
+    names(nodZ) <- names(zoomScale) <- zoomNode
+    # remove nodes which are the descendants of the others
+    nodZW <- rmDesc(node = nodZ, tree = tree)
+    zoomScale[!names(zoomScale) %in% names(nodZW)] <- 1
+
+    if (is.null(addTo)) {
+        fig <- ggtree(tree, ...)
+    } else {
+        fig <- addTo
+    }
+
+    # zoom the selected nodes
+    i <- 1
+    repeat {
+        fig <- fig %>% scaleClade(nodZ[i], scale = zoomScale[i])
+        i <- i + 1
+        if (i > length(nodZ)) {
+            break
+        }
+    }
 
 
-  lim <- c(min(fig$data$y), max(fig$data$y))
+    lim <- c(min(fig$data$y), max(fig$data$y))
 
-  ## ggtree function set ylim when layout is circular or radical this would lead
-  ## to issue, like points not displayed when zoom in some branches
-  suppressMessages(fig <- fig + scale_y_continuous(limits = lim))
+    ## ggtree function set ylim when layout is circular or radical this would lead
+    ## to issue, like points not displayed when zoom in some branches
+    suppressMessages(fig <- fig + scale_y_continuous(limits = lim))
 
-  fig
+    fig
 }
 
 #' Add legend
@@ -449,26 +449,26 @@ addZoom <- function(tree, zoomNode = NULL, zoomLevel = NULL,
 
 addLegend <- function(legend.theme) {
 
-  # default way to put legend
-  li1 <- list(legend.position = "right",
-              legend.text = element_text(size= 12),
-              legend.key.size = unit(4,"cm"),
-              legend.key.height = unit(0.4,"cm"),
-              legend.key.width = unit(0.5, "cm"),
-              legend.title = element_text(size = 15)
-              #,
-              # legend.background = element_rect(),
-              #legend.box.background = element_rect()
-  )
-  # user defined
-  if (is.null(legend.theme)) {
-    legend.theme <- list(NULL)
-  }
-  li2 <- legend.theme
-  # overwrite the default
-  li <- modifyList(li1, li2)
-  # ggplot2 theme
-  do.call(theme, li)
+    # default way to put legend
+    li1 <- list(legend.position = "right",
+                legend.text = element_text(size= 12),
+                legend.key.size = unit(4,"cm"),
+                legend.key.height = unit(0.4,"cm"),
+                legend.key.width = unit(0.5, "cm"),
+                legend.title = element_text(size = 15)
+                #,
+                # legend.background = element_rect(),
+                #legend.box.background = element_rect()
+    )
+    # user defined
+    if (is.null(legend.theme)) {
+        legend.theme <- list(NULL)
+    }
+    li2 <- legend.theme
+    # overwrite the default
+    li <- modifyList(li1, li2)
+    # ggplot2 theme
+    do.call(theme, li)
 }
 
 
@@ -499,22 +499,22 @@ addLegend <- function(legend.theme) {
 sizeScale <- function(col.point, size.point,
                       legend.label, legend.title,
                       size.point.legend, legend) {
-  # if legend is required, correct the label with guide_legend
-  if (legend) {
-    ll <- list("branch" = NULL, "point" = NULL)
-    lt <- as.list(legend.title)
-    names(lt) <- names(legend.title)
-    legend.title <- modifyList(ll, lt)
-    scale_size_manual(values = size.point,
-                      labels = legend.label$col.point,
-                      guide = guide_legend(
-                        title = legend.title$point,
-                        override.aes = list(
-                          shape = 16, color = col.point,
-                          size = size.point.legend)))
-  } else {
-    scale_size_manual(values = size.point)
-  }
+    # if legend is required, correct the label with guide_legend
+    if (legend) {
+        ll <- list("branch" = NULL, "point" = NULL)
+        lt <- as.list(legend.title)
+        names(lt) <- names(legend.title)
+        legend.title <- modifyList(ll, lt)
+        scale_size_manual(values = size.point,
+                          labels = legend.label$col.point,
+                          guide = guide_legend(
+                              title = legend.title$point,
+                              override.aes = list(
+                                  shape = 16, color = col.point,
+                                  size = size.point.legend)))
+    } else {
+        scale_size_manual(values = size.point)
+    }
 }
 
 #' Customize the color
@@ -560,106 +560,106 @@ colScale <- function(branch,
                      legend.title,
                      size.line.legend,
                      legend) {
-  # colG is to correct the label
-  # colV is to correct the value
-  # if(is.null(point)){
-  #   colG <- colV <- c(col.branch, col.other)
-  #   names(colV) <- c(col.branch, "grp_other")
-  # }else{
-  #   colG <- colV <- c(col.branch, col.other, col.point)
-  #   names(colV) <- c(col.branch, "grp_other", "YES_Found")
-  # }
+    # colG is to correct the label
+    # colV is to correct the value
+    # if(is.null(point)){
+    #   colG <- colV <- c(col.branch, col.other)
+    #   names(colV) <- c(col.branch, "grp_other")
+    # }else{
+    #   colG <- colV <- c(col.branch, col.other, col.point)
+    #   names(colV) <- c(col.branch, "grp_other", "YES_Found")
+    # }
 
-  # colG is created to correct the color
-  # vG is created to output the label
-  if (length(legend.label$col.branch) > length(col.branch)) {
-    stop("Same color with different labels. You probably need more colors")
-  }
-
-  if (is.null(point)) {
-    cG <- list(col.branch, col.other)
-    names(cG) <- c("col.branch", "col.other")
-    colV <- c(col.branch, col.other)
-    names(colV) <- c(col.branch, "grp_other")
-  } else {
-    cG <- list(col.branch, col.other, col.point)
-    names(cG) <- c("col.branch", "col.other", "col.point")
-    colV <- c(col.branch, col.other, col.point)
-    names(colV) <- c(col.branch, "grp_other", "YES_Found")
-  }
-
-  if (legend) {
-    #if legend label is not provided
-    if (is.null(legend.label)) {
-      stop("legend.label isn't provided")
+    # colG is created to correct the color
+    # vG is created to output the label
+    if (length(legend.label$col.branch) > length(col.branch)) {
+        stop("Same color with different labels. You probably need more colors")
     }
 
-    # decide the content in the legend (branch, other or point)
-    # ll is a template
-    ll <- list(col.branch = "",
-               col.other = "",
-               col.point = "")
-    listG <- listLab <- ll[names(ll) %in% names(cG)]
-    listG <- modifyList(listG, cG)
-    listLab <- modifyList(listLab, legend.label)
-
-    # match the color and the label
-    namG <- mapply(function(x, y) {
-      names(x) <- y
-      x
-    }, x = setNames(listG, NULL),
-    y = setNames(listLab, NULL))
-
-    if (is.list(namG)) {
-      colG <- unlist(namG)
+    if (is.null(point)) {
+        cG <- list(col.branch, col.other)
+        names(cG) <- c("col.branch", "col.other")
+        colV <- c(col.branch, col.other)
+        names(colV) <- c(col.branch, "grp_other")
     } else {
-      colG <- namG
+        cG <- list(col.branch, col.other, col.point)
+        names(cG) <- c("col.branch", "col.other", "col.point")
+        colV <- c(col.branch, col.other, col.point)
+        names(colV) <- c(col.branch, "grp_other", "YES_Found")
     }
 
-    colG <- colG[!(duplicated(colG) &
-                     duplicated(names(colG)))]
-    lab <- names(colG)
-    ww <- tail(which(lab %in% legend.label$col.point),1)
-    # lab <- ifelse(names(colG) %in% legend.label$col.point, "", names(colG))
+    if (legend) {
+        #if legend label is not provided
+        if (is.null(legend.label)) {
+            stop("legend.label isn't provided")
+        }
 
-    lab[ww] <- ""
-    #colG <- unlist(setNames(namG, NULL))
+        # decide the content in the legend (branch, other or point)
+        # ll is a template
+        ll <- list(col.branch = "",
+                   col.other = "",
+                   col.point = "")
+        listG <- listLab <- ll[names(ll) %in% names(cG)]
+        listG <- modifyList(listG, cG)
+        listLab <- modifyList(listLab, legend.label)
 
-    # if there are duplicates for the pairs of color and lable,
-    # remove them.
-    #colG <- colG[!(duplicated(colG) & duplicated(names(colG)))]
-    # lab <- ifelse(names(colG) %in% legend.label$col.point, "", names(colG))
-    #lab <- names(colG)
-    #lab[3] <- ifelse(lab[3] %in% legend.label$col.point,
-    #                "", lab[3] )
-    lty <- ifelse(lab %in% "", "blank", "solid")
-    du <- duplicated(colG) & duplicated(names(colG))
-    lab <- ifelse(du, "", lab)
-    lty <- ifelse(du, "blank", lty)
+        # match the color and the label
+        namG <- mapply(function(x, y) {
+            names(x) <- y
+            x
+        }, x = setNames(listG, NULL),
+        y = setNames(listLab, NULL))
+
+        if (is.list(namG)) {
+            colG <- unlist(namG)
+        } else {
+            colG <- namG
+        }
+
+        colG <- colG[!(duplicated(colG) &
+                           duplicated(names(colG)))]
+        lab <- names(colG)
+        ww <- tail(which(lab %in% legend.label$col.point),1)
+        # lab <- ifelse(names(colG) %in% legend.label$col.point, "", names(colG))
+
+        lab[ww] <- ""
+        #colG <- unlist(setNames(namG, NULL))
+
+        # if there are duplicates for the pairs of color and lable,
+        # remove them.
+        #colG <- colG[!(duplicated(colG) & duplicated(names(colG)))]
+        # lab <- ifelse(names(colG) %in% legend.label$col.point, "", names(colG))
+        #lab <- names(colG)
+        #lab[3] <- ifelse(lab[3] %in% legend.label$col.point,
+        #                "", lab[3] )
+        lty <- ifelse(lab %in% "", "blank", "solid")
+        du <- duplicated(colG) & duplicated(names(colG))
+        lab <- ifelse(du, "", lab)
+        lty <- ifelse(du, "blank", lty)
 
 
-    # update legend.title
-    ll <- list("branch" = NULL, "point" = NULL)
-    lt <- as.list(legend.title)
-    names(lt) <- names(legend.title)
-    legend.title <- modifyList(ll, lt)
+        # update legend.title
+        ll <- list("branch" = NULL, "point" = NULL)
+        lt <- as.list(legend.title)
+        names(lt) <- names(legend.title)
+        legend.title <- modifyList(ll, lt)
 
-    scale_color_manual(
-      values = colV,
-      labels = lab,
-      guide = guide_legend(
-        title = legend.title$branch,
-        override.aes = list(
-          color = colG,
-          linetype = lty,
-          shape = rep(NA, length(colG)),
-          size = size.line.legend
+        scale_color_manual(
+            values = colV,
+            labels = lab,
+            guide = guide_legend(
+                title = legend.title$branch,
+                override.aes = list(
+                    color = colG,
+                    linetype = lty,
+                    shape = rep(NA, length(colG)),
+                    size = size.line.legend
+                )
+            )
         )
-      )
-    )
-  } else {
-    scale_color_manual(values = colV)
-  }
+    } else {
+        scale_color_manual(values = colV)
+    }
 
 }
 

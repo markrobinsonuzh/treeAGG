@@ -28,53 +28,53 @@
 
 transNode <- function(tree, input) {
 
-  if (!inherits(tree, "phylo")) {
-    stop("tree: should be a phylo object")
-  }
-
-  # node number & tip number
-  mat <- tree$edge
-  nod <- sort(unique(mat[, 1]))
-  tip <- sort(setdiff(mat[, 2], mat[, 1]))
-
-  # check whether the input node number exists in the provided tree
-  if (is.numeric(input)) {
-    if (!all(input %in% mat)) {
-      stop("Node ", input, " can't be found in the ", deparse(substitute(tree)),
-           "\n")
+    if (!inherits(tree, "phylo")) {
+        stop("tree: should be a phylo object")
     }
-  }
 
-  # tip label
-  if (is.null(tree$tip.label)) {
-    tipLab <- paste("Tip_", tip, sep = "")
-  } else {
-    tipLab <- tree$tip.label
-  }
-  # node label
-  if (is.null(tree$node.label)) {
-    nodLab <- paste("Node_", nod, sep = "")
-  } else {
-    nodLab <- tree$node.label
-  }
+    # node number & tip number
+    mat <- tree$edge
+    nod <- sort(unique(mat[, 1]))
+    tip <- sort(setdiff(mat[, 2], mat[, 1]))
 
-  comb <- c(tip, nod)
-  names(comb) <- c(tipLab, nodLab)
+    # check whether the input node number exists in the provided tree
+    if (is.numeric(input)) {
+        if (!all(input %in% mat)) {
+            stop("Node ", input, " can't be found in the ", deparse(substitute(tree)),
+                 "\n")
+        }
+    }
 
-  # transfer from label to number
-  if (inherits(input, "character")) {
-    if (all(input %in% names(comb))) {
-      final <- comb[input]
+    # tip label
+    if (is.null(tree$tip.label)) {
+        tipLab <- paste("Tip_", tip, sep = "")
     } else {
-      stop("The nodes ", paste(input[!input %in% names(comb)], collapse = ", "),
-           " could not be found in the tree. \n Node numbers or Node labels are
-           required but not a mixture of both")
+        tipLab <- tree$tip.label
+    }
+    # node label
+    if (is.null(tree$node.label)) {
+        nodLab <- paste("Node_", nod, sep = "")
+    } else {
+        nodLab <- tree$node.label
     }
 
-  } else {
-    final <- names(comb[match(input, comb)])
-  }
+    comb <- c(tip, nod)
+    names(comb) <- c(tipLab, nodLab)
 
-  return(final)
+    # transfer from label to number
+    if (inherits(input, "character")) {
+        if (all(input %in% names(comb))) {
+            final <- comb[input]
+        } else {
+            stop("The nodes ", paste(input[!input %in% names(comb)], collapse = ", "),
+                 " could not be found in the tree. \n Node numbers or Node labels are
+           required but not a mixture of both")
+        }
+
+    } else {
+        final <- names(comb[match(input, comb)])
+    }
+
+    return(final)
 
 }

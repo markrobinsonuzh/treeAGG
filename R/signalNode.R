@@ -35,44 +35,44 @@
 #' signalNode(node = c(2, 3, 16), tree = tinyTree)
 #'
 
- signalNode <- function(tree, node, label = FALSE) {
+signalNode <- function(tree, node, label = FALSE) {
 
-  if (!inherits(tree, "phylo")) {
-    stop("tree is not a phylo object.")
-  }
+    if (!inherits(tree, "phylo")) {
+        stop("tree is not a phylo object.")
+    }
 
-  if (!is.atomic(node)) {
-    stop("node is a vector")
-  }
+    if (!is.atomic(node)) {
+        stop("node is a vector")
+    }
 
-  # transfer node label to node number
-  if (inherits(node, "character")) {
-    node <- transNode(tree, input = node)
-  } else {
-    node <- node
-  }
+    # transfer node label to node number
+    if (inherits(node, "character")) {
+        node <- transNode(tree, input = node)
+    } else {
+        node <- node
+    }
 
-  # path matrix
-  mat <- matTree(tree)
+    # path matrix
+    mat <- matTree(tree)
 
-  if (!all(node %in% as.vector(mat))) {
-    stop("Some nodes could not be found in the tree")
-  }
+    if (!all(node %in% as.vector(mat))) {
+        stop("Some nodes could not be found in the tree")
+    }
 
-  # select paths which include the input nodes
-  ind <- apply(mat, 1, FUN = function(x) {
-    any(x %in% node)
-  })
-  # select nodes which only exist in the selected paths
-  selN <- setdiff(as.vector(mat[ind, ]), as.vector(mat[!ind, ]))
-  # remove nodes which are descendants of any others
-  sNode <- rmDesc(node = selN, tree = tree)
+    # select paths which include the input nodes
+    ind <- apply(mat, 1, FUN = function(x) {
+        any(x %in% node)
+    })
+    # select nodes which only exist in the selected paths
+    selN <- setdiff(as.vector(mat[ind, ]), as.vector(mat[!ind, ]))
+    # remove nodes which are descendants of any others
+    sNode <- rmDesc(node = selN, tree = tree)
 
-  if (label) {
-    final <- transNode(tree = tree, input = sNode)
-  } else {
-    final <- sNode
-  }
+    if (label) {
+        final <- transNode(tree = tree, input = sNode)
+    } else {
+        final <- sNode
+    }
 
-  return(final)
+    return(final)
 }

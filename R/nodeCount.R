@@ -38,41 +38,40 @@
 #' ggtree(tinyTree) %<+% d + geom_text2(aes(label = count))
 
 nodeCount <- function(tree, data, fun = sum) {
+    if (!(inherits(data, "data.frame") |
+          inherits(data, "matrix"))) {
+        stop("data should be a matrix or data.frame")
+    }
 
-  if (!(inherits(data, "data.frame") |
-        inherits(data, "matrix"))) {
-    stop("data should be a matrix or data.frame")
-  }
+    if (!inherits(tree, "phylo")) {
+        stop("tree: should be a phylo object")
+    }
 
-  if (!inherits(tree, "phylo")) {
-    stop("tree: should be a phylo object")
-  }
+    if (!setequal(rownames(data), tree$tip.label)) {
+        chx <- setdiff(rownames(data), tree$tip.label)
+        chs <- head(chx)
+        stop(cat("The rownames of data don't match the tree tip labels:",
+                 chs, "\n"))
+    }
 
-  if (!setequal(rownames(data), tree$tip.label)) {
-    chx <- setdiff(rownames(data), tree$tip.label)
-    chs <- head(chx)
-    stop(cat("The rownames of data don't match the tree tip labels:",
-             chs, "\n"))
-  }
+    emat <- tree$edge
+    leaf <- setdiff(emat[, 2], emat[, 1])
+    nodeI <- setdiff(emat[, 1], leaf)
 
-  emat <- tree$edge
-  leaf <- setdiff(emat[, 2], emat[, 1])
-  nodeI <- setdiff(emat[, 1], leaf)
+    ## calculate counts for nodes
+    nN <- length(nodeI)
+    nNam <- transNode(tree = tree, input = nodeI)
 
-  ## calculate counts for nodes
-  nN <- length(nodeI)
-  nNam <- transNode(tree = tree, input = nodeI)
-
-  # calculate counts at nodes
-  cNode <- matrix(NA, nrow = nN, ncol = ncol(data))
-  rownames(cNode) <- nNam
-  for (i in seq_len(nN)) {
-    node.i <- nodeI[i]
-    tips.i <- findOS(ancestor = node.i, tree = tree,
-                     only.Tip = TRUE, self.include = TRUE,
-                     return = "label")
-    cNode[i, ] <- apply(data[tips.i, ], 2, fun)
-  }
-  colnames(cNode) <- colnames(data)
-  return(rbind(data, cNode))
+    # calculate counts at nodes
+    cNode <- matrix(NA, nrow = nN, ncol = ncol(data))
+    rownames(cNode) <- nNam
+    for (i in seq_len(nN)) {
+        node.i <- nodeI[i]
+        tips.i <- findOS(ancestor = node.i, tree = tree,
+                         only.Tip = TRUE, self.include = TRUE,
+                         return = "label")
+        cNode[i, ] <- apply(data[tips.i, ], 2, fun)
+    }
+    colnames(cNode) <- colnames(data)
+    return(rbind(data, cNode))
 }

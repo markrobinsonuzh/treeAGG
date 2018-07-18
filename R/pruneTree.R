@@ -68,7 +68,7 @@ pruneTree <- function(tree, message = FALSE) {
         # create phylo object
         list.x <- list(edge = mat.x, tip.label = tipLab[tip.x],
                        edge.length = tree$edge.length[m.x],
-            node.label = nodLab[nod.x - max(tip)], Nnode = length(nod.x))
+                       node.label = nodLab[nod.x - max(tip)], Nnode = length(nod.x))
         class(list.x) <- "phylo"
         list.x
     })
