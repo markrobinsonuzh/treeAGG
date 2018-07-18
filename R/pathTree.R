@@ -6,7 +6,7 @@
 #' @param tree A phylo object
 #'
 #' @export
-#' @return NULL
+#' @return a list
 #' @author Ruizhu Huang
 #'
 #' @examples

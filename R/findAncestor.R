@@ -1,10 +1,12 @@
 #' Find the ancestors of specified nodes
 #'
-#' \code{findAncestor} finds the ancestor in the nth generation before specified nodes.
+#' \code{findAncestor} finds the ancestor in the nth generation before
+#' specified nodes.
 #'
 #' @param tree A phylo object
 #' @param node A vector of node numbers or node labels
-#' @param level A vector of numbers to define nth generation before the specified nodes
+#' @param level A vector of numbers to define nth generation before the
+#' specified nodes
 #' @param treeMat A matrix with each row representing a path. The entry is node
 #'   number. The first column is leaf node numbers. The columns are organized as
 #'   the order of nodes in the paths connecting leaves and the root. Default is
@@ -65,11 +67,13 @@ findAncestor <- function(tree, node, level, treeMat = NULL) {
             ind.f <- cbind(ind[, 1], vv)
         } else {
             # v2 <- ifelse(vv <= selP, vv, selP)
-            stop("The level specified for nodes ", node[x], " exceed the root level; try a small level value. \n")
+            stop("The level specified for nodes ", node[x], " exceed the root
+                 level; try a small level value. \n")
             # ind.f <- cbind(ind[, 1], v2)
         }
 
-        # there is only one path to go to the root when the starting point is fixed
+        # there is only one path to go to the root when the starting point is
+        # fixed
         vu <- unique(treeMat[ind.f])
         if (length(vu) > 1) {
             stop("more than one node has been found.")

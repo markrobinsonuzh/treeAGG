@@ -14,7 +14,7 @@
 #'   label).
 #'
 #' @export
-#' @return NULL
+#' @return A vector
 #' @author Ruizhu Huang
 #'
 #' @examples

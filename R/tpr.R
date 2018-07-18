@@ -121,15 +121,19 @@ tpr <- function(tree, truth, found,
 }
 
 
-#' Calculate the number of true positives and the total number of positives on a tree structure
+#' Calculate the number of true positives and the total number of positives on
+#' a tree structure
 #'
-#' \code{tpr0} calculates the number of true positives and the total number of positives on a tree structure at leaf or node level.
+#' \code{tpr0} calculates the number of true positives and the total number of
+#' positives on a tree structure at leaf or node level.
 #'
 #' @param tree A phylo object
-#' @param truth Nodes that have signals (eg. differentally abundant at different experimental conditions.).
+#' @param truth Nodes that have signals (eg. differentally abundant at different
+#'  experimental conditions.).
 #' @param found Nodes that have been found to have signal
-#' @param level If "leaf", true positive rate is calculated at leaf level; if "node", it is calculated at node level.
-#' @return NULL
+#' @param level If "leaf", true positive rate is calculated at leaf level; if
+#' "node", it is calculated at node level.
+#' @return a vector
 
 tpr0 <- function(tree,
                  truth = NULL,
@@ -192,7 +196,8 @@ tpr0 <- function(tree,
         stop("found should include character or numeric")
       }
 
-      # if there is signal and also something found, the true positive and the positive could be calculated after their input formats are correct.
+      # if there is signal and also something found, the true positive and the
+      # positive could be calculated after their input formats are correct.
       level <- match.arg(level)
       switch(level,
              leaf = {

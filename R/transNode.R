@@ -7,7 +7,7 @@
 #' @param input A tree node label or a tree node number
 #'
 #' @export
-#' @return NULL
+#' @return a vector
 #' @author Ruizhu Huang
 #'
 #' @examples
@@ -40,7 +40,8 @@ transNode <- function(tree, input) {
   # check whether the input node number exists in the provided tree
   if (is.numeric(input)) {
     if (!all(input %in% mat)) {
-      stop("Node ", input, " can't be found in the ", deparse(substitute(tree)), "\n")
+      stop("Node ", input, " can't be found in the ", deparse(substitute(tree)),
+           "\n")
     }
   }
 
@@ -66,7 +67,8 @@ transNode <- function(tree, input) {
       final <- comb[input]
     } else {
       stop("The nodes ", paste(input[!input %in% names(comb)], collapse = ", "),
-           " could not be found in the tree. \n Node numbers or Node labels are required but not a mixture of both")
+           " could not be found in the tree. \n Node numbers or Node labels are
+           required but not a mixture of both")
     }
 
   } else {

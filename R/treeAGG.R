@@ -9,7 +9,8 @@
 #'        2. a column for tree aggregation
 #'           (use value from this column to decide whether to aggregate)
 #'        3. a column of adjusted p value
-#'           (use value from this column to decide whether to reject a null hypothesis)
+#'           (use value from this column to decide whether to reject a null
+#'           hypothesis)
 #' @param stree A list of phylo object. The subtrees of \strong{tree}.
 #' @param pLim The threshold value (for \strong{varSIG}) to reject a null
 #'   hypothesis. By default, NULL. If NULL, the algorithm only compares the
@@ -25,7 +26,7 @@
 #' @author Ruizhu Huang
 #'
 #' @examples
-#' library(treeAGG)
+#'
 #' library(ggtree)
 #'
 #' data(tinyTree)
@@ -91,15 +92,16 @@ treeAGG <- function(tree, data, stree = NULL,
   all.tip <- tree$tip.label
   num.tip <- length(all.tip)
 
-  ## ----------- tree aggregation----------- firstly, set all tips and nodes as TRUE
+  ## ----------- tree aggregation----------- firstly, set all tips and nodes as
+  TRUE
   keep.tip <- rep(TRUE, num.tip)
   keep.node <- rep(TRUE, num.node)
   names(keep.tip) <- all.tip
   names(keep.node) <- all.node
   keep <- c(keep.tip, keep.node)
 
-  # compare between the parent and its children.  If the parent has smaller value,
-  # set their children as FALSE otherwise set the parent as FALSE.
+  # compare between the parent and its children.  If the parent has smaller
+  # value, set their children as FALSE otherwise set the parent as FALSE.
 
   for (i in seq_along(all.node)) {
     # parent & children
@@ -114,8 +116,8 @@ treeAGG <- function(tree, data, stree = NULL,
     mRank.child <- min(c(rank[child.i], 1), na.rm = TRUE)
     mRank.node <- min(c(rank[node.i], 1), na.rm = TRUE)
     if (keep[node.i]) {
-      # if min value occur at nodes, remove their children otherwise remove the nodes and
-      # keep their children
+      # if min value occur at nodes, remove their children otherwise remove the
+      # nodes and keep their children
       if (mRank.node > mRank.child) {
         keep[node.i] <- FALSE
       } else {

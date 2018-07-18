@@ -126,14 +126,18 @@ fdr <- function(tree, truth, found,
 }
 
 
-#' Calculate the number of false discoveries and the total number of discoveries on a tree structure
+#' Calculate the number of false discoveries and the total number of discoveries
+#'  on a tree structure
 #'
-#' \code{fdr0} calculates the number of false discoveries and the total number of discoveries at leaf or node level on a tree structure .
+#' \code{fdr0} calculates the number of false discoveries and the total number
+#' of discoveries at leaf or node level on a tree structure .
 #'
 #' @param tree A phylo object
-#' @param truth Nodes that have signals (eg. differentally abundant at different experimental conditions.).
+#' @param truth Nodes that have signals (eg. differentally abundant at different
+#'  experimental conditions.).
 #' @param found Nodes that have been found to have signal
-#' @param level If "leaf", false discovery rate is calculated at leaf level; if "node", it is calculated at node level.
+#' @param level If "leaf", false discovery rate is calculated at leaf level;
+#' if "node", it is calculated at node level.
 #' @return a vector
 #' @author Ruizhu Huang
 
@@ -142,7 +146,8 @@ fdr0 <- function(tree,
                  found = NULL,
                  level = c("node", "leaf")) {
 
-  # if no discovery (found = NULL), the false discovery is 0 and the discovery is 0
+  # if no discovery (found = NULL), the false discovery is 0 and the discovery
+  # is 0
   if (is.null(found)) {
     c(fd = 0, disc = 0)
   } else {
@@ -156,7 +161,8 @@ fdr0 <- function(tree,
     }
 
     # if discovery exists and has correct input format, but truth is null
-    # then false discovery equals to discovery and the number depends on the level
+    # then false discovery equals to discovery and the number depends on the
+    # level
     if (is.null(truth)) {
       level <- match.arg(level)
       switch(level,
@@ -186,8 +192,8 @@ fdr0 <- function(tree,
              })
     } else {
 
-      # if discovery (found) exists and has correct input format, and truth isn't null
-      # check whether the input format of truth is correct
+      # if discovery (found) exists and has correct input format, and truth
+      # isn't null check whether the input format of truth is correct
       if (!(
         inherits(truth, "character") |
         inherits(truth, "numeric") |
@@ -196,7 +202,9 @@ fdr0 <- function(tree,
         stop("truth should include character or numeric")
       }
 
-      # if both found and truth are not NULL, the false discovery and the        discovery could be calculated after their input formats are correct as below.
+      # if both found and truth are not NULL, the false discovery and the
+      # discovery could be calculated after their input formats are correct
+      # as below.
       level <- match.arg(level)
       switch(level,
              leaf = {

@@ -51,7 +51,8 @@ nodeCount <- function(tree, data, fun = sum) {
   if (!setequal(rownames(data), tree$tip.label)) {
     chx <- setdiff(rownames(data), tree$tip.label)
     chs <- head(chx)
-    stop(cat("The rownames of data don't match the tree tip labels:", chs, "\n"))
+    stop(cat("The rownames of data don't match the tree tip labels:",
+             chs, "\n"))
   }
 
   emat <- tree$edge

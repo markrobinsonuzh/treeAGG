@@ -3,24 +3,49 @@
 #' \code{treePlot} visualizes a phylogenetic tree.
 #'
 #' @param tree A phylo object
-#' @param branch A vector of node numbers labels to specify the branches to be colored. Each branch is represented by its branch node. A leaf node reprents the edge connecting the leaf and its parent.
-#' @param col.branch A vector of colors. Its length should be one or equals to the length of \strong{branch}. If \strong{col.branch} has the same length as \strong{branch}, the branches are colored correspondingly with the \strong{col.branch}. The default is blue.
-#' @param col.other A color for the branches other than those specified in \strong{branch}
-#' @param point A vector of node numbers or node labels to specify the locations to add points in the tree
+#' @param branch A vector of node numbers labels to specify the branches to be
+#' colored. Each branch is represented by its branch node. A leaf node reprents
+#' the edge connecting the leaf and its parent.
+#' @param col.branch A vector of colors. Its length should be one or equals to
+#' the length of \strong{branch}. If \strong{col.branch} has the same length as
+#'  \strong{branch}, the branches are colored correspondingly with the
+#' \strong{col.branch}. The default is blue.
+#' @param col.other A color for the branches other than those specified in
+#' \strong{branch}
+#' @param point A vector of node numbers or node labels to specify the
+#' locations to add points in the tree
 #' @param col.point A color for the \strong{point}. It has length equal to one.
-#' @param size.point The size for the \strong{point}. It has length equal to one.
-#' @param zoomNode A vector of nodes to be zoomed in. If default (NULL), the tree is not zoomed in.
-#' @param zoomLevel A numeric vector. Its length is equal to 1 or equal to the length of \strong{zoomNode}. If default (NULL), a leaf is zoomed in its direct parent level and an internal node is zoomed in its own level.
-#' @param zoomScale A numeric vector. Its length is equal to one or equal to the length of \strong{zoomNode}. If \strong{zoomScale} has the same length as \strong{zoomNode}, the branches are zoomed in with different scales corresponding to the value of \strong{zoomScale}. If default (NULL), tree is not zoomed in.
-#' @param legend TRUE or FALSE. Default is FALSE. If TRUE, the legend is created.
-#' @param legend.theme A list of arguments used for the theme in ggplot2 package (see \code{\link[ggplot2]{theme}} ) and starting with "legend."
-#' @param legend.title A vector to specify the title of the legend. It must be named with "branch" and "point" to match with the argument \strong{branch} and \strong{point}.
-#' @param legend.label A list with three members: "col.branch", "col.other", and "col.point". The elements order in each member matches with the corresponding argument \strong{col.branch}, \strong{col.other} and \strong{col.point}, and will display in the legend. See Examples.
+#' @param size.point The size for the \strong{point}. It has length equal to
+#' one.
+#' @param zoomNode A vector of nodes to be zoomed in. If default (NULL), the
+#' tree is not zoomed in.
+#' @param zoomLevel A numeric vector. Its length is equal to 1 or equal to the
+#' length of \strong{zoomNode}. If default (NULL), a leaf is zoomed in its
+#' direct parent level and an internal node is zoomed in its own level.
+#' @param zoomScale A numeric vector. Its length is equal to one or equal to
+#' the length of \strong{zoomNode}. If \strong{zoomScale} has the same length as
+#'  \strong{zoomNode}, the branches are zoomed in with different scales
+#' corresponding to the value of \strong{zoomScale}. If default (NULL), tree
+#' is not zoomed in.
+#' @param legend TRUE or FALSE. Default is FALSE. If TRUE, the legend is
+#' created.
+#' @param legend.theme A list of arguments used for the theme in ggplot2
+#' package (see \code{\link[ggplot2]{theme}} ) and starting with "legend."
+#' @param legend.title A vector to specify the title of the legend. It must
+#' be named with "branch" and "point" to match with the argument
+#' \strong{branch} and \strong{point}.
+#' @param legend.label A list with three members: "col.branch", "col.other",
+#' and "col.point". The elements order in each member matches with the
+#' corresponding argument \strong{col.branch}, \strong{col.other} and
+#' \strong{col.point}, and will display in the legend. See Examples.
 #' @param size.line.legend The line size shown in the legend for \strong{branch}
-#' @param size.point.legend The point size shown in the legend for \strong{point}.
+#' @param size.point.legend The point size shown in the legend for
+#' \strong{point}.
 #' @param ... see also \code{\link[ggtree]{ggtree}}
 #'
-#' @details treePlot is created based on the \pkg{ggtree} and \pkg{ggplot2}. So other geoms from these two packages could be combined with \code{treePlot} to add geoms in the figure created by \code{treePlot}.
+#' @details treePlot is created based on the \pkg{ggtree} and \pkg{ggplot2}.
+#' So other geoms from these two packages could be combined with
+#' \code{treePlot} to add geoms in the figure created by \code{treePlot}.
 #'
 #' @import ggplot2 ggtree
 #' @export
@@ -206,9 +231,15 @@ treePlot <- function(tree,
 #' \code{addBranch} colors a branch or some edges.
 #'
 #' @param tree A phylo object
-#' @param branch A vector of node numbers labels to specify the branches to be colored. Each branch is represented by its branch node. A leaf node reprents the edge connecting the leaf and its parent.
-#' @param col.branch A vector of colors. Its length should be one or equals to the length of \strong{branch}. If \strong{col.branch} has the same length as \strong{branch}, the branches are colored correspondingly with the \strong{col.branch}. The default is blue.
-#' @param col.other A color for the branches other than those specified in \strong{branch}
+#' @param branch A vector of node numbers labels to specify the branches to be
+#' colored. Each branch is represented by its branch node. A leaf node reprents
+#' the edge connecting the leaf and its parent.
+#' @param col.branch A vector of colors. Its length should be one or equals to
+#' the length of \strong{branch}. If \strong{col.branch} has the same length as
+#'  \strong{branch}, the branches are colored correspondingly with the
+#' \strong{col.branch}. The default is blue.
+#' @param col.other A color for the branches other than those specified in
+#' \strong{branch}
 #' @param addTo NULL or a plot of a phylo object.
 #' @param ... see also \code{\link[ggtree]{ggtree}}
 #'
@@ -269,7 +300,8 @@ addBranch <- function(tree, branch, col.branch,
 #' \code{addPoint} adds points to a plot of phylogenetic tree.
 #'
 #' @param tree A phylo object
-#' @param point A vector of node numbers or node labels to specify the locations to add points in the tree
+#' @param point A vector of node numbers or node labels to specify the
+#' locations to add points in the tree
 #' @param col.point A color for the \strong{point}. It has length equal to one.
 #' @param addTo NULL or a plot of a phylo object.
 #' @param ... see also \code{\link[ggtree]{ggtree}}
@@ -316,10 +348,17 @@ addPoint <- function(tree, point, col.point,
 #' \code{addZoom} zooms in a phylogenetic tree.
 #'
 #' @param tree A phylo object
-#' @param zoomNode A vector of nodes to be zoomed in. If default (NULL), the tree is not zoomed in.
-#' @param zoomLevel A numeric vector. Its length is equal to 1 or equal to the length of \strong{zoomNode}. If default (NULL), a leaf is zoomed in its direct parent level and an internal node is zoomed in its own level.
+#' @param zoomNode A vector of nodes to be zoomed in. If default (NULL), the
+#' tree is not zoomed in.
+#' @param zoomLevel A numeric vector. Its length is equal to 1 or equal to the
+#' length of \strong{zoomNode}. If default (NULL), a leaf is zoomed in its
+#' direct parent level and an internal node is zoomed in its own level.
 #'
-#' @param zoomScale A numeric vector. Its length is equal to one or equal to the length of \strong{zoomNode}. If \strong{zoomScale} has the same length as \strong{zoomNode}, the branches are zoomed in with different scales corresponding to the value of \strong{zoomScale}. If default (NULL), tree is not zoomed in.
+#' @param zoomScale A numeric vector. Its length is equal to one or equal to
+#' the length of \strong{zoomNode}. If \strong{zoomScale} has the same length as
+#'  \strong{zoomNode}, the branches are zoomed in with different scales
+#' corresponding to the value of \strong{zoomScale}. If default (NULL), tree is
+#' not zoomed in.
 #' @param addTo NULL or a plot of a phylo object.
 #' @param ... see also \code{\link[ggtree]{ggtree}}
 #'
@@ -389,8 +428,8 @@ addZoom <- function(tree, zoomNode = NULL, zoomLevel = NULL,
 
   lim <- c(min(fig$data$y), max(fig$data$y))
 
-  ## ggtree function set ylim when layout is circular or radical this would lead to
-  ## issue, like points not displayed when zoom in some branches
+  ## ggtree function set ylim when layout is circular or radical this would lead
+  ## to issue, like points not displayed when zoom in some branches
   suppressMessages(fig <- fig + scale_y_continuous(limits = lim))
 
   fig
@@ -399,7 +438,8 @@ addZoom <- function(tree, zoomNode = NULL, zoomLevel = NULL,
 #' Add legend
 #' \code{addLegend} customizes the legend.
 #'
-#' @param legend.theme A list of arguments used for the theme in ggplot2 package (see \code{\link[ggplot2]{theme}} ) and starting with "legend."
+#' @param legend.theme A list of arguments used for the theme in ggplot2 package
+#'  (see \code{\link[ggplot2]{theme}} ) and starting with "legend."
 #'
 #' @import ggtree ggplot2
 #' @importFrom utils modifyList
@@ -437,10 +477,17 @@ addLegend <- function(legend.theme) {
 #' \code{sizeScale} customizes the size scale.
 #'
 #' @param col.point A color for the \strong{point}. It has length equal to one.
-#' @param size.point The size for the \strong{point}. It has length equal to one.
-#' @param legend.label A list with three members: "col.branch", "col.other", and "col.point". The elements order in each member matches with the corresponding argument \strong{col.branch}, \strong{col.other} and \strong{col.point}, and will display in the legend. See Examples.
-#' @param legend.title A vector to specify the title of the legend. It must be named with "branch" and "point" to match with the argument \strong{branch} and \strong{point}.
-#' @param size.point.legend the point size shown in the legend for \strong{point}.
+#' @param size.point The size for the \strong{point}. It has length equal to
+#' one.
+#' @param legend.label A list with three members: "col.branch", "col.other",
+#' and "col.point". The elements order in each member matches with the
+#' corresponding argument \strong{col.branch}, \strong{col.other} and
+#' \strong{col.point}, and will display in the legend. See Examples.
+#' @param legend.title A vector to specify the title of the legend. It must be
+#' named with "branch" and "point" to match with the argument \strong{branch}
+#' and \strong{point}.
+#' @param size.point.legend the point size shown in the legend for
+#' \strong{point}.
 #' @param legend TRUE or FALSE
 #'
 #' @import ggplot2 ggtree
@@ -474,15 +521,28 @@ sizeScale <- function(col.point, size.point,
 #'
 #' \code{colScale} customizes the color scale.
 #'
-#' @param branch A vector of node numbers labels to specify the branches to be colored. Each branch is represented by its branch node. A leaf node reprents the edge connecting the leaf and its parent.
-#' @param point A vector of node numbers or node labels to specify the locations to add points in the tree.
-#' @param col.branch A vector of colors. Its length should be one or equals to the length of \strong{branch}. If \strong{col.branch} has the same length as \strong{branch}, the branches are colored correspondingly with the \strong{col.branch}. The default is blue.
-#' @param col.other A color for the branches other than those specified in \strong{branch}
+#' @param branch A vector of node numbers labels to specify the branches to be
+#' colored. Each branch is represented by its branch node. A leaf node reprents
+#' the edge connecting the leaf and its parent.
+#' @param point A vector of node numbers or node labels to specify the
+#' locations to add points in the tree.
+#' @param col.branch A vector of colors. Its length should be one or equals to
+#' the length of \strong{branch}. If \strong{col.branch} has the same length as
+#'  \strong{branch}, the branches are colored correspondingly with the
+#' \strong{col.branch}. The default is blue.
+#' @param col.other A color for the branches other than those specified in
+#' \strong{branch}
 #' @param col.point A color for the \strong{point}. It has length equal to one.
-#' @param legend.label A list with three members: "col.branch", "col.other", and "col.point". The elements order in each member matches with the corresponding argument \strong{col.branch}, \strong{col.other} and \strong{col.point}, and will display in the legend. See Examples.
-#' @param legend.title A vector to specify the title of the legend. It must be named with "branch" and "point" to match with the argument \strong{branch} and \strong{point}.
+#' @param legend.label A list with three members: "col.branch", "col.other",
+#' and "col.point". The elements order in each member matches with the
+#' corresponding argument \strong{col.branch}, \strong{col.other} and
+#' \strong{col.point}, and will display in the legend. See Examples.
+#' @param legend.title A vector to specify the title of the legend. It must be
+#' named with "branch" and "point" to match with the argument \strong{branch}
+#' and \strong{point}.
 #' @param size.line.legend the line size shown in the legend for \strong{branch}
-#' @param legend TRUE or FALSE. Default is FALSE. If TRUE, the legend is created.
+#' @param legend TRUE or FALSE. Default is FALSE. If TRUE, the legend is
+#' created.
 #'
 #' @import ggplot2 ggtree
 #' @importFrom utils modifyList tail
