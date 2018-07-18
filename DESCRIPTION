@@ -2,8 +2,12 @@ Package: treeAGG
 Type: Package
 Title: What the Package Does (Title Case)
 Version: 0.1.0
-Author: Ruizhu HUANG
-Maintainer: Ruizhu Huang <fiona2016fiona@gmail.com>
+Authors@R: c(
+    person("Ruizhu", "Huang", email = "ruizhu.uzh@gmail.com",
+           role = c("aut", "cre")),
+    person("Charlotte", "Soneson", role = c("aut")),
+    person("Mark", "Robinson", role = c("aut")))
+Maintainer: Ruizhu Huang <ruizhu.uzh@gmail.com>
 Description: More about what it does (maybe more than one line)
     Use four spaces when indenting paragraphs within the Description.
 Depends: R(>= 3.5.0)
