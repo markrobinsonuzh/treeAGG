@@ -6,8 +6,8 @@
 #' @param tree A list of phylo objects.
 #'
 #' @export
-#'
 #' @return A vector of node numbers
+#' @author Ruizhu Huang
 #' @examples {
 #' data(tinyTree)
 #' library(ggtree)

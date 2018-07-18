@@ -7,10 +7,10 @@
 #' @param input A tree node label or a tree node number
 #'
 #' @export
-#' @return
+#' @return NULL
+#' @author Ruizhu Huang
 #'
 #' @examples
-#'
 #' library(ggtree)
 #'
 #' data(tinyTree)

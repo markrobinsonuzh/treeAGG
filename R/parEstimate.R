@@ -3,14 +3,18 @@
 #' \code{parEstimate} estimates parameters for a Dirichlet distribution from a real data (count table).
 #'
 #' @param data A count table. Samples in the column and entities in the row.
-#' 
+#'
 #' @importFrom dirmult dirmult
-#' 
 #' @export
-#' 
+#'
 #' @details Use the default setting from \code{dirmult} (see \code{\link[dirmult]{dirmult}})
-#' 
+#'
 #' @return A list including \dQuote{pi} and \dQuote{theta}
+#' @author Ruizhu Huang
+#' @examples
+#' library(GUniFrac)
+#' data("throat.otu.tab")
+#' throat.par <- parEstimate(data = t(throat.otu.tab))
 
 parEstimate <- function(data) {
 

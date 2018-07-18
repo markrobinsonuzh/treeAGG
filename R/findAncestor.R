@@ -13,6 +13,7 @@
 #'
 #' @export
 #' @return a vector of node numbers
+#' @author Ruizhu Huang
 #'
 #' @examples
 #' library(ggtree)

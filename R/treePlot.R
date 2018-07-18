@@ -25,7 +25,7 @@
 #' @import ggplot2 ggtree
 #' @export
 #' @return A tree plot
-#'
+#' @author Ruizhu Huang
 #' @examples
 #'
 #' data(bigTree)
@@ -213,7 +213,9 @@ treePlot <- function(tree,
 #' @param ... see also \code{\link[ggtree]{ggtree}}
 #'
 #' @import ggtree ggplot2
-#' @return
+#' @return A figure
+#' @author Ruizhu Huang
+#' @keywords internal
 
 addBranch <- function(tree, branch, col.branch,
                       col.other, addTo = NULL, ...) {
@@ -273,7 +275,9 @@ addBranch <- function(tree, branch, col.branch,
 #' @param ... see also \code{\link[ggtree]{ggtree}}
 #'
 #' @import ggtree ggplot2
-#' @return
+#' @return A figure
+#' @author Ruizhu Huang
+#' @keywords internal
 
 addPoint <- function(tree, point, col.point,
                      addTo = NULL, ...) {
@@ -320,7 +324,9 @@ addPoint <- function(tree, point, col.point,
 #' @param ... see also \code{\link[ggtree]{ggtree}}
 #'
 #' @import ggtree ggplot2
-#' @return
+#' @return A figure
+#' @author Ruizhu Huang
+#' @keywords internal
 
 addZoom <- function(tree, zoomNode = NULL, zoomLevel = NULL,
                     zoomScale = NULL, addTo = NULL, ...) {
@@ -397,7 +403,9 @@ addZoom <- function(tree, zoomNode = NULL, zoomLevel = NULL,
 #'
 #' @import ggtree ggplot2
 #' @importFrom utils modifyList
-#' @return
+#' @return a list
+#' @author Ruizhu Huang
+#' @keywords internal
 
 addLegend <- function(legend.theme) {
 
@@ -437,7 +445,9 @@ addLegend <- function(legend.theme) {
 #'
 #' @import ggplot2 ggtree
 #' @importFrom utils modifyList
-#' @return
+#' @return ggproto object (Scale)
+#' @author Ruizhu Huang
+#' @keywords internal
 
 sizeScale <- function(col.point, size.point,
                       legend.label, legend.title,
@@ -477,7 +487,9 @@ sizeScale <- function(col.point, size.point,
 #' @import ggplot2 ggtree
 #' @importFrom utils modifyList tail
 #' @importFrom stats setNames
-#' @return
+#' @return ggproto object (color)
+#' @author Ruizhu Huang
+#' @keywords internal
 
 colScale <- function(branch,
                      point,

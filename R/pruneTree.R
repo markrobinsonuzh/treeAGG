@@ -5,14 +5,15 @@
 #' @param tree A phylo object
 #' @param message A logical value, TRUE or FALSE. If default (FALSE), the
 #'   process isn't printed out.
-#' 
+#'
+#' @export
 #' @return A list of phylo objects. If the tree ('tree') provides node and tip
 #'   labels, the labels are passed to its subtrees; otherwise, the labels are
 #'   generated automatically with a prefix 'Node_' for internal nodes and 'Tip_'
 #'   for leaves with the corresponding numbers in the edge component of phylo
 #'   object. (tree$edge)
+#' @author Ruizhu Huang
 #'
-#' @export
 #'
 #' @examples
 #'

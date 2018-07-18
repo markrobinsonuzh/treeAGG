@@ -18,10 +18,9 @@
 #'   requirements are returned.
 #'
 #' @export
-#'
 #' @return The node whose descendant branch has the lowest proportion
-#'
-#' @examples{
+#' @author Ruizhu Huang
+#' @examples
 #' data("cytofTree")
 #' data("cytofCount")
 #' set.seed(1)
@@ -30,7 +29,7 @@
 #' sN <- selNode(tree = tree, minTip = 20,
 #' maxTip = 50, minPr = 0.02, maxPr = 0.03,
 #' skip = NULL, data = cytofCount, all = TRUE)
-#' }
+#'
 #'
 
 selNode <- function(tree, data, minTip = 0, maxTip = Inf,
@@ -89,12 +88,19 @@ selNode <- function(tree, data, minTip = 0, maxTip = Inf,
                    only.Tip = TRUE, self.include = TRUE)
     tipS <- unlist(tipS)
     # take those without overlaps
-    rmp <- sapply(st$node, FUN = function(x){
+    # rmp <- sapply(st$node, FUN = function(x){
+    #   tx <- findOS(ancestor = x, tree = tree, only.Tip = TRUE,
+    #                self.include = TRUE)
+    #   ix <- intersect(tipS, tx)
+    #   length(ix) == 0
+    # })
+
+    rmp <- vapply(st$node, FUN = function(x){
       tx <- findOS(ancestor = x, tree = tree, only.Tip = TRUE,
                    self.include = TRUE)
       ix <- intersect(tipS, tx)
       length(ix) == 0
-    })
+    }, FUN.VALUE = TRUE)
 
     new.st <- st[rmp, ]
   } else {

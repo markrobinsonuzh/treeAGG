@@ -8,8 +8,9 @@
 #' @param label A logical value. If TRUE, the selected node label is output;
 #'   otherwise the node number is output
 #'
-#' @return The label of the shared node
 #' @export
+#' @return The label of the shared node
+#' @author Ruizhu Huang
 #'
 #' @examples
 #'

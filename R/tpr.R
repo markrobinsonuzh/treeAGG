@@ -32,9 +32,8 @@
 #'
 #' @export
 #' @return A true positive rate
-#'
+#' @author Ruizhu Huang
 #' @examples
-#'
 #' library(ggtree)
 #' data("tinyTree")
 #' ggtree(tinyTree) + geom_text2(aes(label = node))
@@ -130,7 +129,7 @@ tpr <- function(tree, truth, found,
 #' @param truth Nodes that have signals (eg. differentally abundant at different experimental conditions.).
 #' @param found Nodes that have been found to have signal
 #' @param level If "leaf", true positive rate is calculated at leaf level; if "node", it is calculated at node level.
-#' @return
+#' @return NULL
 
 tpr0 <- function(tree,
                  truth = NULL,

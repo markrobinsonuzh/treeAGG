@@ -6,13 +6,11 @@
 #' reach the root.
 #'
 #' @param tree A phylo object
-#'
-#' @return A matrix
-#'
 #' @export
+#' @return A matrix
+#' @author Ruizhu Huang
 #'
 #' @examples
-#'
 #' library(ggtree)
 #'
 #' ggtree(exTree, branch.length = 'none') +

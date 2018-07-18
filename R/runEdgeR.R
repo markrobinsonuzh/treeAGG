@@ -27,6 +27,13 @@
 #'  tag.disp, the tagwise dispersion
 #'
 #'  waldAP, the adjusted p-value from Wald test ('BH' method; Benjamini & Hochberg (1995))
+#' @author Ruizhu Huang
+#' @examples
+#' library(treeAGG)
+#' data("cytofCount")
+#' mod <- runEdgeR(data = cytofCount, nSam = c(5, 5),
+#' isTip = rep(TRUE, nrow(cytofCount)), prior.count = 0,
+#' normalize = TRUE)
 
 runEdgeR <- function(data, nSam, isTip,
                      isAnalyze = NULL,
@@ -38,9 +45,9 @@ runEdgeR <- function(data, nSam, isTip,
   } else{
     isAnalyze <- isAnalyze
   }
-  
+
   # define conditions
-  grp <- factor(rep(1:2, nSam))
+  grp <- factor(rep(seq_len(2), nSam))
 
   # correct sample size
   SampSize.c <- colSums(data[isTip, ])

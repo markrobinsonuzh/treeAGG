@@ -6,10 +6,10 @@
 #' @param tree A phylo object
 #'
 #' @export
-#' @return
+#' @return NULL
+#' @author Ruizhu Huang
 #'
 #' @examples
-#'
 #' data(tinyTree)
 #' library(ggtree)
 #' ggtree(tinyTree) + geom_text2(aes(label = node))

@@ -9,10 +9,11 @@
 #'   counts at its descendant leaf nodes. The default is sum
 #'
 #' @importFrom utils head
+#' @export
 #' @return A count table (matrix class) with a row representing a node and a
 #'   column representing a sample.
+#' @author Ruizhu Huang
 #'
-#' @export
 #'
 #' @examples
 #' data("tinyTree")

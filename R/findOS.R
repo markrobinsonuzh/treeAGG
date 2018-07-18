@@ -14,7 +14,8 @@
 #'   label).
 #'
 #' @export
-#' @return
+#' @return NULL
+#' @author Ruizhu Huang
 #'
 #' @examples
 #' data(tinyTree)
