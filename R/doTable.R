@@ -23,7 +23,6 @@
 #' @importFrom dirmult dirmult
 #' @export
 #'
-#'
 #' @return a list of objects
 #' \item{FC}{the fold change of entities correspondint to the tree leaves.}
 #' \item{Count}{a list of count table or a count table. Entities on the row and samples in the column. Each count table includes entities corresponding to all nodes on the tree structure.}
@@ -43,8 +42,9 @@
 #' \item S1: two branches are selected to swap their proportions, and leaves on the same branch have the same fold change.
 #' \item S2: two branches are selected to swap their proportions. Leaves in the same branch have different fold changes but same direction (either increase or decrease).
 #' \item S3: two branches are selected. One branch has its proportion swapped with the proportion of some leaves from the other branch.}
-
-#'@examples{
+#' @author Ruizhu Huang
+#'
+#' @examples{
 #' if(require(GUniFrac)){
 #' data("throat.otu.tab")
 #' data("throat.tree")
@@ -134,6 +134,7 @@ doTable <- function(tree, data, scenario = "S1",
 #' @param ratio The proportion ratio of branch B to branch A. This value is used to select branches(see \bold{Details}). If there are no branches having exactly this ratio, the pair with the value closest to \code{ratio} would be selected.
 #'
 #' @return a data frame of one row
+#' @author Ruizhu Huang
 
 pickLoc <- function(tree, data, from.A,
                     minTip.A, maxTip.A,
@@ -218,22 +219,48 @@ pickLoc <- function(tree, data, from.A,
   }
 
   # An entry in mm is set to NA if one node is the descendant of the other
-  nm <- matrix(sapply(seq_len(ncol(mm)), FUN = function(x) {
-    # each column
-    cn <- colnames(mm)
-    cx <- cn[x]
+  # nm <- matrix(sapply(seq_len(ncol(mm)), FUN = function(x) {
+  #   # each column
+  #   cn <- colnames(mm)
+  #   cx <- cn[x]
+  #
+  #   # all rows
+  #   rn <- rownames(mm)
+  #   tx <- desI[rn]
+  #
+  #   cs <- lapply(tx,FUN = function(x) {
+  #     length(intersect(x, desI[[cx]])) > 0
+  #   })
+  #   cv <- unlist(cs)
+  #   fm <- mm[, x]
+  #   fm[cv] <- NA
+  #   fm}), nrow = nrow(mm))
+  # preserve attributes of mm
+  nm <- mm
+  nm[] <- vapply(
+    seq_len(ncol(mm)),
+    FUN = function(x) {
+      # each column
+      cn <- colnames(mm)
+      cx <- cn[x]
 
-    # all rows
-    rn <- rownames(mm)
-    tx <- desI[rn]
+      # all rows
+      rn <- rownames(mm)
+      tx <- desI[rn]
 
-    cs <- lapply(tx,FUN = function(x) {
-      length(intersect(x, desI[[cx]])) > 0
-    })
-    cv <- unlist(cs)
-    fm <- mm[, x]
-    fm[cv] <- NA
-    fm}), nrow = nrow(mm))
+      cs <- lapply(
+        tx,
+        FUN = function(x) {
+          length(intersect(x, desI[[cx]])) > 0
+        }
+      )
+      cv <- unlist(cs)
+      fm <- mm[, x]
+      fm[cv] <- NA
+      fm
+    },
+    FUN.VALUE = numeric(nrow(mm))
+  )
 
   colnames(nm) <- colnames(mm)
   rownames(nm) <- rownames(mm)
@@ -284,6 +311,7 @@ pickLoc <- function(tree, data, from.A,
 #' @param data A count table (a matrix or a data frame). It has tree leaves in rows and samples from different conditions in  columns.
 #' @param from.A,from.B The branch node labels of Branch A, B.
 #' @return A data frame of one row
+#' @author Ruizhu Huang
 
 infLoc <- function(tree, data, from.A,
                    from.B) {
@@ -345,6 +373,7 @@ infLoc <- function(tree, data, from.A,
 #'
 #' @importFrom stats runif
 #' @return T numeric vector
+#' @author Ruizhu Huang
 
 doFC <- function(tree, data, scenario,
                  branchA, branchB,
@@ -484,6 +513,7 @@ doFC <- function(tree, data, scenario,
 #' @importFrom dirmult rdirichlet
 #' @importFrom stats rmultinom rnbinom
 #' @return a matrix or a list of matrices
+#' @author Ruizhu Huang
 #'
 doCount <- function(data, FC, nSam, mu,
                     size, n) {
