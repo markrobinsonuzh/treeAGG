@@ -9,7 +9,8 @@ addPoint(tree, point, col.point, addTo = NULL, ...)
 \arguments{
 \item{tree}{A phylo object}
 
-\item{point}{A vector of node numbers or node labels to specify the locations to add points in the tree}
+\item{point}{A vector of node numbers or node labels to specify the
+locations to add points in the tree}
 
 \item{col.point}{A color for the \strong{point}. It has length equal to one.}
 
@@ -17,6 +18,13 @@ addPoint(tree, point, col.point, addTo = NULL, ...)
 
 \item{...}{see also \code{\link[ggtree]{ggtree}}}
 }
+\value{
+A figure
+}
 \description{
 \code{addPoint} adds points to a plot of phylogenetic tree.
 }
+\author{
+Ruizhu Huang
+}
+\keyword{internal}

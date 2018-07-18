@@ -189,6 +189,7 @@ doTable <- function(tree, data, scenario = "S1",
 #'
 #' @return a data frame of one row
 #' @author Ruizhu Huang
+#' @keywords internal
 
 pickLoc <- function(tree, data, from.A,
                     minTip.A, maxTip.A,
@@ -368,6 +369,7 @@ pickLoc <- function(tree, data, from.A,
 #' @param from.A,from.B The branch node labels of Branch A, B.
 #' @return A data frame of one row
 #' @author Ruizhu Huang
+#' @keywords internal
 
 infLoc <- function(tree, data, from.A,
                    from.B) {
@@ -438,6 +440,7 @@ infLoc <- function(tree, data, from.A,
 #' @importFrom stats runif
 #' @return T numeric vector
 #' @author Ruizhu Huang
+#' @keywords internal
 
 doFC <- function(tree, data, scenario,
                  branchA, branchB,
@@ -588,6 +591,7 @@ doFC <- function(tree, data, scenario,
 #' @importFrom stats rmultinom rnbinom
 #' @return a matrix or a list of matrices
 #' @author Ruizhu Huang
+#' @keywords internal
 #'
 doCount <- function(data, FC, nSam, mu,
                     size, n) {

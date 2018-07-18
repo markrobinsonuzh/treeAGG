@@ -8,9 +8,17 @@
 addLegend(legend.theme)
 }
 \arguments{
-\item{legend.theme}{A list of arguments used for the theme in ggplot2 package (see \code{\link[ggplot2]{theme}} ) and starting with "legend."}
+\item{legend.theme}{A list of arguments used for the theme in ggplot2 package
+(see \code{\link[ggplot2]{theme}} ) and starting with "legend."}
+}
+\value{
+a list
 }
 \description{
 Add legend
 \code{addLegend} customizes the legend.
 }
+\author{
+Ruizhu Huang
+}
+\keyword{internal}

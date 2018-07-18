@@ -140,6 +140,7 @@ fdr <- function(tree, truth, found,
 #' if "node", it is calculated at node level.
 #' @return a vector
 #' @author Ruizhu Huang
+#' @keywords internal
 
 fdr0 <- function(tree,
                  truth = NULL,

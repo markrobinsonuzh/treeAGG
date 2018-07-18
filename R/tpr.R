@@ -134,6 +134,7 @@ tpr <- function(tree, truth, found,
 #' @param level If "leaf", true positive rate is calculated at leaf level; if
 #' "node", it is calculated at node level.
 #' @return a vector
+#' @keywords internal
 
 tpr0 <- function(tree,
                  truth = NULL,

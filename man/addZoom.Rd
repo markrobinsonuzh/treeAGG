@@ -10,16 +10,30 @@ addZoom(tree, zoomNode = NULL, zoomLevel = NULL, zoomScale = NULL,
 \arguments{
 \item{tree}{A phylo object}
 
-\item{zoomNode}{A vector of nodes to be zoomed in. If default (NULL), the tree is not zoomed in.}
+\item{zoomNode}{A vector of nodes to be zoomed in. If default (NULL), the
+tree is not zoomed in.}
 
-\item{zoomLevel}{A numeric vector. Its length is equal to 1 or equal to the length of \strong{zoomNode}. If default (NULL), a leaf is zoomed in its direct parent level and an internal node is zoomed in its own level.}
+\item{zoomLevel}{A numeric vector. Its length is equal to 1 or equal to the
+length of \strong{zoomNode}. If default (NULL), a leaf is zoomed in its
+direct parent level and an internal node is zoomed in its own level.}
 
-\item{zoomScale}{A numeric vector. Its length is equal to one or equal to the length of \strong{zoomNode}. If \strong{zoomScale} has the same length as \strong{zoomNode}, the branches are zoomed in with different scales corresponding to the value of \strong{zoomScale}. If default (NULL), tree is not zoomed in.}
+\item{zoomScale}{A numeric vector. Its length is equal to one or equal to
+the length of \strong{zoomNode}. If \strong{zoomScale} has the same length as
+ \strong{zoomNode}, the branches are zoomed in with different scales
+corresponding to the value of \strong{zoomScale}. If default (NULL), tree is
+not zoomed in.}
 
 \item{addTo}{NULL or a plot of a phylo object.}
 
 \item{...}{see also \code{\link[ggtree]{ggtree}}}
 }
+\value{
+A figure
+}
 \description{
 \code{addZoom} zooms in a phylogenetic tree.
 }
+\author{
+Ruizhu Huang
+}
+\keyword{internal}
