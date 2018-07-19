@@ -11,11 +11,14 @@ transNode(tree, input)
 
 \item{input}{A tree node label or a tree node number}
 }
+\value{
+a vector
+}
 \description{
-\code{transNode} does the transfermation between the number and the label of a node on a tree
+\code{transNode} does the transformation between the number and the label of
+a node on a tree
 }
 \examples{
-
 library(ggtree)
 
 data(tinyTree)
@@ -30,4 +33,7 @@ transNode(tinyTree, input = c(11, 2, 4))
 
 transNode(tinyTree, input = c('Node_16', 'Node_11'))
 
+}
+\author{
+Ruizhu Huang
 }

@@ -4,12 +4,12 @@
 \alias{rmDesc}
 \title{Remove nodes which are the descendants of other nodes}
 \usage{
-rmDesc(node, tree)
+rmDesc(tree, node)
 }
 \arguments{
-\item{node}{A vector of node labels or node numbers}
-
 \item{tree}{A list of phylo objects.}
+
+\item{node}{A vector of node labels or node numbers}
 }
 \value{
 A vector of node numbers
@@ -31,4 +31,7 @@ aV <- c(5, 4, 18, 3, 2)
 (rn <- rmDesc(node = aV, tree = tinyTree))
 }
 
+}
+\author{
+Ruizhu Huang
 }

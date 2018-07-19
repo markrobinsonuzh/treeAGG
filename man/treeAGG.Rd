@@ -4,28 +4,65 @@
 \alias{treeAGG}
 \title{Tree aggregation}
 \usage{
-treeAGG(tree, data, stree = NULL, P.lim = NULL, varSIG = NULL, varAGG)
+treeAGG(tree, data, stree = NULL, pLim = NULL, varSIG = NULL, varAGG)
 }
 \arguments{
 \item{tree}{A phylo object;}
 
 \item{data}{A data frame (include at least :
 1. the label of tree nodes and tips as row names
-2. a column of p value
-3. a column of adjusted p value}
+2. a column for tree aggregation
+   (use value from this column to decide whether to aggregate)
+3. a column of adjusted p value
+   (use value from this column to decide whether to reject a null
+   hypothesis)}
 
 \item{stree}{A list of phylo object. The subtrees of \strong{tree}.}
 
-\item{P.lim}{The threshold value (for the adjusted p values) to reject a null hypothesis. By default, NULL. If NULL, the algorithm only compares the value provided by \strong{varAGG} and doesn't decide whether to reject a null hypothesis.}
+\item{pLim}{The threshold value (for \strong{varSIG}) to reject a null
+hypothesis. By default, NULL. If NULL, the algorithm only compares the
+value provided by \strong{varAGG} and doesn't decide whether to reject a
+null hypothesis.}
 
-\item{varSIG}{The name of column for testing significance}
+\item{varSIG}{The name of column storing adjusted p values.}
 
-\item{varAGG}{The name of column used to do tree aggregation, eg. the name of the p value or adjusted p value column}
+\item{varAGG}{The name of column used to do tree aggregation, eg. the name of
+the p value or adjusted p value column}
 }
 \value{
 A character vector, containing the labels of tips and nodes which
 have selected by the minimum P-value algorithm
 }
 \description{
-\code{treeAGG} combines the p values with the tree structure and decide the which nodes to be aggregated to based on the min-p algorithm.
+\code{treeAGG} combines the p values with the tree structure and decide the
+which nodes to be aggregated to based on the min-p algorithm.
+}
+\examples{
+
+library(ggtree)
+
+data(tinyTree)
+
+# data
+set.seed(3)
+pv <- runif(19)
+apv <- rank(pv)/length(pv)*pv
+df <- cbind.data.frame(pval = pv, adj_p = apv)
+rownames(df) <- c(tinyTree$tip.label, tinyTree$node.label)
+
+# display the tree structure and p value at each node
+df1 <- cbind.data.frame(
+node = transNode(tree = tinyTree, input = rownames(df)),
+df)
+
+ggtree(tinyTree) \%<+\% df1 + geom_text2(aes(label = label)) +
+geom_text2(aes(label = round(adj_p, 3)), vjust = -0.5, color = "blue")
+
+# tree aggregation
+(tt <- treeAGG(tree = tinyTree, data = df, pLim = 0.05,
+varSIG = "adj_p", varAGG = "pval"))
+
+}
+\author{
+Ruizhu Huang
 }

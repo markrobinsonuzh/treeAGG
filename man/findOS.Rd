@@ -4,22 +4,30 @@
 \alias{findOS}
 \title{Find descendants (or offsprings)}
 \usage{
-findOS(ancestor, tree, only.Tip = TRUE, self.include = TRUE,
+findOS(tree, ancestor, only.Tip = TRUE, self.include = TRUE,
   return = c("number", "label"))
 }
 \arguments{
-\item{ancestor}{An internal node. It could be the node number or the node label.}
-
 \item{tree}{A phylo object.}
 
-\item{only.Tip}{A logical value, TRUE or FALSE. The default is TRUE. If default, only the leaf nodes in the descendant nodes would be returned.}
+\item{ancestor}{An internal node. It could be the node number or the node
+label.}
 
-\item{self.include}{A logical value, TRUE or FALSE. The default is TRUE. If default, the node specified in \strong{ancestor} is included. The leaf node itself is returned as its descendant.}
+\item{only.Tip}{A logical value, TRUE or FALSE. The default is TRUE. If
+default, only the leaf nodes in the descendant nodes would be returned.}
 
-\item{return}{"number" (return the node number) or "label" (return the node label).}
+\item{self.include}{A logical value, TRUE or FALSE. The default is TRUE. If
+default, the node specified in \strong{ancestor} is included. The leaf node
+itself is returned as its descendant.}
+
+\item{return}{"number" (return the node number) or "label" (return the node
+label).}
+}
+\value{
+A vector
 }
 \description{
-\code{findOS} finds descendants of an internal node.
+\code{findOS} finds descendants of a node.
 }
 \examples{
 data(tinyTree)
@@ -29,5 +37,8 @@ ggtree(tinyTree) +
 geom_text2(aes(label = node)) +
 geom_hilight(node = 15, fill = 'steelblue', alpha = 0.5)
 
-(tips <- findOS(15, tinyTree, only.Tip = TRUE))
+(tips <- findOS(tree = tinyTree, ancestor = 15, only.Tip = TRUE))
+}
+\author{
+Ruizhu Huang
 }

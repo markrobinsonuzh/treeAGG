@@ -7,16 +7,22 @@
 pathTree(tree)
 }
 \arguments{
-\item{tree}{a phylo object}
+\item{tree}{A phylo object}
+}
+\value{
+a list
 }
 \description{
-\code{treePath} converts a phylo object tree into multiple paths. Each starts with a tip, connects all internal nodes, and end with the root.
+\code{treePath} converts a phylo object tree into multiple paths. Each starts
+with a tip, connects all internal nodes, and end with the root.
 }
 \examples{
-
 data(tinyTree)
 library(ggtree)
 ggtree(tinyTree) + geom_text2(aes(label = node))
 
 (paths <- pathTree(tinyTree))
+}
+\author{
+Ruizhu Huang
 }

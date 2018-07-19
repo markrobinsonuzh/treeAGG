@@ -2,19 +2,30 @@
 % Please edit documentation in R/fdr.R
 \name{fdr0}
 \alias{fdr0}
-\title{Calculate the number of false discoveries and the total number of discoveries on a tree structure}
+\title{Calculate the number of false discoveries and the total number of discoveries
+ on a tree structure}
 \usage{
 fdr0(tree, truth = NULL, found = NULL, level = c("node", "leaf"))
 }
 \arguments{
 \item{tree}{A phylo object}
 
-\item{truth}{Nodes that have signals (eg. differentally abundant at different experimental conditions.).}
+\item{truth}{Nodes that have signals (eg. differentally abundant at different
+experimental conditions.).}
 
 \item{found}{Nodes that have been found to have signal}
 
-\item{level}{If "leaf", false discovery rate is calculated at leaf level; if "node", it is calculated at node level.}
+\item{level}{If "leaf", false discovery rate is calculated at leaf level;
+if "node", it is calculated at node level.}
+}
+\value{
+a vector
 }
 \description{
-\code{fdr0} calculates the number of false discoveries and the total number of discoveries at leaf or node level on a tree structure .
+\code{fdr0} calculates the number of false discoveries and the total number
+of discoveries at leaf or node level on a tree structure .
 }
+\author{
+Ruizhu Huang
+}
+\keyword{internal}

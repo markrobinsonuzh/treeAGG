@@ -13,8 +13,18 @@ parEstimate(data)
 A list including \dQuote{pi} and \dQuote{theta}
 }
 \description{
-\code{parEstimate} estimates parameters for a Dirichlet distribution from a real data (count table).
+\code{parEstimate} estimates parameters for a Dirichlet distribution from
+a real data (count table).
 }
 \details{
-Use the default setting from \code{dirmult} (see \code{\link[dirmult]{dirmult}})
+Use the default setting from \code{dirmult}
+(see \code{\link[dirmult]{dirmult}})
+}
+\examples{
+library(GUniFrac)
+data("throat.otu.tab")
+throat.par <- parEstimate(data = t(throat.otu.tab))
+}
+\author{
+Ruizhu Huang
 }

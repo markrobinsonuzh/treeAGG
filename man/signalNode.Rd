@@ -2,22 +2,24 @@
 % Please edit documentation in R/signalNode.R
 \name{signalNode}
 \alias{signalNode}
-\title{Find the node shared by the specified nodes}
+\title{find the optimal nodes to short result.}
 \usage{
-signalNode(node, tree, label = FALSE)
+signalNode(tree, node, label = FALSE)
 }
 \arguments{
-\item{node}{A vector of node numbers or node labels}
-
 \item{tree}{A tree (phylo object)}
 
-\item{label}{A logical value. If TRUE, the selected node label is output; otherwise the node number is output}
+\item{node}{A vector of node numbers or node labels}
+
+\item{label}{A logical value. If TRUE, the selected node label is output;
+otherwise the node number is output}
 }
 \value{
 The label of the shared node
 }
 \description{
-\code{signalNode} is to find nodes which are the ancestors shared by the specified nodes.  The descendant leaves of the found nodes are also the descendant leaves of the specified nodes.
+\code{signalNode} is to replace nodes with their ancestors
+to make result shorter.
 }
 \examples{
 
@@ -43,4 +45,7 @@ geom_text2(aes(label = node))
 signalNode(node = c(2, 3), tree = tinyTree)
 signalNode(node = c(2, 3, 16), tree = tinyTree)
 
+}
+\author{
+Ruizhu Huang
 }

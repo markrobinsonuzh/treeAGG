@@ -4,22 +4,35 @@
 \alias{doCount}
 \title{generate a count table}
 \usage{
-doCount(FC, data, nSam, mu, size, n)
+doCount(data, FC, nSam, mu, size, n)
 }
 \arguments{
+\item{data}{A matrix or data frame, representing the count table from real
+data}
+
 \item{FC}{A numeric vector, representing the fold changes}
 
-\item{data}{A matrix or data frame, representing the count table from real data}
+\item{nSam}{A vector of length two containing the number of samples in two
+different groups or conditions.}
 
-\item{nSam}{A vector of length two containing the number of samples in two different groups or conditions.}
+\item{mu, size}{The parameters of the Negative Binomial distribution (see mu
+and size in \code{\link[stats]{rnbinom}}.)}
 
-\item{mu, size}{The parameters of the Negative Binomial distribution (see mu and size in \code{\link[stats]{rnbinom}}.)}
-
-\item{n}{A numeric value, representing the number of count tables generated. If above one, the output is a list of matrices.}
+\item{n}{A numeric value, representing the number of count tables generated.
+If above one, the output is a list of matrices.}
 }
 \value{
 a matrix or a list of matrices
 }
 \description{
-\code{doCount} generates a count table given some available information. Here, the information includes the fold change between two conditions, the parameters of Negative Binomial distritubion (which the sample library size follows), a data table from real data (to estimate the proportion of each entity in the sample), and the number of samples in two different groups or conditions.
+\code{doCount} generates a count table given some available information.
+Here, the information includes the fold change between two conditions,
+the parameters of Negative Binomial distritubion (which the sample library
+size follows), a data table from real data (to estimate the proportion of
+each entity in the sample), and the number of samples in two different
+groups or conditions.
 }
+\author{
+Ruizhu Huang
+}
+\keyword{internal}

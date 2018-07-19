@@ -2,23 +2,25 @@
 % Please edit documentation in R/nodeCount.R
 \name{nodeCount}
 \alias{nodeCount}
-\title{Calculate the counts at internal nodes}
+\title{Calculate counts at internal nodes}
 \usage{
-nodeCount(data, tree, fun = sum)
+nodeCount(tree, data, fun = sum)
 }
 \arguments{
-\item{data}{A matrix or data frame. A count table from real data.}
-
 \item{tree}{A phylo object}
 
-\item{fun}{A function to create the count of an internal node based on the counts at its descendant leaf nodes. The default is sum}
+\item{data}{A matrix or data frame. A count table from real data.}
+
+\item{fun}{A function to create the count of an internal node based on the
+counts at its descendant leaf nodes. The default is sum}
 }
 \value{
-A count table (matrix class) with a row representing a node and
-a column representing a sample.
+A count table (matrix class) with a row representing a node and a
+  column representing a sample.
 }
 \description{
-\code{nodeCount} calculates the counts at internal nodes. The count of an internal node is the sum of counts at its descendant leaves.
+\code{nodeCount} calculates the counts at internal nodes. The count of an
+internal node is the sum of counts at its descendant leaves.
 }
 \examples{
 data("tinyTree")
@@ -41,4 +43,7 @@ nod <- transNode(tree = tinyTree, input = rownames(count_tinyTree))
 d <- cbind.data.frame(node = nod, count = count_tinyTree[, 1])
 
 ggtree(tinyTree) \%<+\% d + geom_text2(aes(label = count))
+}
+\author{
+Ruizhu Huang
 }

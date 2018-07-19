@@ -9,7 +9,8 @@ infLoc(tree, data, from.A, from.B)
 \arguments{
 \item{tree}{A phylo object}
 
-\item{data}{A count table (a matrix or a data frame). It has tree leaves in rows and samples from different conditions in  columns.}
+\item{data}{A count table (a matrix or a data frame). It has tree leaves in
+rows and samples from different conditions in  columns.}
 
 \item{from.A, from.B}{The branch node labels of Branch A, B.}
 }
@@ -17,5 +18,10 @@ infLoc(tree, data, from.A, from.B)
 A data frame of one row
 }
 \description{
-\code{infLoc} is to give information of two branches about the count proportion and the number of leaves
+\code{infLoc} is to give information of two branches about the count
+proportion and the number of leaves
 }
+\author{
+Ruizhu Huang
+}
+\keyword{internal}

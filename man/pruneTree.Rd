@@ -9,10 +9,15 @@ pruneTree(tree, message = FALSE)
 \arguments{
 \item{tree}{A phylo object}
 
-\item{message}{A logical value, TRUE or FALSE. If default (FALSE), the process isn't printed out.}
+\item{message}{A logical value, TRUE or FALSE. If default (FALSE), the
+process isn't printed out.}
 }
 \value{
-A list of phylo objects. If the tree ('tree') provides node and tip labels, the labels are passed to its subtrees; otherwise, the labels are generated automatically with a prefix 'Node_' for internal nodes and 'Tip_' for leaves with the corresponding numbers in the edge component of phylo object. (tree$edge)
+A list of phylo objects. If the tree ('tree') provides node and tip
+  labels, the labels are passed to its subtrees; otherwise, the labels are
+  generated automatically with a prefix 'Node_' for internal nodes and 'Tip_'
+  for leaves with the corresponding numbers in the edge component of phylo
+  object. (tree$edge)
 }
 \description{
 \code{pruneTree} prunes the tree at each node.
@@ -21,4 +26,7 @@ A list of phylo objects. If the tree ('tree') provides node and tip labels, the 
 
 data(tinyTree)
 small <- pruneTree(tree = tinyTree, message = TRUE)
+}
+\author{
+Ruizhu Huang
 }

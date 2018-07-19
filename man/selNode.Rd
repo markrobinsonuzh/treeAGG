@@ -2,7 +2,7 @@
 % Please edit documentation in R/selNode.R
 \name{selNode}
 \alias{selNode}
-\title{Select a branch}
+\title{Select branches}
 \usage{
 selNode(tree, data, minTip = 0, maxTip = Inf, minPr = 0, maxPr = Inf,
   skip = NULL, all = FALSE)
@@ -10,7 +10,8 @@ selNode(tree, data, minTip = 0, maxTip = Inf, minPr = 0, maxPr = Inf,
 \arguments{
 \item{tree}{A phylo object}
 
-\item{data}{A count table from the real data or a list output from \code{parEstimate}.}
+\item{data}{A count table from the real data or a list output from
+\code{parEstimate}.}
 
 \item{minTip}{the minimum number of leaves in the selected branch}
 
@@ -20,26 +21,33 @@ selNode(tree, data, minTip = 0, maxTip = Inf, minPr = 0, maxPr = Inf,
 
 \item{maxPr}{The maximum count proportion of the selected branch in a sample}
 
-\item{skip}{A character vector of node labels. These nodes are not the descendants or the ancestors of the selected branch.}
+\item{skip}{A character vector of node labels. These nodes are not the
+descendants or the ancestors of the selected branch.}
 
-\item{all}{TRUE or FALSE. Default is FALSE. If FALSE, the branch node of a branch, which meet the requirements and has the minimum count proportion, is returned; otherwise branch nodes of all branches meeting the requirements are returned.}
+\item{all}{TRUE or FALSE. Default is FALSE. If FALSE, the branch node of a
+branch, which meet the requirements and has the minimum count proportion,
+is returned; otherwise branch nodes of all branches meeting the
+requirements are returned.}
 }
 \value{
 The node whose descendant branch has the lowest proportion
 }
 \description{
-\code{selNode} selects a branch meeting the specified criteria in the number of leaves and the count proportion.
+\code{selNode} selects branches meeting the specified criteria in the number
+of leaves and the count proportion.
 }
 \examples{
-{
-data("simTree")
-data("simCount")
+data("cytofTree")
+data("cytofCount")
 set.seed(1)
 library(ape)
-tree <- as.phylo(simTree)
+tree <- as.phylo(cytofTree)
 sN <- selNode(tree = tree, minTip = 20,
 maxTip = 50, minPr = 0.02, maxPr = 0.03,
-skip = NULL, data = simCount)
-}
+skip = NULL, data = cytofCount, all = TRUE)
 
+
+}
+\author{
+Ruizhu Huang
 }

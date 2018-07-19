@@ -10,9 +10,14 @@ pickLoc(tree, data, from.A, minTip.A, maxTip.A, minTip.B, maxTip.B, minPr.A,
 \arguments{
 \item{tree}{A phylo object}
 
-\item{data}{A count table (a matrix or a data frame). It has tree leaves in rows and samples from different conditions in columns.}
+\item{data}{A count table (a matrix or a data frame). It has tree leaves in
+rows and samples from different conditions in columns.}
 
-\item{from.A}{The branch node label of branch A. In simulation, we select two branches (A & B) to have differential abundance under different conditions. If from.A is specified, then branch A is fixed. If from.A is NULL, one can find a suitable branch which meets the criteria specified in \code{minTip.A}, \code{maxTip.A}, \code{minPr.A} and \code{maxPr.A}.}
+\item{from.A}{The branch node label of branch A. In simulation, we select two
+branches (A & B) to have differential abundance under different conditions.
+If from.A is specified, then branch A is fixed. If from.A is NULL, one can
+find a suitable branch which meets the criteria specified in \code{minTip.A},
+\code{maxTip.A}, \code{minPr.A} and \code{maxPr.A}.}
 
 \item{minTip.A}{The minimum number of leaves in branch A}
 
@@ -26,11 +31,19 @@ pickLoc(tree, data, from.A, minTip.A, maxTip.A, minTip.B, maxTip.B, minPr.A,
 
 \item{maxPr.A}{The maximum abundance proportion of leaves in branch A}
 
-\item{ratio}{The proportion ratio of branch B to branch A. This value is used to select branches(see \bold{Details}). If there are no branches having exactly this ratio, the pair with the value closest to \code{ratio} would be selected.}
+\item{ratio}{The proportion ratio of branch B to branch A. This value is
+used to select branches(see \bold{Details}). If there are no branches having
+exactly this ratio, the pair with the value closest to \code{ratio} would
+be selected.}
 }
 \value{
 a data frame of one row
 }
 \description{
-\code{pickLoc} selects two branches which meet the criteria specified by the arguments
+\code{pickLoc} selects two branches which meet the criteria specified by
+the arguments
 }
+\author{
+Ruizhu Huang
+}
+\keyword{internal}

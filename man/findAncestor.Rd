@@ -11,15 +11,21 @@ findAncestor(tree, node, level, treeMat = NULL)
 
 \item{node}{A vector of node numbers or node labels}
 
-\item{level}{A vector of numbers to define nth generation before the specified nodes}
+\item{level}{A vector of numbers to define nth generation before the
+specified nodes}
 
-\item{treeMat}{A matrix with each row representing a path. The entry is node number. The first column is leaf node numbers. The columns are organized as the order of nodes in the paths connecting leaves and the root. Default is null, treeMat is generated automatically. The treeMat is provided when the tree is very large to save running time.}
+\item{treeMat}{A matrix with each row representing a path. The entry is node
+number. The first column is leaf node numbers. The columns are organized as
+the order of nodes in the paths connecting leaves and the root. Default is
+null, treeMat is generated automatically. The treeMat is provided when the
+tree is very large to save running time.}
 }
 \value{
 a vector of node numbers
 }
 \description{
-\code{findAncestor} finds the ancestor in the nth generation before specified nodes.
+\code{findAncestor} finds the ancestor in the nth generation before
+specified nodes.
 }
 \examples{
 library(ggtree)
@@ -28,4 +34,7 @@ ggtree(exTree, branch.length = 'none') +
  geom_text2(aes(label = node))
 
  findAncestor(tree = exTree, node = c(53, 61), level = 1)
+}
+\author{
+Ruizhu Huang
 }

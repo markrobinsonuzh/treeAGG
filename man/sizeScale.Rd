@@ -10,16 +10,30 @@ sizeScale(col.point, size.point, legend.label, legend.title, size.point.legend,
 \arguments{
 \item{col.point}{A color for the \strong{point}. It has length equal to one.}
 
-\item{size.point}{The size for the \strong{point}. It has length equal to one.}
+\item{size.point}{The size for the \strong{point}. It has length equal to
+one.}
 
-\item{legend.label}{A list with three members: "col.branch", "col.other", and "col.point". The elements order in each member matches with the corresponding argument \strong{col.branch}, \strong{col.other} and \strong{col.point}, and will display in the legend. See Examples.}
+\item{legend.label}{A list with three members: "col.branch", "col.other",
+and "col.point". The elements order in each member matches with the
+corresponding argument \strong{col.branch}, \strong{col.other} and
+\strong{col.point}, and will display in the legend. See Examples.}
 
-\item{legend.title}{A vector to specify the title of the legend. It must be named with "branch" and "point" to match with the argument \strong{branch} and \strong{point}.}
+\item{legend.title}{A vector to specify the title of the legend. It must be
+named with "branch" and "point" to match with the argument \strong{branch}
+and \strong{point}.}
 
-\item{size.point.legend}{the point size shown in the legend for \strong{point}.}
+\item{size.point.legend}{the point size shown in the legend for
+\strong{point}.}
 
 \item{legend}{TRUE or FALSE}
+}
+\value{
+ggproto object (Scale)
 }
 \description{
 \code{sizeScale} customizes the size scale.
 }
+\author{
+Ruizhu Huang
+}
+\keyword{internal}
