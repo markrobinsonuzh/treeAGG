@@ -5,6 +5,14 @@ author:
   affiliation: 
   - Institute of Molecular Life Sciences, University of Zurich.
   - SIB Swiss Institute of Bioinformatics.
+- name: Charlotte Soneson
+  affiliation: 
+  - Institute of Molecular Life Sciences, University of Zurich.
+  - SIB Swiss Institute of Bioinformatics.
+- name: Mark Robinson
+  affiliation: 
+  - Institute of Molecular Life Sciences, University of Zurich.
+  - SIB Swiss Institute of Bioinformatics.
 package: treeAGG
 output: 
   BiocStyle::html_document
@@ -14,7 +22,7 @@ vignette: >
   %\VignetteEngine{knitr::rmarkdown}
 editor_options: 
   chunk_output_type: console
-bibliography: treeAGG.bib
+bibliography: treeAGG_vignette.bib
 ---
 
 
@@ -23,8 +31,53 @@ bibliography: treeAGG.bib
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE, message = FALSE)
 ```
+# Introduction
 
-# Real data
+The arrangement of hypotheses in a hierarchical structure appears in many research fields and often indicates different resolutions at which data can be viewed. On which resolution level should the signal be intepreted has arisen researchers' interest. For example, the association between a phenotypic outcome (e.g., diseased and healthy) and abundance changes of entities (e.g., microbes or cells) might be interested. However, the abundance change on the entity level might not be evident due to the low abundance even though it does exist. It might become evident at a higher hierarchical level, which represents a cluster of entities, due to the accumulation caused by the similarity in response to the environment shared by the entities in the same cluster. 
+
+On which hierarchical level should the change be tested becomes a critical question to be answered. A flexible method to select hierarchical level, instead of cutting the tree structure at arbitary levels, is desired. Our package treeAGG, which uses minP algorithm, is a such tool. It does a bottom-up search for the optimal level of a tree to interpret signal by integrating two types of data: abundance estimate of a set of entities (e.g., microbes or cells) across a set of samples (e.g., diseased and healthy) and a tree that encodes a hierarchical relationship among the entities (e.g., a phylogeny of microbes). It could flexibly combine with current available tools, such as edgeR or DESeq2.
+
+
+
+# Method
+
+Consider the case in which a count table and a tree of $n$ entities (e.g. microbes or cells) are available. The goal is to find the hierarchal level of the tree on which the association should be intepreted. Each row of the count table represents an entity $g$. Each column is a sample. Samples are collected from different conditions (e.g., healthy and diseased). Let $Y_{gi}$ denote the observed count of an entity (a leaf on the tree) or a cluster of entities (an internal node on the tree) $g$ in sample $i$. To investigate whether an entity or a cluster of entities has differential abundance under different conditions, currently available packages, such as, `r Biocpkg("edgeR")` and `r Biocpkg("DESeq2")`) could be used. Let's take `r Biocpkg("edgeR")` as an example and explain how our package works.
+
+As assumed in `r Biocpkg("edgeR")`[@Robinson2009], $Y_{gi}$ follows a negative binomial distribution
+$$\mathbf{Y}_{gi}  \sim NB(\mathbf{M}_{i}\mathbf{p}_{gj}, \mathbf{\phi}_{g})  $$
+$$g = 1, 2, 3, ..., n, n+1, ..., n+K;$$ 
+$$i = 1, 2, ... m;$$ 
+$$j = 1, 2, ..., J.$$
+
+
+Here,  $\mathbf{M}_{i}$ is the effective total count of sample $i$, $\mathbf{p}_{gj}$ is the relative abundance of OTU or internal node $g$ in experimental group (or condition) $j$ to which sample $i$ belongs, and $\mathbf{\phi}_{g}$ is the dispersion parameter used to consider the biological variation between samples. The negative binomial distribution is parameterized with mean as $\mathbb{E}[\mathbf{Y}_{gi}] = \mu_{gi} =  \mathbf{M}_{i}\mathbf{p}_{gj}$, and variance as
+$\text{Var}[\mathbf{Y}_{gi}] = \mu_{gi}(1+\mu_{gi}\phi_{g})$. When $\mathbf{\phi}_{g} = 0$, the negative binomial distribution reduces to Poisson distribution. In total, we have $n$ entities, $K$ entity clusters, $m$ samples and $J$ conditions.
+
+A generalized linear model could be build at each leaf (an entity) and each internal node (a cluster of entities) of the tree after the value of  $\mathbf{\phi}_{g}$ is estimated,
+$$
+\text{log}(\mu_{gi}) = \mathbf{x}^{T}_{i} \mathbf{\beta}_{g}, \quad g = 1, 2, ..., n, n+1, ...., n+K
+$$
+where $\mathbf{x}^{T}_{i}$ is a vector of covariates including confounders (e.g., age, gender) and the covariate of interest (e.g., diseased and healthy sample) applied on sample $i$, and $\mathbf{\beta}_{g}$ is a vector of corresponding regression coefficients. Let $\beta^{1}_{g}$ denote the coefficient value for the covariate of interest in $\beta_{g}$.
+
+
+We arrange the hypotheses in a tree-like structure and test hypotheses
+$$
+H^{g}_{0}: \beta^{1}_{g} = 0, (g = 1, 2, ..., n, n+1, ...., n+K ),
+$$
+where n is the number of tree leaves and K is the number of internal nodes.
+
+The min-P algorithm is implemented to do the tree aggregation as below.
+
+* Test all hypotheses at tree leaves and internal nodes simultaneously and use Benjamin-Hochberg procedure to control the FDR rate.
+* Start from the tree leaves. Compare the adjusted p value (or p value) on leaves to that on their parent node. If the minimum value is on the level parent node, take the parent node; otherwise, take the children and compare them to one higher level of their parent.
+* Repeat the previous step until reach the root.
+
+Finally, for any internal node in the final result, its descendants all have higher p value than it.
+
+
+
+# Application
+## Real data
 
 ```{r}
 library(ggplot2)
@@ -32,54 +85,54 @@ library(ape)
 library(treeAGG)
 ```
 
-## Data preparation
+### Data preparation
 
 To use the `r Biocpkg("treeAGG")` package, two data structures are required: a table of counts of entities (e.g., cell clusters or microbes) across multiple samples, and a hierarchical structure of these entities (e.g., a hierarchical organization of cell clusters or a phylogenetic tree of microbes). Here, we show an example of mass cytometry data, where the entities are cell clusters and the counts represent the number of cells included in each cluster across a number of biological samples. In this example, we would like to investigate on which hierarchical level the cell clusters are differentially abundant between healthy and cancer subjects.
 
-### Tree 
+#### Tree 
 
 The tree we use here is the hierarchical structure of cell clusters, obtained by hierarchical clustering of the individual clusters. It's a *hclust* object, provided as part of the `r Biocpkg("treeAGG")` package. 
 
 ```{r}
-data("simTree")
-class(simTree)
+data("cytofTree")
+class(cytofTree)
 ```
 
-To use `r Biocpkg("treeAGG")`, we need to transform the *hclust* object into a *phylo* object, using the *as.phylo* function from the `r CRANpkg("ape")` package.
+To use `r Biocpkg("treeAGG")`, we need to transform the *hclust* object into a *phylo* object, using the *as.phylo* function from the `r CRANpkg("ape")` package [@Paradis2004].
 
 ```{r}
-pTree <- as.phylo(simTree)
+pTree <- as.phylo(cytofTree)
 class(pTree)
 ```
 
-### Count table
+#### Count table
 
 ```{r}
-data("simCount")
-dim(simCount)
-head(simCount)
+data("cytofCount")
+dim(cytofCount)
+head(cytofCount)
 ```
 
-The count table contains the number of cells in each of the cell clusters across 10 samples, five from healthy subjects and five representing samples from cancer subjects. It's a semi-simulated data set, where one cell population has been spiked in [@Weber2018-xc]. More details are in the help page (`?simCount`).
+The count table contains the number of cells in each of the cell clusters across 10 samples, five from healthy subjects and five representing samples from cancer subjects. It's a semi-simulated data set, where one cell population has been spiked in [@Weber2018]. More details are in the help page (`?cytofCount`).
 
-For the count table, each row represents a cell cluster that corresponds to a leaf node in the hierarchical tree, and each column represents a sample. To do tree signal aggregation, we also need counts of the internal nodes of the tree, which indicate different resolutions at which data can be viewed. As *simCount* only provides counts at leaf level, we generate counts of internal nodes by summing the counts of their descendants, using the `nodeCount` function as shown below.
+For the count table, each row represents a cell cluster that corresponds to a leaf node in the hierarchical tree, and each column represents a sample. To do tree signal aggregation, we also need counts of the internal nodes of the tree, which indicate different resolutions at which data can be viewed. As *cytofCount* only provides counts at leaf level, we generate counts of internal nodes by summing the counts of their descendants, using the `nodeCount` function as shown below.
 
 ```{r}
 # the count of an internal node is the sum of its descendant leaves counts.
 # the output table has counts for all nodes (both leaf and internal).
-count <- nodeCount(data = simCount, 
+count <- nodeCount(data = cytofCount, 
                    tree = pTree,
                    fun = sum)
 dim(count)
 ```
 
 
-## Data analysis
+### Data analysis
 
 We arrange the hypothesis in a tree-like structure and for each node in the tree test the hypothesis 
 $$H_0 : \text{There is no differential abundance between conditions}.$$
 
-The Bioconductor package **edgeR** is used here to investigate whether an entity shows differential abundance between conditions, but users are free to perform the testing using any suitable software. The only requirement is that the differential testing outputs a multiple testing-adjusted p-value at each tree node, which can be further used to do the aggregation. 
+The Bioconductor package `r Biocpkg("edgeR")` is used here to investigate whether an entity shows differential abundance between conditions, but users are free to perform the testing using any suitable software. The only requirement is that the differential testing outputs a multiple testing-adjusted p-value at each tree node, which can be further used to do the aggregation. 
 
 ```{r}
 # rows for internal nodes
@@ -94,41 +147,40 @@ head(mod)
 
 The output of `runEdgeR` is a data frame with multiple columns, one of which is the adjusted p value (named `FDR`). The adjusted p value is obtained via the Benjamini-Hochberg method. We could directly use the `mod` data frame to do the tree aggregation in the next section, or extract only the column `FDR`.
 
-## Tree aggregation
+### Tree aggregation
 
-To do the tree aggregation, we need a hiearchical tree (`ptree`) and a matrix or data frame with a column of adjusted p-values at each node of the tree (`mod`). `P.lim` is the threshold for the adjusted p-value to reject the null hypothesis. `varSIG` is the name of the column in *data* which contains the adjusted p-values, and `varAGG` is the name of the colum which is used to do the aggregation (here it is also the adjusted p-value).
+To do the tree aggregation, we need a hiearchical tree (`ptree`) and a matrix or data frame with a column of adjusted p-values at each node of the tree (`mod`). `pLim` is the threshold for the adjusted p-value to reject the null hypothesis. `varSIG` is the name of the column in *data* which contains the adjusted p-values, and `varAGG` is the name of the colum which is used to do the aggregation (here it is also the adjusted p-value).
 
 ```{r}
 # min - P
 loc <- treeAGG(tree = pTree, data = mod,
-               P.lim = 0.05, varSIG = "FDR",
+               pLim = 0.05, varSIG = "FDR",
                varAGG = "FDR")
-loc
 ```
 
 `loc` contains the IDs of the nodes suggested to drive the differential abundance between conditions.
 
-## Results
-### Visualisation
+### Results
+#### Visualisation
 
-The information about the true differential abundance of cell clusters in our semi-simulated data set is stored in the `simTruth` object available in the package (More details could be seen via `?simTruth`)
+The information about the true differential abundance of cell clusters in our semi-simulated data set is stored in the `cytofTruth` object available in the package (More details could be seen via `?cytofTruth`)
 
 ```{r}
-data("simTruth")
-head(simTruth)
+data("cytofTruth")
+head(cytofTruth)
 ```
 
-We extract the clusters that are truly differentially abundant. `simTruth` only provides the truth on the leaf level. If a branch has all its leaves differentially abundant, we would ideally like to aggregate the leaves to the top node of the branch, that is, the node connecting this branch and the other part of the tree. 
+We extract the clusters that are truly differentially abundant. `cytofTruth` only provides the truth on the leaf level. If a branch has all its leaves differentially abundant, we would ideally like to aggregate the leaves to the top node of the branch, that is, the node connecting this branch and the other part of the tree. 
 
 ```{r}
 # leaves are differentially abundant (true leaves)
-trueTip <- simTruth$cluster[simTruth$true]
+trueTip <- cytofTruth$cluster[cytofTruth$true]
 
 # find branch nodes shared by true leaves.
 real <- signalNode(node = trueTip, tree = pTree, label = TRUE)
 ```
 
-Next, we compare the result with the truth. The branches with blue edges are truly differentially abundant. The results obtained from the minP algorithm are shown as orange points. If an internal node is labelled with an orange point, it means that all its descendant nodes are found to be differentially abundant. In other words, the whole branch is found to have signal. 
+Next, we generate a figure to compare the result with the truth via `treePlot`. (The function `treePlot` is created based on `r Biocpkg("ggtree")`[@Yu2017] and `r CRANpkg("ggplot2")`[@Wickham2016]). The branches with blue edges are truly differentially abundant. The results obtained from the minP algorithm are shown as orange points. Nodes labelled with orange points are the suggested optimal levels at which to interpret the signal. 
 
 ```{r}
 p <- treePlot(tree = pTree ,  
@@ -158,9 +210,11 @@ p
 
 ```
 
-### Evaluation
+#### Evaluation
 
-The true positive rate at the leaf (node) level is the ratio of the number of correctly found leaves (nodes) to the number of truly differentially abundant leaves (nodes).
+The evaluation could be performed on the leaf or node level. The leaf level of a node is its descendant leaves. The node level of some specified leaves are leaves themselves and internal nodes having descendant leaves within the specified leaves. 
+
+The true positive rate (TPR) could be calculated on the leaf or node level. On the leaf level, it is the ratio of the number of correctly found leaves to the number of truly differentially abundant leaves.  The calculation of TPR on the node level is similar to that on the leaf level except that the ratio is based on nodes instead of leaves. 
 
 ```{r}
 # true positive rate at leaf level
@@ -171,7 +225,8 @@ The true positive rate at the leaf (node) level is the ratio of the number of co
              found = loc, level = "node"))
 ```
 
-The false discovery rate at the leaf (node) level is the ratio of the number of falsely found leaves (nodes) to the total number of found leaves (nodes).
+The false discovery rate (FDR) could be calculated on the leaf or node level. On the leaf level, it is the ratio of the number of falsely found leaves to the number of found leaves.  The calculation of FDR on the node level is similar to that on the leaf level except that the ratio is based on nodes instead of leaves. 
+
 
 ```{r}
 # true positive rate at leaf level
@@ -182,7 +237,7 @@ The false discovery rate at the leaf (node) level is the ratio of the number of 
              found = loc, level = "node"))
 ```
 
-# Simulation
+## Simulation
 
 `r Biocpkg("treeAGG")` provides the function `doTable` to simulate different signal patterns by swapping the signal strength (relative count) of two branches.
 
@@ -192,7 +247,7 @@ The false discovery rate at the leaf (node) level is the ratio of the number of 
 
 Full signal means that the counts for all leaves on the branch are modified. Partial signal means that only some leaves evenly distributed on that branch have signal.
 
-To simulate a count table using `doTable`, one needs to provide a real hiearchical structure and a real count table of entities. Here, we use a real throat microbiome data set that includes a count table of 856 OTUs (operational taxonomic units) from 60 samples and a phylogenetic tree with 856 leaves and 855 internal nodes [CITE ORIGINAL PAPER]. More details about the data could be seen via `?throat.tree` and `?throat.otu.tab`.
+To simulate a count table using `doTable`, one needs to provide a real hiearchical structure and a real count table of entities. Here, we use a real throat microbiome data set that includes a count table of 856 OTUs (operational taxonomic units) from 60 samples and a phylogenetic tree with 856 leaves and 855 internal nodes [@Charlson2010]. More details about the data could be seen via `?throat.tree` and `?throat.otu.tab`.
 
 ```{r}
 library(GUniFrac)
@@ -203,7 +258,7 @@ data("throat.tree")
 data("throat.otu.tab")
 ```
 
-## Signal branches known
+### Signal branches known
 
 If we already know for which two branches we want to swap the signals, we can feed `doTable` the real data via two arguments `tree` and `data`, and these branches via `from.A` and `from.B` as below. `throat.otu.tab` has the samples in the row and entities in the column, so we need to transpose it before input to `doTable`.
 
@@ -234,7 +289,7 @@ treePlot(tree = throat.tree, branch = bb0,
          legend.theme = list(legend.position = c(0.2, 0.6)))
 ```
 
-## Signal branches unknown
+### Signal branches unknown
 
 If we have not decided yet where to put signal or only decide one branch, we can let `doTable` select the branches. 
 
@@ -328,12 +383,12 @@ rbind(dat3$Branch, dat4$Branch)
 
 Branch A in `dat3` and `dat4` are the same. 
 
-One could simulate different signal patterns by changing the `scene`.
+One could simulate different signal patterns by changing the `scenario`.
 
 ```{r}
 dat5 <- doTable(from.A = dat4$Branch$A,
                 from.B = dat4$Branch$B,
-                scene = "S3",
+                scenario = "S3",
                 tree = throat.tree,
                 data = throat.par)
 ```
