@@ -136,10 +136,11 @@ treeAGG <- function(tree, data, stree = NULL,
         final <- intersect(isSig, namK)
     }
 
-    return(final)
-    # datF <- cbind.data.frame(label = rownames(data),
-    #                         select = ifelse(rownames(data) %in% final,
-    #                                         TRUE, FALSE))
-    #return(datF)
+    # return(final)
+    datF <- cbind.data.frame(label = rownames(data),
+                            select = ifelse(rownames(data) %in% final,
+                                            TRUE, FALSE),
+                            stringsAsFactors = FALSE)
+    return(datF)
 
 }
