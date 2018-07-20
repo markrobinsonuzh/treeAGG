@@ -1,6 +1,6 @@
 #' Calculate counts at internal nodes
 #'
-#' \code{nodeCount} calculates the counts at internal nodes. The count of an
+#' \code{nodeValue} calculates the counts at internal nodes. The count of an
 #' internal node is the sum of counts at its descendant leaves.
 #'
 #' @param tree A phylo object
@@ -25,7 +25,7 @@
 #' colnames(count) <- paste(c("C1_", "C2_"),
 #' c(1:5, 1:5), sep = "")
 #'
-#' count_tinyTree <- nodeCount(data = count,
+#' count_tinyTree <- nodeValue(data = count,
 #' tree = tinyTree, fun = mean)
 #'
 #' # check to see whether the count of an internal node is the sum
@@ -37,7 +37,7 @@
 #'
 #' ggtree(tinyTree) %<+% d + geom_text2(aes(label = count))
 
-nodeCount <- function(tree, data, fun = sum) {
+nodeValue <- function(tree, data, fun = sum) {
     if (!(inherits(data, "data.frame") |
           inherits(data, "matrix"))) {
         stop("data should be a matrix or data.frame")

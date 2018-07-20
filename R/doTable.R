@@ -149,11 +149,11 @@ doTable <- function(tree, data, scenario = "S1",
                      nSam = nSam, mu, size, n)
 
     if(inherits(count, "list")) {
-        full <- lapply(count, nodeCount, tree = tree,
+        full <- lapply(count, nodeValue, tree = tree,
                        fun = fun)
     }
     if(inherits(count, "matrix")) {
-        full <- nodeCount(tree = tree, data = count,
+        full <- nodeValue(tree = tree, data = count,
                           fun = fun)
     }
 
