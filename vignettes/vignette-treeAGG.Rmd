@@ -115,12 +115,12 @@ head(cytofCount)
 
 The count table contains the number of cells in each of the cell clusters across 10 samples, five from healthy subjects and five representing samples from cancer subjects. It's a semi-simulated data set, where one cell population has been spiked in [@Weber2018]. More details are in the help page (`?cytofCount`).
 
-For the count table, each row represents a cell cluster that corresponds to a leaf node in the hierarchical tree, and each column represents a sample. To do tree signal aggregation, we also need counts of the internal nodes of the tree, which indicate different resolutions at which data can be viewed. As *cytofCount* only provides counts at leaf level, we generate counts of internal nodes by summing the counts of their descendants, using the `nodeCount` function as shown below.
+For the count table, each row represents a cell cluster that corresponds to a leaf node in the hierarchical tree, and each column represents a sample. To do tree signal aggregation, we also need counts of the internal nodes of the tree, which indicate different resolutions at which data can be viewed. As *cytofCount* only provides counts at leaf level, we generate counts of internal nodes by summing the counts of their descendants, using the `nodeValue` function as shown below.
 
 ```{r}
 # the count of an internal node is the sum of its descendant leaves counts.
 # the output table has counts for all nodes (both leaf and internal).
-count <- nodeCount(data = cytofCount, 
+count <- nodeValue(data = cytofCount, 
                    tree = pTree,
                    fun = sum)
 dim(count)
@@ -132,20 +132,39 @@ dim(count)
 We arrange the hypothesis in a tree-like structure and for each node in the tree test the hypothesis 
 $$H_0 : \text{There is no differential abundance between conditions}.$$
 
-The Bioconductor package `r Biocpkg("edgeR")` is used here to investigate whether an entity shows differential abundance between conditions, but users are free to perform the testing using any suitable software. The only requirement is that the differential testing outputs a multiple testing-adjusted p-value at each tree node, which can be further used to do the aggregation. 
+The Bioconductor package `r Biocpkg("edgeR")` is used here as an example to investigate whether an entity shows differential abundance between conditions, but users are free to perform the testing using any suitable software. The only requirement is that the differential testing outputs a multiple testing-adjusted p-value at each tree node, which can be further used to do the aggregation.
 
 ```{r}
-# rows for internal nodes
-isNode <- grepl("Node", rownames(count))
-mod <- runEdgeR(data = count, 
-                nSam = c(5, 5), 
-                isTip = !isNode,
-                prior.count = 0,
-                normalize = TRUE)
+library(edgeR)
+# create DGEList object
+#  - overwrite the library size with the sum of counts from leaves.
+isLeaf <- !grepl("Node", rownames(count))
+y <- DGEList(counts = count, lib.size = colSums(count[isLeaf, ]),
+             group = rep(1:2, each = 5), remove.zeros = TRUE)
+
+# TMM normalisation
+y <- calcNormFactors(object = y, method = "TMM")
+
+# construct design matrix
+grp <- factor(rep(1:2, each = 5))
+dm <- model.matrix(~ grp)
+
+# estimate dispersion
+y <- estimateGLMRobustDisp(y, design = dm)
+fit <- glmFit(y, design = dm)
+lrt <- glmLRT(fit)
+
+# multiple testing correction
+# n is set to Inf below, because we want to have the results of all entities.
+# Benjamin-Hochberg correction is used here.
+ 
+out <- topTags(lrt, n = Inf, adjust.method = "BH")
+mod <- out$table
+
 head(mod)
 ```
-
-The output of `runEdgeR` is a data frame with multiple columns, one of which is the adjusted p value (named `FDR`). The adjusted p value is obtained via the Benjamini-Hochberg method. We could directly use the `mod` data frame to do the tree aggregation in the next section, or extract only the column `FDR`.
+ 
+The output `mod` has multiple columns, one of which is the adjusted p value (named `FDR`). The adjusted p value is obtained via the Benjamini-Hochberg method. We could directly use the `mod` data frame to do the tree aggregation in the next section, or extract only the column `FDR`. One thing should be paid attention to is that `mod` should have entitiy labels as the row names so that the result could be matched correctly to the tree structure.
 
 ### Tree aggregation
 
@@ -153,11 +172,16 @@ To do the tree aggregation, we need a hiearchical tree (`ptree`) and a matrix or
 
 ```{r}
 # min - P
-loc <- treeAGG(tree = pTree, data = mod,
+outAGG <- treeAGG(tree = pTree, data = mod,
                pLim = 0.05, varSIG = "FDR",
                varAGG = "FDR")
+head(outAGG)
 ```
 
+```{r}
+loc <- outAGG$label[outAGG$select]
+loc
+```
 `loc` contains the IDs of the nodes suggested to drive the differential abundance between conditions.
 
 ### Results
