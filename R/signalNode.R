@@ -1,7 +1,8 @@
 #' find the optimal nodes to short result.
 #'
-#' \code{signalNode} is to replace nodes with their ancestors
-#' to make result shorter.
+#' \code{signalNode} is to represent some nodes with their ancestor to make result
+#' as short as possible. The ancestors share exactly the same leaves as the
+#' original nodes.
 #'
 #' @param tree A tree (phylo object)
 #' @param node A vector of node numbers or node labels
@@ -73,6 +74,5 @@ signalNode <- function(tree, node, label = FALSE) {
     } else {
         final <- sNode
     }
-
     return(final)
 }
