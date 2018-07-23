@@ -55,7 +55,13 @@ transNode <- function(tree, input) {
     if (is.null(tree$node.label)) {
         nodLab <- paste("Node_", nod, sep = "")
     } else {
-        nodLab <- tree$node.label
+        Labs <- tree$node.label
+        if (any(duplicated(Labs))){
+            warning("Some internal nodes have same labels")
+            nodLab <- paste("Node_", nod, sep = "")
+        }else{
+            nodLab <- Labs
+        }
     }
 
     comb <- c(tip, nod)
