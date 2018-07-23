@@ -33,15 +33,15 @@ knitr::opts_chunk$set(echo = TRUE, message = FALSE)
 ```
 # Introduction
 
-The arrangement of hypotheses in a hierarchical structure appears in many research fields and often indicates different resolutions at which data can be viewed. On which resolution level should the signal be intepreted has arisen researchers' interest. For example, the association between a phenotypic outcome (e.g., diseased and healthy) and abundance changes of entities (e.g., microbes or cells) might be interested. However, the abundance change on the entity level might not be evident due to the low abundance even though it does exist. It might become evident at a higher hierarchical level, which represents a cluster of entities, due to the accumulation caused by the similarity in response to the environment shared by the entities in the same cluster. 
+The arrangement of hypotheses in a hierarchical structure appears in many research fields and often indicates different resolutions at which data can be viewed. On which resolution level should the signal be intepreted has arisen researchers' interest. For example, the association between a phenotypic outcome (e.g., diseased and healthy) and abundance changes of entities (e.g., microbes or cells) might be of interest. However, the abundance change on the entity level might not be evident due to the low abundance even though it does exist. It might become evident at a higher hierarchical level, which represents a cluster of entities, due to the accumulation caused by the similarity in response to the environment shared by the entities in the same cluster. 
 
-On which hierarchical level should the change be tested becomes a critical question to be answered. A flexible method to select hierarchical level, instead of cutting the tree structure at arbitary levels, is desired. Our package treeAGG, which uses minP algorithm, is a such tool. It does a bottom-up search for the optimal level of a tree to interpret signal by integrating two types of data: abundance estimate of a set of entities (e.g., microbes or cells) across a set of samples (e.g., diseased and healthy) and a tree that encodes a hierarchical relationship among the entities (e.g., a phylogeny of microbes). It could flexibly combine with current available tools, such as edgeR or DESeq2.
+On which hierarchical level should the change be tested becomes a critical question to be answered. A flexible method to select hierarchical level, instead of cutting the tree structure at arbitary levels, is desired. Our package treeAGG, which uses the minP algorithm, is a such tool. It does a bottom-up search for the optimal level of a tree to interpret signal by integrating two types of data: abundance estimate of a set of entities (e.g., microbes or cells) across a set of samples (e.g., diseased and healthy) and a tree that encodes a hierarchical relationship among the entities (e.g., a phylogeny of microbes). It could flexibly combine with current available tools, such as edgeR or DESeq2.
 
 
 
 # Method
 
-Consider the case in which a count table and a tree of $n$ entities (e.g. microbes or cells) are available. The goal is to find the hierarchal level of the tree on which the association should be intepreted. Each row of the count table represents an entity $g$. Each column is a sample. Samples are collected from different conditions (e.g., healthy and diseased). Let $Y_{gi}$ denote the observed count of an entity (a leaf on the tree) or a cluster of entities (an internal node on the tree) $g$ in sample $i$. To investigate whether an entity or a cluster of entities has differential abundance under different conditions, currently available packages, such as, `r Biocpkg("edgeR")` and `r Biocpkg("DESeq2")`) could be used. Let's take `r Biocpkg("edgeR")` as an example and explain how our package works.
+Consider the case in which a count table and a tree of $n$ entities (e.g. microbes or cells) are available. The goal is to find the hierarchical level of the tree on which the association should be intepreted. Each row of the count table represents an entity $g$. Each column is a sample. Samples are collected from different conditions (e.g., healthy and diseased). Let $Y_{gi}$ denote the observed count of an entity (a leaf on the tree) or a cluster of entities (an internal node on the tree) $g$ in sample $i$. To investigate whether an entity or a cluster of entities has differential abundance under different conditions, currently available packages, such as, `r Biocpkg("edgeR")` and `r Biocpkg("DESeq2")`) could be used. Let's take `r Biocpkg("edgeR")` as an example and explain how our package works.
 
 As assumed in `r Biocpkg("edgeR")`[@Robinson2009], $Y_{gi}$ follows a negative binomial distribution
 $$\mathbf{Y}_{gi}  \sim NB(\mathbf{M}_{i}\mathbf{p}_{gj}, \mathbf{\phi}_{g})  $$
@@ -53,7 +53,7 @@ $$j = 1, 2, ..., J.$$
 Here,  $\mathbf{M}_{i}$ is the effective total count of sample $i$, $\mathbf{p}_{gj}$ is the relative abundance of OTU or internal node $g$ in experimental group (or condition) $j$ to which sample $i$ belongs, and $\mathbf{\phi}_{g}$ is the dispersion parameter used to consider the biological variation between samples. The negative binomial distribution is parameterized with mean as $\mathbb{E}[\mathbf{Y}_{gi}] = \mu_{gi} =  \mathbf{M}_{i}\mathbf{p}_{gj}$, and variance as
 $\text{Var}[\mathbf{Y}_{gi}] = \mu_{gi}(1+\mu_{gi}\phi_{g})$. When $\mathbf{\phi}_{g} = 0$, the negative binomial distribution reduces to Poisson distribution. In total, we have $n$ entities, $K$ entity clusters, $m$ samples and $J$ conditions.
 
-A generalized linear model could be build at each leaf (an entity) and each internal node (a cluster of entities) of the tree after the value of  $\mathbf{\phi}_{g}$ is estimated,
+A generalized linear model could be built at each leaf (an entity) and each internal node (a cluster of entities) of the tree after the value of  $\mathbf{\phi}_{g}$ is estimated,
 $$
 \text{log}(\mu_{gi}) = \mathbf{x}^{T}_{i} \mathbf{\beta}_{g}, \quad g = 1, 2, ..., n, n+1, ...., n+K
 $$
@@ -168,7 +168,7 @@ The output `mod` has multiple columns, one of which is the adjusted p value (nam
 
 ### Tree aggregation
 
-To do the tree aggregation, we need a hiearchical tree (`ptree`) and a matrix or data frame with a column of adjusted p-values at each node of the tree (`mod`). `pLim` is the threshold for the adjusted p-value to reject the null hypothesis. `varSIG` is the name of the column in *data* which contains the adjusted p-values, and `varAGG` is the name of the colum which is used to do the aggregation (here it is also the adjusted p-value).
+To do the tree aggregation, we need a hiearchical tree (`ptree`) and a matrix or data frame with a column of adjusted p-values at each node of the tree (`mod`). `pLim` is the threshold for the adjusted p-value to reject the null hypothesis. `varSIG` is the name of the column in *data* that contains the adjusted p-values, and `varAGG` is the name of the column that is used to do the aggregation (here it is also the adjusted p-value).
 
 ```{r}
 # min - P
@@ -194,7 +194,7 @@ data("cytofTruth")
 head(cytofTruth)
 ```
 
-We extract the clusters that are truly differentially abundant. `cytofTruth` only provides the truth on the leaf level. If a branch has all its leaves differentially abundant, we would ideally like to aggregate the leaves to the top node of the branch, that is, the node connecting this branch and the other part of the tree. 
+We extract the clusters that are truly differentially abundant (see [@Weber2018]). `cytofTruth` only provides the truth on the leaf level. If a branch has all its leaves differentially abundant, we would ideally like to aggregate the leaves to the top node of the branch, that is, the node connecting this branch and the other part of the tree. 
 
 ```{r}
 # leaves are differentially abundant (true leaves)
@@ -267,11 +267,11 @@ The false discovery rate (FDR) could be calculated on the leaf or node level. On
 
 * scenario one (S1): full signal on two selected branches. Signals within each of the two branches (or clusters) have the same sign and strength.
 * scenario two (S2): full signal on two selected branches. Signals within each of the two branches (or clusters) have the same sign but different strength.
-* scenario three (S3): one branch have full signal, but the other only have partial signal. Signals within each of the two branches (or clusters) have the same sign and strength.
+* scenario three (S3): one branch has full signal, but the others only have partial signal. Signals within each of the two branches (or clusters) have the same sign and strength.
 
 Full signal means that the counts for all leaves on the branch are modified. Partial signal means that only some leaves evenly distributed on that branch have signal.
 
-To simulate a count table using `doTable`, one needs to provide a real hiearchical structure and a real count table of entities. Here, we use a real throat microbiome data set that includes a count table of 856 OTUs (operational taxonomic units) from 60 samples and a phylogenetic tree with 856 leaves and 855 internal nodes [@Charlson2010]. More details about the data could be seen via `?throat.tree` and `?throat.otu.tab`.
+To simulate a count table using `doTable`, one needs to provide a real hiearchical structure and a real count table of entities. Here, we use a real throat microbiome data set that includes a count table of 856 OTUs (operational taxonomic units) from 60 samples and a phylogenetic tree with 856 leaves and 855 internal nodes [@Charlson2010]. More details about the data could be seen via `?GUniFrac::throat.tree` and `?GUniFrac::throat.otu.tab`.
 
 ```{r}
 library(GUniFrac)
@@ -291,8 +291,7 @@ If we already know for which two branches we want to swap the signals, we can fe
 dat0 <- doTable(tree = throat.tree,
                 data = as.matrix(t(throat.otu.tab)),
                 from.A = 1671,
-                from.B = 1613
-)
+                from.B = 1613)
 
 str(dat0)
 ```
@@ -349,8 +348,7 @@ treePlot(tree = throat.tree, branch = bb1,
            col.branch = c("increase", "decrease")),
          legend.title = c(branch = "Truth"),
          layout = "rectangular",
-         legend.theme = list(legend.position = c(0.2, 0.6))
-)
+         legend.theme = list(legend.position = c(0.2, 0.6)))
 ```
 
 If we want to limit the set of branches that can be selected for the signal swapping to only those where the number of leaves is in a given interval, it can be achieved by changing the values of `minTip.A`, `maxTip.A`, `minTip.B` and `maxTip.B`.
@@ -372,8 +370,7 @@ treePlot(tree = throat.tree, branch = bb2,
          legend.label = list(
            col.branch = c("increase", "decrease")),
          legend.title = c(branch = "Truth"),
-         legend.theme = list(legend.position = c(0.2, 0.6))
-)
+         legend.theme = list(legend.position = c(0.2, 0.6)))
 ```
 
 Similarly, if one would like to select branches with a certain abundance level, it can be done via `minPr.A` and `maxPr.A`. These two arguments restrict the count proportion level of branch A. One could combine using these two arguments with `ratio` to restrict the branch B.
@@ -436,8 +433,7 @@ p1 <- treePlot(
                    "decrease"),
     col.other = "same"),
   legend.title = c(branch = "Truth"),
-  legend.theme = list(legend.position = c(0.2, 0.6))
-)
+  legend.theme = list(legend.position = c(0.2, 0.6)))
 
 bb4 <- c(dat4$Branch$A, dat4$Branch$B)
 p2 <- treePlot(tree = throat.tree, 
