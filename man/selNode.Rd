@@ -37,6 +37,7 @@ The node whose descendant branch has the lowest proportion
 of leaves and the count proportion.
 }
 \examples{
+\dontrun{
 data("cytofTree")
 data("cytofCount")
 set.seed(1)
@@ -45,7 +46,7 @@ tree <- as.phylo(cytofTree)
 sN <- selNode(tree = tree, minTip = 20,
 maxTip = 50, minPr = 0.02, maxPr = 0.03,
 skip = NULL, data = cytofCount, all = TRUE)
-
+}
 
 }
 \author{

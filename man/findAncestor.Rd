@@ -24,7 +24,7 @@ tree is very large to save running time.}
 a vector of node numbers
 }
 \description{
-\code{findAncestor} finds the ancestor in the nth generation before
+\code{findAncestor} finds the ancestor in the nth generation above
 specified nodes.
 }
 \examples{

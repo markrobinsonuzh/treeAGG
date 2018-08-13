@@ -4,12 +4,19 @@
 \alias{transNode}
 \title{Transfer between node number and node label}
 \usage{
-transNode(tree, input)
+transNode(tree, input, use.original = FALSE)
 }
 \arguments{
 \item{tree}{A phylo object}
 
-\item{input}{A tree node label or a tree node number}
+\item{input}{A character or numeric vector representing tree node label(s)
+or tree node number(s)}
+
+\item{use.original}{A logical value, TRUE or FALSE. Only required when
+\strong{input} is numeric. Default is FALSE. There are cases that a tree
+has no labels for some nodes. If keep.null is TRUE, NA is returned for these
+nodes; otherwise, the node number (from \strong{input}) will be returned
+with prefix "Node_" (for internal nodes) or "Leaf_" (for leaf nodes).}
 }
 \value{
 a vector

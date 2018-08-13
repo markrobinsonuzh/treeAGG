@@ -18,8 +18,9 @@ otherwise the node number is output}
 The label of the shared node
 }
 \description{
-\code{signalNode} is to replace nodes with their ancestors
-to make result shorter.
+\code{signalNode} is to represent some nodes with their ancestor to make result
+as short as possible. The ancestors share exactly the same leaves as the
+original nodes.
 }
 \examples{
 
