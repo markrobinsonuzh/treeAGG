@@ -1,19 +1,26 @@
-#' Simulate a count table
+#' Simulate different scenarios of abundance change in entities
 #'
-#' \code{doTable} creates a count table for all nodes of a tree under two
-#' different groups such that the tree would have different abundance patterns
-#' in the different conditions.
+#' \code{simData} simulates different abundance patterns for entities under
+#' different conditions. These entities have their corresponding nodes on
+#' a tree. More details about the simulated patterns could be found in the
+#' vignette via \code{browseVignettes("treeAGG")}.
 #'
 #' @param tree A phylo object
-#' @param data A matrix, representing a count table from real data.
-#' It has the entities corresponding to tree leaves in the row and samples
-#' in the column.
+#' @param data A matrix, representing a table of values, such as count,
+#' collected from real data. It has the entities corresponding to tree leaves
+#' in the row and samples in the column.
+#' @param obj A treeSummarizedExperiment object that includes a list of
+#' matrix-like elements, or a matrix-like element in assays, and a phylo object
+#' in metadata. In other words, \strong{obj} provides the same information
+#' given by \strong{tree} and \strong{data}. If \strong{data} is provided at the
+#' presence of \strong{obj}, then \code{simData} would use the information from
+#'  \strong{data}.
 #' @param scenario \dQuote{S1}, \dQuote{S2}, or \dQuote{S3}
 #' (see \bold{Details}). Default is \dQuote{S1}.
 #' @param from.A,from.B The branch node labels of branches A and B for which
 #' the signal is swapped. Default, both are NULL. In simulation, we select two
 #' branches (A & B) to have differential abundance under different conditions.
-#' One could specify these two branches or let \code{doTable} choose.
+#' One could specify these two branches or let \code{doData} choose.
 #' (Note: If \code{from.A} is NULL, \code{from.B} is set to NULL).
 #' @param minTip.A The minimum number of leaves in branch A
 #' @param maxTip.A The maximum number of leaves in branch A
@@ -41,7 +48,181 @@
 #' library size for each simulated sample.
 #' @param n A numeric value to specify how many count tables would be generated
 #' with the same settings. Default is one and one count table would be obtained
-#' at the end. If above one, the output of \code{doTable} is a list of matrices
+#' at the end. If above one, the output of \code{doData} is a list of matrices
+#' (count tables). This is useful, when one needs multiple simulations.
+#' @param fun A function to derive the count at each internal node based on its
+#' descendant leaves, e.g. sum, mean. The argument of the function is a numeric
+#' vector with the counts of an internal node's descendant leaves.
+#' @param seed a numeric value. Set seed to get reproducible results.
+#'
+#' @importFrom dirmult dirmult
+#' @export
+#'
+#' @return a list of objects
+#' \item{FC}{the fold change of entities correspondint to the tree leaves.}
+#' \item{Count}{a list of count table or a count table. Entities on the row and
+#' samples in the column. Each count table includes entities corresponding to
+#' all nodes on the tree structure.}
+#' \item{Branch}{the information about two selected branches.}
+#' \describe{
+#' \item{A}{the branch node label of branch A}
+#' \item{B}{the branch node label of branch B}
+#' \item{ratio}{the count proportion ratio of branch B to branch A}
+#' \item{A_tips}{the number of leaves on branch A}
+#' \item{B_tips}{the number of leaves on branch B}
+#' \item{A_prop(\%)}{the count proportion of branch A (in percentage)}
+#' \item{B_prop(\%)}{the count proportion of branch B (in percentage)}
+#' }
+#'
+#' @details \code{simData} simulates a count table for entities which are
+#' corresponding to the nodes of a tree. The entities are in rows and the
+#' samples from different groups or conditions are in columns. The library size
+#' of each sample is sampled from a Negative Binomial distribution with mean
+#' and size specified by the arguments \code{mu} and \code{size}. The counts of
+#' entities, which are located on the tree leaves, in the same sample are
+#' assumed to follow a Dirichlet-Multinomial distribution. The parameters for
+#' the Dirichlet-Multinomial distribution are estimated from a real data set
+#' specified by the argument \code{data} via the function \code{dirmult}
+#' (see \code{\link[dirmult]{dirmult}}). To generate different abundance
+#' patterns under different conditions, we provide three different scenarios,
+#' \dQuote{S1}, \dQuote{S2}, and \dQuote{S3} (specified via \code{scenario}).
+#' Our vignette provides figures to explain these three scenarios
+#' (try \code{browseVignettes("treeAGG")}).
+#' \itemize{
+#' \item S1: two branches are selected to swap their proportions, and leaves on
+#' the same branch have the same fold change.
+#' \item S2: two branches are selected to swap their proportions. Leaves in the
+#' same branch have different fold changes but same direction (either increase
+#' or decrease).
+#' \item S3: two branches are selected. One branch has its proportion swapped
+#' with the proportion of some leaves from the other branch.}
+#'
+#' @author Ruizhu Huang
+#'
+#' @examples
+#' \dontrun{
+#' if(require(GUniFrac)){
+#' data("throat.otu.tab")
+#' data("throat.tree")
+#'
+#' # provide tree & data
+#' count <- as.matrix(t(throat.otu.tab))
+#' set.seed(1)
+#' dat1 <- simData(tree = throat.tree, data = count, ratio = 2, seed = 1)
+#'
+#' # provide obj
+#' treeDat <- treeSummarizedExperiment(tree = throat.tree,
+#'                                     assays = list(count))
+#' set.seed(1)
+#' dat2 <- simData(obj = treeDat, ratio = 2, seed = 1123)
+#' }
+#'}
+
+
+simData <- function(tree, data, obj, scenario = "S1",
+                    from.A = NULL, from.B = NULL,
+                    minTip.A = 0, maxTip.A = Inf,
+                    minTip.B = 0, maxTip.B = Inf,
+                    minPr.A = 0, maxPr.A = 1,
+                    ratio = 2, adjB = NULL,
+                    pct = 0.6, nSam = c(50, 50),
+                    mu = 10000, size = 50,
+                    n = 1, fun = sum, seed = 1){
+    set.seed(seed)
+    # -------------------------------------------------------------------------
+    # provide (tree & data)
+    if(missing(obj)) {
+        if(missing(tree) | missing(data)) {
+            stop("tree or data is not provided")
+        } else {
+            obj <- doData(tree = tree, data = data, scenario = scenario,
+                          from.A = from.A, from.B = from.B,
+                          minTip.A = minTip.A, maxTip.A = maxTip.A,
+                          minTip.B = minTip.B, maxTip.B = maxTip.B,
+                          minPr.A = minPr.A, maxPr.A = maxPr.A,
+                          ratio = ratio, adjB = adjB, pct = pct,
+                          nSam = nSam, mu = mu, size = size,
+                          n = n, fun = fun) }
+
+    # -------------------------------------------------------------------------
+    # provide obj
+    } else {
+        if(!inherits(obj, "treeSummarizedExperiment")){
+            stop("obj should be a treeSummarizedExperiment object.")
+        } else{
+            # -------------------------------
+            # data is also provided, use data
+            if(!missing(data)){
+                data <- data
+            }else{
+            # -------------------------------
+            # data isn't provided, use obj assays data
+            # if more than one table in assays, use the first one
+                if(length(assays(obj)) > 1){
+                    message("\n more than one table provided in the assays;
+                            only the first one would be used. \n")}
+                data <- assays(obj)[[1]]
+            }
+            obj <- doData(tree = metadata(obj)$tree, data = data,
+                          scenario = scenario, from.A = from.A,
+                          from.B = from.B,
+                          minTip.A = minTip.A, maxTip.A = maxTip.A,
+                          minTip.B = minTip.B, maxTip.B = maxTip.B,
+                          minPr.A = minPr.A, maxPr.A = maxPr.A,
+                          ratio = ratio, adjB = adjB, pct = pct,
+                          nSam = nSam, mu = mu, size = size,
+                          n = n, fun = fun)
+        }
+    }
+    return(obj)
+}
+
+
+
+#' Simulate a count table
+#'
+#' \code{doData} creates a count table for all nodes of a tree under two
+#' different groups such that the tree would have different abundance patterns
+#' in the different conditions.
+#'
+#' @param tree A phylo object
+#' @param data A matrix, representing a count table from real data.
+#' It has the entities corresponding to tree leaves in the row and samples
+#' in the column.
+#' @param scenario \dQuote{S1}, \dQuote{S2}, or \dQuote{S3}
+#' (see \bold{Details}). Default is \dQuote{S1}.
+#' @param from.A,from.B The branch node labels of branches A and B for which
+#' the signal is swapped. Default, both are NULL. In simulation, we select two
+#' branches (A & B) to have differential abundance under different conditions.
+#' One could specify these two branches or let \code{doData} choose.
+#' (Note: If \code{from.A} is NULL, \code{from.B} is set to NULL).
+#' @param minTip.A The minimum number of leaves in branch A
+#' @param maxTip.A The maximum number of leaves in branch A
+#' @param minTip.B The minimum number of leaves in branch B
+#' @param maxTip.B The maximum number of leaves in branch B
+#' @param minPr.A The minimum abundance proportion of leaves in branch A
+#' @param maxPr.A The maximum abundance proportion of leaves in branch A
+#' @param ratio The proportion ratio of branch B to branch A.
+#' This value is used to select branches(see \bold{Details}).
+#' If there are no branches having exactly this ratio,
+#' the pair with the value closest to \code{ratio} would be selected.
+#' @param adjB a numeric value between 0 and 1 (only for \code{scenario} is
+#' \dQuote{S3}). Default is NULL. If NULL, branch A and branch B swap their
+#' proportions. If a numeric value, e.g. 0.1, then branch B decreases to
+#' its one tenth proportion and the decrease in branch B is added to branch A.
+#' For example, assume there are two experimental conditions (C1 & C2), branch A
+#' has 10 and branch B has 40 in C1. If adjB is set to 0.1, then in C2 branch B
+#' becomes 4 and branch A 46 so that the total proportion stays the same.
+#' @param pct The percentage of leaves in branch B that have differential
+#' abundance under different conditions (only for scenario \dQuote{S3})
+#' @param nSam A numeric vector of length 2, containing the sample size for two
+#'  different conditions
+#' @param mu,size The parameters of the Negative Binomial distribution. (see mu
+#' and size in \code{\link[stats]{rnbinom}}). Parameters used to generate the
+#' library size for each simulated sample.
+#' @param n A numeric value to specify how many count tables would be generated
+#' with the same settings. Default is one and one count table would be obtained
+#' at the end. If above one, the output of \code{doData} is a list of matrices
 #' (count tables). This is useful, when one needs multiple simulations.
 #' @param fun A function to derive the count at each internal node based on its
 #' descendant leaves, e.g. sum, mean. The argument of the function is a numeric
@@ -66,7 +247,7 @@
 #' \item{B_prop(\%)}{the count proportion of branch B (in percentage)}
 #' }
 #'
-#' @details \code{doTable} simulates a count table for entities which are
+#' @details \code{doData} simulates a count table for entities which are
 #' corresponding to the nodes of a tree. The entities are in rows and the
 #' samples from different groups or conditions are in columns. The library size
 #' of each sample is sampled from a Negative Binomial distribution with mean
@@ -88,18 +269,19 @@
 #' with the proportion of some leaves from the other branch.}
 #' @author Ruizhu Huang
 #'
-#' @examples{
+#' @examples
+#' \dontrun{
 #' if(require(GUniFrac)){
 #' data("throat.otu.tab")
 #' data("throat.tree")
 #'
-#' dat <- doTable(tree = throat.tree,
+#' dat <- doData(tree = throat.tree,
 #' data = as.matrix(t(throat.otu.tab)),
 #' ratio = 2)
 #' }
 #'}
 
-doTable <- function(tree, data, scenario = "S1",
+doData <- function(tree, data, scenario = "S1",
                     from.A = NULL, from.B = NULL,
                     minTip.A = 0, maxTip.A = Inf,
                     minTip.B = 0, maxTip.B = Inf,
@@ -149,16 +331,55 @@ doTable <- function(tree, data, scenario = "S1",
                      nSam = nSam, mu, size, n)
 
     if(inherits(count, "list")) {
-        full <- lapply(count, nodeValue, tree = tree,
-                       fun = fun)
-    }
-    if(inherits(count, "matrix")) {
-        full <- nodeValue(tree = tree, data = count,
-                          fun = fun)
+        grpDat <- data.frame(group = substr(colnames(count), 1, 2))
+        countTSE <- treeSummarizedExperiment(tree = tree, assays = count,
+                                             metadata = list(
+                                                 tree = NULL,
+                                                 FC = beta,
+                                                 branch = pk,
+                                                 scenario = scenario),
+                                             colData = grpDat)
     }
 
-    obj <- list(Count = full, FC = beta,
-                Branch = pk, Scenario = scenario)
+    if(inherits(count, "matrix")) {
+        grpDat <- data.frame(group = substr(colnames(count), 1, 2))
+        countTSE <- treeSummarizedExperiment(tree = tree, assays = list(count),
+                                             metadata = list(
+                                                 tree = NULL,
+                                                 FC = beta,
+                                                 branch = pk,
+                                                 scenario = scenario),
+                                             colData = grpDat)
+    }
+    obj <- nodeValue.B(data = countTSE, fun = sum)
+
+    # if(inherits(count, "list")) {
+    #
+    #     full <- lapply(count, nodeValue, tree = tree,
+    #                    fun = fun)
+    #     obj <- treeSummarizedExperiment(tree = tree,
+    #                                     assays = full,
+    #                                     metadata = list(tree = NULL,
+    #                                                     FC = beta,
+    #                                                     branch = pk,
+    #                                                     scenario = scenario))
+    # }
+    #
+    # if(inherits(count, "matrix")) {
+    #     full <- nodeValue(tree = tree, data = count,
+    #                       fun = fun)
+    #
+    #     obj <- treeSummarizedExperiment(tree = tree,
+    #                                     assays = list(full),
+    #                                     metadata = list(tree = NULL,
+    #                                                     FC = beta,
+    #                                                     branch = pk,
+    #                                                     scenario = scenario))
+    # }
+
+
+    #obj <- list(Count = full, FC = beta,
+    #            Branch = pk, Scenario = scenario)
     return(obj)
 }
 
@@ -438,7 +659,7 @@ infLoc <- function(tree, data, from.A,
 
 #'
 #' @importFrom stats runif
-#' @return T numeric vector
+#' @return numeric vector
 #' @author Ruizhu Huang
 #' @keywords internal
 
