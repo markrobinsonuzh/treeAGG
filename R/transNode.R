@@ -4,7 +4,13 @@
 #' a node on a tree
 #'
 #' @param tree A phylo object
-#' @param input A tree node label or a tree node number
+#' @param input A character or numeric vector representing tree node label(s)
+#' or tree node number(s)
+#' @param use.original A logical value, TRUE or FALSE. Only required when
+#' \strong{input} is numeric. Default is FALSE. There are cases that a tree
+#' has no labels for some nodes. If keep.null is TRUE, NA is returned for these
+#' nodes; otherwise, the node number (from \strong{input}) will be returned
+#' with prefix "Node_" (for internal nodes) or "Leaf_" (for leaf nodes).
 #'
 #' @export
 #' @return a vector
@@ -26,7 +32,7 @@
 #' transNode(tinyTree, input = c('Node_16', 'Node_11'))
 #'
 
-transNode <- function(tree, input) {
+transNode <- function(tree, input, use.original = FALSE) {
 
     if (!inherits(tree, "phylo")) {
         stop("tree: should be a phylo object")
@@ -40,20 +46,30 @@ transNode <- function(tree, input) {
     # check whether the input node number exists in the provided tree
     if (is.numeric(input)) {
         if (!all(input %in% mat)) {
-            stop("Node ", input, " can't be found in the ", deparse(substitute(tree)),
-                 "\n")
+            stop("Node ", input, " can't be found in the ",
+                 deparse(substitute(tree)), "\n")
         }
     }
 
     # tip label
     if (is.null(tree$tip.label)) {
-        tipLab <- paste("Tip_", tip, sep = "")
+        if(use.original) {
+            tipLab <- NULL
+        }else{
+            tipLab <- paste("leaf_", tip, sep = "")
+        }
+
     } else {
         tipLab <- tree$tip.label
     }
     # node label
     if (is.null(tree$node.label)) {
-        nodLab <- paste("Node_", nod, sep = "")
+        if (use.original) {
+            nodLab <- NULL
+        }else{
+            nodLab <- paste("Node_", nod, sep = "")
+        }
+
     } else {
         Labs <- tree$node.label
         if (any(duplicated(Labs))){
