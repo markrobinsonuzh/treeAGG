@@ -67,7 +67,15 @@ signalNode <- function(tree, node, label = FALSE) {
     # select nodes which only exist in the selected paths
     selN <- setdiff(as.vector(mat[ind, ]), as.vector(mat[!ind, ]))
     # remove nodes which are descendants of any others
-    sNode <- rmDesc(node = selN, tree = tree)
+    matI <- mat[ind,]
+    selF <- apply(matI, MARGIN = 1,
+                FUN = function(x){
+                    y <- x %in% selN
+                    x[sum(y)]
+                })
+    sNode <- unique(selF)
+
+
 
     if (label) {
         final <- transNode(tree = tree, input = sNode)
