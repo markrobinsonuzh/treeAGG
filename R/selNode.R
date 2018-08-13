@@ -21,6 +21,7 @@
 #' @return The node whose descendant branch has the lowest proportion
 #' @author Ruizhu Huang
 #' @examples
+#' \dontrun{
 #' data("cytofTree")
 #' data("cytofCount")
 #' set.seed(1)
@@ -29,7 +30,7 @@
 #' sN <- selNode(tree = tree, minTip = 20,
 #' maxTip = 50, minPr = 0.02, maxPr = 0.03,
 #' skip = NULL, data = cytofCount, all = TRUE)
-#'
+#' }
 #'
 
 selNode <- function(tree, data, minTip = 0, maxTip = Inf,

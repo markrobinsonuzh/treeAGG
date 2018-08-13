@@ -19,9 +19,11 @@
 #' @return A list including \dQuote{pi} and \dQuote{theta}
 #' @author Ruizhu Huang
 #' @examples
+#' \dontrun{
 #' library(GUniFrac)
 #' data("throat.otu.tab")
 #' throat.par <- parEstimate(data = t(throat.otu.tab))
+#' }
 
 parEstimate <- function(data) {
 
