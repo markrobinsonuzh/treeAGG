@@ -21,8 +21,38 @@ Imports:
     stats,
     ape,
     dirmult,
-    utils
+    utils,
+    SummarizedExperiment,
+    methods,
+    S4Vectors
 RoxygenNote: 6.0.1
 VignetteBuilder: knitr
 Suggests: testthat, BiocStyle, knitr, rmarkdown, GUniFrac, cowplot
 biocViews: Software, Microbiome, SingleCell, DecisionTree, FeatureExtraction
+Collate: 
+    'AllGenerics.R'
+    'classValid.R'
+    'allClass.R'
+    'classAccessors.R'
+    'classBuilder.R'
+    'daEdgeR.R'
+    'data.R'
+    'fdr.R'
+    'findAncestor.R'
+    'findOS.R'
+    'matTree.R'
+    'nodeValue.R'
+    'parEstimate.R'
+    'pathTree.R'
+    'pruneTree.R'
+    'rmDesc.R'
+    'runEdgeR.R'
+    'selNode.R'
+    'shareNode.R'
+    'signalNode.R'
+    'simData.R'
+    'tpr.R'
+    'transNode.R'
+    'treeAGG.R'
+    'treePlot.R'
+    'viewSim.R'
