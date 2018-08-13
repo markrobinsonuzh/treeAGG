@@ -1,6 +1,6 @@
 #' Find the ancestors of specified nodes
 #'
-#' \code{findAncestor} finds the ancestor in the nth generation before
+#' \code{findAncestor} finds the ancestor in the nth generation above
 #' specified nodes.
 #'
 #' @param tree A phylo object
