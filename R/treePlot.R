@@ -47,7 +47,8 @@
 #' So other geoms from these two packages could be combined with
 #' \code{treePlot} to add geoms in the figure created by \code{treePlot}.
 #'
-#' @import ggplot2 ggtree
+#' @import ggplot2
+#' @import ggtree
 #' @export
 #' @return A tree plot
 #' @author Ruizhu Huang
@@ -143,6 +144,7 @@ treePlot <- function(tree,
         stop("tree: should be a phylo object")
     }
     p <- ggtree(tree, ...)
+    # p <- ggtree(tree, layout = "rectangular")
 
     # if legend isn't shown
     # if(!legend){
@@ -243,7 +245,8 @@ treePlot <- function(tree,
 #' @param addTo NULL or a plot of a phylo object.
 #' @param ... see also \code{\link[ggtree]{ggtree}}
 #'
-#' @import ggtree ggplot2
+#' @import ggplot2
+#' @importFrom ggtree ggtree %<+%
 #' @return A figure
 #' @author Ruizhu Huang
 #' @keywords internal
@@ -306,7 +309,8 @@ addBranch <- function(tree, branch, col.branch,
 #' @param addTo NULL or a plot of a phylo object.
 #' @param ... see also \code{\link[ggtree]{ggtree}}
 #'
-#' @import ggtree ggplot2
+#' @import ggplot2
+#' @importFrom ggtree ggtree geom_point2
 #' @return A figure
 #' @author Ruizhu Huang
 #' @keywords internal
@@ -362,7 +366,8 @@ addPoint <- function(tree, point, col.point,
 #' @param addTo NULL or a plot of a phylo object.
 #' @param ... see also \code{\link[ggtree]{ggtree}}
 #'
-#' @import ggtree ggplot2
+#' @import ggplot2
+#' @importFrom ggtree ggtree %>% scaleClade
 #' @return A figure
 #' @author Ruizhu Huang
 #' @keywords internal
@@ -428,8 +433,9 @@ addZoom <- function(tree, zoomNode = NULL, zoomLevel = NULL,
 
     lim <- c(min(fig$data$y), max(fig$data$y))
 
-    ## ggtree function set ylim when layout is circular or radical this would lead
-    ## to issue, like points not displayed when zoom in some branches
+    ## I reset limits for y because ggtree function use ylim to limit y axis.
+    ## This would lead to issues, like points not displayed when zoom in some
+    ## branches at the case that layout is circular or radical.
     suppressMessages(fig <- fig + scale_y_continuous(limits = lim))
 
     fig
@@ -441,7 +447,7 @@ addZoom <- function(tree, zoomNode = NULL, zoomLevel = NULL,
 #' @param legend.theme A list of arguments used for the theme in ggplot2 package
 #'  (see \code{\link[ggplot2]{theme}} ) and starting with "legend."
 #'
-#' @import ggtree ggplot2
+#' @import ggplot2
 #' @importFrom utils modifyList
 #' @return a list
 #' @author Ruizhu Huang
@@ -490,7 +496,7 @@ addLegend <- function(legend.theme) {
 #' \strong{point}.
 #' @param legend TRUE or FALSE
 #'
-#' @import ggplot2 ggtree
+#' @import ggplot2
 #' @importFrom utils modifyList
 #' @return ggproto object (Scale)
 #' @author Ruizhu Huang
@@ -544,7 +550,7 @@ sizeScale <- function(col.point, size.point,
 #' @param legend TRUE or FALSE. Default is FALSE. If TRUE, the legend is
 #' created.
 #'
-#' @import ggplot2 ggtree
+#' @import ggplot2
 #' @importFrom utils modifyList tail
 #' @importFrom stats setNames
 #' @return ggproto object (color)
@@ -603,6 +609,12 @@ colScale <- function(branch,
         listG <- modifyList(listG, cG)
         listLab <- modifyList(listLab, legend.label)
 
+        # check whether listG and listLab have the same composition pattern.
+        llG <- lapply(listG, FUN = function(x){match(x, unique(x))})
+        llLab <- lapply(listLab, FUN = function(x){match(x, unique(x))})
+        if(!setequal(llG, llLab)){
+            message("\n The legend label isn't correctly specified. \n")
+        }
         # match the color and the label
         namG <- mapply(function(x, y) {
             names(x) <- y
