@@ -24,7 +24,7 @@ viewSim <- function(obj, layout, zoomScale,
 
     md <- metadata(obj)
     # tree
-    tree <- md$tree
+    tree <- treeData(obj)
 
     # branch
     branch <- c(md$branch$A, md$branch$B)

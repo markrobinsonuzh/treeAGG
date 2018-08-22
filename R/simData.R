@@ -5,16 +5,14 @@
 #' a tree. More details about the simulated patterns could be found in the
 #' vignette via \code{browseVignettes("treeAGG")}.
 #'
-#' @param tree A phylo object
+#' @param tree A phylo object. Only use when \code{obj} is NULL.
 #' @param data A matrix, representing a table of values, such as count,
 #' collected from real data. It has the entities corresponding to tree leaves
-#' in the row and samples in the column.
+#' in the row and samples in the column. Only use when \code{obj} is NULL.
 #' @param obj A treeSummarizedExperiment object that includes a list of
 #' matrix-like elements, or a matrix-like element in assays, and a phylo object
 #' in metadata. In other words, \strong{obj} provides the same information
-#' given by \strong{tree} and \strong{data}. If \strong{data} is provided at the
-#' presence of \strong{obj}, then \code{simData} would use the information from
-#'  \strong{data}.
+#' given by \strong{tree} and \strong{data}.
 #' @param scenario \dQuote{S1}, \dQuote{S2}, or \dQuote{S3}
 #' (see \bold{Details}). Default is \dQuote{S1}.
 #' @param from.A,from.B The branch node labels of branches A and B for which
@@ -56,6 +54,8 @@
 #' @param seed a numeric value. Set seed to get reproducible results.
 #'
 #' @importFrom dirmult dirmult
+#' @importFrom S4Vectors metadata
+#' @importFrom SummarizedExperiment assays
 #' @export
 #'
 #' @return a list of objects
@@ -119,7 +119,8 @@
 #'}
 
 
-simData <- function(tree, data, obj, scenario = "S1",
+simData <- function(tree = NULL, data = NULL,
+                    obj = NULL, scenario = "S1",
                     from.A = NULL, from.B = NULL,
                     minTip.A = 0, maxTip.A = Inf,
                     minTip.B = 0, maxTip.B = Inf,
@@ -147,32 +148,44 @@ simData <- function(tree, data, obj, scenario = "S1",
     # -------------------------------------------------------------------------
     # provide obj
     } else {
-        if(!inherits(obj, "treeSummarizedExperiment")){
-            stop("obj should be a treeSummarizedExperiment object.")
+        if(!inherits(obj, "leafSummarizedExperiment")){
+            stop("obj should be a leafSummarizedExperiment object.")
         } else{
             # -------------------------------
-            # data is also provided, use data
-            if(!missing(data)){
-                data <- data
-            }else{
+            # don't use tree & data argument
+            if ( (!missing(tree)) |
+                 (!is.null(tree)) |
+                (!missing(data)) |
+                (!is.null(data)) ) {
+                stop("Set tree = NULL and data = NULL when obj is a
+                     leafSummarizedExperiment object. \n")
+            }
+
+            # confirme that the dirichlet multinomial parameters are available.
+            # otherwise, estimate them.
+            pars <- metadata(obj)$assays.par
+            if (is.null(pars)) {
+                obj <- parEstimate(data = obj)
+                pars <- metadata(obj)$assays.par
+            }
             # -------------------------------
             # data isn't provided, use obj assays data
             # if more than one table in assays, use the first one
-                if(length(assays(obj)) > 1){
-                    message("\n more than one table provided in the assays;
+            if(length(assays(obj)) > 1){
+                message("\n more than one table provided in the assays;
                             only the first one would be used. \n")}
-                data <- assays(obj)[[1]]
-            }
-            obj <- doData(tree = metadata(obj)$tree, data = data,
-                          scenario = scenario, from.A = from.A,
-                          from.B = from.B,
-                          minTip.A = minTip.A, maxTip.A = maxTip.A,
-                          minTip.B = minTip.B, maxTip.B = maxTip.B,
-                          minPr.A = minPr.A, maxPr.A = maxPr.A,
-                          ratio = ratio, adjB = adjB, pct = pct,
-                          nSam = nSam, mu = mu, size = size,
-                          n = n, fun = fun)
+            data <- assays(obj)[[1]]
         }
+        obj <- doData(tree = metadata(obj)$tree, data = pars,
+                      scenario = scenario, from.A = from.A,
+                      from.B = from.B,
+                      minTip.A = minTip.A, maxTip.A = maxTip.A,
+                      minTip.B = minTip.B, maxTip.B = maxTip.B,
+                      minPr.A = minPr.A, maxPr.A = maxPr.A,
+                      ratio = ratio, adjB = adjB, pct = pct,
+                      nSam = nSam, mu = mu, size = size,
+                      n = n, fun = fun)
+
     }
     return(obj)
 }
@@ -332,9 +345,8 @@ doData <- function(tree, data, scenario = "S1",
 
     if(inherits(count, "list")) {
         grpDat <- data.frame(group = substr(colnames(count), 1, 2))
-        countTSE <- treeSummarizedExperiment(tree = tree, assays = count,
+        countLSE <- leafSummarizedExperiment(tree = tree, assays = count,
                                              metadata = list(
-                                                 tree = NULL,
                                                  FC = beta,
                                                  branch = pk,
                                                  scenario = scenario),
@@ -343,43 +355,15 @@ doData <- function(tree, data, scenario = "S1",
 
     if(inherits(count, "matrix")) {
         grpDat <- data.frame(group = substr(colnames(count), 1, 2))
-        countTSE <- treeSummarizedExperiment(tree = tree, assays = list(count),
+        countLSE <- leafSummarizedExperiment(tree = tree,
+                                             assays = list(count),
                                              metadata = list(
-                                                 tree = NULL,
                                                  FC = beta,
                                                  branch = pk,
                                                  scenario = scenario),
                                              colData = grpDat)
     }
-    obj <- nodeValue.B(data = countTSE, fun = sum)
-
-    # if(inherits(count, "list")) {
-    #
-    #     full <- lapply(count, nodeValue, tree = tree,
-    #                    fun = fun)
-    #     obj <- treeSummarizedExperiment(tree = tree,
-    #                                     assays = full,
-    #                                     metadata = list(tree = NULL,
-    #                                                     FC = beta,
-    #                                                     branch = pk,
-    #                                                     scenario = scenario))
-    # }
-    #
-    # if(inherits(count, "matrix")) {
-    #     full <- nodeValue(tree = tree, data = count,
-    #                       fun = fun)
-    #
-    #     obj <- treeSummarizedExperiment(tree = tree,
-    #                                     assays = list(full),
-    #                                     metadata = list(tree = NULL,
-    #                                                     FC = beta,
-    #                                                     branch = pk,
-    #                                                     scenario = scenario))
-    # }
-
-
-    #obj <- list(Count = full, FC = beta,
-    #            Branch = pk, Scenario = scenario)
+    obj <- nodeValue(data = countLSE, fun = sum)
     return(obj)
 }
 
