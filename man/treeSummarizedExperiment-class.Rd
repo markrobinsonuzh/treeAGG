@@ -5,11 +5,57 @@
 \alias{treeSummarizedExperiment-class}
 \title{An S4 class treeSummarizedExperiment}
 \description{
-The class \code{treeSummarizedExperiment} is extended from the class
-\code{\link[SummarizedExperiment]{SummarizedExperiment}} by including a
-\strong{phylo} object in the metadata. It further restricts the rowData to
-have a column named \strong{nodeLab}. This column provides the labels of
-nodes on the tree that are corresponding to the rows of matrix in
-\strong{assays}. If multiple rows of a matrix in \strong{assays} are matched
-to a same node on the tree, then the same node label is shared by these rows.
+The class \strong{treeSummarizedExperiment} is an extension class of standard
+\code{\link[SummarizedExperiment]{SummarizedExperiment}} class. It has six
+slots. Four of them are traditional slots from
+\code{\link[SummarizedExperiment]{SummarizedExperiment}} class:
+\strong{assays}, \strong{rowData} \strong{colData} and \strong{metadata}. The
+other two slots are \strong{linkData} and \strong{tree}. The class
+\strong{treeSummarizedExperiment} is designed to store rectangular data for
+entities (e.g., microbes or cell types) (\strong{assays}), information about
+the hiearchical structure of entities (\strong{tree}), and information
+about the mapping between the rectangular data and the tree
+(\strong{linkData}).
+}
+\section{Slots}{
+
+\describe{
+\item{\code{linkData}}{A \code{\link[S4Vectors]{DataFrame}} object. It gives map
+information between the rows of rectangular data and the nodes of tree.
+The row dimension is the same to that of \code{assays} data
+\itemize{
+\item \strong{nodeLab} the node labels on the tree.
+\item \strong{nodeLab_allias} a allias of column \code{nodeLab}. It is
+created only when there are missing value or duplicated value in column
+\code{nodeLab}. Commonly, it is a prefix "Node_" follow by the value in
+column \code{nodeNum}.
+\item \strong{nodeNum} the node numbers on the tree.
+\item \strong{isTip} is it a leaf node?
+\item \strong{rowID} the row number in \code{assays}.
+}}
+
+\item{\code{tree}}{A phylo object. It gives information about the hiearchical
+structure of entities.}
+
+\item{\code{...}}{Go \code{\link[SummarizedExperiment]{SummarizedExperiment-class}}
+to see more details about slots inherited from \code{SummarizedExperiment}
+class.}
+}}
+
+\section{Constructor}{
+
+See \code{\link{treeSummarizedExperiment-constructor}} for constructor
+functions.
+}
+
+\section{Accessor}{
+
+See \code{\link{treeSummarizedExperiment-accessor}} for accessor functions.
+}
+
+\seealso{
+\code{\link{treeSummarizedExperiment}}
+  \code{\link{treeSummarizedExperiment-accessor}}
+  \code{\link{leafSummarizedExperiment}}
+  \code{\link[SummarizedExperiment]{SummarizedExperiment-class}}
 }

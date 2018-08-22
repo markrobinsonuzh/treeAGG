@@ -4,25 +4,23 @@
 \alias{simData}
 \title{Simulate different scenarios of abundance change in entities}
 \usage{
-simData(tree, data, obj, scenario = "S1", from.A = NULL, from.B = NULL,
-  minTip.A = 0, maxTip.A = Inf, minTip.B = 0, maxTip.B = Inf,
-  minPr.A = 0, maxPr.A = 1, ratio = 2, adjB = NULL, pct = 0.6,
-  nSam = c(50, 50), mu = 10000, size = 50, n = 1, fun = sum,
-  seed = 1)
+simData(tree = NULL, data = NULL, obj = NULL, scenario = "S1",
+  from.A = NULL, from.B = NULL, minTip.A = 0, maxTip.A = Inf,
+  minTip.B = 0, maxTip.B = Inf, minPr.A = 0, maxPr.A = 1, ratio = 2,
+  adjB = NULL, pct = 0.6, nSam = c(50, 50), mu = 10000, size = 50,
+  n = 1, fun = sum, seed = 1)
 }
 \arguments{
-\item{tree}{A phylo object}
+\item{tree}{A phylo object. Only use when \code{obj} is NULL.}
 
 \item{data}{A matrix, representing a table of values, such as count,
 collected from real data. It has the entities corresponding to tree leaves
-in the row and samples in the column.}
+in the row and samples in the column. Only use when \code{obj} is NULL.}
 
 \item{obj}{A treeSummarizedExperiment object that includes a list of
 matrix-like elements, or a matrix-like element in assays, and a phylo object
 in metadata. In other words, \strong{obj} provides the same information
-given by \strong{tree} and \strong{data}. If \strong{data} is provided at the
-presence of \strong{obj}, then \code{simData} would use the information from
- \strong{data}.}
+given by \strong{tree} and \strong{data}.}
 
 \item{scenario}{\dQuote{S1}, \dQuote{S2}, or \dQuote{S3}
 (see \bold{Details}). Default is \dQuote{S1}.}

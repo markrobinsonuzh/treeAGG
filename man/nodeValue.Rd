@@ -3,26 +3,34 @@
 \docType{methods}
 \name{nodeValue}
 \alias{nodeValue}
-\alias{nodeValue,phylo,matrixDataframe,function-method}
-\alias{nodeValue,ANY,treeSummarizedExperiment,function-method}
+\alias{nodeValue,matrix-method}
+\alias{nodeValue,data.frame-method}
+\alias{nodeValue,DataFrame-method}
+\alias{nodeValue,leafSummarizedExperiment-method}
 \title{Calculate entity values at internal nodes}
 \usage{
-nodeValue(tree, data, fun)
+nodeValue(data, fun = sum, tree, message)
 
-\S4method{nodeValue}{phylo,matrixDataframe,`function`}(tree, data, fun = sum)
+\S4method{nodeValue}{matrix}(data, fun = sum, tree, message = TRUE)
 
-\S4method{nodeValue}{ANY,treeSummarizedExperiment,`function`}(tree, data,
-  fun = sum)
+\S4method{nodeValue}{data.frame}(data, fun = sum, tree, message = TRUE)
+
+\S4method{nodeValue}{DataFrame}(data, fun = sum, tree, message = TRUE)
+
+\S4method{nodeValue}{leafSummarizedExperiment}(data, fun = sum,
+  message = TRUE)
 }
 \arguments{
-\item{tree}{A phylo object to provide information of tree structure. We don't
-need this if data is a treeSummarizedExperiment object.}
-
-\item{data}{A data frame, matrix or treeSummarizedExperiment object. If it's
-treeSummarizedExperiment, then tree information is also given.}
+\item{data}{A leafSummarizedExperiment object or a data frame/matrix.}
 
 \item{fun}{A function to create the value of an internal node based on values
 at its descendant leaf nodes. The default is sum.}
+
+\item{tree}{An optional argument. Only need if \code{data} is a data frame or
+matrix.}
+
+\item{message}{A logical value. The default is TRUE. If TRUE, it will print
+out the currenet status of a process.}
 }
 \value{
 A treeSummarizedExperiment if input data is a

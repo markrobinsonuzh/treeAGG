@@ -3,7 +3,7 @@
 \docType{data}
 \name{phylo}
 \alias{phylo}
-\title{A S3 class for the phylogenetic tree}
+\title{phylo: A S3 class for the phylogenetic tree}
 \format{An object of class \code{phylo} of length 0.}
 \usage{
 phylo

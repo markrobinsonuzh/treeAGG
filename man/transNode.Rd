@@ -4,7 +4,7 @@
 \alias{transNode}
 \title{Transfer between node number and node label}
 \usage{
-transNode(tree, input, use.original = FALSE)
+transNode(tree, input, use.original = FALSE, message = FALSE)
 }
 \arguments{
 \item{tree}{A phylo object}
@@ -17,6 +17,9 @@ or tree node number(s)}
 has no labels for some nodes. If keep.null is TRUE, NA is returned for these
 nodes; otherwise, the node number (from \strong{input}) will be returned
 with prefix "Node_" (for internal nodes) or "Leaf_" (for leaf nodes).}
+
+\item{message}{A logical value, TRUE or FALSE. The default is FALSE. If TRUE,
+message will show when a tree have duplicated labels for some internal nodes.}
 }
 \value{
 a vector

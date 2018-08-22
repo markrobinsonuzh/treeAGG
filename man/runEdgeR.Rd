@@ -2,71 +2,55 @@
 % Please edit documentation in R/runEdgeR.R
 \name{runEdgeR}
 \alias{runEdgeR}
-\title{Differential analysis using edgeR package}
+\title{Test for differential abundance: method 'treeAGG-DA-edgeR'}
 \usage{
-runEdgeR(data, nSam, isTip, isAnalyze = NULL, prior.count, normalize = TRUE,
-  method = "TMM")
+runEdgeR(obj, design = NULL, contrast = NULL, normalize = TRUE,
+  method = "TMM", prior.count = 0.125)
 }
 \arguments{
-\item{data}{A numeric matrix corresponding to the count table of entities
-(eg. genes, microbes or cell clusters) in samples under different conditions.
-Each row represents an entity and each column represents a sample.}
+\item{obj}{A treeSummarizedExperiment object.}
 
-\item{nSam}{A numeric vector. Each element represents the number of samples
-in one condition. For example, if we have n1 samples in condition 1 and n2
-samples in condition 2, then \strong{nSam} is (n1,n2).}
+\item{design}{A numeric matrix. It must be of full column rank. Defaults to
+use all columns of \code{colData} to create design matrix. Note: Users should
+check whether the default created design matrix is exactly what they want or
+create their own design matrix using \code{\link[stats]{model.matrix}}.}
 
-\item{isTip}{A logical vector. It has equal length to the number of rows in
-\strong{data}. If TRUE, the corresponding row contributes to the library
-size of a sample; otherwise, it doesn't. A provided count table might
-include rows for leaves and internal nodes. Only the counts from leaf nodes
-are really measured and should be included to do library size normalisation.}
+\item{contrast}{numeric vector or matrix specifying one or more contrasts of
+the linear model coefficients to be tested equal to zero. Number of rows
+must equal to the number of columns of design. If NULL, the last
+coefficient will be tested equal to zero.}
 
-\item{isAnalyze}{A logical vector with length equal to the row number of the
-data. This is to indicate the row used for differential analysis. Default is
-to use all rows.}
+\item{normalize}{A logical value, TRUE or FALSE. The default is TRUE.}
 
-\item{prior.count}{A numeric value; the average prior count added to each
-observation to compute estimated coefficients for a NB glm in such a way
-that the log-fold-changes are shrunk towards zero
-(see \code{\link[edgeR]{predFC}}.}
+\item{method}{Normalization method to be used. See
+\code{\link[edgeR]{calcNormFactors}} for more details.}
 
-\item{normalize}{A logical value; indicating whether to correct for
-compositionality when estimating size factors. If TRUE, TMM (weighted
-trimmed mean of M-values) is applied; otherwise, raw library size is used.}
-
-\item{method}{See \strong{method} in \code{\link[edgeR]{calcNormFactors}}}
+\item{prior.count}{average prior count to be added to observation to shrink
+the estimated log-fold-changes towards zero}
 }
 \value{
-A data frame containing the elements
- logFC, the log-abundance ratio, i.e. fold change, for each tag in the
- two groups being compared logCPM, the log-average concentration/abundance
- for each tag in the two groups being compared
- PValue, exact p-value for differential expression using the NB model
-
- FDR, the p-value adjusted for multiple testing as found using p.adjust
- using the method BH.
-
- predLFC, the predictive log2 fold changes (SEE \code{\link[edgeR]{predFC}})
-
- estimate, the estimated coefficient logFC = estimate / log(2)
-
- tag.disp, the tagwise dispersion
-
- waldAP, the adjusted p-value from Wald test ('BH' method; Benjamini &
- Hochberg (1995))
+A treeSummarizedExperiment
 }
 \description{
-\code{runEdgeR} performs differential analysis for the data using the edgeR
-package
+Test differential abundance of entities using functions from the
+\code{\link{edgeR}} (Robinson et al. 2010, \emph{Bioinformatics}; McCarthy et
+al. 2012, \emph{Nucleic Acids Research}) to fit models and calculate
+moderated test for each entity. We have used
+\code{\link[edgeR]{estimateGLMRobustDisp}} to estimate the dispersion. The
+statistical methods implemented in the \code{edgeR} package were originally
+designed for the analysis of gene expression data such as RNA-sequencing
+counts. Here, we apply these methods to counts that might be from microbes or
+cells.
 }
-\examples{
+\details{
+The experimental design must be specified using a design matrix. The customized design matrix could be given by \code{design}.
 
-data("cytofCount")
-mod <- runEdgeR(data = cytofCount, nSam = c(5, 5),
-isTip = rep(TRUE, nrow(cytofCount)), prior.count = 0,
-normalize = TRUE)
-}
-\author{
-Ruizhu Huang
+Normalization for samples is automatically performed by \code{edgeR} package.
+More details about the calculation of normalization factor could be found
+from \code{\link[edgeR]{calcNormFactors}}. A sample might include entities
+corresponding to leaf nodes and internal nodes of tree. Only entities
+corresponding to leaf nodes are used to calculate the library size of each
+sample. The reason is that the abundance of an entity, corresponding to an
+internal node, is calculated by taking sum of the abundance from its
+descendant leaf nodes.
 }
