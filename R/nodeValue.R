@@ -1,21 +1,6 @@
 
-
-#' Calculate entity values for internal nodes
-#'
-#' \code{nodeValue} calculates the entity value at each internal node.
-#'
-#' @param tree A phylo object
-#' @param data A matrix or data frame.
-#' @param fun A function.
-#'
-#' @importFrom utils head
-#' @keywords internal
-#' @return A count table (matrix class) with a row representing a node and a
-#'   column representing a sample.
-#' @author Ruizhu Huang
-#'
-
-nodeValue.A <- function(tree, data, fun = sum) {
+# when data is a data frame or a matrix
+nodeValue.A <- function(data, fun = sum, tree, message = TRUE) {
     if (!(inherits(data, "data.frame") |
           inherits(data, "matrix"))) {
         stop("data should be a matrix or data.frame")
@@ -43,105 +28,134 @@ nodeValue.A <- function(tree, data, fun = sum) {
     # calculate counts at nodes
     cNode <- matrix(NA, nrow = nN, ncol = ncol(data))
     rownames(cNode) <- nNam
+
+    # message: current status of the process
+    # if (message) {
+    #     cat(seq_len())
+    # }
     for (i in seq_len(nN)) {
         node.i <- nodeI[i]
         tips.i <- findOS(ancestor = node.i, tree = tree,
                          only.Tip = TRUE, self.include = TRUE,
                          return = "label")
         cNode[i, ] <- apply(data[tips.i, ], 2, fun)
+
+        # print out the running process
+        if (message) {
+            Sys.sleep(0.2)
+            message(i, " out of ", nN , " finished", "\r", appendLF = FALSE)
+            # message(i, "\r", appendLF = FALSE)
+            flush.console()
+        }
     }
     colnames(cNode) <- colnames(data)
     return(rbind(data, cNode))
 }
 
 
-#' Calculate entity value for each internal node
-#'
-#' \code{nodeValue.B} calculates value, such as, count, for each internal node.
-#' @param tree A phylo object
-#' @param data A treeSummarizedExperiment
-#' @param fun A function
-#'
-#' @importFrom utils head
-#' @importFrom S4Vectors metadata DataFrame
-#' @importFrom SummarizedExperiment SummarizedExperiment assays rowData
-#' @keywords internal
-#' @return A treeSummarizedExperiment.
-#' @author Ruizhu Huang
-#'
-#'
-nodeValue.B <- function(tree, data, fun = sum) {
-    if (!inherits(data, "treeSummarizedExperiment")) {
-        stop("\n data should be a treeSummarizedExperiment. \n")
+# when data is a leafSummarizedExperiment
+nodeValue.B <- function(data, fun = sum, message = TRUE) {
+    if (!inherits(data, "leafSummarizedExperiment")) {
+        stop("\n data should be a leafSummarizedExperiment. \n")
     }
 
-    if (!missing(tree)) {
-        stop("\n Conflict in tree: phylo object has been found both in data
-             and tree argument. \n")
-    }
+
     # extract table and tree from treeSummarizedExperiment.
     tree <- metadata(data)$tree
     table <- assays(data)
     rData <- rowData(data)
+    mData <- metadata(data)
+    cData <- colData(data)
 
     # leaves and internal nodes
     emat <- tree$edge
     leaf <- setdiff(emat[, 2], emat[, 1])
     nodeI <- setdiff(emat[, 1], leaf)
+    nodeA <- c(leaf, nodeI)
 
-    ## calculate counts for internal nodes
-    nN <- length(nodeI)
-    nNam <- transNode(tree = tree, input = nodeI)
+    ## all nodes
+    nN <- length(nodeA)
+    nNam <- transNode(tree = tree, input = nodeA, use.original = FALSE)
 
-    # create empty table for values of internal nodes
-    tableI <- lapply(table, FUN = function(x){
+    # -------------------------------------------------------------------
+    # create empty table nodes
+    tableA <- lapply(table, FUN = function(x){
         y <- matrix(NA, nrow = nN, ncol = ncol(x))
-        rownames(y) <- nNam
         colnames(y) <- colnames(data)
         return(y)
     })
-    # calculate counts at nodes
+
+    # create rowData for nodes
+    rD <- rData[rep(1, nN), ]
+
+    # node labels for rows
+    nodeLab <- rData$nodeLab
+    if (is.null(nodeLab)) { nodeLab <- rownames(data)}
+
+    # calculate values at nodes
     for (i in seq_len(nN)) {
-        node.i <- nodeI[i]
+        node.i <- nodeA[i]
         tips.i <- findOS(ancestor = node.i, tree = tree,
                          only.Tip = TRUE, self.include = TRUE,
                          return = "label")
-        row.i <- rData$rowID[rData$nodeLab %in% tips.i]
-        # calculate count
-        for(j in seq_along(tableI)){
+
+        row.i <- which(nodeLab %in% tips.i)
+
+        # rowdata: if all rows have the value, keep value; otherwise, use NA
+        rdata.i <- rData[row.i, ]
+        ul.i <- lapply(seq_len(ncol(rData)), FUN = function(x){
+            iu <- unique(rdata.i[, x])
+            if (length(iu) == 1) {return(iu)} else {return(NA)}
+        })
+        udata.i <- do.call(cbind.data.frame, ul.i)
+        rD[i, ] <- udata.i
+
+        # calculate values (e.g., abundance or intensity) for each node
+        for(j in seq_along(tableA)){
             table.j <- table[[j]]
-            tableI[[j]][i, ] <- apply(table.j[row.i, ], 2, fun)
+            tableA[[j]][i, ] <- apply(table.j[row.i, , drop = FALSE], 2, fun)
+        }
+
+        # print out the running process
+        if (message) {
+            Sys.sleep(0.2)
+            message(i, " out of ", nN , " finished", "\r", appendLF = FALSE)
+            flush.console()
         }
     }
 
-    # create empty dataFrame for the rowData of internal nodes
-    rDataI <- DataFrame(nodeLab = transNode(tree = tree, input = nodeI,
-                                            use.original = TRUE),
-                        nodeNum = nodeI,
-                        isLeaf = FALSE,
-                        rowID = nrow(rData) + seq_len(nN),
-                        row.names = nNam )
+    # update rowdata; column nodeLab is removed
+     rdataA <- rD[, !colnames(rD) %in% c("nodeLab")]
+
+
+    # create empty dataFrame for the rowData of nodes
+    # rdataA <- DataFrame(nodeLab = transNode(tree = tree, input = nodeA,
+    #                                         use.original = TRUE),
+    #                     nodeNum = nodeA,
+    #                     isLeaf = nodeA %in% leaf,
+    #                     rowID = seq_len(nN))
+
+    linkData <- DataFrame(nodeLab = transNode(tree = tree, input = nodeA,
+                                                use.original = TRUE),
+                            nodeNum = nodeA,
+                            isLeaf = nodeA %in% leaf,
+                            rowID = seq_len(nN))
 
     # combine rows for internal nodes and leaf nodes
-    table <- lapply(table, FUN = function(x){
-        rownames(x) <- NULL
-        return(x)
-    })
-    tableI <- lapply(tableI, FUN = function(x){
-        rownames(x) <- NULL
-        return(x)
-    })
-    tableC <- Map(rbind, table, tableI)
-    rdataC <- rbind(rData, rDataI)
+    # tse <- treeSummarizedExperiment(tree = tree, assays = tableA,
+    #                                 rowData = rdataA, metadata = mData,
+    #                                 colData = cData)
 
-    tse <- treeSummarizedExperiment(tree = tree, assays = tableC,
-                                    rowData = rdataC)
-
-    SummarizedExperiment(assays = tableC,
-                         rowData = rdataC)
+    mData.new <- mData[names(mData) != "tree"]
+    tse <- treeSummarizedExperiment(linkData = linkData, tree = tree,
+                                    assays = tableA, metadata = mData.new,
+                                    colData = cData, rowData = rdataA)
     return(tse)
 
 }
+
+
+
 
 #' Calculate entity values at internal nodes
 #'
@@ -154,13 +168,13 @@ nodeValue.B <- function(tree, data, fun = sum) {
 #' could be achieved by specifying different functions in the argument
 #' \strong{fun}.
 #'
-#' @param tree A phylo object to provide information of tree structure. We don't
-#' need this if data is a treeSummarizedExperiment object.
-#' @param data A data frame, matrix or treeSummarizedExperiment object. If it's
-#' treeSummarizedExperiment, then tree information is also given.
+#' @param data A leafSummarizedExperiment object or a data frame/matrix.
 #' @param fun A function to create the value of an internal node based on values
 #' at its descendant leaf nodes. The default is sum.
-#'
+#' @param tree An optional argument. Only need if \code{data} is a data frame or
+#'   matrix.
+#' @param message A logical value. The default is TRUE. If TRUE, it will print
+#'   out the currenet status of a process.
 #' @importFrom utils head
 #' @importFrom S4Vectors metadata DataFrame
 #' @importFrom SummarizedExperiment SummarizedExperiment
@@ -198,17 +212,28 @@ nodeValue.B <- function(tree, data, fun = sum) {
 #' ggtree(tinyTree) %<+% d + geom_text2(aes(label = count))
 #'}
 #'
-setGeneric("nodeValue", function(tree, data, fun) {
+setGeneric("nodeValue", function(data, fun = sum, tree, message) {
     standardGeneric("nodeValue")
 })
 
 #' @rdname nodeValue
-#' @export
-setMethod("nodeValue", signature("phylo", "matrixDataframe", "function"),
+setMethod("nodeValue",
+          signature(data = "matrix"),
           nodeValue.A)
 
 #' @rdname nodeValue
-#' @export
-setMethod("nodeValue", signature("ANY", "treeSummarizedExperiment",
-                                 "function"), nodeValue.B)
+setMethod("nodeValue",
+          signature(data = "data.frame"),
+          nodeValue.A)
+
+#' @rdname nodeValue
+#' @importClassesFrom S4Vectors DataFrame
+setMethod("nodeValue",
+          signature(data = "DataFrame"),
+          nodeValue.A)
+
+#' @rdname nodeValue
+setMethod("nodeValue",
+          signature(data = "leafSummarizedExperiment"),
+          nodeValue.B)
 
