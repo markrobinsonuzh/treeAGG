@@ -1,127 +1,155 @@
-#' Differential analysis using edgeR package
+#' Test for differential abundance: method 'treeAGG-DA-edgeR'
 #'
-#' \code{runEdgeR} performs differential analysis for the data using the edgeR
-#' package
+#' Test differential abundance of entities using functions from the
+#' \code{\link{edgeR}} (Robinson et al. 2010, \emph{Bioinformatics}; McCarthy et
+#' al. 2012, \emph{Nucleic Acids Research}) to fit models and calculate
+#' moderated test for each entity. We have used
+#' \code{\link[edgeR]{estimateGLMRobustDisp}} to estimate the dispersion. The
+#' statistical methods implemented in the \code{edgeR} package were originally
+#' designed for the analysis of gene expression data such as RNA-sequencing
+#' counts. Here, we apply these methods to counts that might be from microbes or
+#' cells.
 #'
-#' @param data  A numeric matrix corresponding to the count table of entities
-#' (eg. genes, microbes or cell clusters) in samples under different conditions.
-#' Each row represents an entity and each column represents a sample.
-#' @param nSam A numeric vector. Each element represents the number of samples
-#' in one condition. For example, if we have n1 samples in condition 1 and n2
-#' samples in condition 2, then \strong{nSam} is (n1,n2).
-#' @param isTip A logical vector. It has equal length to the number of rows in
-#' \strong{data}. If TRUE, the corresponding row contributes to the library
-#' size of a sample; otherwise, it doesn't. A provided count table might
-#' include rows for leaves and internal nodes. Only the counts from leaf nodes
-#' are really measured and should be included to do library size normalisation.
-#' @param isAnalyze A logical vector with length equal to the row number of the
-#' data. This is to indicate the row used for differential analysis. Default is
-#' to use all rows.
-#' @param prior.count A numeric value; the average prior count added to each
-#' observation to compute estimated coefficients for a NB glm in such a way
-#' that the log-fold-changes are shrunk towards zero
-#' (see \code{\link[edgeR]{predFC}}.
-#' @param normalize A logical value; indicating whether to correct for
-#' compositionality when estimating size factors. If TRUE, TMM (weighted
-#' trimmed mean of M-values) is applied; otherwise, raw library size is used.
-#' @param method See \strong{method} in \code{\link[edgeR]{calcNormFactors}}
+#' The experimental design must be specified using a design matrix. The customized design matrix could be given by \code{design}.
 #'
+#' Normalization for samples is automatically performed by \code{edgeR} package.
+#' More details about the calculation of normalization factor could be found
+#' from \code{\link[edgeR]{calcNormFactors}}. A sample might include entities
+#' corresponding to leaf nodes and internal nodes of tree. Only entities
+#' corresponding to leaf nodes are used to calculate the library size of each
+#' sample. The reason is that the abundance of an entity, corresponding to an
+#' internal node, is calculated by taking sum of the abundance from its
+#' descendant leaf nodes.
+#'
+#' @param obj A treeSummarizedExperiment object.
+#' @param design A numeric matrix. It must be of full column rank. Defaults to
+#' use all columns of \code{colData} to create design matrix. Note: Users should
+#' check whether the default created design matrix is exactly what they want or
+#' create their own design matrix using \code{\link[stats]{model.matrix}}.
+#' @param contrast numeric vector or matrix specifying one or more contrasts of
+#'   the linear model coefficients to be tested equal to zero. Number of rows
+#'   must equal to the number of columns of design. If NULL, the last
+#'   coefficient will be tested equal to zero.
+#' @param normalize A logical value, TRUE or FALSE. The default is TRUE.
+#' @param method Normalization method to be used. See
+#'   \code{\link[edgeR]{calcNormFactors}} for more details.
+#' @param prior.count average prior count to be added to observation to shrink
+#'   the estimated log-fold-changes towards zero
+#'
+#' @importFrom S4Vectors DataFrame
+#' @importFrom edgeR DGEList calcNormFactors estimateGLMRobustDisp glmFit glmLRT
+#'   topTags
 #' @export
-#' @importFrom edgeR DGEList calcNormFactors estimateGLMRobustDisp glmFit
-#' glmLRT topTags predFC
-#' @importFrom stats model.matrix p.adjust pnorm
-#'
-#' @return A data frame containing the elements
-#'  logFC, the log-abundance ratio, i.e. fold change, for each tag in the
-#'  two groups being compared logCPM, the log-average concentration/abundance
-#'  for each tag in the two groups being compared
-#'  PValue, exact p-value for differential expression using the NB model
-#'
-#'  FDR, the p-value adjusted for multiple testing as found using p.adjust
-#'  using the method BH.
-#'
-#'  predLFC, the predictive log2 fold changes (SEE \code{\link[edgeR]{predFC}})
-#'
-#'  estimate, the estimated coefficient logFC = estimate / log(2)
-#'
-#'  tag.disp, the tagwise dispersion
-#'
-#'  waldAP, the adjusted p-value from Wald test ('BH' method; Benjamini &
-#'  Hochberg (1995))
-#' @author Ruizhu Huang
-#' @examples
-#'
-#' data("cytofCount")
-#' mod <- runEdgeR(data = cytofCount, nSam = c(5, 5),
-#' isTip = rep(TRUE, nrow(cytofCount)), prior.count = 0,
-#' normalize = TRUE)
+#' @return A treeSummarizedExperiment
 
-runEdgeR <- function(data, nSam, isTip,
-                     isAnalyze = NULL,
-                     prior.count, normalize = TRUE,
-                     method = "TMM") {
-    # use all rows to do analysis
-    if (is.null(isAnalyze)) {
-        isAnalyze <- rep(TRUE, nrow(data))
-    } else{
-        isAnalyze <- isAnalyze
-    }
+runEdgeR <- function(obj, design = NULL, contrast = NULL,
+                     normalize = TRUE, method = "TMM",
+                     prior.count = 0.125){
 
-    # define conditions
-    grp <- factor(rep(seq_len(2), nSam))
+    # calculate library size
+    linkD <- linkData(obj)
+    objL<- obj[linkD[linkD$isLeaf, "rowID"], ]
+    tableL <- assays(objL)
+    libSize <- lapply(tableL, FUN = function(x) {
+        rs <- rowsum(x, group = rep(1, nrow(x)))
+        return(rs[1, ])})
 
-    # correct sample size
-    SampSize.c <- colSums(data[isTip, ])
-    y <- edgeR::DGEList(data[isAnalyze, ], group = grp, remove.zeros = TRUE)
-    y$samples$lib.size <- SampSize.c
+    # create DEGList
+    tableA <- assays(obj)
+    y <- lapply(seq_along(tableA), FUN = function(x) {
+        yy <- DGEList(tableA[[x]], remove.zeros = TRUE)
+        yy$samples$lib.size <- libSize[[x]]
+        yy
+    } )
 
     # normalisation
     if (normalize) {
-        y <- edgeR::calcNormFactors(y, method)
+        y <- lapply(y, calcNormFactors, method = method)
     } else {
         y <- y
     }
 
-    # construct design matrix
-    design <- model.matrix(~grp)
-    # estimate dispersion
-    y <- edgeR::estimateGLMRobustDisp(y, design = design)
-    fit <- edgeR::glmFit(y, design = design)
-    lrt <- edgeR::glmLRT(fit)
-    tt <- edgeR::topTags(lrt, n = Inf, adjust.method = "BH", sort.by = "none")
-
-    # estimate the predictive log fold changes
-    predlfc <- edgeR::predFC(y, design, prior.count = prior.count)
-    rownames(predlfc) <- rownames(y$counts)
-    tt$table$predLFC <- predlfc[rownames(tt$table), 2]
-
-    # wald test
-    X <- fit$design
-    coef <- fit$coefficients
-    phi <- fit$dispersion
-    mu <- fit$fitted.values
-    mu <- mu + 1e-06
-    nr <- nrow(mu)
-    vb <- coef
-    for (i in seq(nr)) {
-        W <- diag((mu[i, ]^-1 + phi[i])^-1)
-        xtwx <- t(X) %*% W %*% X
-        xtwxInv <- solve(xtwx)
-        vb[i, ] <- diag(xtwxInv %*% xtwx %*% xtwxInv)
+    # default design matrix
+    if (is.null(design)) {
+        design <- designMatrix(data = colData(obj))
     }
-    waldStat <- coef/sqrt(vb)
-    waldP <- (1 - apply(abs(waldStat), 2, pnorm)) * 2
-    waldP.1 <- waldP[rownames(tt$table), 2]
-    tt$table$waldAP <- p.adjust(waldP.1, method = "BH")
-    tt$table$std.err <- sqrt(vb)[rownames(tt$table), 2]
-    tt$table$estimate <- coef[rownames(tt$table), 2]
 
-    # tagwise dispersion
-    disp <- fit$dispersion
-    names(disp) <- rownames(fit$coefficients)
-    tt$table$tag.disp <- disp[rownames(tt$table)]
-    # colnames(tt$table)[colnames(tt$table)=='logFC']<-'log2FC'
-    # colnames(tt$table)[colnames(tt$table)=='PValue']<-'pvalue'
+    # estimate dispersion
+    y <- lapply(y, estimateGLMRobustDisp, design = design)
 
-    return(tt$table)
+    # build model
+    fit <- lapply(y, glmFit, design = design, prior.count = prior.count)
+    lrt <- lapply(fit, glmLRT, contrast = contrast)
+    tt <- lapply(lrt, topTags, n = Inf, adjust.method = "BH",
+                 sort.by = "none")
+    final <- lapply(tt, FUN = function(x) { x$table })
+
+    # output result to metadata
+    outP <- lapply(seq_along(final), function(x) {
+        # nodeLab and nodeNum columns from rowData
+        #  dt <- rowData(obj)[, c("nodeLab", "nodeNum")]
+
+        # find rows deleted
+        idx <- as.numeric(rownames(final[[x]]))
+        idc <- setdiff(seq_len(nrow(obj)), idx)
+
+        # add and rearrange rows so that the output is also row-wise
+        # corresponding to the assays data.
+        df <- DataFrame(final[[x]])
+        dm <- matrix(NA, nrow = length(idc), ncol = ncol(df),
+                     dimnames = list(idc, colnames(df)))
+        dfc <- DataFrame(dm)
+        dfA <- rbind(df, dfc)
+        dfA <- dfA[order(as.numeric(rownames(dfA))),]
+        return(dfA)
+
+    })
+
+    outL <- treeSummarizedExperiment(assays = outP,
+                                     rowData = rowData(obj),
+                                     metadata = list(design = design,
+                                                     contrast = contrast),
+                                     tree = treeData(obj),
+                                     linkData = linkD)
+    return(outL)
 }
+
+
+#' Create design matrix
+#'
+#' \code{designMatrix} creates a design matrix by expanding factors to a set of
+#' dummay variables and epanding interactions similarly.
+#'
+#'
+#' \code{designMatrix} creates a design matrix using the data extracted from
+#' \code{data}. \code{cols} specifies the columns to extract.
+#' \code{designMatrix} is built on \code{\link[stats]{model.matrix}} with
+#' \code{contrasts.arg = NULL}.
+#'
+#' @param data A \code{data.frame} or \code{DataFrame}.
+#' @param cols A numeric vector. Specify columns to include in the design of
+#' model matrix. Default is to include all columns.
+#'
+#' @importFrom stats model.matrix as.formula
+#' @keywords internal
+#' @return a matrix.
+
+designMatrix <- function(data, cols = NULL) {
+
+    stopifnot(class(data) %in% c("data.frame", "DataFrame"))
+
+    # if cols is null, use all columns.
+    if (is.null(cols)) {
+        cols <- seq_len(ncol(data))
+    }
+
+    # create design matrix
+    terms <- colnames(data)[cols]
+
+    formula <- as.formula(paste("~", paste(terms, collapse = " + ")))
+
+    design <- model.matrix(formula, data = data)
+
+    return(design)
+}
+
