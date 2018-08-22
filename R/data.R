@@ -84,6 +84,21 @@
 #' }
 "cytofCount"
 
+#' The information about clusters of the AML-sim data
+#'
+#' A data frame provides information about clusters. Each cluster corresponds to
+#' a row in the \code{\link{cytofCount}}.
+#'
+#' @format A data frame of cluster information:
+#' \describe{
+#'   \item{cluster}{The name of cluster}
+#'   \item{n_cells}{The number of cells in the cluster}
+#'   \item{n_spikein}{The number of spike-in cells in the cluster}
+#'   \item{prop_spikein}{The proportion of spike-in cells in the cluster}
+#'   \item{DA}{whether the cluster is differential abundant between the healthy
+#'   sample and the CN sample}
+#' }
+"cytofCluster"
 
 #' The true signal in the AML-sim data
 #'
