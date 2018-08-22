@@ -1,6 +1,6 @@
 
 # when data is a data frame or a matrix
-nodeValue.A <- function(data, fun = sum, tree, message = TRUE) {
+nodeValue.A <- function(data, fun = sum, tree, message = FALSE) {
     if (!(inherits(data, "data.frame") |
           inherits(data, "matrix"))) {
         stop("data should be a matrix or data.frame")
@@ -54,7 +54,7 @@ nodeValue.A <- function(data, fun = sum, tree, message = TRUE) {
 
 
 # when data is a leafSummarizedExperiment
-nodeValue.B <- function(data, fun = sum, message = TRUE) {
+nodeValue.B <- function(data, fun = sum, message = FALSE) {
     if (!inherits(data, "leafSummarizedExperiment")) {
         stop("\n data should be a leafSummarizedExperiment. \n")
     }
@@ -175,7 +175,7 @@ nodeValue.B <- function(data, fun = sum, message = TRUE) {
 #'   matrix.
 #' @param message A logical value. The default is TRUE. If TRUE, it will print
 #'   out the currenet status of a process.
-#' @importFrom utils head
+#' @importFrom utils head flush.console
 #' @importFrom S4Vectors metadata DataFrame
 #' @importFrom SummarizedExperiment SummarizedExperiment
 #'
@@ -212,27 +212,31 @@ nodeValue.B <- function(data, fun = sum, message = TRUE) {
 #' ggtree(tinyTree) %<+% d + geom_text2(aes(label = count))
 #'}
 #'
-setGeneric("nodeValue", function(data, fun = sum, tree, message) {
+setGeneric("nodeValue", function(data, fun = sum, tree, message = FALSE) {
     standardGeneric("nodeValue")
 })
 
 #' @rdname nodeValue
+#' @importFrom utils flush.console
 setMethod("nodeValue",
           signature(data = "matrix"),
           nodeValue.A)
 
 #' @rdname nodeValue
+#' @importFrom utils flush.console
 setMethod("nodeValue",
           signature(data = "data.frame"),
           nodeValue.A)
 
 #' @rdname nodeValue
+#' @importFrom utils flush.console
 #' @importClassesFrom S4Vectors DataFrame
 setMethod("nodeValue",
           signature(data = "DataFrame"),
           nodeValue.A)
 
 #' @rdname nodeValue
+#' @importFrom utils flush.console
 setMethod("nodeValue",
           signature(data = "leafSummarizedExperiment"),
           nodeValue.B)

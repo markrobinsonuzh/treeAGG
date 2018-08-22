@@ -9,16 +9,16 @@
 \alias{nodeValue,leafSummarizedExperiment-method}
 \title{Calculate entity values at internal nodes}
 \usage{
-nodeValue(data, fun = sum, tree, message)
+nodeValue(data, fun = sum, tree, message = FALSE)
 
-\S4method{nodeValue}{matrix}(data, fun = sum, tree, message = TRUE)
+\S4method{nodeValue}{matrix}(data, fun = sum, tree, message = FALSE)
 
-\S4method{nodeValue}{data.frame}(data, fun = sum, tree, message = TRUE)
+\S4method{nodeValue}{data.frame}(data, fun = sum, tree, message = FALSE)
 
-\S4method{nodeValue}{DataFrame}(data, fun = sum, tree, message = TRUE)
+\S4method{nodeValue}{DataFrame}(data, fun = sum, tree, message = FALSE)
 
 \S4method{nodeValue}{leafSummarizedExperiment}(data, fun = sum,
-  message = TRUE)
+  message = FALSE)
 }
 \arguments{
 \item{data}{A leafSummarizedExperiment object or a data frame/matrix.}
