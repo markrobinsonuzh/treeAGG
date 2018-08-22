@@ -127,24 +127,11 @@ nodeValue.B <- function(data, fun = sum, message = FALSE) {
     # update rowdata; column nodeLab is removed
      rdataA <- rD[, !colnames(rD) %in% c("nodeLab")]
 
-
-    # create empty dataFrame for the rowData of nodes
-    # rdataA <- DataFrame(nodeLab = transNode(tree = tree, input = nodeA,
-    #                                         use.original = TRUE),
-    #                     nodeNum = nodeA,
-    #                     isLeaf = nodeA %in% leaf,
-    #                     rowID = seq_len(nN))
-
     linkData <- DataFrame(nodeLab = transNode(tree = tree, input = nodeA,
                                                 use.original = TRUE),
                             nodeNum = nodeA,
                             isLeaf = nodeA %in% leaf,
                             rowID = seq_len(nN))
-
-    # combine rows for internal nodes and leaf nodes
-    # tse <- treeSummarizedExperiment(tree = tree, assays = tableA,
-    #                                 rowData = rdataA, metadata = mData,
-    #                                 colData = cData)
 
     mData.new <- mData[names(mData) != "tree"]
     tse <- treeSummarizedExperiment(linkData = linkData, tree = tree,
