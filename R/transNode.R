@@ -11,6 +11,8 @@
 #' has no labels for some nodes. If keep.null is TRUE, NA is returned for these
 #' nodes; otherwise, the node number (from \strong{input}) will be returned
 #' with prefix "Node_" (for internal nodes) or "Leaf_" (for leaf nodes).
+#' @param message A logical value, TRUE or FALSE. The default is FALSE. If TRUE,
+#' message will show when a tree have duplicated labels for some internal nodes.
 #'
 #' @export
 #' @return a vector
@@ -32,7 +34,7 @@
 #' transNode(tinyTree, input = c('Node_16', 'Node_11'))
 #'
 
-transNode <- function(tree, input, use.original = FALSE) {
+transNode <- function(tree, input, use.original = FALSE, message = FALSE) {
 
     if (!inherits(tree, "phylo")) {
         stop("tree: should be a phylo object")
@@ -73,7 +75,9 @@ transNode <- function(tree, input, use.original = FALSE) {
     } else {
         Labs <- tree$node.label
         if (any(duplicated(Labs))){
-            warning("Some internal nodes have same labels")
+            if (message) {
+                cat("Some internal nodes have same labels")
+            }
             nodLab <- paste("Node_", nod, sep = "")
         }else{
             nodLab <- Labs
