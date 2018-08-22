@@ -30,12 +30,10 @@ VignetteBuilder: knitr
 Suggests: testthat, BiocStyle, knitr, rmarkdown, GUniFrac, cowplot
 biocViews: Software, Microbiome, SingleCell, DecisionTree, FeatureExtraction
 Collate: 
-    'AllGenerics.R'
     'classValid.R'
     'allClass.R'
-    'classAccessors.R'
-    'classBuilder.R'
-    'daEdgeR.R'
+    'allGenerics.R'
+    'classAccessor.R'
     'data.R'
     'fdr.R'
     'findAncestor.R'
@@ -55,4 +53,5 @@ Collate:
     'transNode.R'
     'treeAGG.R'
     'treePlot.R'
+    'updateTSE.R'
     'viewSim.R'
