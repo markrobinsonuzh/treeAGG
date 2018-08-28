@@ -8,8 +8,10 @@
 #'   \code{parEstimate}.
 #' @param minTip the minimum number of leaves in the selected branch
 #' @param maxTip The maximum number of leaves in the selected branch
-#' @param minPr The minimum count proportion of the selected branch in a sample
-#' @param maxPr The maximum count proportion of the selected branch in a sample
+#' @param minPr The minimum count proportion of the selected branch in a sample.
+#' A value between 0 and 1.
+#' @param maxPr The maximum count proportion of the selected branch in a sample.
+#' A value between 0 and 1.
 #' @param skip A character vector of node labels. These nodes are not the
 #'   descendants or the ancestors of the selected branch.
 #' @param all TRUE or FALSE. Default is FALSE. If FALSE, the branch node of a
@@ -34,7 +36,7 @@
 #'
 
 selNode <- function(tree, data, minTip = 0, maxTip = Inf,
-                    minPr = 0, maxPr = Inf,
+                    minPr = 0, maxPr = 1,
                     skip = NULL, all = FALSE){
 
     ##------------ descendant tips ------------
