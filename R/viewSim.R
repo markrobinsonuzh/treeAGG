@@ -3,9 +3,12 @@
 #' \code{viewSim} is to visualize the output from the function \code{simData}.
 #'
 #' @param obj The output from \code{simData}
-#' @param layout The tree layout. Select one from 'rectangular', 'slanted', 'fan', 'circular', 'radial', 'equal_angle' and 'daylight'.
-#' @param zoomScale A positive numeric value. If it is above one, branches with fold change equal to one (non-signal branch) will be zoomed in; If below one, they
-#' will be shrinked.
+#' @param layout The tree layout. Select one from 'rectangular', 'slanted',
+#'   'fan', 'circular', 'radial', 'equal_angle' and 'daylight'. The default is
+#'   "rectangular".
+#' @param zoomScale A positive numeric value. If it is above one, branches with
+#'   fold change equal to one (non-signal branch) will be zoomed in; If below
+#'   one, they will be shrinked. Default is 0.05
 #' @param legend.theme A list of arguments used for the theme in ggplot2
 #' package (see \code{\link[ggplot2]{theme}} ) and starting with "legend."
 #' @param tip.label TRUE or FALSE. Default is FALSE. If TRUE, the leaves with
@@ -17,7 +20,7 @@
 #'
 #' @return a figure
 #'
-viewSim <- function(obj, layout, zoomScale,
+viewSim <- function(obj, layout = "rectrangular", zoomScale = 1/20,
                     legend.theme = list(
                         legend.position = c(0.15, 0.6)),
                     tip.label = FALSE){
