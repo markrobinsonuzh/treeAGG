@@ -17,7 +17,7 @@ simData(tree = NULL, data = NULL, obj = NULL, scenario = "S1",
 collected from real data. It has the entities corresponding to tree leaves
 in the row and samples in the column. Only use when \code{obj} is NULL.}
 
-\item{obj}{A treeSummarizedExperiment object that includes a list of
+\item{obj}{A leafSummarizedExperiment object that includes a list of
 matrix-like elements, or a matrix-like element in assays, and a phylo object
 in metadata. In other words, \strong{obj} provides the same information
 given by \strong{tree} and \strong{data}.}
@@ -49,12 +49,13 @@ If there are no branches having exactly this ratio,
 the pair with the value closest to \code{ratio} would be selected.}
 
 \item{adjB}{a numeric value between 0 and 1 (only for \code{scenario} is
-\dQuote{S3}). Default is NULL. If NULL, branch A and branch B swap their
-proportions. If a numeric value, e.g. 0.1, then branch B decreases to
-its one tenth proportion and the decrease in branch B is added to branch A.
-For example, assume there are two experimental conditions (C1 & C2), branch A
-has 10 and branch B has 40 in C1. If adjB is set to 0.1, then in C2 branch B
-becomes 4 and branch A 46 so that the total proportion stays the same.}
+\dQuote{S3}). Default is NULL. If NULL, branch A and the selected part of
+branch B swap their proportions. If a numeric value, e.g. 0.1, then the
+selected part of branch B decreases to its one tenth proportion and the
+decrease in branch B is added to branch A. For example, assume there are two
+experimental conditions (C1 & C2), branch A has 10 and branch B has 40 in C1.
+If adjB is set to 0.1, then in C2 branch B becomes 4 and branch A 46 so that
+the total proportion stays the same.}
 
 \item{pct}{The percentage of leaves in branch B that have differential
 abundance under different conditions (only for scenario \dQuote{S3})}

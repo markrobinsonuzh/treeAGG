@@ -4,16 +4,19 @@
 \alias{viewSim}
 \title{visualize simulated scenario}
 \usage{
-viewSim(obj, layout, zoomScale, legend.theme = list(legend.position = c(0.15,
-  0.6)), tip.label = FALSE)
+viewSim(obj, layout = "rectrangular", zoomScale = 1/20,
+  legend.theme = list(legend.position = c(0.15, 0.6)), tip.label = FALSE)
 }
 \arguments{
 \item{obj}{The output from \code{simData}}
 
-\item{layout}{The tree layout. Select one from 'rectangular', 'slanted', 'fan', 'circular', 'radial', 'equal_angle' and 'daylight'.}
+\item{layout}{The tree layout. Select one from 'rectangular', 'slanted',
+'fan', 'circular', 'radial', 'equal_angle' and 'daylight'. The default is
+"rectangular".}
 
-\item{zoomScale}{A positive numeric value. If it is above one, branches with fold change equal to one (non-signal branch) will be zoomed in; If below one, they
-will be shrinked.}
+\item{zoomScale}{A positive numeric value. If it is above one, branches with
+fold change equal to one (non-signal branch) will be zoomed in; If below
+one, they will be shrinked. Default is 0.05}
 
 \item{legend.theme}{A list of arguments used for the theme in ggplot2
 package (see \code{\link[ggplot2]{theme}} ) and starting with "legend."}

@@ -8,16 +8,16 @@
 \alias{treeAGG,DataFrame-method}
 \title{Tree aggregation}
 \usage{
-treeAGG(data, sigf.by, sigf.limit, agg.by, tree, node.by)
+treeAGG(data, sigf.by, sigf.limit, agg.by, tree, node.by, message = FALSE)
 
 \S4method{treeAGG}{treeSummarizedExperiment}(data, sigf.by = NULL,
-  sigf.limit = 0.05, agg.by = NULL)
+  sigf.limit = 0.05, agg.by = NULL, message = FALSE)
 
 \S4method{treeAGG}{data.frame}(data, sigf.by = NULL, sigf.limit = 0.05,
-  agg.by = NULL, tree = NULL, node.by = "nodeLab")
+  agg.by = NULL, tree = NULL, node.by = "nodeLab", message = FALSE)
 
 \S4method{treeAGG}{DataFrame}(data, sigf.by = NULL, sigf.limit = 0.05,
-  agg.by = NULL, tree = NULL, node.by = "nodeLab")
+  agg.by = NULL, tree = NULL, node.by = "nodeLab", message = FALSE)
 }
 \arguments{
 \item{data}{A data frame or a treeSummarizedExperiment.
@@ -47,6 +47,9 @@ is a data frame.}
 
 \item{node.by}{A column name. The column stores the node label. A optional
 argument. Only use when \code{data} is a data frame.}
+
+\item{message}{A logical value. The default is TRUE. If TRUE, it will print
+out the currenet status of a process.}
 }
 \value{
 A data frame
