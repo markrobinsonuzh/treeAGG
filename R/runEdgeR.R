@@ -64,7 +64,8 @@ runEdgeR <- function(obj, design = NULL, contrast = NULL,
 
     # normalisation
     if (normalize) {
-        y <- lapply(y, calcNormFactors, method = method)
+        y <- lapply(seq_along(tableA), FUN = function(x) {
+            calcNormFactors(y[[x]], method = method)})
     } else {
         y <- y
     }
