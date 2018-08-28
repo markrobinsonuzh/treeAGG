@@ -38,7 +38,6 @@ Collate:
     'fdr.R'
     'findAncestor.R'
     'findOS.R'
-    'lineTree.R'
     'matTree.R'
     'nodeValue.R'
     'parEstimate.R'
