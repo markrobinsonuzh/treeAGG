@@ -323,6 +323,7 @@ doData <- function(tree, data, scenario = "S1",
 
     # estimate parameters for Dirichlet-multinomial distribution
     data <- parEstimate(data = data)
+
     if (!is.null(from.A) && !is.null(from.B)) {
         pk <- infLoc(tree = tree, data = data,
         from.A = from.A, from.B = from.B)
@@ -334,6 +335,7 @@ doData <- function(tree, data, scenario = "S1",
                       maxPr.A = maxPr.A, ratio = ratio)
     }
 
+
     beta <- doFC(tree = tree, data = data,
                  scenario = scenario,
                  branchA = pk$A,
@@ -341,11 +343,14 @@ doData <- function(tree, data, scenario = "S1",
                  ratio = pk$`ratio`,
                  adjB = adjB, pct = pct)
 
+
+
     count <- doCount(data = data, FC = beta,
                      nSam = nSam, mu, size, n)
 
+
     if(inherits(count, "list")) {
-        grpDat <- data.frame(group = substr(colnames(count), 1, 2))
+        grpDat <- data.frame(group = substr(colnames(count[[1]]), 1, 2))
         countLSE <- leafSummarizedExperiment(tree = tree, assays = count,
                                              metadata = list(
                                                  FC = beta,
