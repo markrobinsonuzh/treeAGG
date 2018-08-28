@@ -3,7 +3,8 @@
 # if data provided is a data.frame
 treeAGG.A <- function(data, sigf.by = NULL,
                       sigf.limit = 0.05, agg.by = NULL,
-                      tree = NULL, node.by = "nodeLab") {
+                      tree = NULL, node.by = "nodeLab",
+                      message = FALSE) {
 
     if (!inherits(tree, "phylo")) {
         stop("object tree is not of class phylo. \n")
@@ -55,6 +56,13 @@ treeAGG.A <- function(data, sigf.by = NULL,
         } else {
             aggData[row.n, "keep"] <- FALSE
         }
+
+        if (message) {
+            #Sys.sleep(0.001)
+            message(i, " out of ", length(nodeIE),
+                    " finished", "\r", appendLF = FALSE)
+            flush.console()
+        }
     }
 
     final <- data
@@ -67,7 +75,8 @@ treeAGG.A <- function(data, sigf.by = NULL,
 # ----------------------------------------------------------------------------
 # if data provided is a treeSummarizedExperiment (tse)
 treeAGG.B <- function(data, sigf.by = NULL,
-                        sigf.limit = 0.05, agg.by = NULL) {
+                        sigf.limit = 0.05,
+                      agg.by = NULL, message = FALSE) {
 
 
     # extract tree
@@ -82,8 +91,9 @@ treeAGG.B <- function(data, sigf.by = NULL,
 
 
     # assign keep = TRUE to all nodes
-    keep <- DataFrame(nodeLab = linkD$nodeLab,
-                      nodeNum = linkD$nodeNum, aggKeep = TRUE)
+    # keep <- DataFrame(nodeLab = linkD$nodeLab,
+    #                   nodeNum = linkD$nodeNum, aggKeep = TRUE)
+    keep <- DataFrame(aggKeep = TRUE)
     keepList <- lapply(seq_along(assayD), FUN = function(x){
         cbind(assayD[[x]], keep)
     })
@@ -134,6 +144,13 @@ treeAGG.B <- function(data, sigf.by = NULL,
             }
         }
 
+        if (message) {
+            #Sys.sleep(0.001)
+            message(i, " out of ", length(nodeIE),
+                    " finished", "\r", appendLF = FALSE)
+            flush.console()
+        }
+
     }
 
     # set FALSE if the varSig (e.g. adjusted p-value) value is above sigf.limit
@@ -148,13 +165,19 @@ treeAGG.B <- function(data, sigf.by = NULL,
             node.i <- nodeA[i]
             ind.i <- nodeJ == node.i
             sig.i <- sigJ[ind.i]
-            if (sig.i > sigf.limit) {
+            ind.i <- (sig.i > sigf.limit)
+            if (ind.i %in% TRUE) {
                 keepList[[j]]$aggKeep[i] <- FALSE
             }
         }
     }
 
-    return(keepList)
+
+   objF <- treeSummarizedExperiment(tree = treeData(data),
+                                    linkData = linkData(data),
+                                    assays = keepList,
+                                    rowData = rowData(data))
+    return(objF)
 
 
 }
@@ -188,7 +211,8 @@ treeAGG.B <- function(data, sigf.by = NULL,
 #'   is a data frame.
 #' @param node.by A column name. The column stores the node label. A optional
 #'   argument. Only use when \code{data} is a data frame.
-
+#' @param message A logical value. The default is TRUE. If TRUE, it will print
+#'   out the currenet status of a process.
 
 #'
 #' @return A data frame
@@ -230,7 +254,7 @@ treeAGG.B <- function(data, sigf.by = NULL,
 #'
 setGeneric("treeAGG", function(data, sigf.by,
                                sigf.limit, agg.by,
-                               tree, node.by) {
+                               tree, node.by, message  = FALSE) {
     standardGeneric("treeAGG")
 })
 
