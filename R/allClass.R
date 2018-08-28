@@ -308,11 +308,12 @@ treeSummarizedExperiment <- function(tree = NULL, linkData = NULL,
     # -------------------------------------------------------------------------
     # The labels of tree nodes should be unique
     treeLab <- c(tree$tip.label, tree$node.label)
-    isDp <- duplicated(treeLab)
+    tipLab <- tree$tip.label
+    isDp <- duplicated(tipLab)
     anyDp <- any(isDp)
     if (anyDp) {
         stop("\n Can not distinguish nodes with the same label: ",
-             head(treeLab[isDp])," \n")
+             head(tipLab[isDp])," \n")
     }
 
     # -------------------------------------------------------------------------

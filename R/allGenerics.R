@@ -106,12 +106,13 @@ setMethod("assayNames<-", signature("treeSummarizedExperiment"),
               callNextMethod()
           })
 
+
 #' @importMethodsFrom SummarizedExperiment assays
 #' @importFrom methods callNextMethod
 #' @rdname treeSummarizedExperiment-accessor
 #' @export
 setMethod("assays", signature("treeSummarizedExperiment"),
-          function(x, use.nodeLab = FALSE, withDimnames = TRUE){
+          function(x, use.nodeLab = FALSE, withDimnames = FALSE){
               out <- callNextMethod(x, withDimnames)
 
               if (use.nodeLab) {
@@ -135,7 +136,7 @@ setMethod("assays", signature("treeSummarizedExperiment"),
 #' @rdname treeSummarizedExperiment-accessor
 #' @export
 setMethod("assays<-", signature("treeSummarizedExperiment"),
-          function(x, ...){
+          function(x, value){
               callNextMethod()
           })
 

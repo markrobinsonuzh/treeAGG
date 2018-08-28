@@ -97,6 +97,7 @@
 #'   \item{prop_spikein}{The proportion of spike-in cells in the cluster}
 #'   \item{DA}{whether the cluster is differential abundant between the healthy
 #'   sample and the CN sample}
+#'   \item{truth}{is it differentially abundant}
 #' }
 "cytofCluster"
 

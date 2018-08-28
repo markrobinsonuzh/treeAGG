@@ -42,7 +42,7 @@ nodeValue.A <- function(data, fun = sum, tree, message = FALSE) {
 
         # print out the running process
         if (message) {
-            Sys.sleep(0.2)
+           # Sys.sleep(0.001)
             message(i, " out of ", nN , " finished", "\r", appendLF = FALSE)
             # message(i, "\r", appendLF = FALSE)
             flush.console()
@@ -80,13 +80,15 @@ nodeValue.B <- function(data, fun = sum, message = FALSE) {
     # -------------------------------------------------------------------
     # create empty table nodes
     tableA <- lapply(table, FUN = function(x){
-        y <- matrix(NA, nrow = nN, ncol = ncol(x))
+        y <- matrix(0, nrow = nN, ncol = ncol(x))
         colnames(y) <- colnames(data)
         return(y)
     })
 
     # create rowData for nodes
     rD <- rData[rep(1, nN), ]
+
+    nc <- ncol(rData)
 
     # node labels for rows
     nodeLab <- rData$nodeLab
@@ -99,26 +101,41 @@ nodeValue.B <- function(data, fun = sum, message = FALSE) {
                          only.Tip = TRUE, self.include = TRUE,
                          return = "label")
 
-        row.i <- which(nodeLab %in% tips.i)
+        row.i <- match(tips.i, nodeLab)
 
-        # rowdata: if all rows have the value, keep value; otherwise, use NA
-        rdata.i <- rData[row.i, ]
-        ul.i <- lapply(seq_len(ncol(rData)), FUN = function(x){
-            iu <- unique(rdata.i[, x])
-            if (length(iu) == 1) {return(iu)} else {return(NA)}
-        })
-        udata.i <- do.call(cbind.data.frame, ul.i)
-        rD[i, ] <- udata.i
+        # if multiple rows of the descendants exist, do calculation as follows
+        if (length(row.i) > 1){
+            # rowdata: if all rows have the value, keep value; otherwise, use NA
+            rdata.i <- rData[row.i, ]
 
-        # calculate values (e.g., abundance or intensity) for each node
-        for(j in seq_along(tableA)){
-            table.j <- table[[j]]
-            tableA[[j]][i, ] <- apply(table.j[row.i, , drop = FALSE], 2, fun)
+            ul.i <- lapply(seq_len(nc), FUN = function(x){
+                iu <- unique(rdata.i[, x])
+                if (length(iu) == 1) {return(iu)} else { return(NA) }
+            })
+            rD[i, ] <- do.call(cbind.data.frame, ul.i)
+
+            # calculate values (e.g., abundance or intensity) for each node
+            for(j in seq_along(tableA)){
+                table.j <- table[[j]]
+                tableA[[j]][i, ] <- apply(table.j[row.i, , drop = FALSE], 2, fun)
+            }
+        }
+
+        if (length(row.i) == 1){
+
+
+            # rowdata
+            rD[i, ] <- rData[row.i, ]
+
+            for(j in seq_along(tableA)){
+                table.j <- table[[j]]
+                tableA[[j]][i, ] <- as.matrix(table.j[row.i, ])
+            }
         }
 
         # print out the running process
         if (message) {
-            Sys.sleep(0.2)
+            #Sys.sleep(0.001)
             message(i, " out of ", nN , " finished", "\r", appendLF = FALSE)
             flush.console()
         }
@@ -127,14 +144,14 @@ nodeValue.B <- function(data, fun = sum, message = FALSE) {
     # update rowdata; column nodeLab is removed
      rdataA <- rD[, !colnames(rD) %in% c("nodeLab")]
 
-    linkData <- DataFrame(nodeLab = transNode(tree = tree, input = nodeA,
+    linkD <- DataFrame(nodeLab = transNode(tree = tree, input = nodeA,
                                                 use.original = TRUE),
                             nodeNum = nodeA,
                             isLeaf = nodeA %in% leaf,
                             rowID = seq_len(nN))
 
     mData.new <- mData[names(mData) != "tree"]
-    tse <- treeSummarizedExperiment(linkData = linkData, tree = tree,
+    tse <- treeSummarizedExperiment(linkData = linkD, tree = tree,
                                     assays = tableA, metadata = mData.new,
                                     colData = cData, rowData = rdataA)
     return(tse)
