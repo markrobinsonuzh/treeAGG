@@ -27,6 +27,9 @@ coefficient will be tested equal to zero.}
 
 \item{prior.count}{average prior count to be added to observation to shrink
 the estimated log-fold-changes towards zero}
+
+\item{use.assays}{A numeric vector. It specifies which matrix-like elements
+in assays will be used to do analysis.}
 }
 \value{
 A treeSummarizedExperiment

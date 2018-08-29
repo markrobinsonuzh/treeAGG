@@ -35,6 +35,8 @@
 #'   \code{\link[edgeR]{calcNormFactors}} for more details.
 #' @param prior.count average prior count to be added to observation to shrink
 #'   the estimated log-fold-changes towards zero
+#' @param use.assays A numeric vector. It specifies which matrix-like elements
+#'   in assays will be used to do analysis.
 #'
 #' @importFrom S4Vectors DataFrame
 #' @importFrom edgeR DGEList calcNormFactors estimateGLMRobustDisp glmFit glmLRT
@@ -81,7 +83,7 @@ runEdgeR <- function(obj, design = NULL, contrast = NULL,
     })
 
     # extract elements from assays for analysis
-    tableA <- assays(objA, withDimnames = FALSE)
+    tableA <- assays(obj, withDimnames = FALSE)
 
     # create DEGList
     y <- lapply(seq_along(tableA), FUN = function(x) {

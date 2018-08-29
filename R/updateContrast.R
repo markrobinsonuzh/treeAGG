@@ -42,14 +42,14 @@ updateContrast <- function(data, contrast){
 
     # check whether glmFit exists in the metadata.
     metaD <- metadata(data)
-    is.glmFit <- names(metaD) %in% "dgeGLM"
+    is.dgeGLM <- names(metaD) %in% "dgeGLM"
     if (!any(is.dgeGLM)) {
         stop("A DGEGLM object output from glmFit (edgeR) can not be found. \n ")
     }
 
     # check whether the non-null elements in dgeGLM are DGEGLM object
     gf <- metaD$dgeGLM
-    use.gf <- metaD$use.assays
+    use.gf <- metaD$"use.assays"
     is.DGEGLM <- lapply(use.gf, FUN = function(x){
         class(gf[[x]]) == "DGEGLM"
     })
@@ -62,7 +62,7 @@ updateContrast <- function(data, contrast){
     # update result use the new contrast.
     fit <- metaD$dgeGLM
     lrt <- lapply(seq_along(fit), FUN = function(x) {
-        if (x %in% use.assays) {
+        if (x %in% use.gf) {
             glmLRT(fit[[x]], contrast = contrast)
         } else {
             NULL
@@ -74,10 +74,10 @@ updateContrast <- function(data, contrast){
     # output result to metadata
     outP <- lapply(seq_along(final), function(x) {
 
-        if (x %in% use.assays) {
+        if (x %in% use.gf) {
             # find rows deleted
             idx <- as.numeric(rownames(final[[x]]))
-            idc <- setdiff(seq_len(nrow(obj)), idx)
+            idc <- setdiff(seq_len(nrow(data)), idx)
 
             # add and rearrange rows so that the output is also row-wise
             # corresponding to the assays data.
