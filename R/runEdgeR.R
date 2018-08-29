@@ -62,6 +62,7 @@
 
 runEdgeR <- function(obj, design = NULL, contrast = NULL,
                      normalize = TRUE, method = "TMM",
+                     adjust.method = "BH",
                      prior.count = 0.125, use.assays = NULL){
 
     # which elements from assays will be used for analysis.
@@ -136,18 +137,18 @@ runEdgeR <- function(obj, design = NULL, contrast = NULL,
      })
 
 
-     # tt <- lapply(seq_along(lrt), FUN = function(x) {
-     #     if (x %in% use.assays) {
-     #         topTags(lrt[[x]], n = Inf, adjust.method = "BH",
-     #                 sort.by = "none")
-     #     } else {
-     #         NULL
-     #     }
-     # })
+     tt <- lapply(seq_along(lrt), FUN = function(x) {
+         if (x %in% use.assays) {
+             topTags(lrt[[x]], n = Inf, adjust.method = adjust.method,
+                     sort.by = "none")
+         } else {
+             NULL
+         }
+     })
 
     #  tt <- lapply(lrt, topTags, n = Inf, adjust.method = "BH",
     #               sort.by = "none")
-    final <- lapply(lrt, FUN = function(x) { x$table })
+    final <- lapply(tt, FUN = function(x) { x$table })
 
     # output result to metadata
     outP <- lapply(seq_along(final), function(x) {

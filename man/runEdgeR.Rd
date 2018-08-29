@@ -5,7 +5,8 @@
 \title{Test for differential abundance: method 'treeAGG-DA-edgeR'}
 \usage{
 runEdgeR(obj, design = NULL, contrast = NULL, normalize = TRUE,
-  method = "TMM", prior.count = 0.125, use.assays = NULL)
+  method = "TMM", adjust.method = "BH", prior.count = 0.125,
+  use.assays = NULL)
 }
 \arguments{
 \item{obj}{A treeSummarizedExperiment object.}
