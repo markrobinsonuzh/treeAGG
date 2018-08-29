@@ -108,11 +108,18 @@ nodeValue.B <- function(data, fun = sum, message = FALSE) {
             # rowdata: if all rows have the value, keep value; otherwise, use NA
             rdata.i <- rData[row.i, ]
 
-            ul.i <- lapply(seq_len(nc), FUN = function(x){
-                iu <- unique(rdata.i[, x])
-                if (length(iu) == 1) {return(iu)} else { return(NA) }
-            })
-            rD[i, ] <- do.call(cbind.data.frame, ul.i)
+            # ul.i <- lapply(seq_len(nc), FUN = function(x){
+            #     iu <- unique(rdata.i[, x])
+            #     if (length(iu) == 1) {return(iu)} else { return(NA) }
+            # })
+            #
+            # rD[i, ] <- do.call(cbind.data.frame, ul.i)
+
+            for (k in seq_len(nc)) {
+                iu <- unique(rdata.i[, k])
+                rD[i, k] <- ifelse(length(iu) == 1, iu, NA)
+
+            }
 
             # calculate values (e.g., abundance or intensity) for each node
             for(j in seq_along(tableA)){
