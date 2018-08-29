@@ -26,6 +26,10 @@ coefficient will be tested equal to zero.}
 \item{method}{Normalization method to be used. See
 \code{\link[edgeR]{calcNormFactors}} for more details.}
 
+\item{adjust.method}{A character string stating the method used to adjust
+p-values for multiple testing, passed on to \code{\link[stats]{p.adjust}}.
+It could be "bonferroni", "holm", "hochberg", "hommel", "BH", or "BY".}
+
 \item{prior.count}{average prior count to be added to observation to shrink
 the estimated log-fold-changes towards zero}
 

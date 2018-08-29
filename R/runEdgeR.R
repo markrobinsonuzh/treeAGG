@@ -37,6 +37,10 @@
 #'   the estimated log-fold-changes towards zero
 #' @param use.assays A numeric vector. It specifies which matrix-like elements
 #'   in assays will be used to do analysis.
+#' @param adjust.method A character string stating the method used to adjust
+#'   p-values for multiple testing, passed on to \code{\link[stats]{p.adjust}}.
+#'   It could be "bonferroni", "holm", "hochberg", "hommel", "BH", or "BY".
+#'
 #'
 #' @importFrom S4Vectors DataFrame
 #' @importFrom edgeR DGEList calcNormFactors estimateGLMRobustDisp glmFit glmLRT
