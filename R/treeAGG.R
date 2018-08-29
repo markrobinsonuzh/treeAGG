@@ -1,10 +1,10 @@
 
 # ----------------------------------------------------------------------------
 # if data provided is a data.frame
-treeAGG.A <- function(data, sigf.by = NULL,
-                      sigf.limit = 0.05, agg.by = NULL,
-                      tree = NULL, node.by = "nodeLab",
-                      message = FALSE) {
+treeAGG.A <- function(data, sigf.by,
+                      sigf.limit, agg.by,
+                      tree, node.by,
+                      message) {
 
     if (!inherits(tree, "phylo")) {
         stop("object tree is not of class phylo. \n")
@@ -74,9 +74,9 @@ treeAGG.A <- function(data, sigf.by = NULL,
 
 # ----------------------------------------------------------------------------
 # if data provided is a treeSummarizedExperiment (tse)
-treeAGG.B <- function(data, sigf.by = NULL,
-                        sigf.limit = 0.05,
-                      agg.by = NULL, message = FALSE) {
+treeAGG.B <- function(data, sigf.by,
+                      sigf.limit,
+                      agg.by, message) {
 
 
     # extract tree
@@ -100,10 +100,11 @@ treeAGG.B <- function(data, sigf.by = NULL,
 
     # extract a column for aggregation and a column for rejecting hypothesis
     # test
+
     aggList<- lapply(assayD, FUN = function(x){
         data.frame(nodeNum = linkD$nodeNum,
-                   varSig = x[linkD$rowID, sigf.by],
-                   varAgg = x[linkD$rowID, agg.by])
+                   varSig = x[linkD$rowID, colnames(x) == sigf.by],
+                   varAgg = x[linkD$rowID, colnames(x) == agg.by])
     })
 
     # compare between an internal node and its descendant nodes.
@@ -176,7 +177,8 @@ treeAGG.B <- function(data, sigf.by = NULL,
    objF <- treeSummarizedExperiment(tree = treeData(data),
                                     linkData = linkData(data),
                                     assays = keepList,
-                                    rowData = rowData(data))
+                                    rowData = rowData(data),
+                                    metadata = metadata(data))
     return(objF)
 
 
@@ -213,7 +215,7 @@ treeAGG.B <- function(data, sigf.by = NULL,
 #'   argument. Only use when \code{data} is a data frame.
 #' @param message A logical value. The default is TRUE. If TRUE, it will print
 #'   out the currenet status of a process.
-
+#' @importFrom S4Vectors DataFrame
 #'
 #' @return A data frame
 #' @author Ruizhu Huang
@@ -252,13 +254,14 @@ treeAGG.B <- function(data, sigf.by = NULL,
 #'
 #'
 #'
-setGeneric("treeAGG", function(data, sigf.by,
-                               sigf.limit, agg.by,
-                               tree, node.by, message  = FALSE) {
+setGeneric("treeAGG", function(data, sigf.by = "FDR",
+                               sigf.limit = 0.05, agg.by = "FDR",
+                               tree, node.by = "nodeLab", message  = FALSE) {
     standardGeneric("treeAGG")
 })
 
 #' @rdname treeAGG
+#' @importFrom S4Vectors DataFrame
 setMethod("treeAGG", signature(data = "treeSummarizedExperiment"),
           treeAGG.B)
 

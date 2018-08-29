@@ -8,16 +8,17 @@
 \alias{treeAGG,DataFrame-method}
 \title{Tree aggregation}
 \usage{
-treeAGG(data, sigf.by, sigf.limit, agg.by, tree, node.by, message = FALSE)
+treeAGG(data, sigf.by = "FDR", sigf.limit = 0.05, agg.by = "FDR", tree,
+  node.by = "nodeLab", message = FALSE)
 
-\S4method{treeAGG}{treeSummarizedExperiment}(data, sigf.by = NULL,
-  sigf.limit = 0.05, agg.by = NULL, message = FALSE)
+\S4method{treeAGG}{treeSummarizedExperiment}(data, sigf.by, sigf.limit, agg.by,
+  message)
 
-\S4method{treeAGG}{data.frame}(data, sigf.by = NULL, sigf.limit = 0.05,
-  agg.by = NULL, tree = NULL, node.by = "nodeLab", message = FALSE)
+\S4method{treeAGG}{data.frame}(data, sigf.by = "FDR", sigf.limit = 0.05,
+  agg.by = "FDR", tree, node.by = "nodeLab", message = FALSE)
 
-\S4method{treeAGG}{DataFrame}(data, sigf.by = NULL, sigf.limit = 0.05,
-  agg.by = NULL, tree = NULL, node.by = "nodeLab", message = FALSE)
+\S4method{treeAGG}{DataFrame}(data, sigf.by = "FDR", sigf.limit = 0.05,
+  agg.by = "FDR", tree, node.by = "nodeLab", message = FALSE)
 }
 \arguments{
 \item{data}{A data frame or a treeSummarizedExperiment.
