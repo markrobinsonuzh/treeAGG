@@ -49,6 +49,7 @@ Collate:
     'shareNode.R'
     'signalNode.R'
     'simData.R'
+    'topNodes.R'
     'tpr.R'
     'transNode.R'
     'treeAGG.R'
