@@ -3,7 +3,14 @@
 ### class
 # ======================
 
-
+#  -----------------------------------------------------------------------------
+#' int_rowData: A virtual class
+#' -----------------------------------------------------------------------------
+#' A virtual class to be assigned to a column of \code{rowData} in a
+#' \code{treeSummarizedExperiment} object. The columns with this class could be
+#' optionally exported or hidden when using \code{rowData}.
+#' @keywords internal
+setClass("internal_rowData", contains = "DataFrame")
 
 #-------------------------------------------------------------------------------
 #' phylo: A S3 class for the phylogenetic tree
@@ -177,7 +184,8 @@ setClass("treeSummarizedExperiment",
 #' @importFrom methods as
 #' @export
 #' @return A leafSummarizedExperiment object
-#' @seealso \code{\link{leafSummarizedExperiment}}
+#' @seealso \code{\link{leafSummarizedExperiment-class}}
+#'   \code{\link{SummarizedExperiment-class}}
 #' @name leafSummarizedExperiment-constructor
 #' @author Ruizhu HUANG
 #' @examples
@@ -214,7 +222,7 @@ leafSummarizedExperiment <- function(tree, ...) {
     tipLab <- tree$tip.label
     nodeLab<- rowData(se)$nodeLab
     if (!is.null(nodeLab)) {
-        isIn <- nodeLab%in% tipLab
+        isIn <- (nodeLab %in% tipLab)
         isOut <- !isIn
         if (sum(isOut) > 0) {
             cat(sum(isOut), "rows are removed. They cannot be assigned to
