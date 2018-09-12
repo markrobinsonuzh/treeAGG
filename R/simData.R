@@ -763,14 +763,16 @@ doFC <- function(tree, data, scenario,
         # }, y=beta)
         # colnames(beta) <- ratio
         if(is.null(adjB)){
-            beta[selA] <- ratio
-            beta[tipL] <- (sumL-(ratio-1)*sumA)/sumL
+            beta[selA] <- sumL/sumA
+            beta[tipL] <- sumA/sumL
         }else{
             if(!is.numeric(adjB)){
                 stop("adjB should be numeric")
             }
             beta[tipL] <- adjB
             beta[selA] <- (sumL*(1-adjB)+sumA)/sumA
+            # beta[selA] <- fcA
+            # beta[tipL] <- (sumL-(fcA-1)*sumA)/sumL
         }
 
     }
