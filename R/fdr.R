@@ -117,7 +117,15 @@ fdr <- function(tree, truth, found,
         }
         tt <- fdr0(tree = tree, truth = truth,
                    found = found, level = level)
-        fdr <- tt[1]/tt[2]
+        if (tt[2] == 0) {
+            if (tt[1] > 0 ) {
+                stop("the number of discovery is lower than
+                     that of false dicovery. \n")}
+            fdr <- 0
+        } else {
+            fdr <- tt[1]/tt[2]
+        }
+
     }
 
     # return final results
