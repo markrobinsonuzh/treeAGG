@@ -150,7 +150,7 @@ nodeValue.B <- function(data, fun = sum, message = FALSE) {
 
     # update rowdata; column nodeLab is removed
      rdataA <- rD[, !colnames(rD) %in% c("nodeLab")]
-
+     rownames(rdataA) <- NULL
     linkD <- DataFrame(nodeLab = transNode(tree = tree, input = nodeA,
                                                 use.original = TRUE),
                             nodeNum = nodeA,
