@@ -52,6 +52,11 @@ NULL
 #'   assays. For rowData, arguments passed through ... are forwarded to mcols.
 #'   For cbind, rbind, ... contains leafSummarizedExperiment objects to be
 #'   combined. For other accessors, ignored.
+#' @param internal TRUE or FALSE. Only for \code{rowData}. If TRUE, the columns
+#'   with \code{int_rowData} class are visible; otherwise, they would be hiden.
+#'   These columns are usually result tables that users obtain from their
+#'   customized analysis and  are written back to the
+#'   \code{treeSummarizedExperiment} object that stores the original data.
 #' @param use.nodeLab A logical(1), indicating whether the rownames of assay
 #'   elements should use node labels (the column \code{nodeLab} in
 #'   \code{linkData} if there is not duplicated values; otherwise the column

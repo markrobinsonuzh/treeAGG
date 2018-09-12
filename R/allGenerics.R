@@ -144,8 +144,16 @@ setMethod("assays<-", signature("treeSummarizedExperiment"),
 #' @importFrom methods callNextMethod
 #' @rdname treeSummarizedExperiment-accessor
 #' @export
-setMethod("rowData", "treeSummarizedExperiment", function(x, ...) {
-    callNextMethod()
+setMethod("rowData", "treeSummarizedExperiment", function(x, internal = TRUE) {
+    if (internal) {
+        callNextMethod()
+    } else {
+        vv <- callNextMethod()
+        cv <- unlist(lapply(vv, class))
+        isInternal <- cv == "internal_rowData"
+        vv[, !isInternal]
+    }
+
 })
 
 
@@ -156,6 +164,8 @@ setMethod("rowData", "treeSummarizedExperiment", function(x, ...) {
 setMethod("rowData<-", "treeSummarizedExperiment", function(x, ...) {
     callNextMethod()
 })
+
+
 
 #' @importMethodsFrom SummarizedExperiment colData
 #' @importFrom methods callNextMethod
