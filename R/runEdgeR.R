@@ -34,7 +34,8 @@
 #' @param method Normalization method to be used. See
 #'   \code{\link[edgeR]{calcNormFactors}} for more details.
 #' @param prior.count average prior count to be added to observation to shrink
-#'   the estimated log-fold-changes towards zero
+#'   the estimated log-fold-changes towards zero. See \code{prior.count} in
+#'   \code{\link[edgeR]{glmFit}}
 #' @param use.assays A numeric vector. It specifies which matrix-like elements
 #'   in assays will be used to do analysis.
 #' @param adjust.method A character string stating the method used to adjust
@@ -62,6 +63,8 @@
 #'    of \code{\link[edgeR]{DGEGLM-class}}
 #'    }
 #' }
+#'
+#'
 #'
 
 runEdgeR <- function(obj, design = NULL, contrast = NULL,
@@ -132,61 +135,101 @@ runEdgeR <- function(obj, design = NULL, contrast = NULL,
             NULL
         }
     })
-     lrt <- lapply(seq_along(fit), FUN = function(x) {
-         if (x %in% use.assays) {
-             glmLRT(fit[[x]], contrast = contrast)
-         } else {
-             NULL
-         }
-     })
+
+    tt1 <- lapply(seq_along(fit), FUN = function(x) {
+        if (x %in% use.assays) {
+            # make sure a list is provided for the contrast
+            if (is.null(contrast)) {
+                lrt <- glmLRT(fit[[x]], contrast = contrast)
+                tabx <- topTags(lrt, n = Inf, adjust.method = adjust.method,
+                                sort.by = "none")$table
+                xx <- list(tabx)
+
+            } else {
+                xx <- lapply(contrast, FUN = function(y) {
+                    lrt <- glmLRT(fit[[x]], contrast = y)
+                    tabx <- topTags(lrt, n = Inf,
+                                    adjust.method = adjust.method,
+                                    sort.by = "none")$table
+                    return(tabx)
+                })
+                }
 
 
-     tt <- lapply(seq_along(lrt), FUN = function(x) {
-         if (x %in% use.assays) {
-             topTags(lrt[[x]], n = Inf, adjust.method = adjust.method,
-                     sort.by = "none")
-         } else {
-             NULL
-         }
-     })
+            names(xx) <- names(contrast)
+            return(xx)
+        } else {
+            return(NULL)
+        }
+    })
 
-    #  tt <- lapply(lrt, topTags, n = Inf, adjust.method = "BH",
-    #               sort.by = "none")
-    final <- lapply(tt, FUN = function(x) { x$table })
-
-    # output result to metadata
-    outP <- lapply(seq_along(final), function(x) {
+     tt2 <- lapply(seq_along(tt1), function(x) {
 
         if (x %in% use.assays) {
-            # find rows deleted
-            idx <- as.numeric(rownames(final[[x]]))
-            idc <- setdiff(seq_len(nrow(obj)), idx)
 
             # add and rearrange rows so that the output is also row-wise
             # corresponding to the assays data.
-            df <- DataFrame(final[[x]])
-            dm <- matrix(NA, nrow = length(idc), ncol = ncol(df),
-                         dimnames = list(idc, colnames(df)))
-            dfc <- DataFrame(dm)
-            dfA <- rbind(df, dfc)
-            dfA <- dfA[order(as.numeric(rownames(dfA))),]
-            return(dfA)
+            res <- lapply(tt1[[x]], function(y) {
+                # find rows deleted
+                idx <- as.numeric(rownames(y))
+                idc <- setdiff(seq_len(nrow(obj)), idx)
+
+                df <- DataFrame(y)
+                dm <- matrix(NA, nrow = length(idc), ncol = ncol(df),
+                             dimnames = list(idc, colnames(df)))
+                dfc <- DataFrame(dm)
+                dfA <- rbind(df, dfc)
+                dfA <- dfA[order(as.numeric(rownames(dfA))),]
+                return(dfA)
+            })
+            return(res)
+
         } else {
             NULL
         }
      })
-    names(outP) <- names(assays(obj))
 
-    outL <- treeSummarizedExperiment(assays = outP,
-                                     rowData = rowData(obj),
-                                     metadata = list(assaysInput = assays(obj),
-                                                     use.assays = use.assays,
-                                                     design = design,
-                                                     contrast = contrast,
-                                                     dgeGLM = fit),
-                                     tree = treeData(obj),
-                                     linkData = linkD)
-    return(outL)
+    # reshape: convert a list into a dataFrame
+    tt3 <- lapply(seq_along(tt2), FUN = function(j) {
+        if (j %in% use.assays) {
+            cat(j, " \n")
+            x <- tt2[[j]]
+            dx <- x[[1]][, 0]
+            for (i in seq_along(x)) {
+                xi <- x[[i]]
+                nxi <- names(x)[i]
+                if (is.null(nxi)) { nxi <- "contrastNULL"}
+                dx[[nxi]] <- xi
+
+            }
+            return(dx)
+        } else {
+            NULL
+        }
+    })
+    names(tt3) <- paste("result_assay",
+                        seq_along(assays(obj)),
+                        sep = "" )
+    # put the analysis result in the rowData
+    # set the class as internal_rowData
+    for (i in seq_along(tt3)) {
+        if (!is.null(tt3[[i]])) {
+            rowData(obj)[[names(tt3)[i]]] <- as(tt3[[i]], "internal_rowData")
+        }
+
+    }
+
+
+    ## put the analysis result in the metadata
+    metadata(obj)$output_glmFit <- fit
+    metadata(obj)$table_output_glmLRT <- tt2
+    metadata(obj)$use.assays <- use.assays
+    metadata(obj)$design <- design
+    metadata(obj)$contrast <- contrast
+
+
+    # return(outL)
+    return(obj)
 }
 
 
