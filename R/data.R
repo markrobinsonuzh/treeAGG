@@ -95,11 +95,24 @@
 #'   \item{n_cells}{The number of cells in the cluster}
 #'   \item{n_spikein}{The number of spike-in cells in the cluster}
 #'   \item{prop_spikein}{The proportion of spike-in cells in the cluster}
-#'   \item{DA}{whether the cluster is differential abundant between the healthy
+#'   \item{truth}{whether the cluster is differential abundant between the healthy
 #'   sample and the CN sample}
-#'   \item{truth}{is it differentially abundant}
 #' }
-"cytofCluster"
+"cytof_cluster"
+
+#' The information about samples of the AML-sim data
+#'
+#' A data frame provides information about samples. Each sample corresponds to
+#' a column in the \code{\link{cytofCount}}.
+#'
+#' @format 5 samples are collected from 5 healthy subjects. Each sample is
+#'   equally split into two subsamples, one of which spike in CN cells to
+#'   simulate samples from patients.
+#' \describe{
+#'   \item{group}{The group that a sample collected from: healthy or CN.}
+#'   \item{patient}{The patient that the sample collected from. }
+#' }
+"cytof_sample"
 
 #' The true signal in the AML-sim data
 #'
