@@ -4,8 +4,8 @@
 \alias{sizeScale}
 \title{Customize the scale}
 \usage{
-sizeScale(col.point, size.point, legend.label, legend.title, size.point.legend,
-  legend)
+sizeScale(col.point, size.point, legend.label, legend.title,
+  size.point.legend, legend)
 }
 \arguments{
 \item{col.point}{A color for the \strong{point}. It has length equal to one.}

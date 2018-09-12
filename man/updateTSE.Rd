@@ -2,33 +2,123 @@
 % Please edit documentation in R/updateTSE.R
 \name{updateTSE}
 \alias{updateTSE}
-\title{replace assays in treeSummarizedExperiment}
+\title{Save the analysis results in the rowData of treeSummarizedExperiment object}
 \usage{
-updateTSE(assays, tse)
+updateTSE(result, tse, use.assays, design, contrast, fit = NULL)
 }
 \arguments{
-\item{assays}{A list of matrix-like elements.  It should have the same number
-of matrix-like elements as the \code{assays} of data specified in the
-argument \code{tse}. Also, its matrix-like elements should have  exactly
-the same number of rows and rows representing the same thing as those in
-the old \code{assays} of \code{tse}. However, the columns could be
-different.}
+\item{result}{A list with the structure as \code{list(A = list(a1, a2, ...),
+B = list(b1, b2, ...))}. The sub-elements, e.g., a1, is a data frame output
+from the data analysis. The sub-elements,a1, a2, ..., are obtained by
+performing analysis on the same table A in the \code{assays} of \code{tse}
+with different contrasts. b1 and a1 are obtained by perfoming analysis on
+different tables (A and B, respectively) in the \code{assays} of \code{tse}
+with the same contrast.}
 
 \item{tse}{A treeSummarizedExperiment object.}
+
+\item{use.assays}{A numeric vector. It specifies which tables are used for
+the analysis. The order should match with the order of \code{results} (A
+and B in the example structure)}
+
+\item{design}{A design matrix that is used in the analysis to get
+\code{result}.}
+
+\item{contrast}{A list of contrast vectors that are used in the analysis to
+get \code{result}. The order should match with the subelements of the
+\code{results}, like a1, a2, ..., in the example structure.}
+
+\item{fit}{NULL. If using \code{\link{edgeR}} package for the analysis, it
+could store the output from \code{\link[edgeR]{glmFit}}. A object of
+\code{\link[edgeR]{DGEGLM-class}}}
 }
 \value{
 A treeSummarizedExperiment object.
 }
 \description{
-\code{updateTSE} allows to replaces the matrix-like element in assays of
-\code{treeSummarizedExperiment} with matrix-like element that have the same
-number of rows but different number of columns.
+\code{updateTSE} adds the analysis results in the rowData of the
+treeSummarizedExperiment object. Which tables of the \code{assays} has been
+used to do data analysis will be specified in the \code{use.assays} of
+\code{metadata}. The design matrix and contrast vectors are also included in
+the \code{metadata}.
 }
-\details{
-The new \code{assays} have exactly the same rows as the original one that was
-replaced. But the columns are allowed to be different. The \code{colData} in
-the original \code{treeSummarizedExperiment} object is removed from the new
-one.
+\examples{
+
+library(edgeR)
+library(S4Vectors)
+set.seed(1)
+y <- matrix(rnbinom(300,size=1,mu=10),nrow=10)
+colnames(y) <- paste(rep(LETTERS[1:3], each = 10), rep(1:10,3), sep = "_")
+rownames(y) <- tinyTree$tip.label
+
+rowInf <- DataFrame(nodeLab = rownames(y),
+                    var1 = sample(letters[1:3], 10, replace = TRUE),
+                    var2 = sample(c(TRUE, FALSE), 10, replace = TRUE))
+colInf <- DataFrame(gg = factor(sample(1:3, 30, replace = TRUE)),
+                    group = rep(LETTERS[1:3], each = 10))
+toy_lse <- leafSummarizedExperiment(tree = tinyTree, rowData = rowInf,
+                                    colData = colInf,
+                                    assays = list(y, (2*y), 3*y))
+
+toy_tse <- nodeValue(data = toy_lse, fun = sum, tree = tinyTree, message = TRUE)
+
+# extract the abundace table
+count <- assays(toy_tse, use.nodeLab = TRUE)[[1]]
+
+# The sample size is the sum of cell counts of clusters on the leaf level of the tree.
+tipCount <- assays(toy_tse[linkData(toy_tse)$isLeaf,], use.nodeLab = TRUE)[[1]]
+libSize <- apply(tipCount, 2, sum)
+
+# create DGEList
+y <- DGEList(counts = count, lib.size = libSize,
+             remove.zeros = FALSE)
+
+# calculate normalisation factors
+y <- calcNormFactors(object = y, method = "TMM")
+
+# construct design matrix
+sample_inf <- colData(toy_tse)
+design <- model.matrix(~ gg + group, data = sample_inf)
+
+# estimate dispersion
+y <- estimateGLMRobustDisp(y, design = design)
+
+# fit the negative binomial GLMs
+fit <- glmFit(y, design = design, prior.count = 0.125)
+
+# run likelihood ratio tests
+# contrast
+contrast1 <- c(0, 0, 0, -1, 1)
+contrast2 <- c(0, -1, 1, 0, 0)
+
+# contrast is not specified here, so the last coefficient is tested.
+lrt1 <- glmLRT(fit, contrast = contrast1)
+lrt2 <- glmLRT(fit, contrast = c (0, 0, 1, 0, 0))
+# matC <- cbind(c(0, 1, 0, 0, 0), c(0, 0, 1, 0, 0))
+# lrt3 <- glmLRT(fit, contrast = matC)
+
+# extract table
+tab1 <- topTags(lrt1, n = Inf, adjust.method = "BH", sort.by = "none")$table
+tab2 <- topTags(lrt2, n = Inf, adjust.method = "BH", sort.by = "none")$table
+#tab3 <- topTags(lrt3, n = Inf, adjust.method = "BH", sort.by = "none")$table
+
+# put the analysis result in the toy_tse
+contrastList <- list(contrastG1 = contrast1, contrastG2 = contrast2)
+#,contrastG3 = matC)
+
+# the analaysis is performed on the first table of assays
+# add more elements if there are results from more tables of assays
+res <- list(assay1 = list(contrastG1 = tab1, contrastG2 = tab2))
+#, contrastG3 = tab3))
+
+new_tse <- updateTSE(result = res, tse = toy_tse,
+use.assays = 1, design = design, contrast = contrastList,
+fit = fit)
+
+# the results is added to a column called result_assay1
+rowData(toy_tse)
+rowData(new_tse)
+
 }
 \author{
 Ruizhu HUANG

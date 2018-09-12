@@ -4,8 +4,8 @@
 \alias{topNodes}
 \title{Table of the top differential nodes}
 \usage{
-topNodes(data, sort.by = "FDR", decreasing = FALSE, col.rowData = NULL,
-  col.linkData = NULL, show.which = NULL)
+topNodes(data, sort.by = "FDR", decreasing = FALSE,
+  col.rowData = NULL, col.linkData = NULL, use.assays = NULL)
 }
 \arguments{
 \item{data}{A tree summarizedExperiment object output from
@@ -20,7 +20,7 @@ decreasing or not.}
 
 \item{col.linkData}{The names of columns to be extracted from \code{linkData}.}
 
-\item{show.which}{A numeric vector. It specifies which table to show. If
+\item{use.assays}{A numeric vector. It specifies which table to show. If
 NULL, the table correspoinding to the first number storing in the
 \code{use.assays} (in \code{metadata} of \code{input} data) will be shown.
 To recall, numbers in the \code{use.assays} record which matrix-like elements

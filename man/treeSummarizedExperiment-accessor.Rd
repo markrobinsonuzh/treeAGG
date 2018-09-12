@@ -28,7 +28,7 @@
 
 \S4method{assays}{treeSummarizedExperiment,ANY}(x) <- value
 
-\S4method{rowData}{treeSummarizedExperiment}(x, ...)
+\S4method{rowData}{treeSummarizedExperiment}(x, internal = TRUE)
 
 \S4method{rowData}{treeSummarizedExperiment}(x, ...) <- value
 
@@ -71,6 +71,12 @@ withDimnames=TRUE in the getter assays<- allows efficient complex
 assignments (e.g., updating names of assays, names(assays(x,
 withDimnames=FALSE)) = ... is more efficient than names(assays(x)) = ...);
 it does not influence actual assignment of dimnames to assays.}
+
+\item{internal}{TRUE or FALSE. Only for \code{rowData}. If TRUE, the columns
+with \code{int_rowData} class are visible; otherwise, they would be hiden.
+These columns are usually result tables that users obtain from their
+customized analysis and  are written back to the
+\code{treeSummarizedExperiment} object that stores the original data.}
 
 \item{i, j}{The subscripts that can act to subset the rows and columns of
 \code{x}, that is the matrix elements of assays.}

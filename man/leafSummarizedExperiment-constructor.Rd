@@ -61,7 +61,8 @@ colData = sampC)
 
 }
 \seealso{
-\code{\link{leafSummarizedExperiment}}
+\code{\link{leafSummarizedExperiment-class}}
+  \code{\link{SummarizedExperiment-class}}
 }
 \author{
 Ruizhu HUANG

@@ -14,9 +14,11 @@ or tree node number(s)}
 
 \item{use.original}{A logical value, TRUE or FALSE. Only required when
 \strong{input} is numeric. Default is FALSE. There are cases that a tree
-has no labels for some nodes. If keep.null is TRUE, NA is returned for these
-nodes; otherwise, the node number (from \strong{input}) will be returned
-with prefix "Node_" (for internal nodes) or "Leaf_" (for leaf nodes).}
+has no labels for some nodes. For these missing label nodes, if
+\code{use.original} is TRUE, NA is returned for these nodes; otherwise, a
+prefix "Node_" (for internal nodes) or "Leaf_" (for leaf nodes) is added to
+the input node number and this new formed name is then returned as the node
+label.}
 
 \item{message}{A logical value, TRUE or FALSE. The default is FALSE. If TRUE,
 message will show when a tree have duplicated labels for some internal nodes.}

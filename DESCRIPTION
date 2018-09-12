@@ -25,7 +25,7 @@ Imports:
     SummarizedExperiment,
     methods,
     S4Vectors
-RoxygenNote: 6.0.1
+RoxygenNote: 6.1.0
 VignetteBuilder: knitr
 Suggests: testthat, BiocStyle, knitr, rmarkdown, GUniFrac, cowplot
 biocViews: Software, Microbiome, SingleCell, DecisionTree, FeatureExtraction
@@ -38,6 +38,7 @@ Collate:
     'fdr.R'
     'findAncestor.R'
     'findOS.R'
+    'findSibling.R'
     'matTree.R'
     'nodeValue.R'
     'parEstimate.R'

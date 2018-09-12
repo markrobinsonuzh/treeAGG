@@ -13,7 +13,8 @@ nodeValue(data, fun = sum, tree, message = FALSE)
 
 \S4method{nodeValue}{matrix}(data, fun = sum, tree, message = FALSE)
 
-\S4method{nodeValue}{data.frame}(data, fun = sum, tree, message = FALSE)
+\S4method{nodeValue}{data.frame}(data, fun = sum, tree,
+  message = FALSE)
 
 \S4method{nodeValue}{DataFrame}(data, fun = sum, tree, message = FALSE)
 

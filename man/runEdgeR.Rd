@@ -31,7 +31,8 @@ p-values for multiple testing, passed on to \code{\link[stats]{p.adjust}}.
 It could be "bonferroni", "holm", "hochberg", "hommel", "BH", or "BY".}
 
 \item{prior.count}{average prior count to be added to observation to shrink
-the estimated log-fold-changes towards zero}
+the estimated log-fold-changes towards zero. See \code{prior.count} in
+\code{\link[edgeR]{glmFit}}}
 
 \item{use.assays}{A numeric vector. It specifies which matrix-like elements
 in assays will be used to do analysis.}

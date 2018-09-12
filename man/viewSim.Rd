@@ -5,7 +5,8 @@
 \title{visualize simulated scenario}
 \usage{
 viewSim(obj, layout = "rectrangular", zoomScale = 1/20,
-  legend.theme = list(legend.position = c(0.15, 0.6)), tip.label = FALSE)
+  legend.theme = list(legend.position = c(0.15, 0.6)),
+  tip.label = FALSE)
 }
 \arguments{
 \item{obj}{The output from \code{simData}}
