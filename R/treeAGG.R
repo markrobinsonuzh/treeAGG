@@ -3,18 +3,15 @@
 # if data provided is a data.frame
 treeAGG.A <- function(data, sigf.by,
                       sigf.limit, agg.by,
-                      tree, node.by,
+                      tree,
                       message) {
 
     if (!inherits(tree, "phylo")) {
         stop("object tree is not of class phylo. \n")
     }
 
-    if (!inherits(data[, node.by], "character")) {
-        stop("The column ", node.by, " should be character. \n")
-    }
     # nodes
-    nodeL <- data[, node.by]
+    nodeL <- rownames(data)
     nodeN <- transNode(tree = tree, input = nodeL)
 
     # internal nodes
@@ -82,105 +79,129 @@ treeAGG.B <- function(data, sigf.by,
     # extract tree
     tree <- treeData(data)
     linkD <- linkData(data)
-    assayD <- assays(data)
 
     # leaves and internal nodes
     emat <- tree$edge
     leaf <- setdiff(emat[, 2], emat[, 1])
     nodeI <- setdiff(emat[, 1], leaf)
 
+    # extract row data
+    rowD <- rowData(data, internal = FALSE) # orignial rowData
+    rowDI <- rowData(data, internal = TRUE) # orignial rowData + result
+    namI <- colnames(rowDI)
+    indI <- grepl(pattern = "edgeR_result_assay", x = namI) # result
+    rowI <- rowDI[, indI, drop = FALSE]
 
-    # assign keep = TRUE to all nodes
-    # keep <- DataFrame(nodeLab = linkD$nodeLab,
-    #                   nodeNum = linkD$nodeNum, aggKeep = TRUE)
-    keep <- DataFrame(aggKeep = TRUE)
-    keepList <- lapply(seq_along(assayD), FUN = function(x){
-        cbind(assayD[[x]], keep)
+    # convert to a list
+    #  - each element is a data frame whose column is also a data frame
+    #  - each element is the result for an element of assays
+    rowList1 <- lapply(seq_len(sum(indI)), FUN = function(x) {
+        xl <- rowI[, x]
+        return(xl)
+    })
+    names(rowList1) <- colnames(rowI)
+
+    #  - each element is a data frame
+    #    it is the result under a specified contrast for an element of assays
+    rowList2 <- lapply(rowList1, FUN = function(x) {
+        xv <- vector("list", ncol(x))
+        names(xv) <- colnames(x)
+        for (i in seq_len(ncol(x))) {
+            xv[[i]] <- x[, i]
+        }
+        return(xv)
     })
 
-    # extract a column for aggregation and a column for rejecting hypothesis
-    # test
+    # add a column (aggKeep) in each dataframe
+    rowList3 <- lapply(rowList2, FUN = function(x) {
+        xx <- lapply(x, FUN = function(y) {
+            y$aggKeep <- TRUE
 
-    aggList<- lapply(assayD, FUN = function(x){
-        data.frame(nodeNum = linkD$nodeNum,
-                   varSig = x[linkD$rowID, colnames(x) == sigf.by],
-                   varAgg = x[linkD$rowID, colnames(x) == agg.by])
-    })
+            # change the values for nodes with NA value in the result as FALSE
+            y$aggKeep[is.na(y[[sigf.by]])] <- FALSE
 
-    # compare between an internal node and its descendant nodes.
-    # If the internal node has smaller value, set its descendants as FALSE;
-    # otherwise set the internal node as FALSE.
-    nodeIE <- intersect(nodeI, linkD$nodeNum)
-    for (i in seq_along(nodeIE)) {
-        # an node (parent) & its descendants (children)
-        node.i <- nodeIE[i]
-        desc.i <- findOS(tree = tree, ancestor = node.i, only.Tip = FALSE,
-                         self.include = FALSE, return = "number")
-        # row index
-        row.n <- match(node.i, linkD$nodeNum)
-        row.d <- match(desc.i, linkD$nodeNum)
-
-        # decide whether to set FALSE to children
-        dc.i <- lapply(seq_along(keepList), FUN = function(x) {
-            vnode <- aggList[[x]]$varAgg[row.n]
-            vdesc <- aggList[[x]]$varAgg[row.d]
-
-            # set NA value to 1 (to avoid the NA p-value caused by filteration
-            # or not observed)
-            vnode[is.na(vnode)] <- 1
-            vdesc[is.na(vdesc)] <- 1
-
-            # the min value at parent node (node.i)
-            vnode <= min(vdesc)
-
+            return(y)
         })
+        return(xx)
+    })
 
-        # if decision (stored in dc.i) is true, set FALSE to children
-        # otherwise, set FALSE to the parent.
-        for (j in seq_along(keepList)) {
-            if (dc.i[[j]]) {
-                keepList[[j]]$aggKeep[row.d] <- FALSE
-            } else {
-                keepList[[j]]$aggKeep[row.n] <- FALSE
+    # do tree aggregation by comparing the value from agg.by
+    # If the parent node has the smallest value, set the descendants
+    # as FALSE; otherwise set the parent node as FALSE.
+    for (k  in seq_along(nodeI)) {
+        parent.k <- nodeI[k]
+        desc.k <- findOS(tree = tree, ancestor = parent.k,
+                         only.Tip = FALSE,
+                         self.include = FALSE, return = "number")
+
+        # row index
+        row.p <- match(parent.k, linkD$nodeNum)
+        row.d <- match(desc.k, linkD$nodeNum)
+
+        for (i in seq_along(rowList3)) {
+            xi <- rowList3[[i]]
+            for (j in seq_along(xi)) {
+                xj <- xi[[j]]
+
+                # decide whether to set FALSE to children
+                vparent <- xj[[agg.by]][row.p]
+                vdesc <- xj[[agg.by]][row.d]
+
+                # input missing values with 1, the maximum value, so that these
+                # nodes would not be selected.
+                vparent[is.na(vparent)] <- 1
+                vdesc[is.na(vdesc)] <- 1
+
+                # If the parent node has the smallest value, set the descendants
+                # as FALSE; otherwise set the parent node as FALSE.
+                keepParent <- vparent <= min(vdesc)
+                if (keepParent) {
+                    rowList3[[i]][[j]]$aggKeep[row.d] <- FALSE
+                    #xj$aggKeep[row.d] <- FALSE
+                } else {
+                    rowList3[[i]][[j]]$aggKeep[row.p] <- FALSE
+                    #xj$aggKeep[row.p] <- FALSE
+                }
+
+                # set FALSE if the sigf.by (e.g. adjusted p-value) value is
+                # above sigf.limit (a threshold value) or is NA
+                vnode <- xj[[sigf.by]][c(row.p, row.d)]
+                notSigf <- (vnode > sigf.limit | is.na(vnode))
+                row.ns <- c(row.p, row.d)[notSigf]
+                rowList3[[i]][[j]]$aggKeep[row.ns] <- FALSE
             }
         }
 
         if (message) {
-            #Sys.sleep(0.001)
-            message(i, " out of ", length(nodeIE),
-                    " finished", "\r", appendLF = FALSE)
+            message(k, " out of ", length(nodeI),
+                    " is done. ", "\r", appendLF = FALSE)
             flush.console()
         }
-
     }
 
-    # set FALSE if the varSig (e.g. adjusted p-value) value is above sigf.limit
-    # (a threshold value)
-    nodeA <- linkD$nodeNum
-    for (j in seq_along(keepList)) {
-        # find the pair of rows that have the same nodeNum in aggList
-        # and keepList
-        sigJ <- aggList[[j]]$varSig
-        nodeJ <- aggList[[j]]$nodeNum
-        for (i in seq_along(nodeA)) {
-            node.i <- nodeA[i]
-            ind.i <- nodeJ == node.i
-            sig.i <- sigJ[ind.i]
-            ind.i <- (sig.i > sigf.limit)
-            if (ind.i %in% TRUE) {
-                keepList[[j]]$aggKeep[i] <- FALSE
+    # reshape: convert a list into a dataFrame
+    rowList4 <- lapply(seq_along(rowList3), FUN = function(j) {
+            x <- rowList3[[j]]
+            dx <- x[[1]][, 0]
+            for (i in seq_along(x)) {
+                xi <- x[[i]]
+                nxi <- names(x)[i]
+                dx[[nxi]] <- xi
+
             }
-        }
+            return(dx)
+        })
+    names(rowList4) <- names(rowList3)
+
+    # update rowData
+    res <- data
+    rowData(res) <- rowData(data, internal = FALSE)
+
+    for (i in seq_along(rowList4)) {
+       rowData(res)[[names(rowList4)[i]]] <- as(rowList4[[i]], "internal_rowData")
     }
 
-
-   objF <- treeSummarizedExperiment(tree = treeData(data),
-                                    linkData = linkData(data),
-                                    assays = keepList,
-                                    rowData = rowData(data),
-                                    metadata = metadata(data))
-    return(objF)
-
+   return(res)
 
 }
 
@@ -211,11 +232,10 @@ treeAGG.B <- function(data, sigf.by,
 #'   the \code{sigf.by}.
 #' @param tree  A phylo object. A optional argument. Only use when \code{data}
 #'   is a data frame.
-#' @param node.by A column name. The column stores the node label. A optional
-#'   argument. Only use when \code{data} is a data frame.
 #' @param message A logical value. The default is TRUE. If TRUE, it will print
 #'   out the currenet status of a process.
 #' @importFrom S4Vectors DataFrame
+#' @importFrom utils flush.console
 #'
 #' @return A data frame
 #' @author Ruizhu Huang
@@ -223,8 +243,11 @@ treeAGG.B <- function(data, sigf.by,
 #' @export
 #' @examples
 #'
+#' # We recommend to use treeAGG as example 2. It works in the case of example 1.
+#' # However, it is difficult to rownames a data frame when some internal nodes
+#' # of the tree doesn't have labels. Furthermore, it could do tree agg
+#' # Example 1
 #' library(ggtree)
-#'
 #' data(tinyTree)
 #'
 #' # data
@@ -233,30 +256,67 @@ treeAGG.B <- function(data, sigf.by,
 #' pValue <- rank(pv)/length(pv)*pv
 #' treeLab <- c(tinyTree$tip.label, tinyTree$node.label)
 #' df <- cbind.data.frame(pV = pValue,
-#' stringsAsFactors = FALSE, nodeLab = treeLab)
+#' stringsAsFactors = FALSE)
+#' rownames(df) <- treeLab
+#'
 #'
 #'
 #' # tree aggregation
 #' (tt <- treeAGG(tree = tinyTree, data = df, sigf.limit = 0.05,
-#' sigf.by = "pV", agg.by = "pV", node.by ="nodeLab"))
+#' sigf.by = "pV", agg.by = "pV"))
 #'
 #' # display the tree structure and p value at each node
-#' tt$node <- transNode(tree = tinyTree, input = tt$nodeLab)
+#' tt$node <- transNode(tree = tinyTree, input = rownames(tt))
 #'
 #' # p value at each node is given as blue number in tree
 #' # the selected nodes after aggregation is labelled with orange points
 #' # these selected nodes have lower p-value than its descendant nodes if they
 #' # have descendant nodes.
 #' ggtree(tinyTree) %<+% tt + geom_text2(aes(label = label), hjust = -0.2) +
-#' geom_text2(aes(label = round(pV, 3)), vjust = -0.5, color = "blue",
+#' geom_text2(aes(label = round(pv, 3)), vjust = -0.5, color = "blue",
 #'  hjust = -0.15) +
 #' geom_point2(aes(subset = aggKeep), color = "orange", size = 2)
+#'
+#'
+#' # Example 2
+#' set.seed(1)
+#' y <- matrix(rnbinom(300,size=1,mu=10),nrow=10)
+#' colnames(y) <- paste(rep(LETTERS[1:3], each = 10), rep(1:10,3), sep = "_")
+#' rownames(y) <- tinyTree$tip.label
+#'
+#' rowInf <- data.frame(nodeLab = rownames(y),
+#'                     var1 = sample(letters[1:3], 10, replace = TRUE),
+#'                     var2 = sample(c(TRUE, FALSE), 10, replace = TRUE),
+#'                     stringsAsFactors = FALSE)
+#' colInf <- data.frame(gg = factor(sample(1:3, 30, replace = TRUE)),
+#'                     group = rep(LETTERS[1:3], each = 10))
+#' toy_lse <- leafSummarizedExperiment(tree = tinyTree,
+#'                                     assays = list(y, (2*y), 3*y),
+#'                                     rowData = rowInf,
+#'                                     colData = colInf)
+#'
+#' toy_tse <- nodeValue(data = toy_lse, fun = sum, message = TRUE)
+#'
+#' new_tse <- runEdgeR(obj = toy_tse, use.assays = 1, design = NULL,
+#'                     contrast = NULL, normalize = TRUE, method = "TMM",
+#'                     adjust.method = "BH")
+#' # option 1: provide treeSummarizedExperiment
+#' outR1 <- treeAGG(data = new_tse)
+#'
+#'  # or we could extract the result and the tree structure to do aggregation
+#'  (res <- rowData(new_tse)$result_assay1$contrastNULL)
+#'  rownames(res) <- linkData(new_tse)$nodeLab
+#'  (Tree <- treeData(new_tse))
+#'
+#'  # option2: provide data frame and tree structure
+#' outR2 <- treeAGG(data = res, tree = Tree)
+#'
 #'
 #'
 #'
 setGeneric("treeAGG", function(data, sigf.by = "FDR",
                                sigf.limit = 0.05, agg.by = "FDR",
-                               tree, node.by = "nodeLab", message  = FALSE) {
+                               tree, message  = FALSE) {
     standardGeneric("treeAGG")
 })
 
