@@ -81,32 +81,28 @@ runEdgeR <- function(obj, design = NULL, contrast = NULL,
 
     # calculate library size
     linkD <- linkData(obj)
-    objL<- obj[linkD[linkD$isLeaf, "rowID"], ]
-    tableL <- assays(objL, withDimnames = FALSE)
+    objL<- obj[linkD$isLeaf, ]
+    tableL <- assays(objL, withDimnames = FALSE)[use.assays]
     libSize <- lapply(seq_along(tableL), FUN = function(x) {
-        if (x %in% use.assays) {
-            rs <- rowsum(tableL[[x]], group = rep(1, nrow(tableL[[x]])))
-            rs[1, ]
-        } else { NULL }
+        rs <- rowsum(tableL[[x]], group = rep(1, nrow(tableL[[x]])))
+        rs[1, ]
+
     })
 
     # extract elements from assays for analysis
-    tableA <- assays(obj, withDimnames = FALSE)
+    tableA <- assays(obj, withDimnames = FALSE)[use.assays]
 
     # create DEGList
     y <- lapply(seq_along(tableA), FUN = function(x) {
-        if (x %in% use.assays) {
         yy <- DGEList(tableA[[x]], remove.zeros = TRUE)
         yy$samples$lib.size <- libSize[[x]]
-        yy } else { NULL }
+        yy
     } )
 
     # normalisation
     if (normalize) {
         y <- lapply(seq_along(tableA), FUN = function(x) {
-            if (x %in% use.assays) {
             calcNormFactors(y[[x]], method = method)
-                } else { NULL }
         })
     } else {
         y <- y
@@ -119,110 +115,80 @@ runEdgeR <- function(obj, design = NULL, contrast = NULL,
 
     # estimate dispersion
     y <- lapply(seq_along(y), FUN = function(x) {
-        if (x %in% use.assays) {
-            estimateGLMRobustDisp(y[[x]], design = design)
-        } else {
-            NULL
-        }
-    })
+        y <- estimateGLMRobustDisp(y[[x]], design = design)
+        return(y)})
 
     # build model
     # fit <- lapply(y, glmFit, design = design, prior.count = prior.count)
     fit <- lapply(seq_along(y), FUN = function(x) {
-        if (x %in% use.assays) {
-            glmFit(y[[x]], design = design, prior.count = prior.count)
-        } else {
-            NULL
-        }
-    })
+        glmFit(y[[x]], design = design, prior.count = prior.count)})
 
     tt1 <- lapply(seq_along(fit), FUN = function(x) {
-        if (x %in% use.assays) {
-            # make sure a list is provided for the contrast
-            if (is.null(contrast)) {
-                lrt <- glmLRT(fit[[x]], contrast = contrast)
-                tabx <- topTags(lrt, n = Inf, adjust.method = adjust.method,
+        # make sure a list is provided for the contrast
+        if (is.null(contrast)) {
+            lrt <- glmLRT(fit[[x]], contrast = contrast)
+            tabx <- topTags(lrt, n = Inf, adjust.method = adjust.method,
+                            sort.by = "none")$table
+            xx <- list(tabx)
+        } else {
+            xx <- lapply(contrast, FUN = function(y) {
+                lrt <- glmLRT(fit[[x]], contrast = y)
+                tabx <- topTags(lrt, n = Inf,
+                                adjust.method = adjust.method,
                                 sort.by = "none")$table
-                xx <- list(tabx)
-
-            } else {
-                xx <- lapply(contrast, FUN = function(y) {
-                    lrt <- glmLRT(fit[[x]], contrast = y)
-                    tabx <- topTags(lrt, n = Inf,
-                                    adjust.method = adjust.method,
-                                    sort.by = "none")$table
-                    return(tabx)
-                })
-                }
-
-
-            names(xx) <- names(contrast)
-            return(xx)
-        } else {
-            return(NULL)
-        }
-    })
-
-     tt2 <- lapply(seq_along(tt1), function(x) {
-
-        if (x %in% use.assays) {
-
-            # add and rearrange rows so that the output is also row-wise
-            # corresponding to the assays data.
-            res <- lapply(tt1[[x]], function(y) {
-                # find rows deleted
-                idx <- as.numeric(rownames(y))
-                idc <- setdiff(seq_len(nrow(obj)), idx)
-
-                df <- DataFrame(y)
-                dm <- matrix(NA, nrow = length(idc), ncol = ncol(df),
-                             dimnames = list(idc, colnames(df)))
-                dfc <- DataFrame(dm)
-                dfA <- rbind(df, dfc)
-                dfA <- dfA[order(as.numeric(rownames(dfA))),]
-                return(dfA)
+                return(tabx)
             })
-            return(res)
-
-        } else {
-            NULL
         }
-     })
+        names(xx) <- names(contrast)
+        return(xx) })
+
+    tt2 <- lapply(seq_along(tt1), function(x) {
+        # add and rearrange rows so that the output is also row-wise
+        # corresponding to the assays data.
+        res <- lapply(tt1[[x]], function(y) {
+            # find rows deleted
+            idx <- rownames(y)
+            od <- linkD$nodeLab_allias
+            if (is.null(od)) {
+                od <- linkD$nodeLab
+            }
+            idc <- setdiff(od, idx)
+
+            # add deleted rows in the table
+            df <- DataFrame(y)
+            dm <- matrix(NA, nrow = length(idc), ncol = ncol(df),
+                         dimnames = list(idc, colnames(df)))
+            dfc <- DataFrame(dm)
+            dfA <- rbind(df, dfc)
+            # sort rows
+            dfA <- dfA[od,]
+            return(dfA) })
+        return(res) })
 
     # reshape: convert a list into a dataFrame
     tt3 <- lapply(seq_along(tt2), FUN = function(j) {
-        if (j %in% use.assays) {
-            cat(j, " \n")
-            x <- tt2[[j]]
-            dx <- x[[1]][, 0]
-            for (i in seq_along(x)) {
-                xi <- x[[i]]
-                nxi <- names(x)[i]
-                if (is.null(nxi)) { nxi <- "contrastNULL"}
-                dx[[nxi]] <- xi
+        x <- tt2[[j]]
+        dx <- x[[1]][, 0]
+        for (i in seq_along(x)) {
+            xi <- x[[i]]
+            nxi <- names(x)[i]
+            if (is.null(nxi)) { nxi <- "contrastNULL"}
+            dx[[nxi]] <- xi
 
-            }
-            return(dx)
-        } else {
-            NULL
         }
-    })
-    names(tt3) <- paste("result_assay",
-                        seq_along(assays(obj)),
-                        sep = "" )
+        return(dx) })
+    names(tt3) <- paste("result_assay", use.assays, sep = "" )
+
     # put the analysis result in the rowData
     # set the class as internal_rowData
     for (i in seq_along(tt3)) {
-        if (!is.null(tt3[[i]])) {
-            rowData(obj)[[names(tt3)[i]]] <- as(tt3[[i]], "internal_rowData")
-        }
+       rowData(obj)[[names(tt3)[i]]] <- as(tt3[[i]], "internal_rowData")
 
     }
 
 
     ## put the analysis result in the metadata
     metadata(obj)$output_glmFit <- fit
-    metadata(obj)$table_output_glmLRT <- tt2
     metadata(obj)$use.assays <- use.assays
     metadata(obj)$design <- design
     metadata(obj)$contrast <- contrast
