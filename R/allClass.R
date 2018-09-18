@@ -79,9 +79,9 @@ setOldClass("phylo")
 #' @name leafSummarizedExperiment-class
 #' @exportClass leafSummarizedExperiment
 #' @include classValid.R
-setClass("leafSummarizedExperiment",
-         contains = "SummarizedExperiment",
-         validity = validLSE)
+.lse <- setClass("leafSummarizedExperiment",
+                 contains = "SummarizedExperiment",
+                 validity = checkLSE)
 
 #-------------------------------------------------------------------------------
 # treeSummarizedExperiment
@@ -113,10 +113,10 @@ setClass("leafSummarizedExperiment",
 #'   \item \strong{isTip} is it a leaf node?
 #'   \item \strong{rowID} the row number in \code{assays}.
 #'   }
-#' @slot tree A phylo object. It gives information about the hiearchical
+#' @slot treeData A phylo object. It gives information about the hiearchical
 #'   structure of entities.
-#' @slot ... Go \code{\link[SummarizedExperiment]{SummarizedExperiment-class}}
-#'   to see more details about slots inherited from \code{SummarizedExperiment}
+#' @slot ... See \code{\link[SummarizedExperiment]{SummarizedExperiment-class}}
+#'   for more details about slots inherited from \code{SummarizedExperiment}
 #'   class.
 #'
 #' @section Constructor:
@@ -137,7 +137,7 @@ setClass("leafSummarizedExperiment",
 #'   \code{\link[SummarizedExperiment]{SummarizedExperiment-class}}
 setClass("treeSummarizedExperiment",
          representation(linkData = "DataFrame",
-                        tree = "phylo"),
+                        treeData = "phylo"),
          contains = "SummarizedExperiment")
 
 
@@ -193,8 +193,8 @@ setClass("treeSummarizedExperiment",
 #' data("tinyTree")
 #'
 #' # assays
-#' count <- matrix(rpois(190, 50), nrow = 19)
-#' rownames(count) <- c(tinyTree$tip.label, tinyTree$node.label)
+#' count <- matrix(rpois(100, 50), nrow = 10)
+#' rownames(count) <- c(tinyTree$tip.label)
 #' colnames(count) <- paste("C_", 1:10, sep = "_")
 #'
 #' # colData
@@ -202,7 +202,7 @@ setClass("treeSummarizedExperiment",
 #' gender = sample(x = 1:2, size = 10, replace = TRUE))
 #' rownames(sampC) <- colnames(count)
 #'
-#' tse <- leafSummarizedExperiment(tree = tinyTree, assays = list(count),
+#' lse <- leafSummarizedExperiment(tree = tinyTree, assays = list(count),
 #' colData = sampC)
 #'
 leafSummarizedExperiment <- function(tree, ...) {
@@ -225,8 +225,8 @@ leafSummarizedExperiment <- function(tree, ...) {
         isIn <- (nodeLab %in% tipLab)
         isOut <- !isIn
         if (sum(isOut) > 0) {
-            cat(sum(isOut), "rows are removed. They cannot be assigned to
-                any tree leaf. \n")}
+            cat(sum(isOut), "rows are removed from tables of *assays*. \n",
+                nodeLab[isOut]," cannot match to any label of tree leaf node. \n")}
         se <- se[isIn, ] }
     # use rownames
     if (is.null(nodeLab)) {
@@ -238,13 +238,14 @@ leafSummarizedExperiment <- function(tree, ...) {
         isIn <- rowNam %in% tipLab
         isOut <- !isIn
         if (sum(isOut) > 0) {
-            cat(sum(isOut), "rows are removed. They cannot be assigned to
-                any tree leaf. \n")}
+            cat(sum(isOut), "rows are removed from tables of *assays*. \n",
+                rowNam[isOut], " cannot match with any label of tree leaf node. \n")}
         se <- se[isIn, ]
         }
 
     # output as leafSummarizedExperiment
-    lse <- as(se, "leafSummarizedExperiment")
+    #lse <- as(se, "leafSummarizedExperiment")
+    lse <- .lse(se)
     return(lse)
     }
 
@@ -389,7 +390,7 @@ treeSummarizedExperiment <- function(tree = NULL, linkData = NULL,
     # create treeSummarizedExperiment
     rowData(se) <- rowData(se)[, colnames(rowData(se)) != "nodeLab"]
     tse <- new("treeSummarizedExperiment", se,
-               linkData = linkD, tree = tree)
+               linkData = linkD, treeData = tree)
 
     return(tse)
 
