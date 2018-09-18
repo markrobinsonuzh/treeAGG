@@ -228,11 +228,10 @@ updateTSE <- function(result, tse, use.assays, design, contrast, fit = NULL){
     }
 
     # put the contrast, matrix, use.assays in the metadata
-    metadata(tse)$contrast <- contrast
+    metadata(tse)$output_glmFit <- fit
     metadata(tse)$use.assays <- use.assays
     metadata(tse)$design <- design
-    metadata(tse)$output_glmFit <- fit
-
+    metadata(tse)$contrast <- contrast
 
     # output the new tse
     return(tse)
