@@ -89,7 +89,7 @@ treeAGG.B <- function(data, sigf.by,
     rowD <- rowData(data, internal = FALSE) # orignial rowData
     rowDI <- rowData(data, internal = TRUE) # orignial rowData + result
     namI <- colnames(rowDI)
-    indI <- grepl(pattern = "edgeR_result_assay", x = namI) # result
+    indI <- grepl(pattern = "result_assay", x = namI) # result
     rowI <- rowDI[, indI, drop = FALSE]
 
     # convert to a list
