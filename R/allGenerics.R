@@ -219,7 +219,7 @@ setGeneric("treeData", function(x) {
 #' @export
 setMethod("treeData", signature("treeSummarizedExperiment"),
           function(x) {
-              x@tree
+              x@treeData
           })
 
 #' @importFrom methods callNextMethod
@@ -244,7 +244,7 @@ setMethod("[", signature(x = "treeSummarizedExperiment"),
 
               # final <- new("treeSummarizedExperiment", out, linkData = linkD,
               #              tree = x@tree)
-              final <- treeSummarizedExperiment(tree = x@tree,
+              final <- treeSummarizedExperiment(tree = x@treeData,
                                                 linkData = linkD,
                                                 assays = assays(out),
                                                 rowData = rowData(out),
@@ -260,8 +260,9 @@ setMethod("[", signature(x = "treeSummarizedExperiment"),
 setMethod("show", "treeSummarizedExperiment", function(object) {
     callNextMethod()
     cat(
-        "tree:", " a phylo \n",
-        "linkData ", ncol(linkData(object)), " columns \n",
+        "treeData:", " a phylo \n",
+        "linkData:", " a ", class(linkData(object)), " with ",
+        ncol(linkData(object)), " columns \n",
         sep=""
     )
 })
