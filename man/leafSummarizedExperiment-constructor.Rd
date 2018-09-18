@@ -47,8 +47,8 @@ A leafSummarizedExperiment object
 data("tinyTree")
 
 # assays
-count <- matrix(rpois(190, 50), nrow = 19)
-rownames(count) <- c(tinyTree$tip.label, tinyTree$node.label)
+count <- matrix(rpois(100, 50), nrow = 10)
+rownames(count) <- c(tinyTree$tip.label)
 colnames(count) <- paste("C_", 1:10, sep = "_")
 
 # colData
@@ -56,7 +56,7 @@ sampC <- data.frame(condition = rep(c("control", "trt"), each = 5),
 gender = sample(x = 1:2, size = 10, replace = TRUE))
 rownames(sampC) <- colnames(count)
 
-tse <- leafSummarizedExperiment(tree = tinyTree, assays = list(count),
+lse <- leafSummarizedExperiment(tree = tinyTree, assays = list(count),
 colData = sampC)
 
 }

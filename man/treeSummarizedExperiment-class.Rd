@@ -34,11 +34,11 @@ column \code{nodeNum}.
 \item \strong{rowID} the row number in \code{assays}.
 }}
 
-\item{\code{tree}}{A phylo object. It gives information about the hiearchical
+\item{\code{treeData}}{A phylo object. It gives information about the hiearchical
 structure of entities.}
 
-\item{\code{...}}{Go \code{\link[SummarizedExperiment]{SummarizedExperiment-class}}
-to see more details about slots inherited from \code{SummarizedExperiment}
+\item{\code{...}}{See \code{\link[SummarizedExperiment]{SummarizedExperiment-class}}
+for more details about slots inherited from \code{SummarizedExperiment}
 class.}
 }}
 

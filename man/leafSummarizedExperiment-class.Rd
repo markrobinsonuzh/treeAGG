@@ -3,6 +3,7 @@
 \docType{class}
 \name{leafSummarizedExperiment-class}
 \alias{leafSummarizedExperiment-class}
+\alias{.lse}
 \title{An S4 class leafSummarizedExperiment}
 \description{
 The class \strong{leafSummarizedExperiment} is an extension class of standard
