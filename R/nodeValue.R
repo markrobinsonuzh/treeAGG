@@ -63,7 +63,7 @@ nodeValue.B <- function(data, fun = sum, message = FALSE) {
     # extract table and tree from treeSummarizedExperiment.
     tree <- metadata(data)$tree
     table <- assays(data)
-    rData <- rowData(data)
+    rData <- rowData(data, use.names = FALSE)
     mData <- metadata(data)
     cData <- colData(data)
 

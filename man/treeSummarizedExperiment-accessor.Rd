@@ -26,9 +26,10 @@
 \S4method{assays}{treeSummarizedExperiment}(x, use.nodeLab = FALSE,
   withDimnames = FALSE)
 
-\S4method{assays}{treeSummarizedExperiment,ANY}(x) <- value
+\S4method{assays}{treeSummarizedExperiment,ANY}(x, ...,
+  withDimnames = TRUE) <- value
 
-\S4method{rowData}{treeSummarizedExperiment}(x, internal = TRUE)
+\S4method{rowData}{treeSummarizedExperiment}(x, internal = TRUE, ...)
 
 \S4method{rowData}{treeSummarizedExperiment}(x, ...) <- value
 
