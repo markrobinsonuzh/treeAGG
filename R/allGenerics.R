@@ -16,7 +16,7 @@ setMethod("assayNames", signature("leafSummarizedExperiment"),
 #' @rdname leafSummarizedExperiment-accessor
 #' @export
 setMethod("assayNames<-", signature("leafSummarizedExperiment"),
-          function(x, ...){
+          function(x, ..., value){
               callNextMethod()
           })
 
@@ -25,7 +25,7 @@ setMethod("assayNames<-", signature("leafSummarizedExperiment"),
 #' @rdname leafSummarizedExperiment-accessor
 #' @export
 setMethod("assays", signature("leafSummarizedExperiment"),
-          function(x, ...){
+          function(x, ..., withDimnames = TRUE){
               callNextMethod()
           })
 
@@ -34,7 +34,7 @@ setMethod("assays", signature("leafSummarizedExperiment"),
 #' @rdname leafSummarizedExperiment-accessor
 #' @export
 setMethod("assays<-", signature("leafSummarizedExperiment"),
-          function(x, ...){
+          function(x, ..., withDimnames = TRUE, value){
               callNextMethod()
           })
 
@@ -42,7 +42,8 @@ setMethod("assays<-", signature("leafSummarizedExperiment"),
 #' @importFrom methods callNextMethod
 #' @rdname leafSummarizedExperiment-accessor
 #' @export
-setMethod("rowData", "leafSummarizedExperiment", function(x, ...) {
+setMethod("rowData", "leafSummarizedExperiment",
+          function(x, use.names = TRUE,...) {
     callNextMethod()
 })
 
@@ -51,7 +52,8 @@ setMethod("rowData", "leafSummarizedExperiment", function(x, ...) {
 #' @importFrom methods callNextMethod
 #' @rdname leafSummarizedExperiment-accessor
 #' @export
-setMethod("rowData<-", "leafSummarizedExperiment", function(x, ...) {
+setMethod("rowData<-", "leafSummarizedExperiment",
+          function(x, ..., value) {
     callNextMethod()
 })
 
@@ -68,8 +70,8 @@ setMethod("colData", signature("leafSummarizedExperiment"),
 #' @importFrom methods callNextMethod
 #' @rdname leafSummarizedExperiment-accessor
 #' @export
-setMethod("colData<-", signature("leafSummarizedExperiment"),
-          function(x, ...){
+setMethod("colData<-", signature(x = "leafSummarizedExperiment"),
+          function(x, ..., value){
               callNextMethod()
           })
 
@@ -101,8 +103,8 @@ setMethod("assayNames", signature("treeSummarizedExperiment"),
 #' @importFrom methods callNextMethod
 #' @rdname treeSummarizedExperiment-accessor
 #' @export
-setMethod("assayNames<-", signature("treeSummarizedExperiment"),
-          function(x, ...){
+setMethod("assayNames<-", signature("treeSummarizedExperiment", "character"),
+          function(x, ..., value){
               callNextMethod()
           })
 
@@ -112,7 +114,7 @@ setMethod("assayNames<-", signature("treeSummarizedExperiment"),
 #' @rdname treeSummarizedExperiment-accessor
 #' @export
 setMethod("assays", signature("treeSummarizedExperiment"),
-          function(x, use.nodeLab = FALSE, withDimnames = FALSE){
+          function(x, use.nodeLab = FALSE, ..., withDimnames = FALSE){
               out <- callNextMethod(x, withDimnames)
 
               if (use.nodeLab) {
@@ -135,8 +137,8 @@ setMethod("assays", signature("treeSummarizedExperiment"),
 #' @importFrom methods callNextMethod
 #' @rdname treeSummarizedExperiment-accessor
 #' @export
-setMethod("assays<-", signature("treeSummarizedExperiment"),
-          function(x, ...){
+setMethod("assays<-", signature(x = "treeSummarizedExperiment"),
+          function(x, ..., withDimnames = TRUE, value){
               callNextMethod()
           })
 
@@ -145,7 +147,7 @@ setMethod("assays<-", signature("treeSummarizedExperiment"),
 #' @rdname treeSummarizedExperiment-accessor
 #' @export
 setMethod("rowData", "treeSummarizedExperiment",
-          function(x, internal = TRUE, ...) {
+          function(x, use.names = TRUE, internal = TRUE, ...) {
     if (internal) {
         callNextMethod()
     } else {
@@ -162,7 +164,8 @@ setMethod("rowData", "treeSummarizedExperiment",
 #' @importFrom methods callNextMethod
 #' @rdname treeSummarizedExperiment-accessor
 #' @export
-setMethod("rowData<-", "treeSummarizedExperiment", function(x, ...) {
+setMethod("rowData<-", "treeSummarizedExperiment",
+          function(x, ..., value) {
     callNextMethod()
 })
 
@@ -181,8 +184,8 @@ setMethod("colData", signature("treeSummarizedExperiment"),
 #' @importFrom methods callNextMethod
 #' @rdname treeSummarizedExperiment-accessor
 #' @export
-setMethod("colData<-", signature("treeSummarizedExperiment"),
-          function(x, ...){
+setMethod("colData<-", signature(x = "treeSummarizedExperiment"),
+          function(x, ..., value){
               callNextMethod()
           })
 
