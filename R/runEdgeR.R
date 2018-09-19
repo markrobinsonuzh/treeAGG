@@ -90,7 +90,7 @@ runEdgeR <- function(obj, design = NULL, contrast = NULL,
     })
 
     # extract elements from assays for analysis
-    tableA <- assays(obj, withDimnames = FALSE)[use.assays]
+    tableA <- assays(obj, use.nodeLab = TRUE, withDimnames = TRUE)[use.assays]
 
     # create DEGList
     y <- lapply(seq_along(tableA), FUN = function(x) {
