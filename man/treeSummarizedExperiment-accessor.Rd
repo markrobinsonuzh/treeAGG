@@ -3,7 +3,7 @@
 \docType{methods}
 \name{assayNames,treeSummarizedExperiment-method}
 \alias{assayNames,treeSummarizedExperiment-method}
-\alias{assayNames<-,treeSummarizedExperiment,ANY-method}
+\alias{assayNames<-,treeSummarizedExperiment,character-method}
 \alias{assays,treeSummarizedExperiment-method}
 \alias{assays<-,treeSummarizedExperiment,ANY-method}
 \alias{rowData,treeSummarizedExperiment-method}
@@ -21,15 +21,17 @@
 \usage{
 \S4method{assayNames}{treeSummarizedExperiment}(x, ...)
 
-\S4method{assayNames}{treeSummarizedExperiment,ANY}(x, ...) <- value
+\S4method{assayNames}{treeSummarizedExperiment,character}(x,
+  ...) <- value
 
-\S4method{assays}{treeSummarizedExperiment}(x, use.nodeLab = FALSE,
+\S4method{assays}{treeSummarizedExperiment}(x, use.nodeLab = FALSE, ...,
   withDimnames = FALSE)
 
 \S4method{assays}{treeSummarizedExperiment,ANY}(x, ...,
   withDimnames = TRUE) <- value
 
-\S4method{rowData}{treeSummarizedExperiment}(x, internal = TRUE, ...)
+\S4method{rowData}{treeSummarizedExperiment}(x, use.names = TRUE,
+  internal = TRUE, ...)
 
 \S4method{rowData}{treeSummarizedExperiment}(x, ...) <- value
 
@@ -72,6 +74,17 @@ withDimnames=TRUE in the getter assays<- allows efficient complex
 assignments (e.g., updating names of assays, names(assays(x,
 withDimnames=FALSE)) = ... is more efficient than names(assays(x)) = ...);
 it does not influence actual assignment of dimnames to assays.}
+
+\item{use.names}{Like \code{\link[S4Vectors]{mcols}(x)}, by default
+\code{rowData(x)} propagates the rownames of \code{x} to the returned
+\link[S4Vectors]{DataFrame} object (note that for a SummarizedExperiment
+object, the rownames are also the names i.e. \code{rownames(x)} is always
+the same as \code{names(x)}). Setting \code{use.names=FALSE} suppresses
+this propagation i.e. it returns a \link[S4Vectors]{DataFrame} object with
+no rownames. Use this when \code{rowData(x)} fails, which can happen when
+the rownames contain NAs (because the rownames of a SummarizedExperiment
+object can contain NAs, but the rownames of a \link[S4Vectors]{DataFrame}
+object cannot).}
 
 \item{internal}{TRUE or FALSE. Only for \code{rowData}. If TRUE, the columns
 with \code{int_rowData} class are visible; otherwise, they would be hiden.

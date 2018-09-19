@@ -30,7 +30,7 @@ created only when there are missing value or duplicated value in column
 \code{nodeLab}. Commonly, it is a prefix "Node_" follow by the value in
 column \code{nodeNum}.
 \item \strong{nodeNum} the node numbers on the tree.
-\item \strong{isTip} is it a leaf node?
+\item \strong{isLeaf} is it a leaf node?
 \item \strong{rowID} the row number in \code{assays}.
 }}
 

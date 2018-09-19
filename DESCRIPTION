@@ -43,7 +43,6 @@ Collate:
     'nodeValue.R'
     'parEstimate.R'
     'pathTree.R'
-    'pruneTree.R'
     'rmDesc.R'
     'runEdgeR.R'
     'selNode.R'

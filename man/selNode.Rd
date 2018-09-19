@@ -39,16 +39,17 @@ The node whose descendant branch has the lowest proportion
 of leaves and the count proportion.
 }
 \examples{
-\dontrun{
-data("cytofTree")
-data("cytofCount")
 set.seed(1)
-library(ape)
-tree <- as.phylo(cytofTree)
-sN <- selNode(tree = tree, minTip = 20,
-maxTip = 50, minPr = 0.02, maxPr = 0.03,
-skip = NULL, data = cytofCount, all = TRUE)
-}
+data("tinyTree")
+toyTable <- matrix(rnbinom(40, size = 1, mu = 10), nrow = 10)
+colnames(toyTable) <- paste(rep(LETTERS[1:2], each = 2), rep(1:2, 2), sep = "_")
+rownames(toyTable) <- tinyTree$tip.label
+
+
+dat <- parEstimate(data = toyTable)
+(out1 <- selNode(tree = tinyTree, data = dat, all = TRUE))
+(out2 <- selNode(tree = tinyTree, data = dat, minTip = 4, maxTip = 9,
+minPr = 0, maxPr = 0.8, all = TRUE))
 
 }
 \author{

@@ -20,4 +20,11 @@ A vector of node labels or node numbers
 \description{
 \code{findSibling} is to find the sibling node of an \code{input} node.
 }
-\keyword{internal}
+\examples{
+library(ggtree)
+data(exTree)
+ggtree(exTree, branch.length = 'none') +
+ geom_text2(aes(label = label))
+
+ findSibling(tree = exTree, input = 75)
+}
