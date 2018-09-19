@@ -99,17 +99,22 @@ parEstimate.C <- function(data) {
 #' throat.par <- parEstimate(data = t(throat.otu.tab))
 #' }
 #'
-setGeneric("parEstimate", function(data) {
-    standardGeneric("parEstimate")
-})
+parEstimate <- function(data) {
 
-#' @rdname parEstimate
-setMethod("parEstimate", signature(data = "matrix"), parEstimate.A)
+    if (!class(data) %in% c("matrix", "list", "leafSummarizedExperiment")) {
+        stop("data should be a matrix, list or leafSummarizedExperiment object")
+    }
 
-#' @rdname parEstimate
-setMethod("parEstimate", signature(data = "list"), parEstimate.B)
+    if (inherits(data, "matrix")) {
+        out <- parEstimate.A(data = data)
+    }
 
+    if (inherits(data, "list")) {
+        out <- parEstimate.B(data = data)
+    }
 
-#' @rdname parEstimate
-setMethod("parEstimate", signature(data = "leafSummarizedExperiment"),
-          parEstimate.C)
+    if (inherits(data, "leafSummarizedExperiment")) {
+        out <- parEstimate.C(data = data)
+    }
+        return(out)
+}
