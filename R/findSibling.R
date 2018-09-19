@@ -7,9 +7,16 @@
 #' @param label A logical value, TRUE or FALSE. If TRUE, node labels are
 #' returned.
 #'
-#' @keywords internal
+#' @export
 #' @return A vector of node labels or node numbers
 #'
+#' @examples
+#' library(ggtree)
+#' data(exTree)
+#' ggtree(exTree, branch.length = 'none') +
+#'  geom_text2(aes(label = label))
+#'
+#'  findSibling(tree = exTree, input = 75)
 findSibling <- function(tree, input, label = FALSE){
     # find descendant leaves of input
     inT <- lapply(input,
