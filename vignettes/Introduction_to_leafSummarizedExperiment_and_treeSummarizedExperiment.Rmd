@@ -191,7 +191,7 @@ The output *tse* is a `treeSummarizedExperiment` object. The class
 `treeSummarizedExperiment` is an extension from `SummarizedExperiment` class.
 ```{r}
 class(tse)
-showMethods("treeSummarizedExperiment")
+showClass("treeSummarizedExperiment")
 ```
 
 As shown, there are two more slots, treeData and linkData, in
