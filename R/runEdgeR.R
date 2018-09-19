@@ -148,7 +148,7 @@ runEdgeR <- function(obj, design = NULL, contrast = NULL,
         res <- lapply(tt1[[x]], function(y) {
             # find rows deleted
             idx <- rownames(y)
-            od <- linkD$nodeLab_allias
+            od <- linkD$nodeLab_alias
             if (is.null(od)) {
                 od <- linkD$nodeLab
             }

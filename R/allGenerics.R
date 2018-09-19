@@ -118,7 +118,7 @@ setMethod("assays", signature("treeSummarizedExperiment"),
               if (use.nodeLab) {
                   nodeLab <- x@linkData$nodeLab
                   if (any(duplicated(nodeLab))) {
-                      nodeLab <- x@linkData$nodeLab_allias
+                      nodeLab <- x@linkData$nodeLab_alias
                   }
 
                   outR <- lapply(out, function(x) {

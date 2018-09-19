@@ -187,14 +187,14 @@ updateTSE <- function(result, tse, use.assays, design, contrast, fit = NULL){
             res <- lapply(tt1[[x]], function(y) {
                 # find rows deleted
                 idx <- rownames(y)
-                idc <- setdiff(linkData(tse)$nodeLab_allias, idx)
+                idc <- setdiff(linkData(tse)$nodeLab_alias, idx)
 
                 df <- DataFrame(y)
                 dm <- matrix(NA, nrow = length(idc), ncol = ncol(df),
                              dimnames = list(idc, colnames(df)))
                 dfc <- DataFrame(dm)
                 dfA <- rbind(df, dfc)
-                od <- linkData(tse)$nodeLab_allias
+                od <- linkData(tse)$nodeLab_alias
                 if (is.null(od)) {
                     od <- linkData(tse)$nodeLab
                 }

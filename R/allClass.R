@@ -105,7 +105,7 @@ setOldClass("phylo")
 #'   The row dimension is the same to that of \code{assays} data
 #'   \itemize{
 #'   \item \strong{nodeLab} the node labels on the tree.
-#'   \item \strong{nodeLab_allias} a allias of column \code{nodeLab}. It is
+#'   \item \strong{nodeLab_alias} a alias of column \code{nodeLab}. It is
 #'   created only when there are missing value or duplicated value in column
 #'   \code{nodeLab}. Commonly, it is a prefix "Node_" follow by the value in
 #'   column \code{nodeNum}.
@@ -260,7 +260,7 @@ leafSummarizedExperiment <- function(tree, ...) {
 #'   \code{assays.} is the same. It includes columns as below.
 #'   \itemize{
 #'   \item \strong{nodeLab} the labels of nodes
-#'   \item \strong{nodeLab_allias} a allias of column \code{nodeLab}. It is
+#'   \item \strong{nodeLab_alias} a alias of column \code{nodeLab}. It is
 #'   created only when there are missing value or duplicated value in column
 #'   \code{nodeLab}. Commonly, it is a prefix "Node_" follow by the value in
 #'   column \code{nodeNum}.
@@ -369,20 +369,20 @@ treeSummarizedExperiment <- function(tree = NULL, linkData = NULL,
                            isTip = newLab %in% tree$tip.label,
                            rowID = seq_len(length(newLab)))
 
-        # create column nodeLab_allias, if there are duplicated value in the
+        # create column nodeLab_alias, if there are duplicated value in the
         # nodeLab column
         if (any(duplicated(linkD$nodeLab))) {
-            linkD$nodeLab_allias <- paste("Node_", linkD$nodeNum, sep = "")
+            linkD$nodeLab_alias <- paste("Node_", linkD$nodeNum, sep = "")
         }
 
         } else {
             # if linkData is provided, then use it as linkData
             linkD <- linkData
 
-            # create column nodeLab_allias, if there are duplicated value in the
+            # create column nodeLab_alias, if there are duplicated value in the
             # nodeLab column
             if (any(duplicated(linkD$nodeLab))) {
-                linkD$nodeLab_allias <- paste("Node_", linkD$nodeNum, sep = "")
+                linkD$nodeLab_alias <- paste("Node_", linkD$nodeNum, sep = "")
             }
         }
 
