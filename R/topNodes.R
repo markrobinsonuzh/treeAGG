@@ -25,6 +25,7 @@ topNodes <- function(data, sort.by = "FDR", decreasing = FALSE,
                      col.rowData = NULL, col.linkData = NULL,
                      use.assays = NULL){
 
+
     if (is.null(use.assays)) {
         use.assays <- 1
     }
@@ -36,6 +37,10 @@ topNodes <- function(data, sort.by = "FDR", decreasing = FALSE,
     cNam <- paste("result_assay", use.assays, sep = "")
     fData <- rData[, cNam, drop = FALSE]
 
+
+    if (ncol(fData) == 0) {
+        stop("Results can't be found in the internal part of row data")
+        }
     # convert to a list: results from different assays as different elements
     list1 <- lapply(seq_len(ncol(fData)), FUN = function(x) {
         fData[, x]
