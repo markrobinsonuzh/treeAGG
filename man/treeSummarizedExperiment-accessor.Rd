@@ -62,7 +62,7 @@ combined. For other accessors, ignored.}
 \item{use.nodeLab}{A logical(1), indicating whether the rownames of assay
 elements should use node labels (the column \code{nodeLab} in
 \code{linkData} if there is not duplicated values; otherwise the column
-\code{nodeLab_allias} in \code{linkData} is used.)}
+\code{nodeLab_alias} in \code{linkData} is used.)}
 
 \item{withDimnames}{A logical(1), indicating whether dimnames should be
 applied to extracted assay elements. Setting withDimnames=FALSE increases

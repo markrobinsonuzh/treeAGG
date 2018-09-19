@@ -25,7 +25,7 @@ information between the rows of rectangular data and the nodes of tree.
 The row dimension is the same to that of \code{assays} data
 \itemize{
 \item \strong{nodeLab} the node labels on the tree.
-\item \strong{nodeLab_allias} a allias of column \code{nodeLab}. It is
+\item \strong{nodeLab_alias} a alias of column \code{nodeLab}. It is
 created only when there are missing value or duplicated value in column
 \code{nodeLab}. Commonly, it is a prefix "Node_" follow by the value in
 column \code{nodeNum}.

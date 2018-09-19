@@ -16,7 +16,7 @@ row order between \code{linkData} and the matrix-like element in
 \code{assays.} is the same. It includes columns as below.
 \itemize{
 \item \strong{nodeLab} the labels of nodes
-\item \strong{nodeLab_allias} a allias of column \code{nodeLab}. It is
+\item \strong{nodeLab_alias} a alias of column \code{nodeLab}. It is
 created only when there are missing value or duplicated value in column
 \code{nodeLab}. Commonly, it is a prefix "Node_" follow by the value in
 column \code{nodeNum}.
