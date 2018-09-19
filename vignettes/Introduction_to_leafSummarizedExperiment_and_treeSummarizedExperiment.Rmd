@@ -119,7 +119,7 @@ fill this gap.
 The map between the rows of *toyTable* and the leaf nodes of *toyTree* is checked
 when creating a `leafSummarizedExperiment` object. If the data above is
 used, we get a message that 5 rows of *toyTable* are removed due to the mismatch
-with the node labels of the tree. The `assays` table of the resulting *test* 
+with the node labels of the tree. The `assays` table of the resulting *test1* 
 object consequently has no rows.
 ```{r}
 # use the same data to create a leafSummarizedExperiment object.
@@ -133,17 +133,17 @@ between the rows of *toyTable* and the *toyTree* via a column `nodeLab` in
 `rowData` or via the row names of `rowData`.
 
 Option 1: Create a `leafSummarizedExperiment` object by changing the row names of `rowData`.
-```{r eval=FALSE}
+```{r}
 # change the row names of the row data
 rowInf_1 <- rowInf
 rownames(rowInf_1) <- toyTree$tip.label
 toyTable_1 <- toyTable
 rownames(toyTable_1) <- toyTree$tip.label
-test_1 <- leafSummarizedExperiment(assays = list(toyTable_1), 
+test2 <- leafSummarizedExperiment(assays = list(toyTable_1), 
                                    rowData = rowInf_1,
                                    colData = colInf, 
                                    tree = toyTree)
-assays(test_1)[[1]]
+assays(test2)[[1]]
 ```
 
 Option 2: Create a `leafSummarizedExperiment` object by adding a column `nodeLab` to the 
@@ -222,7 +222,7 @@ use the `assays` accessor function. This is similar to the `SummarizedExperiment
 We could use the node labels from the link data (\@ref(sec:linkData)) as the row
 names via the argument `use.nodeLab = TRUE`. Commonly, the column `nodeLab` is
 used as the row names. However, if it has duplicated values, the column
-`nodeLab_allias` is used.
+`nodeLab_alias` is used.
 
 ```{r}
 assays(tse, use.nodeLab = TRUE)[[1]] 
@@ -297,7 +297,7 @@ a leaf node.
 
 If the labels of internal nodes are available and unique on the tree, the link
 data would have 4 columns including *nodeLab*, *nodeNum*, *isTip*, and *rowID*;
-otherwise, it would have one additonal column *nodeLab_allias*.
+otherwise, it would have one additonal column *nodeLab_alias*.
 
 As shown in the Figure \@ref(fig:toyTREE), the tree we have used has no labels 
 (orange text) for internal nodes.
@@ -362,7 +362,7 @@ label to a row.
 ```{r}
 # give a column nodeLab in row data
 # the linkData would be created automatically
-lab <- ifelse(is.na(linkD$nodeLab), linkD$nodeLab_allias, linkD$nodeLab)
+lab <- ifelse(is.na(linkD$nodeLab), linkD$nodeLab_alias, linkD$nodeLab)
 lab
 (nData <- cbind(nodeLab = lab, rData.1))
 ```
@@ -401,5 +401,3 @@ tseC <- treeSummarizedExperiment(assays = list(toyTable),
                                  tree = toyTree)
 ```
 
-# Reference
-Have difficulty to cite SummarizedExperiment package....
