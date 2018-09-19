@@ -110,7 +110,7 @@ setOldClass("phylo")
 #'   \code{nodeLab}. Commonly, it is a prefix "Node_" follow by the value in
 #'   column \code{nodeNum}.
 #'   \item \strong{nodeNum} the node numbers on the tree.
-#'   \item \strong{isTip} is it a leaf node?
+#'   \item \strong{isLeaf} is it a leaf node?
 #'   \item \strong{rowID} the row number in \code{assays}.
 #'   }
 #' @slot treeData A phylo object. It gives information about the hiearchical
@@ -366,7 +366,7 @@ treeSummarizedExperiment <- function(tree = NULL, linkData = NULL,
         linkD <- DataFrame(nodeLab = newLab,
                            nodeNum = transNode(tree = tree,
                                                input = newLab),
-                           isTip = newLab %in% tree$tip.label,
+                           isLeaf = newLab %in% tree$tip.label,
                            rowID = seq_len(length(newLab)))
 
         # create column nodeLab_alias, if there are duplicated value in the

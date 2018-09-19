@@ -51,7 +51,7 @@ viewSim <- function(obj, layout = "rectrangular", zoomScale = 1/20,
 
     # zoomNode
     sNode <- findParallel(tree = tree, input = branch, label = FALSE)
-    isT <- isTip(tree = tree, input = sNode)
+    isT <- isLeaf(tree = tree, input = sNode)
     fNode <- sNode[!isT]
 
     # fold change
@@ -155,21 +155,21 @@ findParallel <- function(tree, input, label = FALSE){
     # replace leaves with their ancestor branch node
     fT <- signalNode(tree = tree, node = exT, label = FALSE)
 
-    # isT <- isTip(tree = tree, input = fT)
+    # isT <- isLeaf(tree = tree, input = fT)
     # fn <- fT[!isT]
     return(fT)
 }
 
 #' To test whether specified nodes are leaf nodes
 #'
-#' \code{isTip} is to test wheter some specified nodes are leaf nodes of a tree.
+#' \code{isLeaf} is to test wheter some specified nodes are leaf nodes of a tree.
 #'
 #' @param tree A phylo object.
 #' @param input A numeric or character vector. Node labels or node numbers.
 #'
 #' @return a logical vector with the same length as input
 #' @keywords internal
-isTip <- function(tree, input){
+isLeaf <- function(tree, input){
     # leaves
     tip <- setdiff(tree$edge[,2], tree$edge[, 1])
     # input
@@ -179,6 +179,6 @@ isTip <- function(tree, input){
         input <- input
     }
     # is it a tip
-    isTip <- input %in% tip
-    return(isTip)
+    isLeaf <- input %in% tip
+    return(isLeaf)
 }
