@@ -15,5 +15,7 @@ devtools::install_github("markrobinsonuzh/treeAGG")
 
 ## How to use it
 
-* [vignettes](https://github.com/markrobinsonuzh/treeAGG/blob/master/vignettes/vignette-treeAGG.Rmd)
+* [Introduction to leafSummarizedExperiment and treeSummarizedExperiment](https://github.com/markrobinsonuzh/treeAGG/blob/master/vignettes/Introduction_to_leafSummarizedExperiment_and_treeSummarizedExperiment.Rmd)
+* [Example of data analysis](https://github.com/markrobinsonuzh/treeAGG/blob/master/vignettes/Example_of_data_analysis.Rmd)
+
 
