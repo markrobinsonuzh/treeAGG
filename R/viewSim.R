@@ -13,6 +13,7 @@
 #' package (see \code{\link[ggplot2]{theme}} ) and starting with "legend."
 #' @param tip.label TRUE or FALSE. Default is FALSE. If TRUE, the leaves with
 #' fold change above or below 1 will be labelled.
+#' @param legend.title The title of the legend. The default is "Abundance"
 #'
 #' @importFrom S4Vectors metadata
 #' @importFrom ggtree %<+% geom_tiplab geom_point2
@@ -23,7 +24,7 @@
 viewSim <- function(obj, layout = "rectrangular", zoomScale = 1/20,
                     legend.theme = list(
                         legend.position = c(0.15, 0.6)),
-                    tip.label = FALSE){
+                    tip.label = FALSE, legend.title = "Abundance"){
 
     md <- metadata(obj)
     # tree
@@ -41,7 +42,7 @@ viewSim <- function(obj, layout = "rectrangular", zoomScale = 1/20,
                   c("go down", "go up"),
                   c("go up", "go down"))
     legend.label <- list(col.branch = nam)
-    legend.title <- c(branch = "Abundance")
+    legend.title <- c(branch = legend.title)
 
     # branch color
     colL <- col.branch[nam]
