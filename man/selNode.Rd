@@ -4,10 +4,12 @@
 \alias{selNode}
 \title{Select branches}
 \usage{
-selNode(tree, data, minTip = 0, maxTip = Inf, minPr = 0, maxPr = 1,
-  skip = NULL, all = FALSE)
+selNode(obj = NULL, tree = NULL, data = NULL, minTip = 0,
+  maxTip = Inf, minPr = 0, maxPr = 1, skip = NULL, all = FALSE)
 }
 \arguments{
+\item{obj}{A leafSummarizedExperiment object.}
+
 \item{tree}{A phylo object}
 
 \item{data}{A count table from the real data or a list output from
@@ -50,6 +52,11 @@ dat <- parEstimate(data = toyTable)
 (out1 <- selNode(tree = tinyTree, data = dat, all = TRUE))
 (out2 <- selNode(tree = tinyTree, data = dat, minTip = 4, maxTip = 9,
 minPr = 0, maxPr = 0.8, all = TRUE))
+
+## provide obj
+lse1 <- leafSummarizedExperiment(tree = tinyTree,
+                                assays = list(toyTable))
+out <- selNode(obj = lse1, all = TRUE)
 
 }
 \author{
