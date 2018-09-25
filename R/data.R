@@ -98,7 +98,7 @@
 #'   \item{truth}{whether the cluster is differential abundant between the healthy
 #'   sample and the CN sample}
 #' }
-"cytof_cluster"
+"cytofCluster"
 
 #' The information about samples of the AML-sim data
 #'
@@ -112,7 +112,7 @@
 #'   \item{group}{The group that a sample collected from: healthy or CN.}
 #'   \item{patient}{The patient that the sample collected from. }
 #' }
-"cytof_sample"
+"cytofSample"
 
 #' The true signal in the AML-sim data
 #'
