@@ -35,7 +35,7 @@ findSibling <- function(tree, input, label = FALSE){
 
     # replace leaves with their ancestor branch node
     fT <- lapply(exT, FUN = function(x) {
-        signalNode(tree = tree, node = x, label = FALSE)} )
+        signalNode(tree = tree, node = x, label = label)} )
     fT <- unlist(fT)
     # isT <- isTip(tree = tree, input = fT)
     # fn <- fT[!isT]
