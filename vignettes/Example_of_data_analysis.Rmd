@@ -233,12 +233,9 @@ Tree <- as.phylo(cytofTree)
 
 ```
 
-<<<<<<< HEAD
+
 The information of each cell cluster, corresponding to a row in the count table, is given in the `cytofCluster` (see `?cytofCluster` for more details). 
-=======
-The information of each cell cluster, corresponding to a row in the count table,
-is given in the `cytof_cluster` (see `?cytof_cluster` for more details).
->>>>>>> f4e87f73a92e75d5e7d765d6cde86433f16c6b5e
+
 ```{r}
 # row information 
 # add a column called nodeLab to tell which node a row corresponds to.
@@ -246,21 +243,11 @@ data("cytofCluster")
 cytofCluster <- DataFrame(cytofCluster)
 cytofCluster$nodeLab <- cytofCluster$cluster
 ```
-<<<<<<< HEAD
+
 We add a new column named as `nodeLab` to tell which node of the tree a row of the count table corresponds to. If such a column is not given, the rownames of the `cytofCluster` is used for the mapping. Hence, users should be careful about the `nodeLab` column or the rownames, and make sure they use the same label as the node label of the tree. When the `nodeLab` column and the rownames both exist and are different, the `nodeLab` column is used.
 
 The information of each sample, corresponding to a column in the count table, is given in the `cytofSample` (see `?cytofSample` for more details). 
-=======
-We add a new column named `nodeLab` to tell which node of the tree a row of the
-count table corresponds to. If such a column is not given, the rownames of the
-`cytofCluster` is used for the mapping. Hence, users should be careful about the
-`nodeLab` column or the rownames, and make sure they use the same labels as the
-node labels of the tree. When the `nodeLab` column and the rownames both exist
-and are different, the `nodeLab` column is used.
 
-The information of each cell cluster, corresponding to a row in the count table,
-is given in the `cytof_sample` (see `?cytof_sample` for more details).
->>>>>>> f4e87f73a92e75d5e7d765d6cde86433f16c6b5e
 ```{r}
 # provide sample information: from healthy or CN group
 data("cytofSample")
@@ -597,7 +584,6 @@ aggR <- treeAGG(data = new_tseM, sigf.by = "FDR",
 ```
 Feed the argument `data` with the output from the previous analysis section
 *new_tse*. The column used for tree aggregation is specified by the column name
-<<<<<<< HEAD
 via `agg.by`, and the column storing the adjusted p-value by `sigf.by`. Users
 could decide the threshold value for the column `sigf.by` via `sigf.limit`. If
 the aggregation takes time, we could set `message = TRUE` to see the running
@@ -608,19 +594,7 @@ obtained from the first table stored in `assays`. We could further specify how
 the rows should be ordered via `sort.by` and `decreasing`. If some columns in
 `linkData` or `rowData` are also needed, they could be extracted out
 simutaneously via `col.rowData` and `col.linkData`, respectively.
-=======
-via `agg.by`, and that for the decision whether the NULL hypothesis at a node
-should be rejected is specified by `sigf.by` (or actually, the column stores
-adjusted p value). Users could decide the threshold value for the column
-`sigf.by` via `sigf.limit`. If the aggregation takes time, we could set `message
-= TRUE` to see the running process. With `topNodes`, the result table from the
-DA analysis and tree aggregation step could be printed out. The output *aggR*
-from previous step is assigned to `data`. The argument `use.assays = 1` is to
-show only results obtained from the first table stored in `assays`. We could
-further specify how the rows should be ordered via `sort.by` and `decreasing`.
-If some columns in `linkData` or `rowData` are also needed, they could be
-extracted out simultaneously via `col.rowData` and `col.linkData`, respectively.
->>>>>>> f4e87f73a92e75d5e7d765d6cde86433f16c6b5e
+
 ```{r}
 tabL <- topNodes(data = aggR, sort.by = "FDR", decreasing = FALSE,
                  use.assays = 1, col.rowData = NULL, 
