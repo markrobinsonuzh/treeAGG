@@ -692,8 +692,26 @@ doFC <- function(tree, data, scenario,
         tipB <- findOS(tree = tree, ancestor = branchB,
                        only.Tip = TRUE, self.include = TRUE)
 
-        beta[tipA] <- 1 + runif(length(tipA))*(ratio-1)
-        beta[tipB] <- 1 - runif(length(tipB))*((ratio-1)/ratio)
+        # proportion on two branches
+        propA <- sum(data$pi[tipA])
+        propB <- sum(data$pi[tipB])
+
+        # swap proportions on two branches and randomly assign a fold change
+        # value to the the leaves on a branch (log fold change in the same branch
+        # should have the same sign)
+
+
+            a1 <- runif(length(tipA))
+            sa <- sum(a1 * propA)
+            a2 <- (propB - propA)/sa
+            a3 <- a1 * a2 + 1
+            beta[tipA] <- a3
+
+            b1 <- runif(length(tipB))
+            sb <- sum(b1 * propB)
+            b2 <- (propA - propB)/sb
+            b3 <- b1 * b2 + 1
+            beta[tipB] <- b3
     }
 
     # distribute signal randomly in one branch and evenly in
