@@ -3,6 +3,7 @@
 #' \code{selNode} selects branches meeting the specified criteria in the number
 #' of leaves and the count proportion.
 #'
+#' @param obj A leafSummarizedExperiment object.
 #' @param tree A phylo object
 #' @param data A count table from the real data or a list output from
 #'   \code{parEstimate}.
@@ -35,10 +36,30 @@
 #' (out2 <- selNode(tree = tinyTree, data = dat, minTip = 4, maxTip = 9,
 #' minPr = 0, maxPr = 0.8, all = TRUE))
 #'
+#' ## provide obj
+#' lse1 <- leafSummarizedExperiment(tree = tinyTree,
+#'                                 assays = list(toyTable))
+#' out <- selNode(obj = lse1, all = TRUE)
+#'
 
-selNode <- function(tree, data, minTip = 0, maxTip = Inf,
+selNode <- function(obj = NULL, tree = NULL, data = NULL,
+                    minTip = 0, maxTip = Inf,
                     minPr = 0, maxPr = 1,
                     skip = NULL, all = FALSE){
+
+    # if the obj is provided with a leafSummarizedExperiment object
+    # use it; otherwise use tree and data
+    if (inherits(obj, "leafSummarizedExperiment")) {
+        if (any(!is.null(tree), !is.null(data))) {
+            stop("Set tree and data as NULL when obj is given. \n")
+        }
+        obj <- parEstimate(data = obj)
+        tree <- metadata(obj)$tree
+        data <- metadata(obj)$assays.par
+    } else {
+        tree <- tree
+        data <- data
+    }
 
     ##------------ descendant tips ------------
     # descendant tips for each internal node
