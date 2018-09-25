@@ -6,7 +6,7 @@
 \usage{
 viewSim(obj, layout = "rectrangular", zoomScale = 1/20,
   legend.theme = list(legend.position = c(0.15, 0.6)),
-  tip.label = FALSE)
+  tip.label = FALSE, legend.title = "Abundance")
 }
 \arguments{
 \item{obj}{The output from \code{simData}}
@@ -24,6 +24,8 @@ package (see \code{\link[ggplot2]{theme}} ) and starting with "legend."}
 
 \item{tip.label}{TRUE or FALSE. Default is FALSE. If TRUE, the leaves with
 fold change above or below 1 will be labelled.}
+
+\item{legend.title}{The title of the legend. The default is "Abundance"}
 }
 \value{
 a figure
