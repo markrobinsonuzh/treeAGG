@@ -2,28 +2,24 @@
 % Please edit documentation in R/parEstimate.R
 \name{parEstimate}
 \alias{parEstimate}
-\title{Estimate parameters for Dirichlet distribution}
+\title{Parameter estimation in Dirichlet-multinomial distribution}
 \usage{
 parEstimate(data)
 }
 \arguments{
-\item{data}{A count table. Samples in the column and entities in the row.}
+\item{data}{A matrix or leafSummarizedExperiment. Samples in the columns and
+entities in the rows.}
 }
 \value{
 A list including \dQuote{pi} and \dQuote{theta}
 }
 \description{
-\code{parEstimate} estimates parameters \eqn{\pi} and \eqn{\theta} from
-a real data (count table). The entity counts within each sample is assumed to
-follow a multinomial distribution with probabilities,
-\eqn{ \pi_{1}, \pi_{2}, ..., \pi_{k-1}}. When \eqn{\pi} follows a Dirichlet
-distribution,  the marginal distribution of X, the entity count, is
-Dirichlet-multinomial with parameters \eqn{\pi} and \eqn{\theta}.
-More details see \code{\link[dirmult]{dirmult}}
-}
-\details{
-\code{parEstimate} is created based on
-\code{\link[dirmult]{dirmult}}).
+\code{parEstimate} is a wrapper function generated from the function
+\code{\link[dirmult]{dirmult}} with default setting on \code{init},
+\code{initscalar}, \code{epsilon}, \code{trace} and \code{mode}. It allows
+the input \code{data} to accept \code{matrix} or
+\code{leafSummarizedExperiment} and output the value \code{pi} and
+\code{theta}.
 }
 \examples{
 \dontrun{
