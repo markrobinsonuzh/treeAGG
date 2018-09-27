@@ -389,9 +389,9 @@ rb <- rbind(dat2@metadata$branch, dat3@metadata$branch)
 rownames(rb) <- c("dat2", "dat3")
 rb
 ```
-The proportion of branch A is `r rb[2, "A_prop(%)"]`$\%$ in `dat3`. This
+The proportion of branch A is `r rb[2, "A_prop"]` in `dat3`. This
 fulfills the requirement that the relative abundance level of branch A isn't
-above 1$\%$ (`maxPr.A`= 0.01).
+above $0.01$ (`maxPr.A`= 0.01).
 
 ```{r}
 viewSim(obj = dat3, layout = "rectangular", zoomScale = 1/100)

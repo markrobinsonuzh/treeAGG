@@ -13,23 +13,23 @@ simData(tree = NULL, data = NULL, obj = NULL, scenario = "S1",
 \arguments{
 \item{tree}{A phylo object. Only use when \code{obj} is NULL.}
 
-\item{data}{A matrix, representing a table of values, such as count,
-collected from real data. It has the entities corresponding to tree leaves
-in the row and samples in the column. Only use when \code{obj} is NULL.}
+\item{data}{A matrix, representing a table of values, such as count, collected
+from real data. It has the entities corresponding to tree leaves in the row
+and samples in the column. Only use when \code{obj} is NULL.}
 
 \item{obj}{A leafSummarizedExperiment object that includes a list of
 matrix-like elements, or a matrix-like element in assays, and a phylo object
 in metadata. In other words, \strong{obj} provides the same information
 given by \strong{tree} and \strong{data}.}
 
-\item{scenario}{\dQuote{S1}, \dQuote{S2}, or \dQuote{S3}
-(see \bold{Details}). Default is \dQuote{S1}.}
+\item{scenario}{\dQuote{S1}, \dQuote{S2}, or \dQuote{S3} (see \bold{Details}).
+Default is \dQuote{S1}.}
 
-\item{from.A, from.B}{The branch node labels of branches A and B for which
-the signal is swapped. Default, both are NULL. In simulation, we select two
+\item{from.A, from.B}{The branch node labels of branches A and B for which the
+signal is swapped. Default, both are NULL. In simulation, we select two
 branches (A & B) to have differential abundance under different conditions.
-One could specify these two branches or let \code{doData} choose.
-(Note: If \code{from.A} is NULL, \code{from.B} is set to NULL).}
+One could specify these two branches or let \code{doData} choose. (Note: If
+\code{from.A} is NULL, \code{from.B} is set to NULL).}
 
 \item{minTip.A}{The minimum number of leaves in branch A}
 
@@ -39,23 +39,25 @@ One could specify these two branches or let \code{doData} choose.
 
 \item{maxTip.B}{The maximum number of leaves in branch B}
 
-\item{minPr.A}{The minimum abundance proportion of leaves in branch A}
+\item{minPr.A}{A numeric value selected from 0 to 1. The minimum abundance proportion
+of leaves in branch A}
 
-\item{maxPr.A}{The maximum abundance proportion of leaves in branch A}
+\item{maxPr.A}{A numeric value selected from 0 to 1. The maximum abundance proportion
+of leaves in branch A}
 
-\item{ratio}{The proportion ratio of branch B to branch A.
-This value is used to select branches(see \bold{Details}).
-If there are no branches having exactly this ratio,
-the pair with the value closest to \code{ratio} would be selected.}
+\item{ratio}{A numeric value. The proportion ratio of branch B to branch A.
+This value is used to select branches(see \bold{Details}). If there are no
+branches having exactly this ratio, the pair with the value closest to
+\code{ratio} would be selected.}
 
-\item{adjB}{a numeric value between 0 and 1 (only for \code{scenario} is
+\item{adjB}{a numeric value selected from 0 and 1 (only for \code{scenario} is
 \dQuote{S3}). Default is NULL. If NULL, branch A and the selected part of
 branch B swap their proportions. If a numeric value, e.g. 0.1, then the
 selected part of branch B decreases to its one tenth proportion and the
 decrease in branch B is added to branch A. For example, assume there are two
-experimental conditions (C1 & C2), branch A has 10 and branch B has 40 in C1.
-If adjB is set to 0.1, then in C2 branch B becomes 4 and branch A 46 so that
-the total proportion stays the same.}
+experimental conditions (C1 & C2), branch A has 10 and branch B has 40 in
+C1. If adjB is set to 0.1, then in C2 branch B becomes 4 and branch A 46 so
+that the total proportion stays the same.}
 
 \item{pct}{The percentage of leaves in branch B that have differential
 abundance under different conditions (only for scenario \dQuote{S3})}
@@ -79,51 +81,45 @@ vector with the counts of an internal node's descendant leaves.}
 \item{seed}{a numeric value. Set seed to get reproducible results.}
 }
 \value{
-a list of objects
-\item{FC}{the fold change of entities correspondint to the tree leaves.}
-\item{Count}{a list of count table or a count table. Entities on the row and
-samples in the column. Each count table includes entities corresponding to
-all nodes on the tree structure.}
-\item{Branch}{the information about two selected branches.}
-\describe{
-\item{A}{the branch node label of branch A}
-\item{B}{the branch node label of branch B}
-\item{ratio}{the count proportion ratio of branch B to branch A}
-\item{A_tips}{the number of leaves on branch A}
-\item{B_tips}{the number of leaves on branch B}
-\item{A_prop(\%)}{the count proportion of branch A (in percentage)}
-\item{B_prop(\%)}{the count proportion of branch B (in percentage)}
-}
+a list of objects \item{FC}{the fold change of entities correspondint
+ to the tree leaves.} \item{Count}{a list of count table or a count table.
+ Entities on the row and samples in the column. Each count table includes
+ entities corresponding to all nodes on the tree structure.}
+ \item{Branch}{the information about two selected branches.} \describe{
+ \item{A}{the branch node label of branch A} \item{B}{the branch node label
+ of branch B} \item{ratio}{the count proportion ratio of branch B to branch
+ A} \item{A_tips}{the number of leaves on branch A} \item{B_tips}{the number
+ of leaves on branch B} \item{A_prop}{the count proportion of branch A (a
+ value not above 1)} \item{B_prop}{the count proportion of branch B (the
+ maximum is 1a value not above 1)} }
 }
 \description{
 \code{simData} simulates different abundance patterns for entities under
-different conditions. These entities have their corresponding nodes on
-a tree. More details about the simulated patterns could be found in the
-vignette via \code{browseVignettes("treeAGG")}.
+different conditions. These entities have their corresponding nodes on a tree.
+More details about the simulated patterns could be found in the vignette via
+\code{browseVignettes("treeAGG")}.
 }
 \details{
 \code{simData} simulates a count table for entities which are
-corresponding to the nodes of a tree. The entities are in rows and the
-samples from different groups or conditions are in columns. The library size
-of each sample is sampled from a Negative Binomial distribution with mean
-and size specified by the arguments \code{mu} and \code{size}. The counts of
-entities, which are located on the tree leaves, in the same sample are
-assumed to follow a Dirichlet-Multinomial distribution. The parameters for
-the Dirichlet-Multinomial distribution are estimated from a real data set
-specified by the argument \code{data} via the function \code{dirmult}
-(see \code{\link[dirmult]{dirmult}}). To generate different abundance
-patterns under different conditions, we provide three different scenarios,
-\dQuote{S1}, \dQuote{S2}, and \dQuote{S3} (specified via \code{scenario}).
-Our vignette provides figures to explain these three scenarios
-(try \code{browseVignettes("treeAGG")}).
-\itemize{
-\item S1: two branches are selected to swap their proportions, and leaves on
-the same branch have the same fold change.
-\item S2: two branches are selected to swap their proportions. Leaves in the
-same branch have different fold changes but same direction (either increase
-or decrease).
-\item S3: two branches are selected. One branch has its proportion swapped
-with the proportion of some leaves from the other branch.}
+ corresponding to the nodes of a tree. The entities are in rows and the
+ samples from different groups or conditions are in columns. The library size
+ of each sample is sampled from a Negative Binomial distribution with mean
+ and size specified by the arguments \code{mu} and \code{size}. The counts of
+ entities, which are located on the tree leaves, in the same sample are
+ assumed to follow a Dirichlet-Multinomial distribution. The parameters for
+ the Dirichlet-Multinomial distribution are estimated from a real data set
+ specified by the argument \code{data} via the function \code{dirmult} (see
+ \code{\link[dirmult]{dirmult}}). To generate different abundance patterns
+ under different conditions, we provide three different scenarios,
+ \dQuote{S1}, \dQuote{S2}, and \dQuote{S3} (specified via \code{scenario}).
+ Our vignette provides figures to explain these three scenarios (try
+ \code{browseVignettes("treeAGG")}). \itemize{ \item S1: two branches are
+ selected to swap their proportions, and leaves on the same branch have the
+ same fold change. \item S2: two branches are selected to swap their
+ proportions. Leaves in the same branch have different fold changes but same
+ direction (either increase or decrease). \item S3: two branches are
+ selected. One branch has its proportion swapped with the proportion of some
+ leaves from the other branch.}
 }
 \examples{
 \dontrun{
