@@ -496,14 +496,15 @@ findSibling(tree = throat.tree, input = brA, label = TRUE)
 # Appendix
 
 Proof: $$\sum_{g \in Blue} \hat{\pi}'_{g} = \sum_{g \in Orange} \hat{\pi}_{g}$$
+Proof: $$\sum_{g \in Blue} \hat{\pi}'_{g} = \sum_{g \in Orange} \hat{\pi}_{g}$$
 $$\begin{aligned}
 \sum_{g \in Blue} \hat{\pi}'_{g} 
-&= \sum_{g \in Blue} r_g \hat{\pi}'_{g} \\ 
-&= \sum_{g \in Blue} \hat{\pi}'_{g} r_g \\
-&= \sum_{g \in Blue} \hat{\pi}'_{g}(1 + \frac{\sum_{t \in Orange} \hat{\pi}_{t} - \sum_{t \in Blue} \hat{\pi}_{t}}{\sum_{t \in Blue} \hat{\pi}_{t} u_t} u_g) \\
-&= \sum_{g \in Blue} \hat{\pi}'_{g}(1 + \frac{\sum_{t \in Orange} \hat{\pi}_{t} - \sum_{t \in Blue} \hat{\pi}_{t}}{\sum_{t \in Blue} \hat{\pi}_{t} u_t} u_g) \\
-&= \sum_{g \in Blue} \hat{\pi}'_{g} + \sum_{g \in Blue} \hat{\pi}'_{g}\frac{\sum_{t \in Orange} \hat{\pi}_{t} - \sum_{t \in Blue} \hat{\pi}_{t}}{\sum_{t \in Blue} \hat{\pi}_{t} u_t} u_g \\
-&= \sum_{g \in Blue} \hat{\pi}'_{g} + (\sum_{t \in Orange} \hat{\pi}_{t} - \sum_{t \in Blue} \hat{\pi}_{t}) \frac{\sum_{g \in Blue} \hat{\pi}'_{g} u_g}{\sum_{t \in Blue} \hat{\pi}_{t} u_t} \\
+&= \sum_{g \in Blue} r_g \hat{\pi}_{g} \\ 
+&= \sum_{g \in Blue} \hat{\pi}_{g} r_g \\
+&= \sum_{g \in Blue} \hat{\pi}_{g}(1 + \frac{\sum_{t \in Orange} \hat{\pi}_{t} - \sum_{t \in Blue} \hat{\pi}_{t}}{\sum_{t \in Blue} \hat{\pi}_{t} u_t} u_g) \\
+&= \sum_{g \in Blue} \hat{\pi}_{g}(1 + \frac{\sum_{t \in Orange} \hat{\pi}_{t} - \sum_{t \in Blue} \hat{\pi}_{t}}{\sum_{t \in Blue} \hat{\pi}_{t} u_t} u_g) \\
+&= \sum_{g \in Blue} \hat{\pi}_{g} + \sum_{g \in Blue} \hat{\pi}_{g}\frac{\sum_{t \in Orange} \hat{\pi}_{t} - \sum_{t \in Blue} \hat{\pi}_{t}}{\sum_{t \in Blue} \hat{\pi}_{t} u_t} u_g \\
+&= \sum_{g \in Blue} \hat{\pi}_{g} + (\sum_{t \in Orange} \hat{\pi}_{t} - \sum_{t \in Blue} \hat{\pi}_{t}) \frac{\sum_{g \in Blue} \hat{\pi}_{g} u_g}{\sum_{t \in Blue} \hat{\pi}_{t} u_t} \\
 & = \sum_{t \in Orange} \hat{\pi}_{t} \\
 & = \sum_{g \in Orange} \hat{\pi}_{g}
 \end{aligned}$$
