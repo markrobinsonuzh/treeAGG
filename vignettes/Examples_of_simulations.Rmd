@@ -31,18 +31,24 @@ knitr::opts_chunk$set(echo = TRUE, message = FALSE, warning = FALSE)
 
 # Introduction
 
-We would like to simulate a count table, of which some rows have differental abundance on samples with different phenotypic outcomes. The easy way to do it is randomly select some rows and increase the counts of samples with certain phenotypic outcomes. However, this might cause issues in compositional data analysis because the proportion of a row might change even though its count has not changed. To avoid such issues, instead of adding counts to specific rows, we would do swap between rows. 
+We would like to simulate a count table, where some rows have differental
+abundance between samples with different phenotypic outcomes. The easy way to do
+it is to randomly select some rows and increase or decrease the counts of
+samples with certain phenotypic outcomes. However, this might cause issues in
+compositional data because the proportion of a row might change even though its
+count has not changed. To avoid such issues, instead of adding counts to
+specific rows, we swap abundances between groups of rows.
 
 # Method
 
 ```{r scenarioDiff, echo= FALSE, fig.height = 3, fig.cap="\\label{fig1} Different simulated signal patters. The branches that have abundance phenotypic outcome associated are colored, and the others are shrinked to save space. The change direction is shown as color: blue (increase) and orange (decrease). The size of the points represents the amount of change (e.g., fold change) "}
 
-suppressPackageStartupMessages(library(treeAGG)) 
-suppressPackageStartupMessages(library(ggtree))
-suppressPackageStartupMessages(library(ggplot2))
-suppressPackageStartupMessages(library(cowplot))
-
-library(treeAGG)
+suppressPackageStartupMessages({
+  library(treeAGG)
+  library(ggtree)
+  library(ggplot2)
+  library(cowplot)
+})
 
 data("exTree")
 
@@ -90,8 +96,9 @@ fig3 <- treePlot(tree = exTree, branch.length = "none",
 
 plot_grid(fig1, fig2, fig3, labels = c("S1", "S2", "S3"), nrow = 1)
 ```
-The counts of entities in a sample are assumed to follow dirichlet multinomial
-distritubion as several articles [@Zhao2015][@Tang2016a][@Tang2016b][@Wu2016].
+
+The counts of entities in a sample are assumed to follow a Dirichlet Multinomial
+distribution as has been suggested in several articles [@Zhao2015,@Tang2016a,@Tang2016b,@Wu2016]:
 $$\mathbf{x}=(x_1,\dots,x_K) \sim \text{dirmult}(n, \mathbf{\alpha})$$
 \begin{equation}
 \Pr(\mathbf{x}\mid\boldsymbol{\alpha})=\frac{\left(n!\right)\Gamma\left(\alpha_0\right)}
@@ -103,34 +110,36 @@ library size of a sample, $\mathbf{\alpha} = (\alpha_1, \alpha_2, ...,
 \alpha_K)$ are the parameters for the distribution, and $\alpha_0 = \sum
 \alpha_k$.
 
-In package `r CRANpkg("dirmult")`, the parameters $\mathbf{\alpha}$ in equation
-\@ref(eq:dirmult1) are reparameterized with $\mathbf{\pi} = (\pi_1, ..., \pi_K)$
+In the `r CRANpkg("dirmult")` package, the Dirichlet Multinomial distribution (equation
+\@ref(eq:dirmult1)) is reparameterized with $\mathbf{\pi} = (\pi_1, ..., \pi_K)$
 and $\theta$ so that $\alpha_0 = \frac{(1-\theta)}{\theta}$ and $\alpha_k =
 \pi_k \theta$. Here, $\pi_k$ is the expected proportion of entity $k$ in a sample.
 
 The technical details in the simulation procedure are as below.
 
 1. **Estimate the parameters for simulation from a real data.** Estimate the
-proportion $\mathbf{\hat{\pi}} = (\hat{\pi}_{1}, \hat{\pi}_{2}, ...,
+proportions $\mathbf{\hat{\pi}} = (\hat{\pi}_{1}, \hat{\pi}_{2}, ...,
 \hat{\pi}_{m})$ and the overdispersion $\hat{\theta}$ from the real data
 \cite{Charlson2010} via maximum likelihood using package `r CRANpkg("dirmult")`.
 
 2. **Randomly select two branches with different proportions to swap.** The
-selected branches are zoomed in (see Figure \@ref(fig:scenarioDiff)). Depends on
-how the swap is performed, there are 3 simulation scenarios, S1, S2, and S3.
+selected branches are zoomed in (see Figure \@ref(fig:scenarioDiff)). We provide
+3 simulation scenarios (S1, S2, and S3), which differ in how this swap is
+performed.
 
-+ S1 (the left plot in Figure \@ref(fig:scenarioDiff)): The proportions of entities in sample $i$ are $\mathbf{p^A_{i}}$ and
++ S1 (the left plot in Figure \@ref(fig:scenarioDiff)): The proportions of
+entities in sample $i$ are $\mathbf{p^A_{i}}$ and
 $\mathbf{p^B_{i}}$ for the group A and B (the phenotypic outcome), respectively.
 The values of $\mathbf{p^A_{i}}$ and $\mathbf{p^B_{i}}$ are randomly generated
 from the Dirichlet distribution as below.
 $$\text{p}^A_{i} \sim \text{Dirichlet}(\mathbf{\hat{\pi}}, \hat{\theta}).$$
 $$\text{p}^B_{i} \sim \text{Dirichlet}(\mathbf{\hat{\pi}'}, \hat{\theta})$$
-Compared with group A, the proportions of enities on the blue and orange branch
+Compared with group A, the proportions of entities on the blue and orange branch
 have been changed correspondingly by a common factor $r$ and $\frac{1}{r}$ in
 group B.
 \begin{equation}
 \left\{\begin{matrix}
- {\hat{\pi}}'_{k} =\hat{\pi}_{k}; &  k \notin \text{colored branches.}\\
+ {\hat{\pi}}'_{k} =\hat{\pi}_{k}; &  k \notin \text{colored branches}\\
  {\hat{\pi}}'_{k} = r\hat{\pi}_{k}; &  k \in \text{ Blue branch } \\
  {\hat{\pi}}'_{k} =\frac{1}{r}\hat{\pi}_{k}; &  k \in \text{ Orange branch}
  \end{matrix}\right.
@@ -139,17 +148,18 @@ group B.
 where $r = \frac{\sum_{k \in Orange} \hat{\pi}_{k}}{\sum_{k \in Blue}
 \hat{\pi}_{k}}$ is the fold change.
 
-+ S2 (the middle plot in Figure \@ref(fig:scenarioDiff)): The proportions of entities in sample $i$ are $\mathbf{p^A_{i}}$ and
++ S2 (the middle plot in Figure \@ref(fig:scenarioDiff)): The proportions of
+entities in sample $i$ are $\mathbf{p^A_{i}}$ and
 $\mathbf{p^B_{i}}$ for the group A and B, respectively. They are randomly
 generated from the Dirichlet distribution as below.
 $$\text{p}^A_{i} \sim \text{Dirichlet}(\bf{\hat{\pi}}, \hat{\theta}).$$
 $$\text{p}^B_{i} \sim \text{Dirichlet}(\hat{\pi}', \hat{\theta})$$
-Compared with group A, the proportions of enities on the colored branches have
+Compared with group A, the proportions of entities on the colored branches have
 changed by a common factor $r_k$ in group B. $r_k$ varies among entities in the
 same branch, but they are either all above 1 or all below one.
 \begin{equation}
 \left\{\begin{matrix}
- {\hat{\pi}}'_{k} =\hat{\pi}_{k}; &  k \notin \text{colored branches.}\\
+ {\hat{\pi}}'_{k} =\hat{\pi}_{k}; &  k \notin \text{colored branches}\\
   {\hat{\pi}}'_{k} = r_k \hat{\pi}_{k}, \quad r_k = 1 + \frac{\sum_{t \in Orange} \hat{\pi}_{t} - \sum_{t \in Blue} \hat{\pi}_{t}}{\sum_{k \in Blue} \hat{\pi}_{k} u_k} u_k; & k \in \text{ Blue branch } \\
   {\hat{\pi}}'_{k} = r_k \hat{\pi}_{k}, \quad r_k = 1 + \frac{\sum_{t \in Blue} \hat{\pi}_{t} - \sum_{t \in Orange} \hat{\pi}_{t}}{\sum_{k \in Orange} \hat{\pi}_{k} u_k} u_k & k \in \text{ Orange branch}
  \end{matrix}\right.
@@ -162,19 +172,19 @@ is in the Appendix.
 + S3 (the right plot in Figure \@ref(fig:scenarioDiff)): As shown in Figure \@ref(fig:scenarioDiff), all entities in one of the
 selected branches are colored as blue in S1, but only some entities from that
 branch are colored as blue in S3. This means not all entities on that branch are
-differential abundant in S3. Technically, we could not say those entities with blue
+differentially abundant in S3. Technically, we could not say those entities with blue
 color in Figure \@ref(fig:scenarioDiff) is a branch, but for the convenience in
 explanation, they are refered as the blue branch.
 $$\text{p}^A_{i} \sim \text{Dirichlet}(\bf{\hat{\pi}}, \hat{\theta}).$$
 $$\text{p}^B_{i} \sim \text{Dirichlet}(\hat{\pi}', \hat{\theta})$$
-Compared with group A, the proportions of enities on the orange branches have
+Compared with group A, the proportions of entities on the orange branches have
 changed by a common factor $c$ in group B. The value $c$ could be chosen from 0
-to 1. The enities on the blue branch have been changed by a common factor $r$
+to 1. The entities on the blue branch have been changed by a common factor $r$
 that depends on the value $c$.
 
 \begin{equation}
 \left\{\begin{matrix}
- {\hat{\pi}}'_{k} =\hat{\pi}_{k}; &  k \notin \text{colored branches.}\\
+ {\hat{\pi}}'_{k} =\hat{\pi}_{k}; &  k \notin \text{colored branches}\\
  {\hat{\pi}}'_{k} = r \hat{\pi}_{k}; &  k \in \text{ Blue branch } \\
  {\hat{\pi}}'_{k} = c \hat{\pi}_{k}; &  k \in \text{ Orange branch}
  \end{matrix}\right.
@@ -186,13 +196,13 @@ where $r =  \frac{(1-c)\sum_{k \in Orange} \hat{\pi}_{k} + \sum_{k \in Blue} \ha
 To summarize, there are 3 simulation scenarios available in the function
 `simData`. The differential abundance is achieved by swapping the proportions of
 two selected branches in group B. This would make the entities that are not
-selected keep their abundance level accross groups (phenotypic outcome).
+selected keep their abundance level across groups (phenotypic outcomes).
 
 ```{r scene, echo=FALSE, fig.cap= "The basic idea of three scenarios."}
 knitr::include_graphics("scene.png")
 ```
 
-In Figure \@ref(fig:scene)), the height of the bar represent the proportion. We
+In Figure \@ref(fig:scene), the height of the bar represent the proportion. We
 see the tree structure as three parts, the two selected branches and the others.
 The phenotypic outcome is represented by the group (A or B). The proportions of
 the orange and blue branches are swapped between different groups in scenario S1
@@ -202,7 +212,7 @@ the orange bar in group A. In S1, the increase or decrease in the proportion is
 evenly distributed to the entities on the same branch by a common factor $r$ (on
 blue branch) or $\frac{1}{r}$ (on orange branch). However, in S2, the change in
 the proportion is not evenly distributed and the factor $r_k$ varies on the
-entities. In S3, the swap could be partially and depends on the value $c$.
+entities. In S3, the swap could be partial and depends on the value $c$.
 That's why the height of the orange bar in group B could be different to that of
 the blue bar in group A.
 
@@ -238,7 +248,7 @@ data("throat.otu.tab")
 If we already know for which two branches we want to swap the relative
 abundance, we can feed `simData` the real data via two arguments `tree` and
 `data`, and the branches via `from.A` and `from.B` as below. `throat.otu.tab`
-has the samples in the row and entities in the column, so we need to transpose
+has the samples in the rows and entities in the columns, so we need to transpose
 it before input to `simData`. To get reproducible result, we set the random seed
 number via `seed`. 
 
@@ -253,7 +263,7 @@ class(datA)
 
 ```
 The output *datA* is a `leafSummarizedExperiment` object. It's an extension of
-`SummarizedExperiment` class by additionally containing a `phylo` object (tree)
+`SummarizedExperiment` class that additionally contains a `phylo` object (tree)
 in the `metadata` and has more restrictions on `rowData` compared to
 `SummarizedExperiment`. More details about the `leafSummarizedExperiment` class
 could be found in the help page `?leafSummarizedExperiment` or in the vignette
@@ -283,8 +293,8 @@ level (`FC`), the information of branches that have differential abundance
 
 The estimate of parameters from the real data takes a while. In the vignette, we
 will do simulation several times using the same real data. To save time, the
-function `parEstmate` is used to do the estimation once and save results in the
-`metadata` of `leafSummarizedExperiment` for later use.
+function `parEstimate` is used to do the estimation once and save results in the
+`metadata` of the `leafSummarizedExperiment` object for later use.
 
 ```{r}
 names(metadata(lse))
@@ -303,7 +313,7 @@ viewSim(obj = datA, layout = "rectangular", zoomScale = 1/100)
 ```
 
 If more simulated tables are desired with the same simulation setting, the
-argument n` could be used.
+argument `n` could be used.
 ```{r}
 # simulate 2 count tables with the same setting
 datC <- simData(obj = lse,
@@ -319,8 +329,8 @@ length(assays(datC))
 
 If we can't decide which branches to have the differential abundance pattern or
 only decide one of them, we could let `simData` randomly select the suitable
-branches. Two branches are randomly selected with one of them has the abundance
-two times (`ratio = 2`) as much as the other.
+branches. For example, we can select two branches where one of them has twice
+the abundance of the other (`ratio = 2`).
 
 ```{r}
 # set seed to have reproducible results
@@ -330,10 +340,10 @@ dat1 <- simData(obj = lse,
 
 ```
 
-The information about the selected branches is given in the `branch` of
+The information about the selected branches is given in the `branch` slot of the 
 `metadata`. `A` and `B` are the labels of nodes that connect the selected
 branches with the other part of the tree. The value in `ratio` is the ratio of
-the abundance of `B` branch to that of `A` branch. It doesn't have to be exactly
+the abundance of branch `B` to that of branch `A`. It doesn't have to be exactly
 the same as the value specified in the argument `ratio`. When there are not two
 branches with exactly this ratio availabe in the tree, branches with value
 closest to the value are found. The number of leaves in these two branches are
@@ -378,9 +388,9 @@ rb <- rbind(dat2@metadata$branch, dat3@metadata$branch)
 rownames(rb) <- c("dat2", "dat3")
 rb
 ```
-The proportion of branch A is `r rb[2, "A_prop(%)"]`$\%$ in the *dat3*. This
-fulfill the requirement that the relative abundance level of branch A isn't
-above $1\%$ (`maxPr.A`= 0.01).
+The proportion of branch A is `r rb[2, "A_prop(%)"]`$\%$ in `dat3`. This
+fulfills the requirement that the relative abundance level of branch A isn't
+above 1$\%$ (`maxPr.A`= 0.01).
 
 ```{r}
 viewSim(obj = dat3, layout = "rectangular", zoomScale = 1/100)
@@ -422,9 +432,9 @@ dat5 <- simData(from.A = dat4@metadata$branch$A,
 ```
 
 If use `scenario = "S3"`, the argument `adjB` could also be used. It is the $c$
-value in the math formular \@ref(eq:s3) and could be chosen between 0 and 1. If
+value in formula \@ref(eq:s3) and could be chosen between 0 and 1. If
 it's set as NULL, the swap is similar to S1 that the proportions of the selected
-branches are swaped. Note the blue branch here is not the branch specified by
+branches are swapped. Note the blue branch here is not the branch specified by
 `from.A`. It should be only part of `from.A` as colored with blue in the S3 of
 Figure  \@ref(fig:scenarioDiff). Users could use `pct` equal to a value between
 0 and 1 to decide the percentage of leaves in `from.A` should be selected as the
@@ -440,8 +450,8 @@ dat6 <- simData(from.A = dat4@metadata$branch$A,
 ```
 
 
-If users are interested, the values of $c$ and $r$ in the math formular \@ref(eq:s3) are stored as `FC`
-in the `metadata`.
+If users are interested, the values of $c$ and $r$ in formula \@ref(eq:s3) are
+stored as `FC` in the `metadata`.
 ```{r}
 fc <- metadata(dat6)$FC
 ```
@@ -461,7 +471,7 @@ p3 <- viewSim(obj = dat6, layout = "circular", zoomScale = 1/200,
 
 ```{r}
 library(cowplot)
-plot_grid(p1, p3 )
+plot_grid(p1, p3)
 plot_grid(p2)
 ```
 
@@ -471,7 +481,7 @@ in values but same in the direction.
 
 ## Select branches
 
-It's quite normal that a pair of branches that fulfills the requirments
+It's quite normal that a pair of branches that exactly fulfill the requirements
 specified can't be found, especially when a small tree is provided. To
 efficiently select suitable branches, we could summarize the information of
 branches before the simulation using `selNode` and select manually one or two of
