@@ -67,7 +67,9 @@ selNode <- function(obj = NULL, tree = NULL, data = NULL,
     # proportion of internal nodes
     leaf <- setdiff(tree$edge[, 2], tree$edge[, 1])
     nodI <- setdiff(tree$edge[, 1], leaf)
-    nodI <- transNode(tree = tree, input = nodI)
+    nodI <- transNode(tree = tree, input = nodI,
+                      use.original = FALSE,
+                      message = FALSE)
     desI <- lapply(nodI, findOS, tree = tree,
                    only.Tip = FALSE, self.include = TRUE)
     tipI <- lapply(nodI, findOS, tree = tree,
@@ -78,7 +80,9 @@ selNode <- function(obj = NULL, tree = NULL, data = NULL,
     ##------------ node proportions -----------
     # tip proportions estimated from real data
     pars <- parEstimate(data = data)$pi
-    names(pars) <- transNode(tree = tree, input = names(pars))
+    names(pars) <- transNode(tree = tree, input = names(pars),
+                             use.original = FALSE,
+                             message = FALSE)
 
     # proportion for each node
     propList <- lapply(tipI, FUN = function(x){

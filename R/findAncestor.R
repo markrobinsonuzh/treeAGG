@@ -38,7 +38,9 @@ findAncestor <- function(tree, node, level, treeMat = NULL) {
     }
 
     if (inherits(node, "character")) {
-        aggNod <- transNode(tree = tree, input = node)
+        aggNod <- transNode(tree = tree, input = node,
+                            use.original = FALSE,
+                            message = FALSE)
     } else {
         aggNod <- node
     }

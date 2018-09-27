@@ -57,7 +57,9 @@ viewSim <- function(obj, layout = "rectrangular", zoomScale = 1/20,
 
     # fold change
     d <- data.frame(node = transNode(tree = tree,
-                                     input = names(md$FC)),
+                                     input = names(md$FC),
+                                     use.original = FALSE,
+                                     message = FALSE),
                     fc = md$FC)
 
     # figure
@@ -96,9 +98,13 @@ viewSim <- function(obj, layout = "rectrangular", zoomScale = 1/20,
     #
     if(sc == "S3") {
         difN <- names(md$FC)[md$FC != 1]
-        difN <- transNode(tree = tree, input = difN)
+        difN <- transNode(tree = tree, input = difN,
+                          use.original = FALSE,
+                          message = FALSE)
         difS <- signalNode(node = difN, tree = tree)
-        difL <- transNode(tree = tree, input = difS)
+        difL <- transNode(tree = tree, input = difS,
+                          use.original = FALSE,
+                          message = FALSE)
         colL2 <- ifelse(difL == md$branch$B,
                      colL[2], colL[1])
         ind <- match(colL2, col.branch)
@@ -175,7 +181,9 @@ isLeaf <- function(tree, input){
     tip <- setdiff(tree$edge[,2], tree$edge[, 1])
     # input
     if (inherits(input, "character")) {
-        input <- transNode(tree, input = input)
+        input <- transNode(tree, input = input,
+                           use.original = FALSE,
+                           message = FALSE)
     } else {
         input <- input
     }

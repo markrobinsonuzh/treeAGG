@@ -7,7 +7,7 @@
 #' @param input A character or numeric vector representing tree node label(s)
 #' or tree node number(s)
 #' @param use.original A logical value, TRUE or FALSE. Only required when
-#'   \strong{input} is numeric. Default is FALSE. There are cases that a tree
+#'   \strong{input} is numeric. Default is TRUE. There are cases that a tree
 #'   has no labels for some nodes. For these missing label nodes, if
 #'   \code{use.original} is TRUE, NA is returned for these nodes; otherwise, a
 #'   prefix "Node_" (for internal nodes) or "Leaf_" (for leaf nodes) is added to
@@ -36,7 +36,7 @@
 #' transNode(tinyTree, input = c('Node_16', 'Node_11'))
 #'
 
-transNode <- function(tree, input, use.original = FALSE, message = FALSE) {
+transNode <- function(tree, input, use.original = TRUE, message = FALSE) {
 
     if (!inherits(tree, "phylo")) {
         stop("tree: should be a phylo object")

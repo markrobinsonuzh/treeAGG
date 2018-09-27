@@ -29,7 +29,9 @@ rmDesc <- function(tree, node) {
     }
 
     if (inherits(node, "character")) {
-        node <- transNode(tree = tree, input = node)
+        node <- transNode(tree = tree, input = node,
+                          use.original = FALSE,
+                          message = FALSE)
     } else {
         node <- node
     }

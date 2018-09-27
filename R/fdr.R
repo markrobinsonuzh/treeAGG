@@ -89,10 +89,14 @@ fdr <- function(tree, truth, found,
             tt <- mapply(function(x, y) {
                 # transfer node label to node number
                 if (is.character(x)) {
-                    x <- transNode(tree = tree, input = x)
+                    x <- transNode(tree = tree, input = x,
+                                   use.original = FALSE,
+                                   message = FALSE)
                 }
                 if (is.character(y)) {
-                    y <- transNode(tree = tree, input = y)
+                    y <- transNode(tree = tree, input = y,
+                                   use.original = FALSE,
+                                   message = FALSE)
                 }
 
                 fdr0(tree = tree, truth = x,
@@ -110,10 +114,14 @@ fdr <- function(tree, truth, found,
     } else {
         # transfer node label to node number
         if (is.character(truth)) {
-            truth <- transNode(tree = tree, input = truth)
+            truth <- transNode(tree = tree, input = truth,
+                               use.original = FALSE,
+                               message = FALSE)
         }
         if (is.character(found)) {
-            found <- transNode(tree = tree, input = found)
+            found <- transNode(tree = tree, input = found,
+                               use.original = FALSE,
+                               message = FALSE)
         }
         tt <- fdr0(tree = tree, truth = truth,
                    found = found, level = level)

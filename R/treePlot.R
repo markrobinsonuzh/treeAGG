@@ -256,7 +256,9 @@ addBranch <- function(tree, branch, col.branch,
 
     # node number required
     if (inherits(branch, "character")) {
-        branch <- transNode(tree = tree, input = branch)
+        branch <- transNode(tree = tree, input = branch,
+                            use.original = FALSE,
+                            message = FALSE)
     } else {
         branch <- branch
     }
@@ -322,7 +324,9 @@ addPoint <- function(tree, point, col.point,
 
     # node number required
     if (inherits(point, "character")) {
-        point <- transNode(tree = tree, input = point)
+        point <- transNode(tree = tree, input = point,
+                           use.original = FALSE,
+                           message = FALSE)
     } else {
         point <- point
     }
@@ -377,7 +381,9 @@ addZoom <- function(tree, zoomNode = NULL, zoomLevel = NULL,
 
     # node number required
     if (inherits(zoomNode, "character")) {
-        zoomNode <- transNode(tree = tree, input = zoomNode)
+        zoomNode <- transNode(tree = tree, input = zoomNode,
+                              use.original = FALSE,
+                              message = FALSE)
     } else {
         zoomNode <- zoomNode
     }

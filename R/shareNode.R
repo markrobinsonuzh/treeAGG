@@ -46,7 +46,9 @@ shareNode <- function(tree, node, label = FALSE) {
 
     # transfer node label to node number
     if (inherits(node, "character")) {
-        node <- transNode(tree, input = node)
+        node <- transNode(tree, input = node,
+                          use.original = FALSE,
+                          message = FALSE)
     } else {
         node <- node
     }
@@ -73,7 +75,9 @@ shareNode <- function(tree, node, label = FALSE) {
     sNode <- as.numeric(df[df$Freq == min(df$Freq), 1])
 
     if (label) {
-        final <- transNode(tree = tree, input = sNode)
+        final <- transNode(tree = tree, input = sNode,
+                           use.original = FALSE,
+                           message = FALSE)
     } else {
         final <- sNode
     }

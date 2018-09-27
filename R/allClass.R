@@ -365,7 +365,9 @@ treeSummarizedExperiment <- function(tree = NULL, linkData = NULL,
         # create linkD
         linkD <- DataFrame(nodeLab = newLab,
                            nodeNum = transNode(tree = tree,
-                                               input = newLab),
+                                               input = newLab,
+                                               use.original = FALSE,
+                                               message = FALSE),
                            isLeaf = newLab %in% tree$tip.label,
                            rowID = seq_len(length(newLab)))
 

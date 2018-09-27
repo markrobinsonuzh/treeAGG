@@ -415,7 +415,9 @@ pickLoc <- function(tree, data, from.A,
     # matrix: abundance proprotion & the number of descendant leaves
     lenI <- unlist(lapply(desI, length))
     tt <- cbind(nodP, lenI)
-    rownames(tt) <- transNode(tree = tree, input = nodI)
+    rownames(tt) <- transNode(tree = tree, input = nodI,
+                              use.original = FALSE,
+                              message = FALSE)
 
     # return error when the given limits for
     # proportion are outside
@@ -438,7 +440,9 @@ pickLoc <- function(tree, data, from.A,
         if (inherits(from.A, "character")) {
             from.A <- from.A
         } else {
-            from.A <- transNode(tree = tree, input = from.A)
+            from.A <- transNode(tree = tree, input = from.A,
+                                use.original = FALSE,
+                                message = FALSE)
         }
         tt.sel <- tt[match(from.A, rownames(tt)), , drop = FALSE]
     }
@@ -593,13 +597,19 @@ infLoc <- function(tree, data, from.A,
     # matrix: abundance proprotion & the number of descendant leaves
     lenI <- unlist(lapply(desI, length))
     tt <- cbind(nodP, lenI)
-    rownames(tt) <- transNode(tree = tree, input = nodI)
+    rownames(tt) <- transNode(tree = tree, input = nodI,
+                              use.original = FALSE,
+                              message = FALSE)
 
     # if both branches are given
     labA <- ifelse(is.character(from.A), from.A,
-                   transNode(tree = tree, input = from.A))
+                   transNode(tree = tree, input = from.A,
+                             use.original = FALSE,
+                             message = FALSE))
     labB <- ifelse(is.character(from.B), from.B,
-                   transNode(tree = tree, input = from.B))
+                   transNode(tree = tree, input = from.B,
+                             use.original = FALSE,
+                             message = FALSE))
     rAB <- tt[labB, 1]/tt[labA, 1]
     du <- cbind.data.frame(
         "A" = from.A,

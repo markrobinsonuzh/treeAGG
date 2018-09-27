@@ -63,7 +63,9 @@ findOS <- function(tree,
     rownames(matN) <- colnames(matN) <- NULL
 
     if (inherits(ancestor, "character")) {
-        numA <- transNode(tree = tree, input = ancestor)
+        numA <- transNode(tree = tree, input = ancestor,
+                          use.original = FALSE,
+                          message = FALSE)
     } else {
         numA <- ancestor
         if (!numA %in% mat) {
@@ -109,6 +111,8 @@ findOS <- function(tree,
     return <- match.arg(return)
     switch(return,
            number = res,
-           label = transNode(tree = tree, input = res))
+           label = transNode(tree = tree, input = res,
+                             use.original = FALSE,
+                             message = FALSE))
 
 }

@@ -23,7 +23,9 @@ nodeValue.A <- function(data, fun = sum, tree, message = FALSE) {
 
     ## calculate counts for nodes
     nN <- length(nodeI)
-    nNam <- transNode(tree = tree, input = nodeI)
+    nNam <- transNode(tree = tree, input = nodeI,
+                      use.original = FALSE,
+                      message = FALSE)
 
     # calculate counts at nodes
     cNode <- matrix(NA, nrow = nN, ncol = ncol(data))
@@ -75,7 +77,9 @@ nodeValue.B <- function(data, fun = sum, message = FALSE) {
 
     ## all nodes
     nN <- length(nodeA)
-    nNam <- transNode(tree = tree, input = nodeA, use.original = FALSE)
+    nNam <- transNode(tree = tree, input = nodeA,
+                      use.original = FALSE,
+                      message = FALSE)
 
     # -------------------------------------------------------------------
     # create empty table nodes
@@ -152,7 +156,8 @@ nodeValue.B <- function(data, fun = sum, message = FALSE) {
      rdataA <- rD[, !colnames(rD) %in% c("nodeLab")]
      rownames(rdataA) <- NULL
     linkD <- DataFrame(nodeLab = transNode(tree = tree, input = nodeA,
-                                                use.original = TRUE),
+                                           use.original = TRUE,
+                                           message = FALSE),
                             nodeNum = nodeA,
                             isLeaf = nodeA %in% leaf,
                             rowID = seq_len(nN))
@@ -217,7 +222,8 @@ nodeValue.B <- function(data, fun = sum, message = FALSE) {
 #' # of counts of its descendant leaves.
 #' # here, check the first sample as an example
 #'
-#' nod <- transNode(tree = tinyTree, input = rownames(count_tinyTree))
+#' nod <- transNode(tree = tinyTree, input = rownames(count_tinyTree),
+#'        use.original = FALSE, message = FALSE)
 #' d <- cbind.data.frame(node = nod, count = count_tinyTree[, 1])
 #'
 #' ggtree(tinyTree) %<+% d + geom_text2(aes(label = count))
