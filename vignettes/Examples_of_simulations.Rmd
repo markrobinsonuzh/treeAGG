@@ -124,19 +124,19 @@ proportions $\mathbf{\hat{\pi}} = (\hat{\pi}_{1}, \hat{\pi}_{2}, ...,
 
 2. **Randomly select two branches with different proportions to swap.** The
 selected branches are zoomed in (see Figure \@ref(fig:scenarioDiff)). We provide
-3 simulation scenarios (S1, S2, and S3), which differ in how this swap is
+3 simulation scenarios (S1, S2, and S3), which differ in how the swap is
 performed.
 
 + S1 (the left plot in Figure \@ref(fig:scenarioDiff)): The proportions of
-entities in sample $i$ are $\mathbf{p^A_{i}}$ and
-$\mathbf{p^B_{i}}$ for the group A and B (the phenotypic outcome), respectively.
-The values of $\mathbf{p^A_{i}}$ and $\mathbf{p^B_{i}}$ are randomly generated
+entities in sample $i$ are $\mathbf{p}^{G1}_{i}$ and
+$\mathbf{p}^{G2}_{i}$ for the group G1 and G2 (the phenotypic outcome), respectively.
+The values of $\mathbf{p}^{G1}_{i}$ and $\mathbf{p}^{G2}_{i}$ are randomly generated
 from the Dirichlet distribution as below.
-$$\text{p}^A_{i} \sim \text{Dirichlet}(\mathbf{\hat{\pi}}, \hat{\theta}).$$
-$$\text{p}^B_{i} \sim \text{Dirichlet}(\mathbf{\hat{\pi}'}, \hat{\theta})$$
-Compared with group A, the proportions of entities on the blue and orange branch
-have been changed correspondingly by a common factor $r$ and $\frac{1}{r}$ in
-group B.
+$$\mathbf{p}^{G1}_{i} \sim \text{Dirichlet}(\mathbf{\hat{\pi}}, \hat{\theta}).$$
+$$\mathbf{p}^{G2}_{i} \sim \text{Dirichlet}(\mathbf{\hat{\pi}'}, \hat{\theta})$$
+Compared with group G1, the proportions of entities on the blue and orange branch
+have been changed correspondingly by a common factor $r$ or $\frac{1}{r}$ in
+group G2.
 \begin{equation}
 \left\{\begin{matrix}
  {\hat{\pi}}'_{k} =\hat{\pi}_{k}; &  k \notin \text{colored branches}\\
@@ -149,14 +149,14 @@ where $r = \frac{\sum_{k \in Orange} \hat{\pi}_{k}}{\sum_{k \in Blue}
 \hat{\pi}_{k}}$ is the fold change.
 
 + S2 (the middle plot in Figure \@ref(fig:scenarioDiff)): The proportions of
-entities in sample $i$ are $\mathbf{p^A_{i}}$ and
-$\mathbf{p^B_{i}}$ for the group A and B, respectively. They are randomly
+entities in sample $i$ are $\mathbf{p}^{G1}_{i}$ and
+$\mathbf{p}^{G2}_{i}$ for the group G1 and G1, respectively. They are randomly
 generated from the Dirichlet distribution as below.
-$$\text{p}^A_{i} \sim \text{Dirichlet}(\bf{\hat{\pi}}, \hat{\theta}).$$
-$$\text{p}^B_{i} \sim \text{Dirichlet}(\hat{\pi}', \hat{\theta})$$
-Compared with group A, the proportions of entities on the colored branches have
-changed by a common factor $r_k$ in group B. $r_k$ varies among entities in the
-same branch, but they are either all above 1 or all below one.
+$$\mathbf{p}^{G1}_{i} \sim \text{Dirichlet}(\bf{\hat{\pi}}, \hat{\theta}).$$
+$$\mathbf{p}^{G2}_{i} \sim \text{Dirichlet}(\hat{\pi}', \hat{\theta})$$
+Compared with group G1, the proportions of entities on the colored branches have
+changed by a common factor $r_k$ in group G2. $r_k$ varies among entities in the
+same branch, but they are either all above one or all below one.
 \begin{equation}
 \left\{\begin{matrix}
  {\hat{\pi}}'_{k} =\hat{\pi}_{k}; &  k \notin \text{colored branches}\\
@@ -165,20 +165,21 @@ same branch, but they are either all above 1 or all below one.
  \end{matrix}\right.
  (\#eq:s2)
 \end{equation}
-where $u_k$ is randomly generated from a uniformly distributed function ($u_k \sim \text{U}(0, 1)$).
-The proof that the proportions of entities on the blue branch is swapped with that on the orange branch
-is in the Appendix.
+where $u_k$ is randomly generated from a uniformly distributed function ($u_k
+\sim \text{U}(0, 1)$). The proof that the proportions of entities on the blue
+branch is swapped with that on the orange branch is in the [Appendix](#appendix).
 
-+ S3 (the right plot in Figure \@ref(fig:scenarioDiff)): As shown in Figure \@ref(fig:scenarioDiff), all entities in one of the
-selected branches are colored as blue in S1, but only some entities from that
-branch are colored as blue in S3. This means not all entities on that branch are
-differentially abundant in S3. Technically, we could not say those entities with blue
-color in Figure \@ref(fig:scenarioDiff) is a branch, but for the convenience in
++ S3 (the right plot in Figure \@ref(fig:scenarioDiff)): As shown in Figure
+\@ref(fig:scenarioDiff), all entities in one of the selected branches are
+colored as blue in S1, but only some entities from that branch are colored as
+blue in S3. This means not all entities on that branch are differentially
+abundant in S3. Technically, we could not say those entities with blue color in
+Figure \@ref(fig:scenarioDiff) is a branch, but for the convenience in
 explanation, they are refered as the blue branch.
-$$\text{p}^A_{i} \sim \text{Dirichlet}(\bf{\hat{\pi}}, \hat{\theta}).$$
-$$\text{p}^B_{i} \sim \text{Dirichlet}(\hat{\pi}', \hat{\theta})$$
-Compared with group A, the proportions of entities on the orange branches have
-changed by a common factor $c$ in group B. The value $c$ could be chosen from 0
+$$\mathbf{p}^{G1}_{i} \sim \text{Dirichlet}(\mathbf{\hat{\pi}}, \hat{\theta}).$$
+$$\mathbf{p}^{G2}_{i} \sim \text{Dirichlet}(\mathbf{\hat{\pi}}', \hat{\theta})$$
+Compared with group G1, the proportions of entities on the orange branche have
+changed by a common factor $c$ in group G2. The value $c$ could be chosen from 0
 to 1. The entities on the blue branch have been changed by a common factor $r$
 that depends on the value $c$.
 
@@ -190,12 +191,12 @@ that depends on the value $c$.
  \end{matrix}\right.
  (\#eq:s3)
 \end{equation}
-where $r =  \frac{(1-c)\sum_{k \in Orange} \hat{\pi}_{k} + \sum_{k \in Blue} \hat{\pi}_{k}}{\sum_{k \in Blue} \hat{\pi}_{k}}$ and $c \in (0, 1)$. 
+where $r =  \frac{(1-c)\sum_{k \in Orange} \hat{\pi}_{k} + \sum_{k \in Blue} \hat{\pi}_{k}}{\sum_{k \in Blue} \hat{\pi}_{k}}$ and $0 < c < 1$. 
 
 
 To summarize, there are 3 simulation scenarios available in the function
 `simData`. The differential abundance is achieved by swapping the proportions of
-two selected branches in group B. This would make the entities that are not
+two selected branches in group G2. This would make the entities that are not
 selected keep their abundance level across groups (phenotypic outcomes).
 
 ```{r scene, echo=FALSE, fig.cap= "The basic idea of three scenarios."}
@@ -204,17 +205,17 @@ knitr::include_graphics("scene.png")
 
 In Figure \@ref(fig:scene), the height of the bar represent the proportion. We
 see the tree structure as three parts, the two selected branches and the others.
-The phenotypic outcome is represented by the group (A or B). The proportions of
+The phenotypic outcome is represented by the group (G1 or G2). The proportions of
 the orange and blue branches are swapped between different groups in scenario S1
-and S2. The height of the orange bar in the group B is equal to the blue bar in
-the group A, and the height of the blue bar in group B is the same as that of
-the orange bar in group A. In S1, the increase or decrease in the proportion is
+and S2. The height of the orange bar in the group G2 is equal to the blue bar in
+the group G1, and the height of the blue bar in group G2 is the same as that of
+the orange bar in group G1. In S1, the increase or decrease in the proportion is
 evenly distributed to the entities on the same branch by a common factor $r$ (on
 blue branch) or $\frac{1}{r}$ (on orange branch). However, in S2, the change in
 the proportion is not evenly distributed and the factor $r_k$ varies on the
 entities. In S3, the swap could be partial and depends on the value $c$.
-That's why the height of the orange bar in group B could be different to that of
-the blue bar in group A.
+That's why the height of the orange bar in group G2 could be different to that of
+the blue bar in group G1.
 
 The orange and blue branches are also referred as the signal branches in this
 vignette.
@@ -503,7 +504,7 @@ If we would like to find the sibling branch of a selected branch, the function
 findSibling(tree = throat.tree, input = brA, label = TRUE)
 ```
 
-# Appendix
+# Appendix {#appendix}
 
 Proof: $$\sum_{g \in Blue} \hat{\pi}'_{g} = \sum_{g \in Orange} \hat{\pi}_{g}$$
 Proof: $$\sum_{g \in Blue} \hat{\pi}'_{g} = \sum_{g \in Orange} \hat{\pi}_{g}$$
