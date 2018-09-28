@@ -67,34 +67,54 @@ selNode <- function(obj = NULL, tree = NULL, data = NULL,
     # proportion of internal nodes
     leaf <- setdiff(tree$edge[, 2], tree$edge[, 1])
     nodI <- setdiff(tree$edge[, 1], leaf)
-    nodI <- transNode(tree = tree, input = nodI,
+    nodLab <- transNode(tree = tree, input = nodI,
+                        use.original = TRUE,
+                        message = FALSE)
+    nodLab_alias <- transNode(tree = tree, input = nodI,
                       use.original = FALSE,
                       message = FALSE)
+    # descendant nodes
     desI <- lapply(nodI, findOS, tree = tree,
                    only.Tip = FALSE, self.include = TRUE)
+    # descendant leaves
     tipI <- lapply(nodI, findOS, tree = tree,
                    only.Tip = TRUE, self.include = TRUE)
-    names(tipI) <- nodI
+    names(tipI) <- nodLab_alias
+
+    # number of descendant leaves
     numI <- unlist(lapply(tipI, length))
 
     ##------------ node proportions -----------
     # tip proportions estimated from real data
     pars <- parEstimate(data = data)$pi
-    names(pars) <- transNode(tree = tree, input = names(pars),
-                             use.original = FALSE,
-                             message = FALSE)
+    # a vector of node numbers with node labels as names
+    vnum <- transNode(tree = tree, input = names(pars),
+                      use.original = FALSE, message = FALSE)
 
     # proportion for each node
     propList <- lapply(tipI, FUN = function(x){
-        sum(pars[as.character(x)])
+        sum(pars[names(vnum[vnum %in% x])])
     })
     nodP <- unlist(propList)
 
     ##---------- sample ---------------
-    tt <- cbind.data.frame(node = names(nodP),
-                           proportion = nodP,
-                           numTip = numI,
-                           stringsAsFactors =FALSE)
+    if (any(duplicated(nodLab))) {
+        tt <- cbind.data.frame(nodeNum = transNode(tree = tree, input = names(nodP),
+                                                   use.original = FALSE),
+                               nodeLab = nodeLab,
+                               nodeLab_alias = nodeLab_alias,
+                               proportion = nodP,
+                               numTip = numI,
+                               stringsAsFactors =FALSE)
+    } else {
+        tt <- cbind.data.frame(nodeNum = transNode(tree = tree, input = names(nodP),
+                                                   use.original = FALSE),
+                               nodeLab = nodeLab,
+                               proportion = nodP,
+                               numTip = numI,
+                               stringsAsFactors =FALSE)
+    }
+
 
     if (maxPr < min(tt$proportion)) {
         stop("maxPr defined is even lower than the minimum value of
@@ -113,20 +133,18 @@ selNode <- function(obj = NULL, tree = NULL, data = NULL,
     }
     # remove those overlapped
     if (!is.null(skip)) {
+        if (is(skip, character)) {
+            skip <- transNode(tree = tree, input = skip, use.original = FALSE,
+                              message = FALSE)
+        }
         tipS <- lapply(skip, findOS, tree = tree,
-                       only.Tip = TRUE, self.include = TRUE)
+                       only.Tip = TRUE, self.include = TRUE,
+                       return = "number")
         tipS <- unlist(tipS)
-        # take those without overlaps
-        # rmp <- sapply(st$node, FUN = function(x){
-        #   tx <- findOS(ancestor = x, tree = tree, only.Tip = TRUE,
-        #                self.include = TRUE)
-        #   ix <- intersect(tipS, tx)
-        #   length(ix) == 0
-        # })
 
-        rmp <- vapply(st$node, FUN = function(x){
+        rmp <- vapply(st$nodeNum, FUN = function(x){
             tx <- findOS(ancestor = x, tree = tree, only.Tip = TRUE,
-                         self.include = TRUE)
+                         self.include = TRUE, return = "number")
             ix <- intersect(tipS, tx)
             length(ix) == 0
         }, FUN.VALUE = TRUE)
@@ -136,7 +154,7 @@ selNode <- function(obj = NULL, tree = NULL, data = NULL,
         new.st <- st
     }
 
-    # return the one has the lowest proportion
+    # return the one has the lowest proportion if all = FALSE
     #ind <- which.min(abs(new.st$proportion - minPr))
     #final <- new.st[ind,]
     if (all) {

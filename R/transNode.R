@@ -33,76 +33,154 @@
 #' #check whether the node number and node label are matched
 #' transNode(tinyTree, input = c(11, 2, 4))
 #'
-#' transNode(tinyTree, input = c('Node_16', 'Node_11'))
+#' transNode(tree = tinyTree, input = c("Node_16", "Node_11"))
 #'
 
-transNode <- function(tree, input, use.original = TRUE, message = FALSE) {
+transNode <- function(tree, input, use.original = TRUE,
+                      message = FALSE) {
 
     if (!inherits(tree, "phylo")) {
-        stop("tree: should be a phylo object")
+        stop("tree: should be a phylo object. \n")
     }
 
     # node number & tip number
     mat <- tree$edge
-    nod <- sort(unique(mat[, 1]))
+    nodI <- sort(unique(mat[, 1]))
     tip <- sort(setdiff(mat[, 2], mat[, 1]))
+    nodeA <- c(tip, nodI)
+
+    # node labels
+    nodeLab <- c(tree$tip.label, tree$node.label)
+    nodeLab_alias <- c(paste("leaf_", tip, sep = ""),
+                       paste("Node_", nodI, sep = ""))
+    if (message) {
+        if (any(duplicated(nodeLab))) {
+            cat("There are more than one nodes using a same label or without any label.\n")
+        }
+    }
 
     # check whether the input node number exists in the provided tree
     if (is.numeric(input)) {
-        if (!all(input %in% mat)) {
-            stop("Node ", input, " can't be found in the ",
+        if (!all(input %in% nodeA)) {
+            stop("The node number ", input[!input %in% nodeA],
+                 " can't be found in the ",
                  deparse(substitute(tree)), "\n")
         }
     }
+    # check whether the input label exists in the provided tree
+    # (allow nodeLab_alias)
+    inLab <- all(input %in% nodeLab)
+    inAlias <- all(input %in% nodeLab_alias)
+    if (is.character(input)) {
+        if (!any(inLab, inAlias)) {
+            cat(setdiff(input, nodeLab),
+                " can't be matched to any node label of the tree. \n")
+            stop("Either the node label or the alias of node label should be
+                 provided, but not a mixture of them. \n")
 
-    # tip label
-    if (is.null(tree$tip.label)) {
-        if(use.original) {
-            tipLab <- NULL
-        }else{
-            tipLab <- paste("leaf_", tip, sep = "")
+        }
+    }
+
+    # =============== Transformation ======================
+    # transfer from the label to the number
+    if (is.character(input)) {
+        if (all(inAlias)) {
+            names(nodeA) <- nodeLab_alias
+            final <- nodeA[input]
         }
 
-    } else {
-        tipLab <- tree$tip.label
+        if (all(inLab)) {
+            names(nodeA) <- nodeLab
+            final <- nodeA[input]
+        }
     }
-    # node label
-    if (is.null(tree$node.label)) {
+
+    # transfer from the number to the label
+    if (is.numeric(input)) {
         if (use.original) {
-            nodLab <- NULL
-        }else{
-            nodLab <- paste("Node_", nod, sep = "")
-        }
-
-    } else {
-        Labs <- tree$node.label
-        if (any(duplicated(Labs))){
-            if (message) {
-                cat("Some internal nodes have same labels")
-            }
-            nodLab <- paste("Node_", nod, sep = "")
-        }else{
-            nodLab <- Labs
-        }
-    }
-
-    comb <- c(tip, nod)
-    names(comb) <- c(tipLab, nodLab)
-
-    # transfer from label to number
-    if (inherits(input, "character")) {
-        if (all(input %in% names(comb))) {
-            final <- comb[input]
+            sel <- match(input, nodeA)
+            final <- nodeLab[sel]
         } else {
-            stop("The nodes ", paste(input[!input %in% names(comb)], collapse = ", "),
-                 " could not be found in the tree. \n Node numbers or Node labels are
-           required but not a mixture of both")
+            sel <- match(input, nodeA)
+            final <- nodeLab_alias[sel]
         }
 
-    } else {
-        final <- names(comb[match(input, comb)])
     }
 
+    # output
     return(final)
 
 }
+
+# transNode <- function(tree, input, use.original = TRUE, message = FALSE) {
+#
+#     if (!inherits(tree, "phylo")) {
+#         stop("tree: should be a phylo object")
+#     }
+#
+#     # node number & tip number
+#     mat <- tree$edge
+#     nod <- sort(unique(mat[, 1]))
+#     tip <- sort(setdiff(mat[, 2], mat[, 1]))
+#
+#     # check whether the input node number exists in the provided tree
+#     if (is.numeric(input)) {
+#         if (!all(input %in% mat)) {
+#             stop("Node number", input, " can't be found in the ",
+#                  deparse(substitute(tree)), "\n")
+#         }
+#     }
+#
+#     # tip label
+#     if (is.null(tree$tip.label)) {
+#         if(use.original) {
+#             tipLab <- NULL
+#         }else{
+#             tipLab <- paste("leaf_", tip, sep = "")
+#         }
+#
+#     } else {
+#         tipLab <- tree$tip.label
+#     }
+#     # node label
+#     if (is.null(tree$node.label)) {
+#         if (use.original) {
+#             nodLab <- NULL
+#         }else{
+#             nodLab <- paste("Node_", nod, sep = "")
+#         }
+#
+#     } else {
+#         Labs <- tree$node.label
+#         if (any(duplicated(Labs))){
+#             if (message) {
+#                 cat("Some internal nodes have same labels")
+#             }
+#             nodLab <- paste("Node_", nod, sep = "")
+#         }else{
+#             nodLab <- Labs
+#         }
+#     }
+#
+#     comb <- c(tip, nod)
+#     names(comb) <- c(tipLab, nodLab)
+#
+#     # transfer from label to number
+#     if (inherits(input, "character")) {
+#         if (all(input %in% names(comb))) {
+#             final <- comb[input]
+#         } else {
+#             stop("The nodes ", paste(input[!input %in% names(comb)], collapse = ", "),
+#                  " could not be found in the tree. \n Node numbers or Node labels are
+#            required but not a mixture of both")
+#         }
+#
+#     } else {
+#         final <- names(comb[match(input, comb)])
+#     }
+#
+#     return(final)
+#
+# }
+
+
