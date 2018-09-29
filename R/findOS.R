@@ -12,7 +12,12 @@
 #'   itself is returned as its descendant.
 #' @param return "number" (return the node number) or "label" (return the node
 #'   label).
-#'
+#' @param use.alias A logical value, TRUE or FALSE. This is an optional argument
+#'   that only requried when \code{return = "label"}. The default is FALSE, and
+#'   the node label would be returned; otherwise, the alias of node label would be
+#'   output. The alias of node label is created by adding a prefix
+#'   \code{"Node_"} to the node number if the node is an internal node or
+#'   adding a prefix \code{"Leaf_"} if the node is a leaf node.
 #' @export
 #' @return A vector
 #' @author Ruizhu Huang
@@ -31,7 +36,8 @@ findOS <- function(tree,
                    ancestor,
                    only.Tip = TRUE,
                    self.include = TRUE,
-                   return = c("number", "label")) {
+                   return = c("number", "label"),
+                   use.alias = FALSE) {
     if (length(ancestor) > 1) {
         stop("ancestor should have length equal to one")
     }
@@ -64,7 +70,7 @@ findOS <- function(tree,
 
     if (inherits(ancestor, "character")) {
         numA <- transNode(tree = tree, input = ancestor,
-                          use.original = FALSE,
+                          use.alias = TRUE,
                           message = FALSE)
     } else {
         numA <- ancestor
@@ -112,7 +118,7 @@ findOS <- function(tree,
     switch(return,
            number = res,
            label = transNode(tree = tree, input = res,
-                             use.original = FALSE,
+                             use.alias = use.alias,
                              message = FALSE))
 
 }
