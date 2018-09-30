@@ -175,7 +175,9 @@ colored as blue in S1, but only some entities from that branch are colored as
 blue in S3. This means not all entities on that branch are differentially
 abundant in S3. Technically, we could not say those entities with blue color in
 Figure \@ref(fig:scenarioDiff) is a branch, but for the convenience in
-explanation, they are refered as the blue branch.
+explanation, they are refered as the blue branch. We allow users to adjust the
+proportion of leaf nodes colored as blue in that zoom branch via an argument
+`pct` in the `SimData` function.
 $$\mathbf{p}^{G1}_{i} \sim \text{Dirichlet}(\mathbf{\hat{\pi}}, \hat{\theta}).$$
 $$\mathbf{p}^{G2}_{i} \sim \text{Dirichlet}(\mathbf{\hat{\pi}}', \hat{\theta})$$
 Compared with group G1, the proportions of entities on the orange branche have
@@ -501,7 +503,7 @@ If we would like to find the sibling branch of a selected branch, the function
 `findSibling` could be used.
 
 ```{r}
-findSibling(tree = throat.tree, input = brA, label = TRUE)
+findSibling(tree = throat.tree, input = brA, return = "label")
 ```
 
 # Appendix {#appendix}
