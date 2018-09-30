@@ -30,14 +30,16 @@ rmDesc <- function(tree, node) {
 
     if (inherits(node, "character")) {
         node <- transNode(tree = tree, input = node,
-                          use.original = FALSE,
                           message = FALSE)
     } else {
         node <- node
     }
 
-    ListTip <- lapply(as.list(node), FUN = function(x) {
-        findOS(ancestor = x, tree = tree, only.Tip = TRUE, self.include = TRUE)
+    ListTip <- lapply(as.list(node),
+                      FUN = function(x) {
+                          findOS(ancestor = x, tree = tree,
+                                 only.Tip = TRUE, self.include = TRUE,
+                                 return = "number")
     })
     ListTip1 <- ListTip[!duplicated(ListTip)]
     indList <- lapply(ListTip1, FUN = function(x) {

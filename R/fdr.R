@@ -90,12 +90,12 @@ fdr <- function(tree, truth, found,
                 # transfer node label to node number
                 if (is.character(x)) {
                     x <- transNode(tree = tree, input = x,
-                                   use.original = FALSE,
+                                   use.alias = TRUE,
                                    message = FALSE)
                 }
                 if (is.character(y)) {
                     y <- transNode(tree = tree, input = y,
-                                   use.original = FALSE,
+                                   use.alias = TRUE,
                                    message = FALSE)
                 }
 
@@ -115,12 +115,12 @@ fdr <- function(tree, truth, found,
         # transfer node label to node number
         if (is.character(truth)) {
             truth <- transNode(tree = tree, input = truth,
-                               use.original = FALSE,
+                               use.alias = TRUE,
                                message = FALSE)
         }
         if (is.character(found)) {
             found <- transNode(tree = tree, input = found,
-                               use.original = FALSE,
+                               use.alias = TRUE,
                                message = FALSE)
         }
         tt <- fdr0(tree = tree, truth = truth,
@@ -189,7 +189,8 @@ fdr0 <- function(tree,
                            findOS,
                            tree = tree,
                            only.Tip = TRUE,
-                           self.include = TRUE
+                           self.include = TRUE,
+                           return = "number"
                        )
                        tip <- unlist(tipF)
                        c(fp = length(tip), disc = length(tip))
@@ -202,7 +203,8 @@ fdr0 <- function(tree,
                            findOS,
                            tree = tree,
                            only.Tip = FALSE,
-                           self.include = TRUE
+                           self.include = TRUE,
+                           return = "number"
                        )
                        nod <- unlist(nodeF)
                        c(fp = length(nod), disc = length(nod))
@@ -230,14 +232,16 @@ fdr0 <- function(tree,
                            findOS,
                            tree = tree,
                            only.Tip = TRUE,
-                           self.include = TRUE
+                           self.include = TRUE,
+                           return = "number"
                        )
                        tipF <- lapply(
                            found,
                            findOS,
                            tree = tree,
                            only.Tip = TRUE,
-                           self.include = TRUE
+                           self.include = TRUE,
+                           return = "number"
                        )
                        # the true positive & positive
                        fp <- setdiff(unlist(tipF), unlist(tipT))
@@ -249,14 +253,15 @@ fdr0 <- function(tree,
                        # all have signal has signal too.
                        nodeS <- signalNode(node = truth,
                                            tree = tree,
-                                           label = TRUE)
+                                           return = "number")
                        # all nodes have signal
                        nodeT <- lapply(
                            nodeS,
                            findOS,
                            tree = tree,
                            only.Tip = FALSE,
-                           self.include = TRUE
+                           self.include = TRUE,
+                           return = "number"
                        )
                        # nodes found with signal
                        nodeF <- lapply(
@@ -264,7 +269,8 @@ fdr0 <- function(tree,
                            findOS,
                            tree = tree,
                            only.Tip = FALSE,
-                           self.include = TRUE
+                           self.include = TRUE,
+                           return = "number"
                        )
                        # false discovery & discovery
                        fp <- setdiff(unlist(nodeF), unlist(nodeT))

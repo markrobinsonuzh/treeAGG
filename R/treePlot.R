@@ -257,7 +257,6 @@ addBranch <- function(tree, branch, col.branch,
     # node number required
     if (inherits(branch, "character")) {
         branch <- transNode(tree = tree, input = branch,
-                            use.original = FALSE,
                             message = FALSE)
     } else {
         branch <- branch
@@ -272,7 +271,8 @@ addBranch <- function(tree, branch, col.branch,
 
     # The edges selected to be colored
     eList <- lapply(branch, findOS, tree = tree,
-                    only.Tip = FALSE, self.include = TRUE)
+                    only.Tip = FALSE, self.include = TRUE,
+                    return = "number")
     el <- unlist(lapply(eList, length))
     eList <- eList[order(el, decreasing = TRUE)]
     if (length(col.branch) == length(branch)) {
@@ -325,7 +325,6 @@ addPoint <- function(tree, point, col.point,
     # node number required
     if (inherits(point, "character")) {
         point <- transNode(tree = tree, input = point,
-                           use.original = FALSE,
                            message = FALSE)
     } else {
         point <- point
@@ -382,14 +381,14 @@ addZoom <- function(tree, zoomNode = NULL, zoomLevel = NULL,
     # node number required
     if (inherits(zoomNode, "character")) {
         zoomNode <- transNode(tree = tree, input = zoomNode,
-                              use.original = FALSE,
                               message = FALSE)
     } else {
         zoomNode <- zoomNode
     }
 
     zList <- lapply(zoomNode, findOS, tree = tree,
-                    only.Tip = FALSE, self.include = TRUE)
+                    only.Tip = FALSE, self.include = TRUE,
+                    return = "number")
     names(zList) <- zoomNode
     z_len <- unlist(lapply(zList, length))
 
@@ -414,7 +413,8 @@ addZoom <- function(tree, zoomNode = NULL, zoomLevel = NULL,
 
     # the nodes to be zoomed in
     nodZ <- findAncestor(tree = tree, node = zoomNode,
-                         level = zoomLevel)
+                         level = zoomLevel,
+                         return = "number")
     names(nodZ) <- names(zoomScale) <- zoomNode
     # remove nodes which are the descendants of the others
     nodZW <- rmDesc(node = nodZ, tree = tree)

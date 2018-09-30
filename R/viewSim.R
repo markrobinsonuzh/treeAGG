@@ -58,7 +58,6 @@ viewSim <- function(obj, layout = "rectrangular", zoomScale = 1/20,
     # fold change
     d <- data.frame(node = transNode(tree = tree,
                                      input = names(md$FC),
-                                     use.original = FALSE,
                                      message = FALSE),
                     fc = md$FC)
 
@@ -99,11 +98,10 @@ viewSim <- function(obj, layout = "rectrangular", zoomScale = 1/20,
     if(sc == "S3") {
         difN <- names(md$FC)[md$FC != 1]
         difN <- transNode(tree = tree, input = difN,
-                          use.original = FALSE,
                           message = FALSE)
-        difS <- signalNode(node = difN, tree = tree)
+        difS <- signalNode(node = difN, tree = tree,
+                           return = "label", use.alias = TRUE)
         difL <- transNode(tree = tree, input = difS,
-                          use.original = FALSE,
                           message = FALSE)
         colL2 <- ifelse(difL == md$branch$B,
                      colL[2], colL[1])
@@ -146,12 +144,20 @@ viewSim <- function(obj, layout = "rectrangular", zoomScale = 1/20,
 #' @return A vector of node labels or node numbers
 #'
 findParallel <- function(tree, input, label = FALSE){
+
+    if (inherits(input, "character")) {
+        input <- transNode(tree = tree, input = input, message = FALSE)
+    } else {
+        input <- input
+    }
+
     # find descendant leaves of input
     inT <- lapply(input,
                   FUN = function(x){
                       findOS(tree = tree,
                              ancestor = x,
-                             only.Tip = TRUE)})
+                             only.Tip = TRUE,
+                             return = "number")})
     inT <- unlist(inT)
     # find all leaves of tree
     allT <- setdiff(tree$edge[,2], tree$edge[, 1])
@@ -160,7 +166,7 @@ findParallel <- function(tree, input, label = FALSE){
     exT <- setdiff(allT, inT)
 
     # replace leaves with their ancestor branch node
-    fT <- signalNode(tree = tree, node = exT, label = FALSE)
+    fT <- signalNode(tree = tree, node = exT, return = "number")
 
     # isT <- isLeaf(tree = tree, input = fT)
     # fn <- fT[!isT]
@@ -177,16 +183,17 @@ findParallel <- function(tree, input, label = FALSE){
 #' @return a logical vector with the same length as input
 #' @keywords internal
 isLeaf <- function(tree, input){
-    # leaves
-    tip <- setdiff(tree$edge[,2], tree$edge[, 1])
     # input
     if (inherits(input, "character")) {
         input <- transNode(tree, input = input,
-                           use.original = FALSE,
                            message = FALSE)
     } else {
         input <- input
     }
+
+    # leaves
+    tip <- setdiff(tree$edge[,2], tree$edge[, 1])
+
     # is it a tip
     isLeaf <- input %in% tip
     return(isLeaf)

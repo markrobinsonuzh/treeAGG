@@ -5,8 +5,14 @@
 #'
 #' @param tree A  phylo object.
 #' @param node A vector of node numbers or node labels.
-#' @param label A logical value. If TRUE, the selected node label is output;
-#'   otherwise the node number is output
+#' @param return "number" (return the node number) or "label" (return the node
+#'   label).
+#' @param use.alias A logical value, TRUE or FALSE. This is an optional argument
+#'   that only requried when \code{return = "label"}. The default is FALSE, and
+#'   the node label would be returned; otherwise, the alias of node label would be
+#'   output. The alias of node label is created by adding a prefix
+#'   \code{"Node_"} to the node number if the node is an internal node or
+#'   adding a prefix \code{"Leaf_"} if the node is a leaf node.
 #'
 #' @export
 #' @return The label of the shared node
@@ -22,10 +28,10 @@
 #'
 #' ## find the node shared by provided node labels
 #' shareNode(node = c('t4','t9'), tree = tinyTree,
-#'  label = TRUE)
+#'           return = "label", use.alias = FALSE)
 #'
 #' shareNode(node = c('t10','Node_17'), tree = tinyTree,
-#'  label = TRUE)
+#'           return = "label", use.alias = FALSE)
 #'
 #' # -----------------------------------------------------
 #' ggtree(tinyTree,branch.length = 'none')+
@@ -34,7 +40,9 @@
 #' ## find the node shared by provided node numbers
 #' shareNode(node = c(2, 3), tree = tinyTree)
 
-shareNode <- function(tree, node, label = FALSE) {
+shareNode <- function(tree, node,
+                      return = c("number", "label"),
+                      use.alias = FALSE) {
 
     if (!inherits(tree, "phylo")) {
         stop("tree is not a phylo object.")
@@ -47,7 +55,6 @@ shareNode <- function(tree, node, label = FALSE) {
     # transfer node label to node number
     if (inherits(node, "character")) {
         node <- transNode(tree, input = node,
-                          use.original = FALSE,
                           message = FALSE)
     } else {
         node <- node
@@ -74,13 +81,12 @@ shareNode <- function(tree, node, label = FALSE) {
     # select the node with the lowest frequency.  closest to the leaf level.
     sNode <- as.numeric(df[df$Freq == min(df$Freq), 1])
 
-    if (label) {
-        final <- transNode(tree = tree, input = sNode,
-                           use.original = FALSE,
-                           message = FALSE)
-    } else {
-        final <- sNode
-    }
+    # final output (node number or label)
+    return <- match.arg(return)
+    switch(return,
+           number = sNode,
+           label = transNode(tree = tree, input = sNode,
+                             use.alias = use.alias,
+                             message = FALSE))
 
-    return(final)
 }

@@ -129,8 +129,8 @@ simData <- function(tree = NULL, data = NULL,
     set.seed(seed)
     # -------------------------------------------------------------------------
     # provide (tree & data)
-    if(missing(obj)) {
-        if(missing(tree) | missing(data)) {
+    if (is.null(obj)) {
+        if (is.null(tree) | is.null(data)) {
             stop("tree or data is not provided")
         } else {
             obj <- doData(tree = tree, data = data, scenario = scenario,
@@ -337,7 +337,8 @@ doData <- function(tree, data, scenario = "S1",
 
 
     count <- doCount(data = data, FC = beta,
-                     nSam = nSam, mu, size, n)
+                     nSam = nSam, mu = mu,
+                     size = size, n = n)
 
 
     if(inherits(count, "list")) {
@@ -399,7 +400,13 @@ pickLoc <- function(tree, data, from.A,
                     minPr.A, maxPr.A, ratio) {
 
     # tip proportions estimated from real data
+    # rename using the alias of node label
     pars <- parEstimate(data = data)$pi
+    nam1 <- names(pars)
+    val1 <- transNode(tree = tree, input = nam1, message = FALSE)
+    nam2 <- transNode(tree = tree, input = val1, use.alias = TRUE,
+                      message = FALSE)
+    names(pars) <- nam2
 
     # proportion of internal nodes
     leaf <- setdiff(tree$edge[, 2], tree$edge[, 1])
@@ -407,7 +414,8 @@ pickLoc <- function(tree, data, from.A,
     desI <- lapply(nodI, findOS, tree = tree,
                    only.Tip = TRUE,
                    self.include = TRUE,
-                   return = "label")
+                   return = "label",
+                   use.alias = TRUE)
     nodP <- mapply(function(x, y) {
         sum(x[y])
     }, x = list(pars), y = desI)
@@ -415,8 +423,9 @@ pickLoc <- function(tree, data, from.A,
     # matrix: abundance proprotion & the number of descendant leaves
     lenI <- unlist(lapply(desI, length))
     tt <- cbind(nodP, lenI)
-    rownames(tt) <- transNode(tree = tree, input = nodI,
-                              use.original = FALSE,
+    rownames(tt) <- transNode(tree = tree,
+                              input = nodI,
+                              use.alias = TRUE,
                               message = FALSE)
 
     # return error when the given limits for
@@ -441,7 +450,7 @@ pickLoc <- function(tree, data, from.A,
             from.A <- from.A
         } else {
             from.A <- transNode(tree = tree, input = from.A,
-                                use.original = FALSE,
+                                use.alias = TRUE,
                                 message = FALSE)
         }
         tt.sel <- tt[match(from.A, rownames(tt)), , drop = FALSE]
@@ -547,8 +556,10 @@ pickLoc <- function(tree, data, from.A,
     bn <- colnames(nm)[wi[si, 2]]
 
     du <- cbind.data.frame(
-        "A" = an,
-        "B" = bn,
+        "A" = transNode(tree = tree, input = an,
+                        use.alias = FALSE, message = FALSE),
+        "B" = transNode(tree = tree, input = bn,
+                        use.alias = FALSE, message = FALSE),
         "ratio" = round(nm[wi], digits = 2),
         "A_tips" = tt[an, 2],
         "B_tips" = tt[bn, 2],
@@ -581,15 +592,25 @@ infLoc <- function(tree, data, from.A,
                    from.B) {
 
     # tip proportions estimated from real data
+    # rename using the alias of node label
     pars <- parEstimate(data = data)$pi
+    nam1 <- names(pars)
+    val1 <- transNode(tree = tree, input = nam1, message = FALSE)
+    nam2 <- transNode(tree = tree, input = val1, use.alias = TRUE,
+                      message = FALSE)
+    names(pars) <- nam2
 
-    # proportion of internal nodes
+    # nodes
     leaf <- setdiff(tree$edge[, 2], tree$edge[, 1])
     nodI <- setdiff(tree$edge[, 1], leaf)
+    nodA <- c(leaf, nodI)
+
+    # find descendants
     desI <- lapply(nodI, findOS, tree = tree,
                    only.Tip = TRUE,
                    self.include = TRUE,
-                   return = "label")
+                   return = "label",
+                   use.alias = TRUE)
     nodP <- mapply(function(x, y) {
         sum(x[y])
     }, x = list(pars), y = desI)
@@ -598,17 +619,17 @@ infLoc <- function(tree, data, from.A,
     lenI <- unlist(lapply(desI, length))
     tt <- cbind(nodP, lenI)
     rownames(tt) <- transNode(tree = tree, input = nodI,
-                              use.original = FALSE,
+                              use.alias = TRUE,
                               message = FALSE)
 
     # if both branches are given
     labA <- ifelse(is.character(from.A), from.A,
                    transNode(tree = tree, input = from.A,
-                             use.original = FALSE,
+                             use.alias = TRUE,
                              message = FALSE))
     labB <- ifelse(is.character(from.B), from.B,
                    transNode(tree = tree, input = from.B,
-                             use.original = FALSE,
+                             use.alias = TRUE,
                              message = FALSE))
     rAB <- tt[labB, 1]/tt[labA, 1]
     du <- cbind.data.frame(
@@ -653,79 +674,98 @@ infLoc <- function(tree, data, from.A,
 #' @return numeric vector
 #' @author Ruizhu Huang
 #' @keywords internal
-
+#'
 doFC <- function(tree, data, scenario,
                  branchA, branchB,
                  ratio, adjB, pct) {
+    # nodes
+    leaf <- setdiff(tree$edge[, 2], tree$edge[, 1])
+    nodI <- setdiff(tree$edge[, 1], leaf)
+    nodA <- c(leaf, nodI)
 
-    # beta: fold change for tips
-    tips <- tree$tip.label
-    beta <- rep(1, length(tips))
-    names(beta) <- tips
+    # beta
+    beta <- rep(1, length(leaf))
+    names(beta) <- transNode(tree = tree, input = leaf,
+                             use.alias = TRUE)
 
-    # tips on two branches
-    tipA <- findOS(tree = tree, ancestor = branchA,
+    ## the label of nodes on branch A
+    # leaves
+    tip.A <- findOS(tree = tree, ancestor = branchA,
                    only.Tip = TRUE, self.include = TRUE,
-                   return = "label")
+                   return = "label", use.alias = TRUE)
+    # nodes
+    nodA.A <- findOS(tree = tree, ancestor = branchA,
+                    only.Tip = FALSE, self.include = TRUE,
+                    return = "label", use.alias = TRUE)
+    # internal nodes
+    nodI.A <- setdiff(nodA.A, tip.A)
 
-    nod <- findOS(tree = tree, ancestor = branchA,
-                  only.Tip = FALSE, self.include = TRUE,
-                  return = "label")
-    nodeA <- setdiff(nod, tipA)
-    desA <- lapply(nodeA, findOS, tree = tree,
+    # descendants of internal nodes
+    des.IA <- lapply(nodI.A, findOS, tree = tree,
                    only.Tip = TRUE,
-                   self.include = TRUE, return = "label")
+                   self.include = TRUE, return = "label",
+                   use.alias = TRUE)
+
+    # tip proportions estimated from real data
+    # rename using the alias of node label
+    pars <- parEstimate(data = data)$pi
+    nam1 <- names(pars)
+    val1 <- transNode(tree = tree, input = nam1, message = FALSE)
+    nam2 <- transNode(tree = tree, input = val1, use.alias = TRUE,
+                      message = FALSE)
+    names(pars) <- nam2
 
     # swap proportion of two branches: tips in the same branch
     # have the same fold change
     if (scenario == "S1") {
-        tipB <- findOS(tree = tree, ancestor = branchB,
-                       only.Tip = TRUE, self.include = TRUE)
-
-        beta[tipA] <- ratio
-        beta[tipB] <- 1/ratio
+        # leaves on branch B
+        tip.B <- findOS(tree = tree, ancestor = branchB,
+                       only.Tip = TRUE, self.include = TRUE,
+                       return = "label", use.alias = TRUE)
+        beta[tip.A] <- ratio
+        beta[tip.B] <- 1/ratio
     }
 
     # swap proportion of two branches: tips in the same branch
     # have different fold changes but same direction (either
     # increase or decrease)
     if (scenario == "S2") {
-        tipB <- findOS(tree = tree, ancestor = branchB,
-                       only.Tip = TRUE, self.include = TRUE)
-
+        tip.B <- findOS(tree = tree, ancestor = branchB,
+                       only.Tip = TRUE, self.include = TRUE,
+                       return = "label", use.alias = TRUE)
         # proportion on two branches
-        propA <- sum(data$pi[tipA])
-        propB <- sum(data$pi[tipB])
+        propA <- sum(pars[tip.A])
+        propB <- sum(pars[tip.B])
 
         # swap proportions on two branches and randomly assign a fold change
         # value to the the leaves on a branch (log fold change in the same branch
         # should have the same sign)
 
 
-            a1 <- runif(length(tipA))
-            sa <- sum(a1 * propA)
-            a2 <- (propB - propA)/sa
-            a3 <- a1 * a2 + 1
-            beta[tipA] <- a3
+        a1 <- runif(length(tip.A))
+        sa <- sum(a1 * propA)
+        a2 <- (propB - propA)/sa
+        a3 <- a1 * a2 + 1
+        beta[tip.A] <- a3
 
-            b1 <- runif(length(tipB))
-            sb <- sum(b1 * propB)
-            b2 <- (propA - propB)/sb
-            b3 <- b1 * b2 + 1
-            beta[tipB] <- b3
+        b1 <- runif(length(tip.B))
+        sb <- sum(b1 * propB)
+        b2 <- (propA - propB)/sb
+        b3 <- b1 * b2 + 1
+        beta[tip.B] <- b3
     }
 
     # distribute signal randomly in one branch and evenly in
     # another branch
     # tip proportions estimated from real data
-    pars <- parEstimate(data = data)$pi
+
     if (scenario == "S3") {
         iter <- 1
         while (iter <= 200) {
             # select only some tips
-            selA <- sample(tipA, ceiling(length(tipA)*pct))
+            selA <- sample(tip.A, ceiling(length(tip.A)*pct))
             # to make the selected tips disperse evenly in the branch
-            subA <- lapply(desA, FUN = function(x) {
+            subA <- lapply(des.IA, FUN = function(x) {
                 ix <- intersect(x, selA)
                 length(ix)/length(x)
             })
@@ -736,68 +776,184 @@ doFC <- function(tree, data, scenario,
             # are roughly equal to its number proportion in the branch
             # avoid (select all low or high abundance tips in the branch)
 
-            spr <- sumA/sum(pars[tipA])
+            spr <- sumA/sum(pars[tip.A])
             ind.pr <- spr <= (pct + 0.05) & spr >= (pct - 0.05)
 
             if(all(subA <= 0.6) & ind.pr){break}
             iter <- iter+1
         }
-        # ==================================================
-        # cancel the random selection using selNode
-        # ==================================================
-        # if(is.null(branchB)){
-        #   BranchL <- selNode(tree = tree,
-        #                      minTip =length(selA),
-        #                      maxTip = Inf,
-        #                      minPr = max(ratio)*sumA,
-        #                      maxPr = max(ratio)*sumA*1.5,
-        #                      skip = branchA,
-        #                      data = data)$node
-        # }else{
-        BranchL = branchB
-        #}
 
-        if (length(BranchL) == 0) {
+        if (length(branchB) == 0) {
             stop("No suitable branches.
-           Try another branchA or another max of ratio... \n")
+                 Try another branchA or another max of ratio... \n")
         }
-        tipL <-  findOS(tree = tree, ancestor = BranchL,
+        tip.B <- findOS(tree = tree, ancestor = branchB,
                         only.Tip = TRUE, self.include = TRUE,
-                        return = "label")
-        sumL <- sum(pars[tipL])
+                        return = "label", use.alias = TRUE)
+        sumB <- sum(pars[tip.B])
 
-        # ratio : 2, 5, 7, 8
-        # if(length(ratio)==1){
-        #   warning("For scenario S3, if multiple fold changes would be tried later
-        #   to compare their results, it would be better to specify ratio as
-        #           a vector so that the random tips selected would stay the same")
-        # }
-
-        # decide beta
-        # beta <- sapply(ratio, FUN = function(x, y){
-        #   y[selA] <- x
-        #   xl <- (sumL-(x-1)*sumA)/sumL
-        #   y[tipL] <- xl
-        #   return(y)
-        # }, y=beta)
-        # colnames(beta) <- ratio
         if(is.null(adjB)){
-            beta[selA] <- sumL/sumA
-            beta[tipL] <- sumA/sumL
+            beta[selA] <- sumB/sumA
+            beta[tip.B] <- sumA/sumB
         }else{
             if(!is.numeric(adjB)){
                 stop("adjB should be numeric")
             }
-            beta[tipL] <- adjB
-            beta[selA] <- (sumL*(1-adjB)+sumA)/sumA
-            # beta[selA] <- fcA
-            # beta[tipL] <- (sumL-(fcA-1)*sumA)/sumL
+            beta[tip.B] <- adjB
+            beta[selA] <- (sumB*(1-adjB)+sumA)/sumA
+            }
         }
 
-    }
-
+    # rename beta with the node label instead of the alias of node label
+    names(beta) <- transNode(tree = tree, input = leaf,
+                      use.alias = FALSE)
     return(beta)
 }
+
+# doFC <- function(tree, data, scenario,
+#                  branchA, branchB,
+#                  ratio, adjB, pct) {
+#
+#     # beta: fold change for tips
+#     tips <- tree$tip.label
+#     beta <- rep(1, length(tips))
+#     names(beta) <- tips
+#
+#     # tips on two branches
+#     tipA <- findOS(tree = tree, ancestor = branchA,
+#                    only.Tip = TRUE, self.include = TRUE,
+#                    return = "label")
+#
+#     nod <- findOS(tree = tree, ancestor = branchA,
+#                   only.Tip = FALSE, self.include = TRUE,
+#                   return = "label")
+#     nodeA <- setdiff(nod, tipA)
+#     desA <- lapply(nodeA, findOS, tree = tree,
+#                    only.Tip = TRUE,
+#                    self.include = TRUE, return = "label")
+#
+#     # swap proportion of two branches: tips in the same branch
+#     # have the same fold change
+#     if (scenario == "S1") {
+#         tipB <- findOS(tree = tree, ancestor = branchB,
+#                        only.Tip = TRUE, self.include = TRUE)
+#
+#         beta[tipA] <- ratio
+#         beta[tipB] <- 1/ratio
+#     }
+#
+#     # swap proportion of two branches: tips in the same branch
+#     # have different fold changes but same direction (either
+#     # increase or decrease)
+#     if (scenario == "S2") {
+#         tipB <- findOS(tree = tree, ancestor = branchB,
+#                        only.Tip = TRUE, self.include = TRUE)
+#
+#         # proportion on two branches
+#         propA <- sum(data$pi[tipA])
+#         propB <- sum(data$pi[tipB])
+#
+#         # swap proportions on two branches and randomly assign a fold change
+#         # value to the the leaves on a branch (log fold change in the same branch
+#         # should have the same sign)
+#
+#
+#             a1 <- runif(length(tipA))
+#             sa <- sum(a1 * propA)
+#             a2 <- (propB - propA)/sa
+#             a3 <- a1 * a2 + 1
+#             beta[tipA] <- a3
+#
+#             b1 <- runif(length(tipB))
+#             sb <- sum(b1 * propB)
+#             b2 <- (propA - propB)/sb
+#             b3 <- b1 * b2 + 1
+#             beta[tipB] <- b3
+#     }
+#
+#     # distribute signal randomly in one branch and evenly in
+#     # another branch
+#     # tip proportions estimated from real data
+#     pars <- parEstimate(data = data)$pi
+#     if (scenario == "S3") {
+#         iter <- 1
+#         while (iter <= 200) {
+#             # select only some tips
+#             selA <- sample(tipA, ceiling(length(tipA)*pct))
+#             # to make the selected tips disperse evenly in the branch
+#             subA <- lapply(desA, FUN = function(x) {
+#                 ix <- intersect(x, selA)
+#                 length(ix)/length(x)
+#             })
+#             subA <- unlist(subA)
+#             sumA <- sum(pars[selA])
+#
+#             # the abundance proportion of the selected tips
+#             # are roughly equal to its number proportion in the branch
+#             # avoid (select all low or high abundance tips in the branch)
+#
+#             spr <- sumA/sum(pars[tipA])
+#             ind.pr <- spr <= (pct + 0.05) & spr >= (pct - 0.05)
+#
+#             if(all(subA <= 0.6) & ind.pr){break}
+#             iter <- iter+1
+#         }
+#         # ==================================================
+#         # cancel the random selection using selNode
+#         # ==================================================
+#         # if(is.null(branchB)){
+#         #   BranchL <- selNode(tree = tree,
+#         #                      minTip =length(selA),
+#         #                      maxTip = Inf,
+#         #                      minPr = max(ratio)*sumA,
+#         #                      maxPr = max(ratio)*sumA*1.5,
+#         #                      skip = branchA,
+#         #                      data = data)$node
+#         # }else{
+#         BranchL = branchB
+#         #}
+#
+#         if (length(BranchL) == 0) {
+#             stop("No suitable branches.
+#            Try another branchA or another max of ratio... \n")
+#         }
+#         tipL <-  findOS(tree = tree, ancestor = BranchL,
+#                         only.Tip = TRUE, self.include = TRUE,
+#                         return = "label")
+#         sumL <- sum(pars[tipL])
+#
+#         # ratio : 2, 5, 7, 8
+#         # if(length(ratio)==1){
+#         #   warning("For scenario S3, if multiple fold changes would be tried later
+#         #   to compare their results, it would be better to specify ratio as
+#         #           a vector so that the random tips selected would stay the same")
+#         # }
+#
+#         # decide beta
+#         # beta <- sapply(ratio, FUN = function(x, y){
+#         #   y[selA] <- x
+#         #   xl <- (sumL-(x-1)*sumA)/sumL
+#         #   y[tipL] <- xl
+#         #   return(y)
+#         # }, y=beta)
+#         # colnames(beta) <- ratio
+#         if(is.null(adjB)){
+#             beta[selA] <- sumL/sumA
+#             beta[tipL] <- sumA/sumL
+#         }else{
+#             if(!is.numeric(adjB)){
+#                 stop("adjB should be numeric")
+#             }
+#             beta[tipL] <- adjB
+#             beta[selA] <- (sumL*(1-adjB)+sumA)/sumA
+#             # beta[selA] <- fcA
+#             # beta[tipL] <- (sumL-(fcA-1)*sumA)/sumL
+#         }
+#
+#     }
+#
+#     return(beta)
+# }
 
 
 #' generate a count table

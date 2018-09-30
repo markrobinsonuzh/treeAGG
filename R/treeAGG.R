@@ -13,7 +13,6 @@ treeAGG.A <- function(data, sigf.by,
     # nodes
     nodeL <- rownames(data)
     nodeN <- transNode(tree = tree, input = nodeL,
-                       use.original = FALSE,
                        message = FALSE)
 
     # internal nodes
@@ -269,8 +268,7 @@ treeAGG.B <- function(data, sigf.by,
 #'
 #' # display the tree structure and p value at each node
 #' tt$node <- transNode(tree = tinyTree, input = rownames(tt),
-#' use.original = FALSE,
-#' message = FALSE)
+#'                      message = FALSE)
 #'
 #' # p value at each node is given as blue number in tree
 #' # the selected nodes after aggregation is labelled with orange points

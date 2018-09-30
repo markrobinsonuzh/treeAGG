@@ -16,30 +16,36 @@ nodeValue.A <- function(data, fun = sum, tree, message = FALSE) {
         stop(cat("The rownames of data don't match the tree tip labels:",
                  chs, "\n"))
     }
+    # rename data with the alias of the node label
+    rn <- rownames(data)
+    leafNum <- transNode(tree = tree, input = rn, message = FALSE)
+    leafLab_alias <- transNode(tree = tree, input = leafNum,
+                               use.alias = TRUE, message = FALSE)
+    rownames(data) <- leafLab_alias
 
+    # nodes
     emat <- tree$edge
     leaf <- setdiff(emat[, 2], emat[, 1])
     nodeI <- setdiff(emat[, 1], leaf)
 
-    ## calculate counts for nodes
+    ## the node labels
     nN <- length(nodeI)
-    nNam <- transNode(tree = tree, input = nodeI,
-                      use.original = FALSE,
+    nodeLab <- transNode(tree = tree, input = nodeI,
+                      use.alias = FALSE,
                       message = FALSE)
+    nodeLab_alias <- transNode(tree = tree, input = nodeI,
+                         use.alias = TRUE,
+                         message = FALSE)
 
     # calculate counts at nodes
     cNode <- matrix(NA, nrow = nN, ncol = ncol(data))
-    rownames(cNode) <- nNam
+    rownames(cNode) <- nodeLab_alias
 
-    # message: current status of the process
-    # if (message) {
-    #     cat(seq_len())
-    # }
     for (i in seq_len(nN)) {
         node.i <- nodeI[i]
         tips.i <- findOS(ancestor = node.i, tree = tree,
                          only.Tip = TRUE, self.include = TRUE,
-                         return = "label")
+                         return = "label", use.alias = TRUE)
         cNode[i, ] <- apply(data[tips.i, ], 2, fun)
 
         # print out the running process
@@ -51,7 +57,20 @@ nodeValue.A <- function(data, fun = sum, tree, message = FALSE) {
         }
     }
     colnames(cNode) <- colnames(data)
-    return(rbind(data, cNode))
+
+    final <- rbind(data, cNode)
+
+    # if there are duplicated value the node label, use the alias of the node
+    # labels as the row names
+    if (anyDuplicated(c(rn, nodeLab))) {
+        rownames(final) <- c(leafLab_alias, nodeLab_alias)
+    } else {
+        rownames(final) <- c(rn, nodeLab)
+
+    }
+
+    # output
+    return(final)
 }
 
 
@@ -69,6 +88,13 @@ nodeValue.B <- function(data, fun = sum, message = FALSE) {
     mData <- metadata(data)
     cData <- colData(data)
 
+    # the row names of table
+    tipLab <- rData$nodeLab
+    if (is.null(tipLab)) { tipLab <- rownames(data)}
+    tipNum <- transNode(tree = tree, input = tipLab, message = FALSE)
+    tipLab_alias <- transNode(tree = tree, input = tipNum,
+                              use.alias = TRUE, message = FALSE)
+
     # leaves and internal nodes
     emat <- tree$edge
     leaf <- setdiff(emat[, 2], emat[, 1])
@@ -77,8 +103,11 @@ nodeValue.B <- function(data, fun = sum, message = FALSE) {
 
     ## all nodes
     nN <- length(nodeA)
-    nNam <- transNode(tree = tree, input = nodeA,
-                      use.original = FALSE,
+    nodeLab <- transNode(tree = tree, input = nodeA,
+                         use.alias = FALSE,
+                         message = FALSE)
+    nodeLab_alias <- transNode(tree = tree, input = nodeA,
+                      use.alias = TRUE,
                       message = FALSE)
 
     # -------------------------------------------------------------------
@@ -91,39 +120,28 @@ nodeValue.B <- function(data, fun = sum, message = FALSE) {
 
     # create rowData for nodes
     rD <- rData[rep(1, nN), ]
-
     nc <- ncol(rData)
 
-    # node labels for rows
-    nodeLab <- rData$nodeLab
-    if (is.null(nodeLab)) { nodeLab <- rownames(data)}
+    # use the alias of the node label as the rownames
+    rownames(rData) <- tipLab_alias
 
     # calculate values at nodes
     for (i in seq_len(nN)) {
         node.i <- nodeA[i]
         tips.i <- findOS(ancestor = node.i, tree = tree,
                          only.Tip = TRUE, self.include = TRUE,
-                         return = "label")
+                         return = "label", use.alias = TRUE)
 
-        row.i <- match(tips.i, nodeLab)
+        row.i <- match(tips.i, tipLab_alias)
 
         # if multiple rows of the descendants exist, do calculation as follows
         if (length(row.i) > 1){
             # rowdata: if all rows have the value, keep value; otherwise, use NA
             rdata.i <- rData[row.i, ]
-
-            # ul.i <- lapply(seq_len(nc), FUN = function(x){
-            #     iu <- unique(rdata.i[, x])
-            #     if (length(iu) == 1) {return(iu)} else { return(NA) }
-            # })
-            #
-            # rD[i, ] <- do.call(cbind.data.frame, ul.i)
-
             for (k in seq_len(nc)) {
                 iu <- unique(rdata.i[, k])
                 rD[i, k] <- ifelse(length(iu) == 1, iu, NA)
-
-            }
+                }
 
             # calculate values (e.g., abundance or intensity) for each node
             for(j in seq_along(tableA)){
@@ -133,8 +151,6 @@ nodeValue.B <- function(data, fun = sum, message = FALSE) {
         }
 
         if (length(row.i) == 1){
-
-
             # rowdata
             rD[i, ] <- rData[row.i, ]
 
@@ -155,12 +171,20 @@ nodeValue.B <- function(data, fun = sum, message = FALSE) {
     # update rowdata; column nodeLab is removed
      rdataA <- rD[, !colnames(rD) %in% c("nodeLab")]
      rownames(rdataA) <- NULL
-    linkD <- DataFrame(nodeLab = transNode(tree = tree, input = nodeA,
-                                           use.original = TRUE,
-                                           message = FALSE),
+
+     if (anyDuplicated(nodeLab)) {
+         linkD <- DataFrame(nodeLab = nodeLab,
+                            nodeLab_alias = nodeLab_alias,
                             nodeNum = nodeA,
                             isLeaf = nodeA %in% leaf,
                             rowID = seq_len(nN))
+     } else {
+         linkD <- DataFrame(nodeLab = nodeLab,
+                            nodeNum = nodeA,
+                            isLeaf = nodeA %in% leaf,
+                            rowID = seq_len(nN))
+     }
+
 
     mData.new <- mData[names(mData) != "tree"]
     tse <- treeSummarizedExperiment(linkData = linkD, tree = tree,
@@ -207,23 +231,24 @@ nodeValue.B <- function(data, fun = sum, message = FALSE) {
 #' @author Ruizhu Huang
 #' @examples
 #' data("tinyTree")
-#' if(require(ggtree)){
+#' if (require(ggtree)) {
 #' (p <- ggtree(tinyTree) + geom_text(aes(label = label)))
-#'
+
+#' set.seed(1)
 #' count <- matrix(rpois(100, 10), nrow =10)
 #' rownames(count) <- tinyTree$tip.label
 #' colnames(count) <- paste(c("C1_", "C2_"),
 #' c(1:5, 1:5), sep = "")
 #'
 #' count_tinyTree <- nodeValue(data = count,
-#' tree = tinyTree, fun = mean)
+#' tree = tinyTree, fun = sum)
 #'
 #' # check to see whether the count of an internal node is the sum
 #' # of counts of its descendant leaves.
 #' # here, check the first sample as an example
 #'
 #' nod <- transNode(tree = tinyTree, input = rownames(count_tinyTree),
-#'        use.original = FALSE, message = FALSE)
+#'                  message = FALSE)
 #' d <- cbind.data.frame(node = nod, count = count_tinyTree[, 1])
 #'
 #' ggtree(tinyTree) %<+% d + geom_text2(aes(label = count))

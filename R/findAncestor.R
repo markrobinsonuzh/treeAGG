@@ -12,7 +12,14 @@
 #'   the order of nodes in the paths connecting leaves and the root. Default is
 #'   null, treeMat is generated automatically. The treeMat is provided when the
 #'   tree is very large to save running time.
-#'
+#' @param return "number" (return the node number) or "label" (return the node
+#'   label).
+#' @param use.alias A logical value, TRUE or FALSE. This is an optional argument
+#'   that only requried when \code{return = "label"}. The default is FALSE, and
+#'   the node label would be returned; otherwise, the alias of node label would be
+#'   output. The alias of node label is created by adding a prefix
+#'   \code{"Node_"} to the node number if the node is an internal node or
+#'   adding a prefix \code{"Leaf_"} if the node is a leaf node.
 #' @export
 #' @return a vector of node numbers
 #' @author Ruizhu Huang
@@ -20,12 +27,18 @@
 #' @examples
 #' library(ggtree)
 #' data(exTree)
-#' ggtree(exTree, branch.length = 'none') +
-#'  geom_text2(aes(label = node))
+#' ggtree(exTree, branch.length = 'none') %>%
+#'     scaleClade(node = 52, scale = 10)+
+#'  geom_text2(aes(label = label), color = "darkorange",
+#'            hjust = -0.1, vjust = -0.7) +
+#'  geom_text2(aes(label = node), color = "darkblue",
+#'                hjust = -0.5, vjust = 0.7)
 #'
 #'  findAncestor(tree = exTree, node = c(53, 61), level = 1)
 
-findAncestor <- function(tree, node, level, treeMat = NULL) {
+findAncestor <- function(tree, node, level, treeMat = NULL,
+                         return = c("number", "label"),
+                         use.alias = FALSE) {
 
     if (!inherits(tree, "phylo")) {
         stop("tree: should be a phylo object")
@@ -39,7 +52,7 @@ findAncestor <- function(tree, node, level, treeMat = NULL) {
 
     if (inherits(node, "character")) {
         aggNod <- transNode(tree = tree, input = node,
-                            use.original = FALSE,
+                            use.alias = TRUE,
                             message = FALSE)
     } else {
         aggNod <- node
@@ -85,5 +98,13 @@ findAncestor <- function(tree, node, level, treeMat = NULL) {
     })
 
     final <- unlist(selNod)
-    return(final)
+
+    # final output (node number or label)
+    return <- match.arg(return)
+    switch(return,
+           number = final,
+           label = transNode(tree = tree, input = final,
+                             use.alias = use.alias,
+                             message = FALSE))
+
 }

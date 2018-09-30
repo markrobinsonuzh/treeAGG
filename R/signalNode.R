@@ -59,7 +59,6 @@ signalNode <- function(tree, node, return = c("number", "label"),
     # transfer node label to node number
     if (inherits(node, "character")) {
         node <- transNode(tree, input = node,
-                          use.alias = TRUE,
                           message = FALSE)
     } else {
         node <- node
@@ -95,13 +94,4 @@ signalNode <- function(tree, node, return = c("number", "label"),
            label = transNode(tree = tree, input = sNode,
                              use.alias = use.alias,
                              message = FALSE))
-
-    # if (label) {
-    #     final <- transNode(tree = tree, input = sNode,
-    #                        use.original = FALSE,
-    #                        message = FALSE)
-    # } else {
-    #     final <- sNode
-    # }
-    # return(final)
 }

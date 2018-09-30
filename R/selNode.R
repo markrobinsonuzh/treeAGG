@@ -67,19 +67,18 @@ selNode <- function(obj = NULL, tree = NULL, data = NULL,
     # proportion of internal nodes
     leaf <- setdiff(tree$edge[, 2], tree$edge[, 1])
     nodI <- setdiff(tree$edge[, 1], leaf)
-    nodLab <- transNode(tree = tree, input = nodI,
-                        use.original = TRUE,
+    nodeLab <- transNode(tree = tree, input = nodI,
+                        use.alias = FALSE,
                         message = FALSE)
-    nodLab_alias <- transNode(tree = tree, input = nodI,
-                      use.original = FALSE,
+    nodeLab_alias <- transNode(tree = tree, input = nodI,
+                      use.alias = TRUE,
                       message = FALSE)
-    # descendant nodes
-    desI <- lapply(nodI, findOS, tree = tree,
-                   only.Tip = FALSE, self.include = TRUE)
+
     # descendant leaves
     tipI <- lapply(nodI, findOS, tree = tree,
-                   only.Tip = TRUE, self.include = TRUE)
-    names(tipI) <- nodLab_alias
+                   only.Tip = TRUE, self.include = TRUE,
+                   return = "number")
+    names(tipI) <- nodeLab_alias
 
     # number of descendant leaves
     numI <- unlist(lapply(tipI, length))
@@ -89,26 +88,28 @@ selNode <- function(obj = NULL, tree = NULL, data = NULL,
     pars <- parEstimate(data = data)$pi
     # a vector of node numbers with node labels as names
     vnum <- transNode(tree = tree, input = names(pars),
-                      use.original = FALSE, message = FALSE)
+                       message = FALSE)
 
     # proportion for each node
     propList <- lapply(tipI, FUN = function(x){
-        sum(pars[names(vnum[vnum %in% x])])
+        sum(pars[match(x, vnum)])
     })
     nodP <- unlist(propList)
 
     ##---------- sample ---------------
-    if (any(duplicated(nodLab))) {
-        tt <- cbind.data.frame(nodeNum = transNode(tree = tree, input = names(nodP),
-                                                   use.original = FALSE),
+    if (any(duplicated(nodeLab))) {
+        tt <- cbind.data.frame(nodeNum = transNode(tree = tree,
+                                                   input = names(nodP),
+                                                   message = FALSE),
                                nodeLab = nodeLab,
                                nodeLab_alias = nodeLab_alias,
                                proportion = nodP,
                                numTip = numI,
                                stringsAsFactors =FALSE)
     } else {
-        tt <- cbind.data.frame(nodeNum = transNode(tree = tree, input = names(nodP),
-                                                   use.original = FALSE),
+        tt <- cbind.data.frame(nodeNum = transNode(tree = tree,
+                                                   input = names(nodP),
+                                                   message = FALSE),
                                nodeLab = nodeLab,
                                proportion = nodP,
                                numTip = numI,
@@ -123,9 +124,9 @@ selNode <- function(obj = NULL, tree = NULL, data = NULL,
     # only consider nodes with enough tips and
     # desired proportion level
     st <- tt[tt$numTip >= minTip &
-                 tt$numTip <= maxTip &
-                 tt$proportion >= minPr &
-                 tt$proportion <= maxPr,]
+             tt$numTip <= maxTip &
+             tt$proportion >= minPr &
+             tt$proportion <= maxPr,]
     if (nrow(st) == 0) {
         stop("No nodes fullfill the requirements;
          try other settings
@@ -134,7 +135,7 @@ selNode <- function(obj = NULL, tree = NULL, data = NULL,
     # remove those overlapped
     if (!is.null(skip)) {
         if (is(skip, character)) {
-            skip <- transNode(tree = tree, input = skip, use.original = FALSE,
+            skip <- transNode(tree = tree, input = skip,
                               message = FALSE)
         }
         tipS <- lapply(skip, findOS, tree = tree,

@@ -85,12 +85,10 @@ tpr <- function(tree, truth, found,
             tt <- mapply(function(x, y) {
                 if (is.character(x)) {
                     x <- transNode(tree = tree, input = x,
-                                   use.original = FALSE,
                                    message = FALSE)
                 }
                 if (is.character(y)) {
                     y <- transNode(tree = tree, input = y,
-                                   use.original = FALSE,
                                    message = FALSE)
                 }
                 tpr0(tree = tree, truth = x,
@@ -109,12 +107,10 @@ tpr <- function(tree, truth, found,
 
         if (is.character(truth)) {
             truth <- transNode(tree = tree, input = truth,
-                               use.original = FALSE,
                                message = FALSE)
         }
         if (is.character(found)) {
             found <- transNode(tree = tree, input = found,
-                               use.original = FALSE,
                                message = FALSE)
         }
 
@@ -173,7 +169,8 @@ tpr0 <- function(tree,
                            findOS,
                            tree = tree,
                            only.Tip = TRUE,
-                           self.include = TRUE
+                           self.include = TRUE,
+                           return = "number"
                        )
                        tip <- unlist(tipT)
                        c(tp = 0, pos = length(tip))
@@ -183,13 +180,14 @@ tpr0 <- function(tree,
                        # has signal too.
                        nodeS <- signalNode(node = truth,
                                            tree = tree,
-                                           label = TRUE)
+                                           return = "number")
                        nodeT <- lapply(
                            nodeS,
                            findOS,
                            tree = tree,
                            only.Tip = FALSE,
-                           self.include = TRUE
+                           self.include = TRUE,
+                           return = "number"
                        )
                        nod <- unlist(nodeT)
                        c(tp = 0, pos = length(nod))
@@ -215,14 +213,16 @@ tpr0 <- function(tree,
                            findOS,
                            tree = tree,
                            only.Tip = TRUE,
-                           self.include = TRUE
+                           self.include = TRUE,
+                           return = "number"
                        )
                        tipF <- lapply(
                            found,
                            findOS,
                            tree = tree,
                            only.Tip = TRUE,
-                           self.include = TRUE
+                           self.include = TRUE,
+                           return = "number"
                        )
                        # the true positive & positive
                        TP <- intersect(unlist(tipT), unlist(tipF))
@@ -234,14 +234,15 @@ tpr0 <- function(tree,
                        # all have signal has signal too.
                        nodeS <- signalNode(node = truth,
                                            tree = tree,
-                                           label = TRUE)
+                                           return = "number")
                        # all nodes have signal
                        nodeT <- lapply(
                            nodeS,
                            findOS,
                            tree = tree,
                            only.Tip = FALSE,
-                           self.include = TRUE
+                           self.include = TRUE,
+                           return = "number"
                        )
                        # nodes found with signal
                        nodeF <- lapply(
@@ -249,7 +250,8 @@ tpr0 <- function(tree,
                            findOS,
                            tree = tree,
                            only.Tip = FALSE,
-                           self.include = TRUE
+                           self.include = TRUE,
+                           return = "number"
                        )
                        # true positive & positive
                        TP <- intersect(unlist(nodeT), unlist(nodeF))
