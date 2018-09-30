@@ -10,10 +10,10 @@ test_that("selNode could find correct information", {
 
     dat <- parEstimate(data = toyTable)
     sN <- selNode(tree = tinyTree, data = dat, all = TRUE)
-    expect_equal(dim(sN), c(9, 3))
+    expect_equal(dim(sN), c(9, 4))
     expect_equal(dim(
         selNode(tree = tinyTree, data = dat, minTip = 4, maxTip = 9,
-                minPr = 0, maxPr = 0.8, all = TRUE)), c(2, 3))
+                minPr = 0, maxPr = 0.8, all = TRUE)), c(2, 4))
     expect_error(selNode(tree = tinyTree, data = dat, minTip = 4, maxTip = 9,
                          minPr = 0, maxPr = 0.2, all = TRUE))
 })

@@ -28,7 +28,10 @@ test_that("leafSummarizedExperiment constuctor works", {
                                     tree = tinyTree)
 
     expect_is(lse, "leafSummarizedExperiment")
-
+    expect_is(leafSummarizedExperiment(rowData = rowInf,
+                                       colData = colInf,
+                                       tree = tinyTree),
+              "leafSummarizedExperiment")
 })
 
 test_that("treeSummarizedExperiment constuctor works", {
@@ -39,5 +42,8 @@ test_that("treeSummarizedExperiment constuctor works", {
                                     tree = tinyTree)
 
     expect_is(tse, "treeSummarizedExperiment")
-
+    expect_is(treeSummarizedExperiment(rowData = rowInf,
+                                       colData = colInf,
+                                       tree = tinyTree),
+              "treeSummarizedExperiment")
 })

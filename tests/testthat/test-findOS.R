@@ -13,13 +13,15 @@ test_that("findOS could find offspring correctly", {
     ancestor = 15,
     tree = tinyTree,
     only.Tip = TRUE,
-    self.include = TRUE
+    self.include = TRUE,
+    return = "number"
   ), 4:9)
   expect_setequal(findOS(
     ancestor = 15,
     tree = tinyTree,
     only.Tip = FALSE,
-    self.include = TRUE
+    self.include = TRUE,
+    return = "number"
   ), c(4, 17, 18, 16, 15, 5, 6, 7, 19, 8, 9))
 
   expect_setequal(
@@ -27,7 +29,8 @@ test_that("findOS could find offspring correctly", {
       ancestor = 17,
       tree = tinyTree,
       only.Tip = FALSE,
-      self.include = FALSE
+      self.include = FALSE,
+      return = "number"
     ),
     c(4, 18, 5, 6)
   )
@@ -48,7 +51,8 @@ test_that("findOS could find offspring correctly", {
       tree = tinyTree,
       only.Tip = FALSE,
       self.include = TRUE,
-      return = "label"
+      return = "label",
+      use.alias = FALSE
     ),
     c("t9", "Node_18", "t4")
   )
@@ -57,7 +61,8 @@ test_that("findOS could find offspring correctly", {
   expect_setequal(findOS(
     ancestor = 94,
     tree = exTree,
-    only.Tip = TRUE
+    only.Tip = TRUE,
+    return = "number"
   ), c(43:44))
 
 })
