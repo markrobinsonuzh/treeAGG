@@ -3,11 +3,11 @@ Type: Package
 Title: What the Package Does (Title Case)
 Version: 0.1.0
 Authors@R: c(
-    person("Ruizhu", "Huang", email = "ruizhu.uzh@gmail.com",
+    person("Ruizhu", "Huang", email = "ruizhuRH@gmail.com",
            role = c("aut", "cre")),
     person("Charlotte", "Soneson", role = c("aut")),
     person("Mark", "Robinson", role = c("aut")))
-Maintainer: Ruizhu Huang <ruizhu.uzh@gmail.com>
+Maintainer: Ruizhu Huang <ruizhuRH@gmail.com>
 Description: More about what it does (maybe more than one line)
     Use four spaces when indenting paragraphs within the Description.
 Depends: R(>= 3.5.0)
@@ -39,6 +39,7 @@ Collate:
     'findAncestor.R'
     'findOS.R'
     'findSibling.R'
+    'isLeaf.R'
     'matTree.R'
     'nodeValue.R'
     'parEstimate.R'
