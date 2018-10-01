@@ -4,15 +4,23 @@
 \alias{findSibling}
 \title{find the sibling node}
 \usage{
-findSibling(tree, input, label = FALSE)
+findSibling(tree, input, return = c("number", "label"),
+  use.alias = FALSE)
 }
 \arguments{
 \item{tree}{A phylo object.}
 
 \item{input}{A numeric or character vector. Node labels or node numbers.}
 
-\item{label}{A logical value, TRUE or FALSE. If TRUE, node labels are
-returned.}
+\item{return}{"label" or "number". Default is "number", the node number is
+returned. If "label", the selected node label is returned.}
+
+\item{use.alias}{A logical value, TRUE or FALSE. This is an optional argument
+that only requried when \code{return = "label"}. The default is FALSE, and
+the node label would be returned; otherwise, the alias of node label would
+be output. The alias of node label is created by adding a prefix
+\code{"Node_"} to the node number if the node is an internal node or adding
+a prefix \code{"Leaf_"} if the node is a leaf node.}
 }
 \value{
 A vector of node labels or node numbers
@@ -23,8 +31,14 @@ A vector of node labels or node numbers
 \examples{
 library(ggtree)
 data(exTree)
-ggtree(exTree, branch.length = 'none') +
- geom_text2(aes(label = label))
+ggtree(exTree, branch.length = 'none') \%>\%
+    scaleClade(node = 85, scale = 10)+
+    geom_text2(aes(label = label), color = "darkorange",
+           hjust = -0.1, vjust = -0.7) +
+    geom_text2(aes(label = node), color = "darkblue",
+               hjust = -0.5, vjust = 0.7)
 
- findSibling(tree = exTree, input = 75)
+
+ findSibling(tree = exTree, input = 86, return = "number")
+ findSibling(tree = exTree, input = 86, return = "label")
 }

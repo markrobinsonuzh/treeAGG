@@ -18,13 +18,14 @@ decreasing or not.}
 
 \item{col.rowData}{The names of columns to be extracted from \code{rowData}.}
 
-\item{col.linkData}{The names of columns to be extracted from \code{linkData}.}
+\item{col.linkData}{The names of columns to be extracted from
+\code{linkData}.}
 
 \item{use.assays}{A numeric vector. It specifies which table to show. If
 NULL, the table correspoinding to the first number storing in the
 \code{use.assays} (in \code{metadata} of \code{input} data) will be shown.
-To recall, numbers in the \code{use.assays} record which matrix-like elements
-in the \code{assaysTable} have been used to do data analysis.}
+To recall, numbers in the \code{use.assays} record which matrix-like
+elements in the \code{assaysTable} have been used to do data analysis.}
 }
 \value{
 a list of data frame
@@ -33,6 +34,37 @@ a list of data frame
 \code{topNodes} extracts the top differential nodes in a data frame or a list
 of data frame for a given pair of group, ranked by p-value or absolute change
 (e.g. log-fold change)
+}
+\examples{
+library(S4Vectors)
+set.seed(1)
+y <- matrix(rnbinom(300,size=1,mu=10),nrow=10)
+colnames(y) <- paste(rep(LETTERS[1:3], each = 10), rep(1:10,3), sep = "_")
+rownames(y) <- tinyTree$tip.label
+
+rowInf <- DataFrame(nodeLab = rownames(y),
+                    var1 = sample(letters[1:3], 10, replace = TRUE),
+                    var2 = sample(c(TRUE, FALSE), 10, replace = TRUE))
+colInf <- DataFrame(gg = factor(sample(1:3, 30, replace = TRUE)),
+                    group = rep(LETTERS[1:3], each = 10))
+toy_lse <- leafSummarizedExperiment(tree = tinyTree, rowData = rowInf,
+                                    colData = colInf,
+                                    assays = list(y, (2*y), 3*y))
+
+toy_tse <- nodeValue(data = toy_lse, fun = sum, tree = tinyTree,
+ message = TRUE)
+
+# build the model
+contrastList <- list(contrast1 = c(0, 0, 0, -1, 1),
+                     contrast2 = c(0, -1, 1, 0, 0))
+mod <- runEdgeR(obj = toy_tse, contrast = contrastList)
+# results are stored as the column result_assay1, result_assay2, and
+# result_assay3
+(res <- rowData(mod, internal = TRUE))
+# show results gained from the second element of the assasy
+# sort by PValue
+topNodes(mod, sort.by = "PValue", use.assays = 2)
+
 }
 \author{
 Ruizhu HUANG

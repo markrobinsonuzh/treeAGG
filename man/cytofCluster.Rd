@@ -10,8 +10,8 @@
   \item{n_cells}{The number of cells in the cluster}
   \item{n_spikein}{The number of spike-in cells in the cluster}
   \item{prop_spikein}{The proportion of spike-in cells in the cluster}
-  \item{truth}{whether the cluster is differential abundant between the healthy
-  sample and the CN sample}
+  \item{truth}{whether the cluster is differential abundant between the
+  healthy sample and the CN sample}
 }}
 \usage{
 cytofCluster

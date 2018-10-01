@@ -60,13 +60,16 @@ toy_lse <- leafSummarizedExperiment(tree = tinyTree, rowData = rowInf,
                                     colData = colInf,
                                     assays = list(y, (2*y), 3*y))
 
-toy_tse <- nodeValue(data = toy_lse, fun = sum, tree = tinyTree, message = TRUE)
+toy_tse <- nodeValue(data = toy_lse, fun = sum, tree = tinyTree,
+message = TRUE)
 
 # extract the abundace table
 count <- assays(toy_tse, use.nodeLab = TRUE)[[1]]
 
-# The sample size is the sum of cell counts of clusters on the leaf level of the tree.
-tipCount <- assays(toy_tse[linkData(toy_tse)$isLeaf,], use.nodeLab = TRUE)[[1]]
+# The sample size is the sum of cell counts of clusters on the leaf
+# level of the tree.
+tipCount <- assays(toy_tse[linkData(toy_tse)$isLeaf,],
+use.nodeLab = TRUE)[[1]]
 libSize <- apply(tipCount, 2, sum)
 
 # create DGEList

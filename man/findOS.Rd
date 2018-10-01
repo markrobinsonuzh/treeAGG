@@ -5,7 +5,7 @@
 \title{Find descendants (or offsprings)}
 \usage{
 findOS(tree, ancestor, only.Tip = TRUE, self.include = TRUE,
-  return = c("number", "label"))
+  return = c("number", "label"), use.alias = FALSE)
 }
 \arguments{
 \item{tree}{A phylo object.}
@@ -22,6 +22,13 @@ itself is returned as its descendant.}
 
 \item{return}{"number" (return the node number) or "label" (return the node
 label).}
+
+\item{use.alias}{A logical value, TRUE or FALSE. This is an optional argument
+that only requried when \code{return = "label"}. The default is FALSE, and
+the node label would be returned; otherwise, the alias of node label would
+be output. The alias of node label is created by adding a prefix
+\code{"Node_"} to the node number if the node is an internal node or adding
+a prefix \code{"Leaf_"} if the node is a leaf node.}
 }
 \value{
 A vector

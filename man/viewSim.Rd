@@ -4,7 +4,7 @@
 \alias{viewSim}
 \title{visualize simulated scenario}
 \usage{
-viewSim(obj, layout = "rectrangular", zoomScale = 1/20,
+viewSim(obj, layout = "rectangular", zoomScale = 1/20,
   legend.theme = list(legend.position = c(0.15, 0.6)),
   tip.label = FALSE, legend.title = "Abundance")
 }
@@ -32,4 +32,20 @@ a figure
 }
 \description{
 \code{viewSim} is to visualize the output from the function \code{simData}.
+}
+\examples{
+set.seed(1)
+y <- matrix(rnbinom(100,size=1,mu=10),nrow=10)
+colnames(y) <- paste("S", 1:10, sep = "")
+rownames(y) <- tinyTree$tip.label
+
+
+toy_lse <- leafSummarizedExperiment(tree = tinyTree,
+                                    assays = list(y))
+res <- parEstimate(data = toy_lse)
+
+set.seed(1122)
+dat1 <- simData(obj = res)
+viewSim(obj = dat1 )
+
 }

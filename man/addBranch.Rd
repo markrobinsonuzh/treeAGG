@@ -31,6 +31,11 @@ A figure
 \description{
 \code{addBranch} colors a branch or some edges.
 }
+\examples{
+# data(tinyTree)
+# addBranch(tree = tinyTree, branch = 17,
+# col.branch = "blue", col.other = "grey")
+}
 \author{
 Ruizhu Huang
 }

@@ -40,8 +40,8 @@ In \strong{leafSummarizedExperiment} class, we have restrictions as below.
 \item Each rows of matrix-like data in \strong{assays} could be mapped to a
 leaf node of the tree. The label of leaf node is provided in a column
 \strong{nodeLab} in \strong{rowData}, or provides as the rownames of
-\strong{rowData}. If both provided, the information in column \strong{nodeLab} is
-used. }
+\strong{rowData}. If both provided, the information in column
+\strong{nodeLab} is used. }
 }
 \section{Constructor}{
 

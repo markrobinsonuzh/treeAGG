@@ -4,23 +4,31 @@
 \alias{signalNode}
 \title{find the optimal nodes to short result.}
 \usage{
-signalNode(tree, node, label = FALSE)
+signalNode(tree, node, return = c("number", "label"),
+  use.alias = FALSE)
 }
 \arguments{
 \item{tree}{A tree (phylo object)}
 
 \item{node}{A vector of node numbers or node labels}
 
-\item{label}{A logical value. If TRUE, the selected node label is output;
-otherwise the node number is output}
+\item{return}{"label" or "number". Default is "number", the node number is
+returned. If "label", the selected node label is returned.}
+
+\item{use.alias}{A logical value, TRUE or FALSE. This is an optional argument
+that only requried when \code{return = "label"}. The default is FALSE, and
+the node label would be returned; otherwise, the alias of node label would
+be output. The alias of node label is created by adding a prefix
+\code{"Node_"} to the node number if the node is an internal node or adding
+a prefix \code{"Leaf_"} if the node is a leaf node.}
 }
 \value{
 The label of the shared node
 }
 \description{
-\code{signalNode} is to represent some nodes with their ancestor to make result
-as short as possible. The ancestors share exactly the same leaves as the
-original nodes.
+\code{signalNode} is to represent some nodes with their ancestor to make
+result as short as possible. The ancestors share exactly the same leaves as
+the original nodes.
 }
 \examples{
 
@@ -28,19 +36,22 @@ data(tinyTree)
 library(ggtree)
 
 # PLOT tree
+# The node labels are in orange texts and the node numbers are in blue
 ggtree(tinyTree,branch.length = 'none')+
-geom_text2(aes(label = label))
+    geom_text2(aes(label = label), color = "darkorange",
+           hjust = -0.1, vjust = -0.7) +
+    geom_text2(aes(label = node), color = "darkblue",
+               hjust = -0.5, vjust = 0.7)
 
 ## find the node shared by provided node labels
 signalNode(node = c('t4','t9'), tree = tinyTree,
- label = TRUE)
-
+ return = "label")
+signalNode(node = c('t4','t9'), tree = tinyTree,
+ return = "number")
 signalNode(node = c('t10','Node_18', 't8'), tree = tinyTree,
- label = TRUE)
-
-# -----------------------------------------------------
-ggtree(tinyTree,branch.length = 'none')+
-geom_text2(aes(label = node))
+ return = "label", use.alias = FALSE)
+signalNode(node = c('t10','Node_18', 't8'), tree = tinyTree,
+ return = "label", use.alias = TRUE)
 
 ## find the node shared by provided node numbers
 signalNode(node = c(2, 3), tree = tinyTree)

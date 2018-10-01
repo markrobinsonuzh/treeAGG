@@ -24,6 +24,11 @@ A figure
 \description{
 \code{addPoint} adds points to a plot of phylogenetic tree.
 }
+\examples{
+data(tinyTree)
+
+
+}
 \author{
 Ruizhu Huang
 }

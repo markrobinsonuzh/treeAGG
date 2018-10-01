@@ -4,22 +4,28 @@
 \alias{shareNode}
 \title{Find the share node}
 \usage{
-shareNode(tree, node, label = FALSE)
+shareNode(tree, node, return = c("number", "label"), use.alias = FALSE)
 }
 \arguments{
 \item{tree}{A  phylo object.}
 
 \item{node}{A vector of node numbers or node labels.}
 
-\item{label}{A logical value. If TRUE, the selected node label is output;
-otherwise the node number is output}
+\item{return}{"number" (return the node number) or "label" (return the node
+label).}
+
+\item{use.alias}{A logical value, TRUE or FALSE. This is an optional argument
+that only requried when \code{return = "label"}. The default is FALSE, and
+the node label would be returned; otherwise, the alias of node label would
+be output. The alias of node label is created by adding a prefix
+\code{"Node_"} to the node number if the node is an internal node or adding
+a prefix \code{"Leaf_"} if the node is a leaf node.}
 }
 \value{
 The label of the shared node
 }
 \description{
-\code{shareNode} is to find the node where the specified nodes
-first meet.
+\code{shareNode} is to find the node where the specified nodes first meet.
 }
 \examples{
 
@@ -31,10 +37,10 @@ geom_text2(aes(label = label))
 
 ## find the node shared by provided node labels
 shareNode(node = c('t4','t9'), tree = tinyTree,
- label = TRUE)
+          return = "label", use.alias = FALSE)
 
 shareNode(node = c('t10','Node_17'), tree = tinyTree,
- label = TRUE)
+          return = "label", use.alias = FALSE)
 
 # -----------------------------------------------------
 ggtree(tinyTree,branch.length = 'none')+

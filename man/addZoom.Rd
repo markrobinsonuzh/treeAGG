@@ -33,6 +33,11 @@ A figure
 \description{
 \code{addZoom} zooms in a phylogenetic tree.
 }
+\examples{
+# data(tinyTree)
+# addZoom(tree = tinyTree, zoomNode = 17,
+# zoomScale = 3)
+}
 \author{
 Ruizhu Huang
 }

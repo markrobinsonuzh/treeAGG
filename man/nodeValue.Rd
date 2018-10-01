@@ -50,22 +50,23 @@ could be achieved by specifying different functions in the argument
 }
 \examples{
 data("tinyTree")
-if(require(ggtree)){
+if (require(ggtree)) {
 (p <- ggtree(tinyTree) + geom_text(aes(label = label)))
-
+set.seed(1)
 count <- matrix(rpois(100, 10), nrow =10)
 rownames(count) <- tinyTree$tip.label
 colnames(count) <- paste(c("C1_", "C2_"),
 c(1:5, 1:5), sep = "")
 
 count_tinyTree <- nodeValue(data = count,
-tree = tinyTree, fun = mean)
+tree = tinyTree, fun = sum)
 
 # check to see whether the count of an internal node is the sum
 # of counts of its descendant leaves.
 # here, check the first sample as an example
 
-nod <- transNode(tree = tinyTree, input = rownames(count_tinyTree))
+nod <- transNode(tree = tinyTree, input = rownames(count_tinyTree),
+                 message = FALSE)
 d <- cbind.data.frame(node = nod, count = count_tinyTree[, 1])
 
 ggtree(tinyTree) \%<+\% d + geom_text2(aes(label = count))

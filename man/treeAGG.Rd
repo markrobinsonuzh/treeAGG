@@ -58,9 +58,9 @@ which nodes to be aggregated to based on the min-p algorithm.
 }
 \examples{
 
-# We recommend to use treeAGG as example 2. It works in the case of example 1.
-# However, it is difficult to rownames a data frame when some internal nodes
-# of the tree doesn't have labels. Furthermore, it could do tree agg
+# We recommend to use treeAGG as example 2. It works in the case of example
+# 1.However, it is difficult to rownames a data frame when some internal
+# nodesof the tree doesn't have labels. Furthermore, it could do tree agg
 # Example 1
 library(ggtree)
 data(tinyTree)
@@ -81,7 +81,8 @@ rownames(df) <- treeLab
 sigf.by = "pV", agg.by = "pV"))
 
 # display the tree structure and p value at each node
-tt$node <- transNode(tree = tinyTree, input = rownames(tt))
+tt$node <- transNode(tree = tinyTree, input = rownames(tt),
+                     message = FALSE)
 
 # p value at each node is given as blue number in tree
 # the selected nodes after aggregation is labelled with orange points

@@ -4,15 +4,23 @@
 \alias{findParallel}
 \title{find parallel nodes}
 \usage{
-findParallel(tree, input, label = FALSE)
+findParallel(tree, input, return = c("number", "label"),
+  use.alias = FALSE)
 }
 \arguments{
 \item{tree}{A phylo object.}
 
 \item{input}{A numeric or character vector. Node labels or node numbers.}
 
-\item{label}{A logical value, TRUE or FALSE. If TRUE, node labels are
-returned.}
+\item{return}{"number" (return the node number) or "label" (return the node
+label).}
+
+\item{use.alias}{A logical value, TRUE or FALSE. This is an optional argument
+that only requried when \code{return = "label"}. The default is FALSE, and
+the node label would be returned; otherwise, the alias of node label would
+be output. The alias of node label is created by adding a prefix
+\code{"Node_"} to the node number if the node is an internal node or adding
+a prefix \code{"Leaf_"} if the node is a leaf node.}
 }
 \value{
 A vector of node labels or node numbers
@@ -20,9 +28,16 @@ A vector of node labels or node numbers
 \description{
 \code{findParallel} is to find target nodes that could build up a tree with
 some specified nodes. The returned target nodes is the combination that has
-the minimum number of nodes. In other words, a tree is cut in a way that
-the number of branches is the minimum in all possibilities and the specified
+the minimum number of nodes. In other words, a tree is cut in a way that the
+number of branches is the minimum in all possibilities and the specified
 branches are obtained. A branch is represented by its branch node. A leaf
 node represents the edge connecting the leaf and its parent.
+}
+\examples{
+# data(tinyTree)
+# findParallel(tree = tinyTree, input = 12, return = "label",
+#             use.alias = FALSE)
+
+
 }
 \keyword{internal}

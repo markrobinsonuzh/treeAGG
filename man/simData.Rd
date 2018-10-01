@@ -8,7 +8,7 @@ simData(tree = NULL, data = NULL, obj = NULL, scenario = "S1",
   from.A = NULL, from.B = NULL, minTip.A = 0, maxTip.A = Inf,
   minTip.B = 0, maxTip.B = Inf, minPr.A = 0, maxPr.A = 1,
   ratio = 2, adjB = NULL, pct = 0.6, nSam = c(50, 50),
-  mu = 10000, size = 50, n = 1, fun = sum, seed = 1)
+  mu = 10000, size = 50, n = 1, fun = sum)
 }
 \arguments{
 \item{tree}{A phylo object. Only use when \code{obj} is NULL.}
@@ -39,11 +39,11 @@ One could specify these two branches or let \code{doData} choose. (Note: If
 
 \item{maxTip.B}{The maximum number of leaves in branch B}
 
-\item{minPr.A}{A numeric value selected from 0 to 1. The minimum abundance proportion
-of leaves in branch A}
+\item{minPr.A}{A numeric value selected from 0 to 1. The minimum abundance
+proportion of leaves in branch A}
 
-\item{maxPr.A}{A numeric value selected from 0 to 1. The maximum abundance proportion
-of leaves in branch A}
+\item{maxPr.A}{A numeric value selected from 0 to 1. The maximum abundance
+proportion of leaves in branch A}
 
 \item{ratio}{A numeric value. The proportion ratio of branch B to branch A.
 This value is used to select branches(see \bold{Details}). If there are no
@@ -77,8 +77,6 @@ at the end. If above one, the output of \code{doData} is a list of matrices
 \item{fun}{A function to derive the count at each internal node based on its
 descendant leaves, e.g. sum, mean. The argument of the function is a numeric
 vector with the counts of an internal node's descendant leaves.}
-
-\item{seed}{a numeric value. Set seed to get reproducible results.}
 }
 \value{
 a list of objects \item{FC}{the fold change of entities correspondint
@@ -122,23 +120,22 @@ More details about the simulated patterns could be found in the vignette via
  leaves from the other branch.}
 }
 \examples{
-\dontrun{
-if(require(GUniFrac)){
-data("throat.otu.tab")
-data("throat.tree")
 
-# provide tree & data
-count <- as.matrix(t(throat.otu.tab))
 set.seed(1)
-dat1 <- simData(tree = throat.tree, data = count, ratio = 2, seed = 1)
+y <- matrix(rnbinom(100,size=1,mu=10),nrow=10)
+colnames(y) <- paste("S", 1:10, sep = "")
+rownames(y) <- tinyTree$tip.label
 
-# provide obj
-treeDat <- treeSummarizedExperiment(tree = throat.tree,
-                                    assays = list(count))
-set.seed(1)
-dat2 <- simData(obj = treeDat, ratio = 2, seed = 1123)
-}
-}
+
+toy_lse <- leafSummarizedExperiment(tree = tinyTree,
+                                    assays = list(y))
+res <- parEstimate(data = toy_lse)
+
+set.seed(1122)
+dat1 <- simData(obj = res)
+
+
+
 }
 \author{
 Ruizhu Huang

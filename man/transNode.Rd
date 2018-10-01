@@ -4,24 +4,24 @@
 \alias{transNode}
 \title{Transfer between node number and node label}
 \usage{
-transNode(tree, input, use.original = FALSE, message = FALSE)
+transNode(tree, input, use.alias = FALSE, message = FALSE)
 }
 \arguments{
 \item{tree}{A phylo object}
 
-\item{input}{A character or numeric vector representing tree node label(s)
-or tree node number(s)}
+\item{input}{A character or numeric vector representing tree node label(s) or
+tree node number(s)}
 
-\item{use.original}{A logical value, TRUE or FALSE. Only required when
-\strong{input} is numeric. Default is FALSE. There are cases that a tree
-has no labels for some nodes. For these missing label nodes, if
-\code{use.original} is TRUE, NA is returned for these nodes; otherwise, a
-prefix "Node_" (for internal nodes) or "Leaf_" (for leaf nodes) is added to
-the input node number and this new formed name is then returned as the node
-label.}
+\item{use.alias}{A logical value, TRUE or FALSE. This is an optional argument
+that only requried when \code{return = "label"}. The default is FALSE, and
+the node label would be returned; otherwise, the alias of node label would
+be output. The alias of node label is created by adding a prefix
+\code{"Node_"} to the node number if the node is an internal node or adding
+a prefix \code{"Leaf_"} if the node is a leaf node.}
 
 \item{message}{A logical value, TRUE or FALSE. The default is FALSE. If TRUE,
-message will show when a tree have duplicated labels for some internal nodes.}
+message will show when a tree have duplicated labels for some internal
+nodes.}
 }
 \value{
 a vector
@@ -41,9 +41,9 @@ geom_text2(aes(label = node), vjust = -0.8,
 hjust = -0.3, color = 'blue')
 
 #check whether the node number and node label are matched
-transNode(tinyTree, input = c(11, 2, 4))
+transNode(tinyTree, input = c(11, 2, 4, 15))
 
-transNode(tinyTree, input = c('Node_16', 'Node_11'))
+transNode(tree = tinyTree, input = c("Node_16", "Node_11"))
 
 }
 \author{

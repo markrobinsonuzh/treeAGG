@@ -22,11 +22,19 @@ the input \code{data} to accept \code{matrix} or
 \code{theta}.
 }
 \examples{
-\dontrun{
-library(GUniFrac)
-data("throat.otu.tab")
-throat.par <- parEstimate(data = t(throat.otu.tab))
-}
+
+library(S4Vectors)
+set.seed(1)
+y <- matrix(rnbinom(100,size=1,mu=10),nrow=10)
+colnames(y) <- paste("S", 1:10, sep = "")
+rownames(y) <- tinyTree$tip.label
+
+
+toy_lse <- leafSummarizedExperiment(tree = tinyTree,
+                                    assays = list(y))
+res <- parEstimate(data = toy_lse)
+
+metadata(res)$assays.par
 
 }
 \author{
