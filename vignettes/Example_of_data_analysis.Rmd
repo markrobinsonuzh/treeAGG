@@ -643,7 +643,7 @@ the two. Check the example in the help page `?transNode` to see more details.
 ```{r}
 # transform the node number to node label
 # NA obtained, because in the tree structure, no label is assigned for this internal node.
-transNode(tree = treeData(aggR), input = estLoc, use.original = TRUE)
+transNode(tree = treeData(aggR), input = estLoc, use.alias = FALSE)
 ```
 
 To compare the estimated results with the truth, we use `treePlot` to generate a
