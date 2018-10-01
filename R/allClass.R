@@ -225,9 +225,9 @@ leafSummarizedExperiment <- function(tree, ...) {
         isIn <- (nodeLab %in% tipLab)
         isOut <- !isIn
         if (sum(isOut) > 0) {
-            cat(sum(isOut), "rows are removed from tables of *assays*. \n",
+            message(sum(isOut), "rows are removed from tables of *assays*. \n",
                 nodeLab[isOut],
-                " cannot match to any label of tree leaf node. \n")}
+                " can't be matched to any leaf nodes of the tree. \n")}
         se <- se[isIn, ] }
     # use rownames
     if (is.null(nodeLab)) {
@@ -239,9 +239,9 @@ leafSummarizedExperiment <- function(tree, ...) {
         isIn <- rowNam %in% tipLab
         isOut <- !isIn
         if (sum(isOut) > 0) {
-            cat(sum(isOut), "rows are removed from tables of *assays*. \n",
+            message(sum(isOut), "rows are removed from tables of *assays*. \n",
                 rowNam[isOut],
-                " cannot match with any label of tree leaf node. \n")}
+                " can't be matched to any leaf node of the tree. \n")}
         se <- se[isIn, ]
         }
 
@@ -354,8 +354,8 @@ treeSummarizedExperiment <- function(tree = NULL, linkData = NULL,
             isIn <- nodeLab %in% treeLab
             isOut <- !isIn
             if (sum(isOut) > 0) {
-                cat(sum(isOut), "rows are removed. They cannot be assigned to
-                    any tree nodes. \n")}
+                message(sum(isOut), "rows are removed. They can't be matched to
+                    any node of the tree. \n")}
             se <- se[isIn, ]
             newLab <- rowData(se)$nodeLab
             }
@@ -367,14 +367,14 @@ treeSummarizedExperiment <- function(tree = NULL, linkData = NULL,
 
             # if neither nodeLab nor rownames are provided, return error.
             if (is.null(rowNam)) {
-                stop("Either rownames or a nodeLab column in rowData should be
-                     provided \n.")}
+                stop("Either a nodeLab column or row names should be
+                     provided for row data \n.")}
             # keep only rows that could be assigned to the nodes of tree
             isIn <- rowNam %in% treeLab
             isOut <- !isIn
             if (sum(isOut) > 0) {
-                cat(sum(isOut), "rows are removed. They cannot be assigned to
-                    any tree nodes. \n")}
+                message(sum(isOut), " rows are removed. They cannot be maped to
+                    any node of the tree. \n")}
             se <- se[isIn, ]
             newLab <- rownames(se)
             }
