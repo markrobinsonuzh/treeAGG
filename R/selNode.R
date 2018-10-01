@@ -27,7 +27,8 @@
 #' set.seed(1)
 #' data("tinyTree")
 #' toyTable <- matrix(rnbinom(40, size = 1, mu = 10), nrow = 10)
-#' colnames(toyTable) <- paste(rep(LETTERS[1:2], each = 2), rep(1:2, 2), sep = "_")
+#' colnames(toyTable) <- paste(rep(LETTERS[1:2], each = 2),
+#' rep(1:2, 2), sep = "_")
 #' rownames(toyTable) <- tinyTree$tip.label
 #'
 #'
@@ -134,7 +135,7 @@ selNode <- function(obj = NULL, tree = NULL, data = NULL,
     }
     # remove those overlapped
     if (!is.null(skip)) {
-        if (is(skip, character)) {
+        if (is.character(skip)) {
             skip <- transNode(tree = tree, input = skip,
                               message = FALSE)
         }

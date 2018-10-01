@@ -20,8 +20,22 @@
 #' @export
 #'
 #' @return a figure
+#' @examples
+#' set.seed(1)
+#' y <- matrix(rnbinom(100,size=1,mu=10),nrow=10)
+#' colnames(y) <- paste("S", 1:10, sep = "")
+#' rownames(y) <- tinyTree$tip.label
 #'
-viewSim <- function(obj, layout = "rectrangular", zoomScale = 1/20,
+#'
+#' toy_lse <- leafSummarizedExperiment(tree = tinyTree,
+#'                                     assays = list(y))
+#' res <- parEstimate(data = toy_lse)
+#'
+#' set.seed(1122)
+#' dat1 <- simData(obj = res)
+#' viewSim(obj = dat1 )
+#'
+viewSim <- function(obj, layout = "rectangular", zoomScale = 1/20,
                     legend.theme = list(
                         legend.position = c(0.15, 0.6)),
                     tip.label = FALSE, legend.title = "Abundance"){
@@ -51,10 +65,11 @@ viewSim <- function(obj, layout = "rectrangular", zoomScale = 1/20,
     sc <- md$scenario
 
     # zoomNode
-    sNode <- findParallel(tree = tree, input = branch, label = FALSE)
-    isT <- isLeaf(tree = tree, input = sNode)
-    fNode <- sNode[!isT]
+    sNode <- findParallel(tree = tree, input = branch, return = "number")
+    # isT <- isLeaf(tree = tree, input = sNode)
+    # fNode <- sNode[!isT]
 
+    fNode <- sNode
     # fold change
     d <- data.frame(node = transNode(tree = tree,
                                      input = names(md$FC),
@@ -68,7 +83,7 @@ viewSim <- function(obj, layout = "rectrangular", zoomScale = 1/20,
                         zoomScale = zoomScale, layout = layout,
                         legend = TRUE, legend.label = legend.label,
                         legend.theme = legend.theme,
-                        legend.title = legend.title)
+                        legend.title = legend.title )
 
         if(tip.label) {
             fig <- fig %<+% d +
@@ -130,20 +145,33 @@ viewSim <- function(obj, layout = "rectrangular", zoomScale = 1/20,
 #'
 #' \code{findParallel} is to find target nodes that could build up a tree with
 #' some specified nodes. The returned target nodes is the combination that has
-#' the minimum number of nodes. In other words, a tree is cut in a way that
-#' the number of branches is the minimum in all possibilities and the specified
+#' the minimum number of nodes. In other words, a tree is cut in a way that the
+#' number of branches is the minimum in all possibilities and the specified
 #' branches are obtained. A branch is represented by its branch node. A leaf
 #' node represents the edge connecting the leaf and its parent.
 #'
 #' @param tree A phylo object.
 #' @param input A numeric or character vector. Node labels or node numbers.
-#' @param label A logical value, TRUE or FALSE. If TRUE, node labels are
-#' returned.
+#' @param return "number" (return the node number) or "label" (return the node
+#'   label).
+#' @param use.alias A logical value, TRUE or FALSE. This is an optional argument
+#'   that only requried when \code{return = "label"}. The default is FALSE, and
+#'   the node label would be returned; otherwise, the alias of node label would
+#'   be output. The alias of node label is created by adding a prefix
+#'   \code{"Node_"} to the node number if the node is an internal node or adding
+#'   a prefix \code{"Leaf_"} if the node is a leaf node.
 #'
 #' @keywords internal
 #' @return A vector of node labels or node numbers
+#' @examples
+#' # data(tinyTree)
+#' # findParallel(tree = tinyTree, input = 12, return = "label",
+#' #             use.alias = FALSE)
 #'
-findParallel <- function(tree, input, label = FALSE){
+#'
+findParallel <- function(tree, input,
+                         return = c("number", "label"),
+                         use.alias = FALSE){
 
     if (inherits(input, "character")) {
         input <- transNode(tree = tree, input = input, message = FALSE)
@@ -170,31 +198,13 @@ findParallel <- function(tree, input, label = FALSE){
 
     # isT <- isLeaf(tree = tree, input = fT)
     # fn <- fT[!isT]
-    return(fT)
+    # final output (node number or label)
+    return <- match.arg(return)
+    switch(return,
+           number = fT,
+           label = transNode(tree = tree, input = fT,
+                             use.alias = use.alias,
+                             message = FALSE))
+
 }
 
-#' To test whether specified nodes are leaf nodes
-#'
-#' \code{isLeaf} is to test wheter some specified nodes are leaf nodes of a tree.
-#'
-#' @param tree A phylo object.
-#' @param input A numeric or character vector. Node labels or node numbers.
-#'
-#' @return a logical vector with the same length as input
-#' @keywords internal
-isLeaf <- function(tree, input){
-    # input
-    if (inherits(input, "character")) {
-        input <- transNode(tree, input = input,
-                           message = FALSE)
-    } else {
-        input <- input
-    }
-
-    # leaves
-    tip <- setdiff(tree$edge[,2], tree$edge[, 1])
-
-    # is it a tip
-    isLeaf <- input %in% tip
-    return(isLeaf)
-}

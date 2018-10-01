@@ -10,16 +10,46 @@
 #' @param decreasing A logical value. TRUE or FALSE. Should the sorting be
 #'   decreasing or not.
 #' @param col.rowData The names of columns to be extracted from \code{rowData}.
-#' @param col.linkData The names of columns to be extracted from \code{linkData}.
+#' @param col.linkData The names of columns to be extracted from
+#'   \code{linkData}.
 #' @param use.assays A numeric vector. It specifies which table to show. If
 #'   NULL, the table correspoinding to the first number storing in the
 #'   \code{use.assays} (in \code{metadata} of \code{input} data) will be shown.
-#'   To recall, numbers in the \code{use.assays} record which matrix-like elements
-#'   in the \code{assaysTable} have been used to do data analysis.
+#'   To recall, numbers in the \code{use.assays} record which matrix-like
+#'   elements in the \code{assaysTable} have been used to do data analysis.
 #'
 #' @export
 #' @return a list of data frame
 #' @author Ruizhu HUANG
+#' @examples
+#' library(S4Vectors)
+#' set.seed(1)
+#' y <- matrix(rnbinom(300,size=1,mu=10),nrow=10)
+#' colnames(y) <- paste(rep(LETTERS[1:3], each = 10), rep(1:10,3), sep = "_")
+#' rownames(y) <- tinyTree$tip.label
+#'
+#' rowInf <- DataFrame(nodeLab = rownames(y),
+#'                     var1 = sample(letters[1:3], 10, replace = TRUE),
+#'                     var2 = sample(c(TRUE, FALSE), 10, replace = TRUE))
+#' colInf <- DataFrame(gg = factor(sample(1:3, 30, replace = TRUE)),
+#'                     group = rep(LETTERS[1:3], each = 10))
+#' toy_lse <- leafSummarizedExperiment(tree = tinyTree, rowData = rowInf,
+#'                                     colData = colInf,
+#'                                     assays = list(y, (2*y), 3*y))
+#'
+#' toy_tse <- nodeValue(data = toy_lse, fun = sum, tree = tinyTree,
+#'  message = TRUE)
+#'
+#' # build the model
+#' contrastList <- list(contrast1 = c(0, 0, 0, -1, 1),
+#'                      contrast2 = c(0, -1, 1, 0, 0))
+#' mod <- runEdgeR(obj = toy_tse, contrast = contrastList)
+#' # results are stored as the column result_assay1, result_assay2, and
+#' # result_assay3
+#' (res <- rowData(mod, internal = TRUE))
+#' # show results gained from the second element of the assasy
+#' # sort by PValue
+#' topNodes(mod, sort.by = "PValue", use.assays = 2)
 #'
 topNodes <- function(data, sort.by = "FDR", decreasing = FALSE,
                      col.rowData = NULL, col.linkData = NULL,
@@ -69,7 +99,8 @@ topNodes <- function(data, sort.by = "FDR", decreasing = FALSE,
         if (! sort.by %in% colnames(x)) {
             cat("Available columns: ", colnames(x), ".\n" )
             stop("\n ", sort.by,
-                 " can't be found. Choose another from the available columns. \n" )
+                 " can't be found. \n",
+                 "Choose another from the available columns. \n" )
         }
          oo <- order(x[[sort.by]], decreasing = decreasing, na.last = TRUE)
         fx <- x[oo, ]

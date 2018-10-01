@@ -4,16 +4,17 @@
 #' a node on a tree
 #'
 #' @param tree A phylo object
-#' @param input A character or numeric vector representing tree node label(s)
-#' or tree node number(s)
+#' @param input A character or numeric vector representing tree node label(s) or
+#'   tree node number(s)
 #' @param use.alias A logical value, TRUE or FALSE. This is an optional argument
 #'   that only requried when \code{return = "label"}. The default is FALSE, and
-#'   the node label would be returned; otherwise, the alias of node label would be
-#'   output. The alias of node label is created by adding a prefix
-#'   \code{"Node_"} to the node number if the node is an internal node or
-#'   adding a prefix \code{"Leaf_"} if the node is a leaf node.
+#'   the node label would be returned; otherwise, the alias of node label would
+#'   be output. The alias of node label is created by adding a prefix
+#'   \code{"Node_"} to the node number if the node is an internal node or adding
+#'   a prefix \code{"Leaf_"} if the node is a leaf node.
 #' @param message A logical value, TRUE or FALSE. The default is FALSE. If TRUE,
-#' message will show when a tree have duplicated labels for some internal nodes.
+#'   message will show when a tree have duplicated labels for some internal
+#'   nodes.
 #'
 #' @export
 #' @return a vector
@@ -63,7 +64,8 @@ transNode <- function(tree, input, use.alias = FALSE,
                        paste("Node_", nodI, sep = ""))
     if (message) {
         if (any(duplicated(nodeLab))) {
-            cat("There are more than one nodes using a same label or without any label.\n")
+            cat("There are more than one nodes using a same label or
+                without any label.\n")
         }
     }
 
@@ -92,13 +94,11 @@ transNode <- function(tree, input, use.alias = FALSE,
     # =============== Transformation ======================
     # transfer from the label to the number
     if (is.character(input)) {
-        if (all(inAlias)) {
-            names(nodeA) <- nodeLab_alias
-            final <- nodeA[input]
-        }
-
-        if (all(inLab)) {
+        if (inLab) {
             names(nodeA) <- nodeLab
+            final <- nodeA[input]
+        } else {
+            names(nodeA) <- nodeLab_alias
             final <- nodeA[input]
         }
     }
@@ -178,8 +178,10 @@ transNode <- function(tree, input, use.alias = FALSE,
 #         if (all(input %in% names(comb))) {
 #             final <- comb[input]
 #         } else {
-#             stop("The nodes ", paste(input[!input %in% names(comb)], collapse = ", "),
-#                  " could not be found in the tree. \n Node numbers or Node labels are
+#             stop("The nodes ", paste(input[!input %in% names(comb)],
+#                   collapse = ", "),
+#                  " could not be found in the tree. \n
+#                    Node numbers or Node labels are
 #            required but not a mixture of both")
 #         }
 #

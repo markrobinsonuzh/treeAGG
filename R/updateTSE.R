@@ -48,13 +48,16 @@
 #'                                     colData = colInf,
 #'                                     assays = list(y, (2*y), 3*y))
 #'
-#' toy_tse <- nodeValue(data = toy_lse, fun = sum, tree = tinyTree, message = TRUE)
+#' toy_tse <- nodeValue(data = toy_lse, fun = sum, tree = tinyTree,
+#' message = TRUE)
 #'
 #' # extract the abundace table
 #' count <- assays(toy_tse, use.nodeLab = TRUE)[[1]]
 #'
-#' # The sample size is the sum of cell counts of clusters on the leaf level of the tree.
-#' tipCount <- assays(toy_tse[linkData(toy_tse)$isLeaf,], use.nodeLab = TRUE)[[1]]
+#' # The sample size is the sum of cell counts of clusters on the leaf
+#' # level of the tree.
+#' tipCount <- assays(toy_tse[linkData(toy_tse)$isLeaf,],
+#' use.nodeLab = TRUE)[[1]]
 #' libSize <- apply(tipCount, 2, sum)
 #'
 #' # create DGEList
@@ -124,20 +127,22 @@ updateTSE <- function(result, tse, use.assays, design, contrast, fit = NULL){
     class_subelements <- unlist(lapply(sub_result, class))
 
     if (any(!class_subelements %in% c("data.frame", "DataFrame"))) {
-        stop("\n Each sub-element of the input result should be a data frame. \n")
+        stop("Each sub-element of the input result should be a data frame. \n")
     }
 
     # the number of elements should equal to the length of use.assays
     # The example structure has A & B (length 2)
     if (length(result) != length(use.assays)) {
-        stop("\n The length of *result* should match the length of *use.assays*. \n")
+        stop("The length of *result* should match the length of *use.assays*.
+             \n")
     }
 
     # the number of sub-elements should be the same
     # The example structure has a1-a4 (length 4) and b1-b4 (length 4)
     le <- unlist(lapply(result, length))
     if (length(unique(le)) != 1) {
-        stop("\n The sub-elements in *result* have different length: ", le, "\n")
+        stop("\n The sub-elements in *result* have different length: ", le,
+             "\n")
     }
 
     # if the contrast is NULL
@@ -165,8 +170,8 @@ updateTSE <- function(result, tse, use.assays, design, contrast, fit = NULL){
     check.name <- all(namList == names(contrast))
 
     if (!check.name) {
-        stop("\n The names for the sub-elements of *result* should match with the
-             names of the *contrast*. \n")
+        stop("\n The names for the sub-elements of *result* should match with
+             the names of the *contrast*. \n")
     }
     # names the result list
     tt1 <- result

@@ -88,11 +88,19 @@ parEstimate.C <- function(data) {
 #'
 #' @author Ruizhu Huang
 #' @examples
-#' \dontrun{
-#' library(GUniFrac)
-#' data("throat.otu.tab")
-#' throat.par <- parEstimate(data = t(throat.otu.tab))
-#' }
+#'
+#' library(S4Vectors)
+#' set.seed(1)
+#' y <- matrix(rnbinom(100,size=1,mu=10),nrow=10)
+#' colnames(y) <- paste("S", 1:10, sep = "")
+#' rownames(y) <- tinyTree$tip.label
+#'
+#'
+#' toy_lse <- leafSummarizedExperiment(tree = tinyTree,
+#'                                     assays = list(y))
+#' res <- parEstimate(data = toy_lse)
+#'
+#' metadata(res)$assays.par
 #'
 parEstimate <- function(data) {
 
@@ -100,7 +108,8 @@ parEstimate <- function(data) {
     if (!is(data, "matrix") &&
         !is(data, "list") &&
         !is(data, "leafSummarizedExperiment")) {
-        stop("data should be a matrix, list or leafSummarizedExperiment object. \n")
+        stop("data should be a matrix",
+             " list or leafSummarizedExperiment object. \n")
     }
 
     if (is(data, "matrix")) {

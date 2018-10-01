@@ -199,7 +199,8 @@ treeAGG.B <- function(data, sigf.by,
     rowData(res) <- rowData(data, internal = FALSE)
 
     for (i in seq_along(rowList4)) {
-       rowData(res)[[names(rowList4)[i]]] <- as(rowList4[[i]], "internal_rowData")
+       rowData(res)[[names(rowList4)[i]]] <- as(rowList4[[i]],
+                                                "internal_rowData")
     }
 
    return(res)
@@ -244,9 +245,9 @@ treeAGG.B <- function(data, sigf.by,
 #' @export
 #' @examples
 #'
-#' # We recommend to use treeAGG as example 2. It works in the case of example 1.
-#' # However, it is difficult to rownames a data frame when some internal nodes
-#' # of the tree doesn't have labels. Furthermore, it could do tree agg
+#' # We recommend to use treeAGG as example 2. It works in the case of example
+#' # 1.However, it is difficult to rownames a data frame when some internal
+#' # nodesof the tree doesn't have labels. Furthermore, it could do tree agg
 #' # Example 1
 #' library(ggtree)
 #' data(tinyTree)

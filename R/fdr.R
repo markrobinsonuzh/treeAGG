@@ -168,7 +168,8 @@ fdr0 <- function(tree,
     if (is.null(found)) {
         c(fd = 0, disc = 0)
     } else {
-        # if discovery exists, check whether the discovery has correct input format
+        # if discovery exists, check whether the discovery has correct input
+        # format
         if (!(
             inherits(found, "character") |
             inherits(found, "numeric") |
@@ -196,8 +197,8 @@ fdr0 <- function(tree,
                        c(fp = length(tip), disc = length(tip))
                    },
                    node = {
-                       # the internal node whose descendant leaf nodes all have signal
-                       # has signal too.
+                       # the internal node whose descendant leaf nodes all have
+                       # signal has signal too.
                        nodeF <- lapply(
                            found,
                            findOS,
@@ -211,8 +212,9 @@ fdr0 <- function(tree,
                    })
         } else {
 
-            # if discovery (found) exists and has correct input format, and truth
-            # isn't null check whether the input format of truth is correct
+            # if discovery (found) exists and has correct input format, and
+            # truth isn't null check whether the input format of truth is
+            # correct
             if (!(
                 inherits(truth, "character") |
                 inherits(truth, "numeric") |
@@ -222,8 +224,8 @@ fdr0 <- function(tree,
             }
 
             # if both found and truth are not NULL, the false discovery and the
-            # discovery could be calculated after their input formats are correct
-            # as below.
+            # discovery could be calculated after their input formats are
+            # correct as below.
             level <- match.arg(level)
             switch(level,
                    leaf = {

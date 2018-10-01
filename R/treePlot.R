@@ -250,6 +250,10 @@ treePlot <- function(tree,
 #' @return A figure
 #' @author Ruizhu Huang
 #' @keywords internal
+#' @examples
+#' # data(tinyTree)
+#' # addBranch(tree = tinyTree, branch = 17,
+#' # col.branch = "blue", col.other = "grey")
 
 addBranch <- function(tree, branch, col.branch,
                       col.other, addTo = NULL, ...) {
@@ -316,7 +320,10 @@ addBranch <- function(tree, branch, col.branch,
 #' @return A figure
 #' @author Ruizhu Huang
 #' @keywords internal
-
+#' @examples
+#' data(tinyTree)
+#'
+#'
 addPoint <- function(tree, point, col.point,
                      addTo = NULL, ...) {
     p <- ggtree(tree)
@@ -374,12 +381,16 @@ addPoint <- function(tree, point, col.point,
 #' @return A figure
 #' @author Ruizhu Huang
 #' @keywords internal
+#' @examples
+#' # data(tinyTree)
+#' # addZoom(tree = tinyTree, zoomNode = 17,
+#' # zoomScale = 3)
 
 addZoom <- function(tree, zoomNode = NULL, zoomLevel = NULL,
                     zoomScale = NULL, addTo = NULL, ...) {
 
     # node number required
-    if (inherits(zoomNode, "character")) {
+    if (is.character(zoomNode)) {
         zoomNode <- transNode(tree = tree, input = zoomNode,
                               message = FALSE)
     } else {
@@ -459,6 +470,7 @@ addZoom <- function(tree, zoomNode = NULL, zoomLevel = NULL,
 #' @author Ruizhu Huang
 #' @keywords internal
 
+
 addLegend <- function(legend.theme) {
 
     # default way to put legend
@@ -507,6 +519,7 @@ addLegend <- function(legend.theme) {
 #' @return ggproto object (Scale)
 #' @author Ruizhu Huang
 #' @keywords internal
+
 
 sizeScale <- function(col.point, size.point,
                       legend.label, legend.title,
@@ -562,6 +575,7 @@ sizeScale <- function(col.point, size.point,
 #' @return ggproto object (color)
 #' @author Ruizhu Huang
 #' @keywords internal
+#'
 
 colScale <- function(branch,
                      point,
@@ -638,7 +652,8 @@ colScale <- function(branch,
                            duplicated(names(colG)))]
         lab <- names(colG)
         ww <- tail(which(lab %in% legend.label$col.point),1)
-        # lab <- ifelse(names(colG) %in% legend.label$col.point, "", names(colG))
+        # lab <- ifelse(names(colG) %in% legend.label$col.point, "",
+        #names(colG))
 
         lab[ww] <- ""
         #colG <- unlist(setNames(namG, NULL))
@@ -646,7 +661,8 @@ colScale <- function(branch,
         # if there are duplicates for the pairs of color and lable,
         # remove them.
         #colG <- colG[!(duplicated(colG) & duplicated(names(colG)))]
-        # lab <- ifelse(names(colG) %in% legend.label$col.point, "", names(colG))
+        # lab <- ifelse(names(colG) %in% legend.label$col.point, "",
+        #names(colG))
         #lab <- names(colG)
         #lab[3] <- ifelse(lab[3] %in% legend.label$col.point,
         #                "", lab[3] )

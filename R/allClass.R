@@ -64,8 +64,8 @@ setOldClass("phylo")
 #' \item Each rows of matrix-like data in \strong{assays} could be mapped to a
 #' leaf node of the tree. The label of leaf node is provided in a column
 #' \strong{nodeLab} in \strong{rowData}, or provides as the rownames of
-#' \strong{rowData}. If both provided, the information in column \strong{nodeLab} is
-#' used. }
+#' \strong{rowData}. If both provided, the information in column
+#' \strong{nodeLab} is used. }
 #'
 #' @section Constructor:
 #' See \code{\link{leafSummarizedExperiment-constructor}} for constructor
@@ -226,20 +226,22 @@ leafSummarizedExperiment <- function(tree, ...) {
         isOut <- !isIn
         if (sum(isOut) > 0) {
             cat(sum(isOut), "rows are removed from tables of *assays*. \n",
-                nodeLab[isOut]," cannot match to any label of tree leaf node. \n")}
+                nodeLab[isOut],
+                " cannot match to any label of tree leaf node. \n")}
         se <- se[isIn, ] }
     # use rownames
     if (is.null(nodeLab)) {
         rowNam <- rownames(se)
         if (is.null(rowNam)) {
-            stop("Either rownames or a nodeLab column in rowData should be
-                 provided \n.")
+            stop("Either the rownames of rowData or a nodeLab column in ",
+                 "rowData should be provided \n.")
         }
         isIn <- rowNam %in% tipLab
         isOut <- !isIn
         if (sum(isOut) > 0) {
             cat(sum(isOut), "rows are removed from tables of *assays*. \n",
-                rowNam[isOut], " cannot match with any label of tree leaf node. \n")}
+                rowNam[isOut],
+                " cannot match with any label of tree leaf node. \n")}
         se <- se[isIn, ]
         }
 
@@ -301,6 +303,21 @@ leafSummarizedExperiment <- function(tree, ...) {
 #'   \code{\link{treeSummarizedExperiment-accessor}}
 #'   \code{\link{leafSummarizedExperiment}}
 #'   \code{\link[SummarizedExperiment]{SummarizedExperiment-class}}
+#' @examples
+#' data("tinyTree")
+#'
+#' # assays
+#' count <- matrix(rpois(100, 50), nrow = 10)
+#' rownames(count) <- c(tinyTree$tip.label)
+#' colnames(count) <- paste("C_", 1:10, sep = "_")
+#'
+#' # colData
+#' sampC <- data.frame(condition = rep(c("control", "trt"), each = 5),
+#' gender = sample(x = 1:2, size = 10, replace = TRUE))
+#' rownames(sampC) <- colnames(count)
+#' tse <- treeSummarizedExperiment(tree = tinyTree, assays = list(count),
+#' colData = sampC)
+#'
 treeSummarizedExperiment <- function(tree = NULL, linkData = NULL,
                                      ...){
 
@@ -343,8 +360,8 @@ treeSummarizedExperiment <- function(tree = NULL, linkData = NULL,
             newLab <- rowData(se)$nodeLab
             }
 
-        # (2) if the nodeLab column doesn't exist, rownames should match with the
-        # labels of tree leaves.
+        # (2) if the nodeLab column doesn't exist, rownames should match with
+        # the labels of tree leaves.
         if (is.null(nodeLab)) {
             rowNam <- rownames(se)
 

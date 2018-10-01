@@ -10,7 +10,8 @@
 #' counts. Here, we apply these methods to counts that might be from microbes or
 #' cells.
 #'
-#' The experimental design must be specified using a design matrix. The customized design matrix could be given by \code{design}.
+#' The experimental design must be specified using a design matrix. The
+#' customized design matrix could be given by \code{design}.
 #'
 #' Normalization for samples is automatically performed by \code{edgeR} package.
 #' More details about the calculation of normalization factor could be found
@@ -63,9 +64,36 @@
 #'    of \code{\link[edgeR]{DGEGLM-class}}
 #'    }
 #' }
+#' @examples
 #'
+#' library(S4Vectors)
+#' set.seed(1)
+#' y <- matrix(rnbinom(300,size=1,mu=10),nrow=10)
+#' colnames(y) <- paste(rep(LETTERS[1:3], each = 10), rep(1:10,3), sep = "_")
+#' rownames(y) <- tinyTree$tip.label
 #'
+#' rowInf <- DataFrame(nodeLab = rownames(y),
+#'                     var1 = sample(letters[1:3], 10, replace = TRUE),
+#'                     var2 = sample(c(TRUE, FALSE), 10, replace = TRUE))
+#' colInf <- DataFrame(gg = factor(sample(1:3, 30, replace = TRUE)),
+#'                     group = rep(LETTERS[1:3], each = 10))
+#' toy_lse <- leafSummarizedExperiment(tree = tinyTree, rowData = rowInf,
+#'                                     colData = colInf,
+#'                                     assays = list(y, (2*y), 3*y))
 #'
+#' toy_tse <- nodeValue(data = toy_lse, fun = sum, tree = tinyTree,
+#' message = TRUE)
+#'
+#' # build the model
+#' contrastList <- list(contrast1 = c(0, 0, 0, -1, 1),
+#'                      contrast2 = c(0, -1, 1, 0, 0))
+#' mod <- runEdgeR(obj = toy_tse, contrast = contrastList)
+#' # results are stored as the column result_assay1, result_assay2, and
+#' # result_assay3
+#' (res <- rowData(mod, internal = TRUE))
+#' # show results gained from the second element of the assasy
+#' # sort by PValue
+#' topNodes(mod, sort.by = "PValue", use.assays = 2)
 
 runEdgeR <- function(obj, design = NULL, contrast = NULL,
                      normalize = TRUE, method = "TMM",

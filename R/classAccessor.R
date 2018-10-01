@@ -39,7 +39,7 @@
 #'   object can contain NAs, but the rownames of a \link[S4Vectors]{DataFrame}
 #'   object cannot).
 #' @param value	An object of a class specified in the S4 method signature. See
-#' \code{\link[SummarizedExperiment]{SummarizedExperiment}} for more details.
+#'   \code{\link[SummarizedExperiment]{SummarizedExperiment}} for more details.
 #' @name leafSummarizedExperiment-accessor
 #' @return Elements from \code{leafSummarizedExperiment}.
 #' @author Ruizhu HUANG
@@ -47,6 +47,25 @@
 #'   \code{\link{treeSummarizedExperiment-accessor}}
 #'   \code{\link{leafSummarizedExperiment}}
 #'   \code{\link[SummarizedExperiment]{SummarizedExperiment-class}}
+#' @examples
+#' library(S4Vectors)
+#' set.seed(1)
+#' y <- matrix(rnbinom(300,size=1,mu=10),nrow=10)
+#' colnames(y) <- paste(rep(LETTERS[1:3], each = 10), rep(1:10,3), sep = "_")
+#' rownames(y) <- tinyTree$tip.label
+#'
+#' rowInf <- DataFrame(nodeLab = rownames(y),
+#'                     var1 = sample(letters[1:3], 10, replace = TRUE),
+#'                     var2 = sample(c(TRUE, FALSE), 10, replace = TRUE))
+#' colInf <- DataFrame(gg = factor(sample(1:3, 30, replace = TRUE)),
+#'                     group = rep(LETTERS[1:3], each = 10))
+#' toy_lse <- leafSummarizedExperiment(tree = tinyTree, rowData = rowInf,
+#'                                     colData = colInf,
+#'                                     assays = list(y, (2*y), 3*y))
+#' rowData(toy_lse)
+#' colData(toy_lse)
+#' metadata(toy_lse)
+#' assays(toy_lse)
 NULL
 
 # -----------------------------------------------------------------------------
@@ -89,7 +108,7 @@ NULL
 #'   object can contain NAs, but the rownames of a \link[S4Vectors]{DataFrame}
 #'   object cannot).
 #' @param value	An object of a class specified in the S4 method signature. See
-#' \code{\link[SummarizedExperiment]{SummarizedExperiment}} for more details.
+#'   \code{\link[SummarizedExperiment]{SummarizedExperiment}} for more details.
 #' @param i,j The subscripts that can act to subset the rows and columns of
 #'   \code{x}, that is the matrix elements of assays.
 #' @name treeSummarizedExperiment-accessor
@@ -99,4 +118,24 @@ NULL
 #'   \code{\link{treeSummarizedExperiment-accessor}}
 #'   \code{\link{leafSummarizedExperiment}}
 #'   \code{\link[SummarizedExperiment]{SummarizedExperiment-class}}
+#' @examples
+#' library(S4Vectors)
+#' set.seed(1)
+#' y <- matrix(rnbinom(300,size=1,mu=10),nrow=10)
+#' colnames(y) <- paste(rep(LETTERS[1:3], each = 10), rep(1:10,3), sep = "_")
+#' rownames(y) <- tinyTree$tip.label
+#'
+#' rowInf <- DataFrame(nodeLab = rownames(y),
+#'                     var1 = sample(letters[1:3], 10, replace = TRUE),
+#'                     var2 = sample(c(TRUE, FALSE), 10, replace = TRUE))
+#' colInf <- DataFrame(gg = factor(sample(1:3, 30, replace = TRUE)),
+#'                     group = rep(LETTERS[1:3], each = 10))
+#' toy_tse <- treeSummarizedExperiment(tree = tinyTree, rowData = rowInf,
+#'                                     colData = colInf,
+#'                                     assays = list(y, (2*y), 3*y))
+#' rowData(toy_tse)
+#' colData(toy_tse)
+#' metadata(toy_tse)
+#' linkData(toy_tse)
+#' assays(toy_tse)
 NULL

@@ -10,6 +10,7 @@
 #'
 #' @importFrom edgeR glmLRT
 #' @importFrom S4Vectors DataFrame
+#' @importFrom methods is
 #' @export
 #'
 #' @return A treeSummarizedExperiment object. The overall structure is the same
@@ -37,72 +38,100 @@
 #' @seealso \code{\link{runEdgeR}} \code{\link[edgeR]{glmFit}}
 #'   \code{\link[edgeR]{glmLRT}} \code{\link[edgeR]{DGEGLM-class}}
 #' @author Ruizhu HUANG
+#' @examples
+#' library(edgeR)
+#' library(S4Vectors)
+#' set.seed(1)
+#' y <- matrix(rnbinom(300,size=1,mu=10),nrow=10)
+#' colnames(y) <- paste(rep(LETTERS[1:3], each = 10), rep(1:10,3), sep = "_")
+#' rownames(y) <- tinyTree$tip.label
 #'
-updateContrast <- function(data, contrast){
-
-    # check whether glmFit exists in the metadata.
-    metaD <- metadata(data)
-    is.dgeGLM <- names(metaD) %in% "dgeGLM"
-    if (!any(is.dgeGLM)) {
-        stop("A DGEGLM object output from glmFit (edgeR) can not be found. \n ")
-    }
-
-    # check whether the non-null elements in dgeGLM are DGEGLM object
-    gf <- metaD$dgeGLM
-    use.gf <- metaD$"use.assays"
-    is.DGEGLM <- lapply(use.gf, FUN = function(x){
-        class(gf[[x]]) == "DGEGLM"
-    })
-    is.DGEGLM <- unlist(is.DGEGLM)
-    if (!all(is.DGEGLM)) {
-        stop("Wrong form in 'dgeGLM' of metadata: ", which(!is.DGEGLM),
-             " is not DGEGLM")
-    }
-
-    # update result use the new contrast.
-    fit <- metaD$dgeGLM
-    lrt <- lapply(seq_along(fit), FUN = function(x) {
-        if (x %in% use.gf) {
-            glmLRT(fit[[x]], contrast = contrast)
-        } else {
-            NULL
-        }
-    })
-
-    final <- lapply(lrt, FUN = function(x) { x$table })
-
-    # output result to metadata
-    outP <- lapply(seq_along(final), function(x) {
-
-        if (x %in% use.gf) {
-            # find rows deleted
-            idx <- as.numeric(rownames(final[[x]]))
-            idc <- setdiff(seq_len(nrow(data)), idx)
-
-            # add and rearrange rows so that the output is also row-wise
-            # corresponding to the assays data.
-            df <- DataFrame(final[[x]])
-            dm <- matrix(NA, nrow = length(idc), ncol = ncol(df),
-                         dimnames = list(idc, colnames(df)))
-            dfc <- DataFrame(dm)
-            dfA <- rbind(df, dfc)
-            dfA <- dfA[order(as.numeric(rownames(dfA))),]
-            return(dfA)
-        } else {
-            NULL
-        }
-    })
-    names(outP) <- names(assays(data))
-
-    # update contrast
-    metaD$contrast <- contrast
-
-    # update tse
-    outL <- treeSummarizedExperiment(assays = outP,
-                                     rowData = rowData(data),
-                                     metadata = metaD,
-                                     tree = treeData(data),
-                                     linkData = linkData(data))
-
-    return(outL)
-}
+#' rowInf <- DataFrame(nodeLab = rownames(y),
+#'                     var1 = sample(letters[1:3], 10, replace = TRUE),
+#'                     var2 = sample(c(TRUE, FALSE), 10, replace = TRUE))
+#' colInf <- DataFrame(gg = factor(sample(1:3, 30, replace = TRUE)),
+#'                     group = rep(LETTERS[1:3], each = 10))
+#' toy_lse <- leafSummarizedExperiment(tree = tinyTree, rowData = rowInf,
+#'                                     colData = colInf,
+#'                                     assays = list(y, (2*y), 3*y))
+#'
+#' toy_tse <- nodeValue(data = toy_lse, fun = sum, tree = tinyTree,
+#' message = TRUE)
+#'
+#' # run likelihood ratio tests
+#' # contrast
+#' contrast1 <- c(0, 0, 0, -1, 1)
+#' contrast2 <- c(0, -1, 1, 0, 0)
+#'
+#' # build model
+#' mod <- runEdgeR(obj = toy_tse)
+#' mod1 <- updateContrast(mod, contrast = contrast1)
+#'
+# updateContrast <- function(data, contrast){
+#
+#     # check whether glmFit exists in the metadata.
+#     metaD <- metadata(data)
+#     is.dgeGLM <- names(metaD) %in% "dgeGLM"
+#     if (!any(is.dgeGLM)) {
+#   stop("A DGEGLM object output from glmFit (edgeR) can not be found. \n ")
+#     }
+#
+#     # check whether the non-null elements in dgeGLM are DGEGLM object
+#     gf <- metaD$dgeGLM
+#     use.gf <- metaD$"use.assays"
+#     is.DGEGLM <- lapply(use.gf, FUN = function(x){
+#         is(gf[[x]], "DGEGLM")
+#     })
+#     is.DGEGLM <- unlist(is.DGEGLM)
+#     if (!all(is.DGEGLM)) {
+#         stop("Wrong form in 'dgeGLM' of metadata: ", which(!is.DGEGLM),
+#              " is not DGEGLM")
+#     }
+#
+#     # update result use the new contrast.
+#     fit <- metaD$dgeGLM
+#     lrt <- lapply(seq_along(fit), FUN = function(x) {
+#         if (x %in% use.gf) {
+#             glmLRT(fit[[x]], contrast = contrast)
+#         } else {
+#             NULL
+#         }
+#     })
+#
+#     final <- lapply(lrt, FUN = function(x) { x$table })
+#
+#     # output result to metadata
+#     outP <- lapply(seq_along(final), function(x) {
+#
+#         if (x %in% use.gf) {
+#             # find rows deleted
+#             idx <- as.numeric(rownames(final[[x]]))
+#             idc <- setdiff(seq_len(nrow(data)), idx)
+#
+#             # add and rearrange rows so that the output is also row-wise
+#             # corresponding to the assays data.
+#             df <- DataFrame(final[[x]])
+#             dm <- matrix(NA, nrow = length(idc), ncol = ncol(df),
+#                          dimnames = list(idc, colnames(df)))
+#             dfc <- DataFrame(dm)
+#             dfA <- rbind(df, dfc)
+#             dfA <- dfA[order(as.numeric(rownames(dfA))),]
+#             return(dfA)
+#         } else {
+#             NULL
+#         }
+#     })
+#     names(outP) <- names(assays(data))
+#
+#     # update contrast
+#     metaD$contrast <- contrast
+#
+#     # update tse
+#     outL <- treeSummarizedExperiment(assays = outP,
+#                                      rowData = rowData(data),
+#                                      metadata = metaD,
+#                                      tree = treeData(data),
+#                                      linkData = linkData(data))
+#
+#     return(outL)
+# }

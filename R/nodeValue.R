@@ -146,7 +146,8 @@ nodeValue.B <- function(data, fun = sum, message = FALSE) {
             # calculate values (e.g., abundance or intensity) for each node
             for(j in seq_along(tableA)){
                 table.j <- table[[j]]
-                tableA[[j]][i, ] <- apply(table.j[row.i, , drop = FALSE], 2, fun)
+                tableA[[j]][i, ] <- apply(table.j[row.i, , drop = FALSE],
+                                          2, fun)
             }
         }
 

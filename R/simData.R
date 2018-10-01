@@ -24,10 +24,10 @@
 #'@param maxTip.A The maximum number of leaves in branch A
 #'@param minTip.B The minimum number of leaves in branch B
 #'@param maxTip.B The maximum number of leaves in branch B
-#'@param minPr.A A numeric value selected from 0 to 1. The minimum abundance proportion
-#'  of leaves in branch A
-#'@param maxPr.A A numeric value selected from 0 to 1. The maximum abundance proportion
-#'  of leaves in branch A
+#'@param minPr.A A numeric value selected from 0 to 1. The minimum abundance
+#'  proportion of leaves in branch A
+#'@param maxPr.A A numeric value selected from 0 to 1. The maximum abundance
+#'  proportion of leaves in branch A
 #'@param ratio A numeric value. The proportion ratio of branch B to branch A.
 #'  This value is used to select branches(see \bold{Details}). If there are no
 #'  branches having exactly this ratio, the pair with the value closest to
@@ -54,7 +54,6 @@
 #'@param fun A function to derive the count at each internal node based on its
 #'  descendant leaves, e.g. sum, mean. The argument of the function is a numeric
 #'  vector with the counts of an internal node's descendant leaves.
-#'@param seed a numeric value. Set seed to get reproducible results.
 #'
 #'@importFrom dirmult dirmult
 #'@importFrom S4Vectors metadata
@@ -97,23 +96,23 @@
 #'@author Ruizhu Huang
 #'
 #' @examples
-#' \dontrun{
-#' if(require(GUniFrac)){
-#' data("throat.otu.tab")
-#' data("throat.tree")
 #'
-#' # provide tree & data
-#' count <- as.matrix(t(throat.otu.tab))
 #' set.seed(1)
-#' dat1 <- simData(tree = throat.tree, data = count, ratio = 2, seed = 1)
+#' y <- matrix(rnbinom(100,size=1,mu=10),nrow=10)
+#' colnames(y) <- paste("S", 1:10, sep = "")
+#' rownames(y) <- tinyTree$tip.label
 #'
-#' # provide obj
-#' treeDat <- treeSummarizedExperiment(tree = throat.tree,
-#'                                     assays = list(count))
-#' set.seed(1)
-#' dat2 <- simData(obj = treeDat, ratio = 2, seed = 1123)
-#' }
-#'}
+#'
+#' toy_lse <- leafSummarizedExperiment(tree = tinyTree,
+#'                                     assays = list(y))
+#' res <- parEstimate(data = toy_lse)
+#'
+#' set.seed(1122)
+#' dat1 <- simData(obj = res)
+#'
+
+#'
+#'
 
 
 simData <- function(tree = NULL, data = NULL,
@@ -125,8 +124,8 @@ simData <- function(tree = NULL, data = NULL,
                     ratio = 2, adjB = NULL,
                     pct = 0.6, nSam = c(50, 50),
                     mu = 10000, size = 50,
-                    n = 1, fun = sum, seed = 1){
-    set.seed(seed)
+                    n = 1, fun = sum){
+    #set.seed(seed)
     # -------------------------------------------------------------------------
     # provide (tree & data)
     if (is.null(obj)) {
@@ -241,7 +240,7 @@ simData <- function(tree = NULL, data = NULL,
 #'  vector with the counts of an internal node's descendant leaves.
 #'
 #'@importFrom dirmult dirmult
-#'@export
+#'@keywords internal
 #'
 #'@return a list of objects \item{FC}{the fold change of entities correspondint
 #'  to the tree leaves.} \item{Count}{a list of count table or a count table.
@@ -394,6 +393,7 @@ doData <- function(tree, data, scenario = "S1",
 #' @author Ruizhu Huang
 #' @keywords internal
 
+
 pickLoc <- function(tree, data, from.A,
                     minTip.A, maxTip.A,
                     minTip.B, maxTip.B,
@@ -416,6 +416,8 @@ pickLoc <- function(tree, data, from.A,
                    self.include = TRUE,
                    return = "label",
                    use.alias = TRUE)
+    names(desI) <- transNode(tree = tree, input = nodI,
+                             use.alias = TRUE, message = FALSE)
     nodP <- mapply(function(x, y) {
         sum(x[y])
     }, x = list(pars), y = desI)
@@ -457,16 +459,16 @@ pickLoc <- function(tree, data, from.A,
     }
 
     st <- tt.sel[tt.sel[, 2] >= minTip.A &
-                     tt.sel[, 2] <= maxTip.A &
-                     tt.sel[, 1] >= minPr.A &
-                     tt.sel[, 1] <= maxPr.A, , drop = FALSE]
+                 tt.sel[, 2] <= maxTip.A &
+                 tt.sel[, 1] >= minPr.A &
+                 tt.sel[, 1] <= maxPr.A, , drop = FALSE]
     if (nrow(st) == 0) {
         stop("No nodes fullfill the requirements;
          try other values for minTip.A, maxTip.A,
          minPr.A, or maxPr.A")
     }
     st2 <- tt[tt[, 2] >= minTip.B &
-                  tt[, 2] <= maxTip.B, , drop = FALSE]
+              tt[, 2] <= maxTip.B, , drop = FALSE]
 
     # fold change between any two nodes (large/small)
     mm <- (1/st[, 1]) %o% st2[, 1]
@@ -550,7 +552,7 @@ pickLoc <- function(tree, data, from.A,
     # }
     # select the pair with the value closest to the ratio
     dif <- abs(nm - ratio)
-    wi <- which(dif == min(dif), arr.ind = TRUE)
+    wi <- which(dif == min(dif, na.rm = TRUE), arr.ind = TRUE)
     si <- sample(seq_len(nrow(wi)), 1)
     an <- rownames(nm)[wi[si, 1]]
     bn <- colnames(nm)[wi[si, 2]]
@@ -674,7 +676,7 @@ infLoc <- function(tree, data, from.A,
 #' @return numeric vector
 #' @author Ruizhu Huang
 #' @keywords internal
-#'
+
 doFC <- function(tree, data, scenario,
                  branchA, branchB,
                  ratio, adjB, pct) {
@@ -738,8 +740,8 @@ doFC <- function(tree, data, scenario,
         propB <- sum(pars[tip.B])
 
         # swap proportions on two branches and randomly assign a fold change
-        # value to the the leaves on a branch (log fold change in the same branch
-        # should have the same sign)
+        # value to the the leaves on a branch (log fold change in the same
+        # branch should have the same sign)
 
 
         a1 <- runif(length(tip.A))
@@ -854,8 +856,8 @@ doFC <- function(tree, data, scenario,
 #         propB <- sum(data$pi[tipB])
 #
 #         # swap proportions on two branches and randomly assign a fold change
-#         # value to the the leaves on a branch (log fold change in the same branch
-#         # should have the same sign)
+#         # value to the the leaves on a branch (log fold change in the same
+#         # branch should have the same sign)
 #
 #
 #             a1 <- runif(length(tipA))
@@ -924,9 +926,10 @@ doFC <- function(tree, data, scenario,
 #
 #         # ratio : 2, 5, 7, 8
 #         # if(length(ratio)==1){
-#         #   warning("For scenario S3, if multiple fold changes would be tried later
-#         #   to compare their results, it would be better to specify ratio as
-#         #           a vector so that the random tips selected would stay the same")
+#         #  warning("For scenario S3, if multiple fold changes would be tried
+#         #  later to compare their results, it would be better to specify
+#         #  ratio as a vector so that the random tips selected would stay
+#         #  the same")
 #         # }
 #
 #         # decide beta
@@ -980,7 +983,7 @@ doFC <- function(tree, data, scenario,
 #' @return a matrix or a list of matrices
 #' @author Ruizhu Huang
 #' @keywords internal
-#'
+
 doCount <- function(data, FC, nSam, mu,
                     size, n) {
     # parameters

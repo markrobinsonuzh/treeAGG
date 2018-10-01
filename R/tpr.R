@@ -140,6 +140,7 @@ tpr <- function(tree, truth, found,
 #' @return a vector
 #' @keywords internal
 
+
 tpr0 <- function(tree,
                  truth = NULL,
                  found = NULL,
@@ -176,8 +177,8 @@ tpr0 <- function(tree,
                        c(tp = 0, pos = length(tip))
                    },
                    node = {
-                       # the internal node whose descendant leaf nodes all have signal
-                       # has signal too.
+                       # the internal node whose descendant leaf nodes all have
+                       # signal has signal too.
                        nodeS <- signalNode(node = truth,
                                            tree = tree,
                                            return = "number")
@@ -193,8 +194,8 @@ tpr0 <- function(tree,
                        c(tp = 0, pos = length(nod))
                    })
         } else {
-            # if signal exists and has correct input format, but found isn't null
-            # check whether the input format of found is correct
+            # if signal exists and has correct input format, but found isn't
+            # null check whether the input format of found is correct
             if (!(
                 inherits(found, "character") |
                 inherits(found, "numeric") | inherits(found,
@@ -203,8 +204,9 @@ tpr0 <- function(tree,
                 stop("found should include character or numeric")
             }
 
-            # if there is signal and also something found, the true positive and the
-            # positive could be calculated after their input formats are correct.
+            # if there is signal and also something found, the true positive and
+            # the positive could be calculated after their input formats are
+            # correct.
             level <- match.arg(level)
             switch(level,
                    leaf = {

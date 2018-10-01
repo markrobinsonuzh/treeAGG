@@ -14,10 +14,10 @@
 #'   label).
 #' @param use.alias A logical value, TRUE or FALSE. This is an optional argument
 #'   that only requried when \code{return = "label"}. The default is FALSE, and
-#'   the node label would be returned; otherwise, the alias of node label would be
-#'   output. The alias of node label is created by adding a prefix
-#'   \code{"Node_"} to the node number if the node is an internal node or
-#'   adding a prefix \code{"Leaf_"} if the node is a leaf node.
+#'   the node label would be returned; otherwise, the alias of node label would
+#'   be output. The alias of node label is created by adding a prefix
+#'   \code{"Node_"} to the node number if the node is an internal node or adding
+#'   a prefix \code{"Leaf_"} if the node is a leaf node.
 #' @export
 #' @return A vector
 #' @author Ruizhu Huang
