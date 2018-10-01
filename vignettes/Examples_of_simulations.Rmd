@@ -98,7 +98,8 @@ plot_grid(fig1, fig2, fig3, labels = c("S1", "S2", "S3"), nrow = 1)
 ```
 
 The counts of entities in a sample are assumed to follow a Dirichlet Multinomial
-distribution as has been suggested in several articles [@Zhao2015,@Tang2016a,@Tang2016b,@Wu2016]:
+distribution as has been suggested in several articles
+[@Zhao2015,@Tang2016a,@Tang2016b,@Wu2016]:
 $$\mathbf{x}=(x_1,\dots,x_K) \sim \text{dirmult}(n, \mathbf{\alpha})$$
 \begin{equation}
 \Pr(\mathbf{x}\mid\boldsymbol{\alpha})=\frac{\left(n!\right)\Gamma\left(\alpha_0\right)}
@@ -110,10 +111,11 @@ library size of a sample, $\mathbf{\alpha} = (\alpha_1, \alpha_2, ...,
 \alpha_K)$ are the parameters for the distribution, and $\alpha_0 = \sum
 \alpha_k$.
 
-In the `r CRANpkg("dirmult")` package, the Dirichlet Multinomial distribution (equation
-\@ref(eq:dirmult1)) is reparameterized with $\mathbf{\pi} = (\pi_1, ..., \pi_K)$
-and $\theta$ so that $\alpha_0 = \frac{(1-\theta)}{\theta}$ and $\alpha_k =
-\pi_k \theta$. Here, $\pi_k$ is the expected proportion of entity $k$ in a sample.
+In the `r CRANpkg("dirmult")` package, the Dirichlet Multinomial distribution
+(equation \@ref(eq:dirmult1)) is reparameterized with $\mathbf{\pi} = (\pi_1,
+..., \pi_K)$ and $\theta$ so that $\alpha_0 = \frac{(1-\theta)}{\theta}$ and
+$\alpha_k = \pi_k \theta$. Here, $\pi_k$ is the expected proportion of entity
+$k$ in a sample.
 
 The technical details in the simulation procedure are as below.
 
@@ -128,15 +130,15 @@ selected branches are zoomed in (see Figure \@ref(fig:scenarioDiff)). We provide
 performed.
 
 + S1 (the left plot in Figure \@ref(fig:scenarioDiff)): The proportions of
-entities in sample $i$ are $\mathbf{p}^{G1}_{i}$ and
-$\mathbf{p}^{G2}_{i}$ for the group G1 and G2 (the phenotypic outcome), respectively.
-The values of $\mathbf{p}^{G1}_{i}$ and $\mathbf{p}^{G2}_{i}$ are randomly generated
-from the Dirichlet distribution as below.
+entities in sample $i$ are $\mathbf{p}^{G1}_{i}$ and $\mathbf{p}^{G2}_{i}$ for
+the group G1 and G2 (the phenotypic outcome), respectively. The values of
+$\mathbf{p}^{G1}_{i}$ and $\mathbf{p}^{G2}_{i}$ are randomly generated from the
+Dirichlet distribution as below.
 $$\mathbf{p}^{G1}_{i} \sim \text{Dirichlet}(\mathbf{\hat{\pi}}, \hat{\theta}).$$
 $$\mathbf{p}^{G2}_{i} \sim \text{Dirichlet}(\mathbf{\hat{\pi}'}, \hat{\theta})$$
-Compared with group G1, the proportions of entities on the blue and orange branch
-have been changed correspondingly by a common factor $r$ or $\frac{1}{r}$ in
-group G2.
+Compared with group G1, the proportions of entities on the blue and orange
+branch have been changed correspondingly by a common factor $r$ or $\frac{1}{r}$
+in group G2.
 \begin{equation}
 \left\{\begin{matrix}
  {\hat{\pi}}'_{k} =\hat{\pi}_{k}; &  k \notin \text{colored branches}\\
@@ -207,17 +209,17 @@ knitr::include_graphics("scene.png")
 
 In Figure \@ref(fig:scene), the height of the bar represent the proportion. We
 see the tree structure as three parts, the two selected branches and the others.
-The phenotypic outcome is represented by the group (G1 or G2). The proportions of
-the orange and blue branches are swapped between different groups in scenario S1
-and S2. The height of the orange bar in the group G2 is equal to the blue bar in
-the group G1, and the height of the blue bar in group G2 is the same as that of
-the orange bar in group G1. In S1, the increase or decrease in the proportion is
-evenly distributed to the entities on the same branch by a common factor $r$ (on
-blue branch) or $\frac{1}{r}$ (on orange branch). However, in S2, the change in
-the proportion is not evenly distributed and the factor $r_k$ varies on the
-entities. In S3, the swap could be partial and depends on the value $c$.
-That's why the height of the orange bar in group G2 could be different to that of
-the blue bar in group G1.
+The phenotypic outcome is represented by the group (G1 or G2). The proportions
+of the orange and blue branches are swapped between different groups in scenario
+S1 and S2. The height of the orange bar in the group G2 is equal to the blue bar
+in the group G1, and the height of the blue bar in group G2 is the same as that
+of the orange bar in group G1. In S1, the increase or decrease in the proportion
+is evenly distributed to the entities on the same branch by a common factor $r$
+(on blue branch) or $\frac{1}{r}$ (on orange branch). However, in S2, the change
+in the proportion is not evenly distributed and the factor $r_k$ varies on the
+entities. In S3, the swap could be partial and depends on the value $c$. That's
+why the height of the orange bar in group G2 could be different to that of the
+blue bar in group G1.
 
 The orange and blue branches are also referred as the signal branches in this
 vignette.
@@ -250,17 +252,19 @@ data("throat.otu.tab")
 
 If we already know for which two branches we want to swap the relative
 abundance, we can feed `simData` the real data via two arguments `tree` and
-`data`, and the branches via `from.A` and `from.B` as below. `throat.otu.tab`
-has the samples in the rows and entities in the columns, so we need to transpose
-it before input to `simData`. To get reproducible result, we set the random seed
-number via `seed`. 
+`data`, and the branches via `from.A` and `from.B` as below. How to manually
+decide branches to swap could be found in section \@ref(selectBranch).
+`throat.otu.tab` has the samples in the rows and entities in the columns, so we
+need to transpose it before input to `simData`. To get reproducible result, the
+random seed number is set.
 
 ```{r}
 # simulate count table
+set.seed(1122)
 datA <- simData(tree = throat.tree,
                 data = as.matrix(t(throat.otu.tab)),
                 from.A = 1678,
-                from.B = 1613, seed = 1122)
+                from.B = 1613)
 datA
 class(datA) 
 
@@ -278,21 +282,22 @@ The tree and count table could also be combined into a
 lse <- leafSummarizedExperiment(tree = throat.tree, 
                                 assays = list(t(throat.otu.tab)))
 lse
+set.seed(1122)
 datB <- simData(obj = lse,
                 from.A = 1678,
-                from.B = 1613, seed = 1122)
+                from.B = 1613)
 ```
 
 ```{r}
 # Two results are exactly the same
 all.equal(datA, datB)
 ```
-The results, `datA` and `datB`, are exactly the same. Each includes a simulated count
-table in `assays` and the original input tree *throat.tree* as `tree` in
+The results, `datA` and `datB`, are exactly the same. Each includes a simulated
+count table in `assays` and the original input tree *throat.tree* as `tree` in
 `metadata`. Additional information, such as fold changes of entities on the leaf
 level (`FC`), the information of branches that have differential abundance
 (`branch`) and the simulation scenario (`scenario`), is also stored in
-`metadata`. 
+`metadata`.
 
 The estimate of parameters from the real data takes a while. In the vignette, we
 will do simulation several times using the same real data. To save time, the
@@ -319,10 +324,11 @@ If more simulated tables are desired with the same simulation setting, the
 argument `n` could be used.
 ```{r}
 # simulate 2 count tables with the same setting
+set.seed(1122)
 datC <- simData(obj = lse,
                 from.A = 1678,
                 from.B = 1613, 
-                n = 2, seed = 1122)
+                n = 2)
 
 length(assays(datC))
 ```
@@ -338,8 +344,9 @@ the abundance of the other (`ratio = 2`).
 ```{r}
 # set seed to have reproducible results
 # branches are not given
+set.seed(1122)
 dat1 <- simData(obj = lse,
-                ratio = 2, seed = 1122)
+                ratio = 2)
 
 ```
 
@@ -366,10 +373,11 @@ interval, it can be achieved by changing the values of `minTip.A`, `maxTip.A`,
 leaves and at most 40 leaves, the other is to have at least 20 and at most 100.
 
 ```{r}
+set.seed(1122)
 dat2 <- simData(obj = lse, 
                 minTip.A = 20, maxTip.A = 40,
                 minTip.B = 20, maxTip.B = 100,
-                ratio = 2, seed = 1122)
+                ratio = 2)
 ```
 
 ```{r}
@@ -382,12 +390,13 @@ count proportion level of branch A. One could combine using these two arguments
 with `ratio` to restrict the branch B.
 
 ```{r}
+set.seed(1122)
 dat3 <- simData(obj = lse,
                 minTip.A = 20, maxTip.A = 40,
                 minTip.B = 20, maxTip.B = 100, 
                 maxPr.A = 0.01,
-                ratio = 2, seed = 1122)
-rb <- rbind(dat2@metadata$branch, dat3@metadata$branch)
+                ratio = 2)
+rb <- rbind(metadata(dat2)$branch, metadata(dat3)$branch)
 rownames(rb) <- c("dat2", "dat3")
 rb
 ```
@@ -399,7 +408,7 @@ above $0.01$ (`maxPr.A`= 0.01).
 viewSim(obj = dat3, layout = "rectangular", zoomScale = 1/100)
 ```
 
-The ratio in `dat3` is `r dat3@metadata$branch$ratio`, which is different from
+The ratio in `dat3` is `r metadata(dat3)$branch$ratio`, which is different from
 the value given to the argument `ratio = 2`. It's because there is not any pair
 of branches which has ratio exactly equal to 2. The pair having the value
 closest to 2 will be returned.
@@ -407,15 +416,16 @@ closest to 2 will be returned.
 If we want to fix one branch, `from.A` can be used. 
 ```{r}
 # use the branch A selected in dat2.
-brA <- dat2@metadata$branch$A
+set.seed(1122)
+brA <- metadata(dat2)$branch$A
 dat4 <- simData(from.A = brA,
                 obj = lse, 
                 minTip.A = 20, maxTip.A = 40,
                 minTip.B = 20, maxTip.B = 100,
-                ratio = 4, seed = 1122)
+                ratio = 4)
 
 # show the selected branches 
-rb <- rbind(dat2@metadata$branch, dat4@metadata$branch)
+rb <- rbind(metadata(dat2)$branch, metadata(dat4)$branch)
 rownames(rb) <- c("dat2", "dat4")
 rb
 ```
@@ -428,10 +438,11 @@ We could simulate different differential abundance patterns by changing the
 ```{r}
 # use the branches from dat4
 # change scenario to S2
-dat5 <- simData(from.A = dat4@metadata$branch$A,
-                from.B = dat4@metadata$branch$B,
+set.seed(1122)
+dat5 <- simData(from.A = metadata(dat4)$branch$A,
+                from.B = metadata(dat4)$branch$B,
                 obj = lse, 
-                scenario = "S2", seed = 1122)
+                scenario = "S2")
 ```
 
 If use `scenario = "S3"`, the argument `adjB` could also be used. It is the $c$
@@ -446,15 +457,19 @@ blue branch.
 ```{r}
 # use the branches from dat4
 # change scenario to S3
-dat6 <- simData(from.A = dat4@metadata$branch$A,
-                from.B = dat4@metadata$branch$B,
+set.seed(1122)
+dat6 <- simData(from.A = metadata(dat4)$branch$A,
+                from.B = metadata(dat4)$branch$B,
                 obj = lse, pct = 0.6, adjB = NULL, 
-                scenario = "S3", seed = 1122)
+                scenario = "S3")
 ```
 
 
 If users are interested, the values of $c$ and $r$ in formula \@ref(eq:s3) are
-stored as `FC` in the `metadata`.
+stored as `FC` in the `metadata`. The names of *fc* are the node labels and the
+numeric value are the fold change of corresponding nodes. Each leaf node has a
+fold change value. Those have values above one ($r$) are in the blue branch and
+below one in the orange branch ($c$) (see S3 in Figure \@ref(fig:scenarioDiff))
 ```{r}
 fc <- metadata(dat6)$FC
 ```
@@ -482,28 +497,67 @@ In scenario S3, points in a colored branch have the same color but different
 sizes. This means the fold changes of entities in that branch are different
 in values but same in the direction.
 
-## Select branches
+## Select branches {#selectBranch}
 
 It's quite normal that a pair of branches that exactly fulfill the requirements
 specified can't be found, especially when a small tree is provided. To
 efficiently select suitable branches, we could summarize the information of
-branches before the simulation using `selNode` and select manually one or two of
-them as the fixed branch(es).
+branches before the simulation using `selNode` and manually select one or two 
+branches.
 
-Here, all branches (`all = TRUE`), which have the number of leaves between 10
-(`minTip = 10`) and 15 (`maxTip = 15`) and the relative abundance between 0.03
-(`minPr = 0.03`) and 0.05 (`maxPr = 0.05`) are listed.
+The function `selNode` could be used to list all branches (`all = TRUE`) that
+have the number of leaf nodes between 10 (`minTip = 10`) and 15 (`maxTip = 15`)
+and the relative abundance between 0.03 (`minPr = 0.03`) and 0.05 (`maxPr =
+0.05`) as below.
 
 ```{r}
-selNode(obj = lse, minTip = 11, maxTip = 12, 
-        minPr = 0.03, maxPr = 0.05,  all = TRUE )
+(sel1 <- selNode(obj = lse, minTip = 11, maxTip = 12, 
+                    minPr = 0.03, maxPr = 0.05,  all = TRUE))
+```
+The result has listed all branches that meet the requirements. The branch nodes
+of these branches are given in the column `nodeNum` (the node number), `nodeLab`
+(the node label), and `nodeLab_alias` (the alias of the node label). Here, the
+column `nodeLab` has `NA` value because the tree has no label for the nodes
+selected. The relative abundance of these branches, which is a value between 0
+and 1, is given in the column `proportion`. The numbers of descendant leaves on
+those branches are in column `numTip`.
+
+We could take one of the branches, for example, the branch on the first row, as
+the fixed branch. As a pair of branches is required in simulation, the other
+branch could be selected randomly by `simData` or manually as below. Let's say
+the other branch should have roughly twice abundance as the currently selected
+branch (`minPr = 0.06, maxPr = 0.07`). Of course, we don't want a branch that
+has overlap with the currently selected one. For this reason, `skip` is used.
+
+```{r}
+(sel2 <- selNode(obj = lse, minPr = 0.06, maxPr = 0.07, 
+                 skip = sel1$nodeLab_alias[1],
+                 all = TRUE))
 ```
 
-If we would like to find the sibling branch of a selected branch, the function 
-`findSibling` could be used.
+With the information above, we could take a branch that meets the requirement of
+the abundance level and has propor size (number of desendant leaves).
+
+If the sibling branch of a selected branch is need, the function `findSibling`
+could be used. Users could decide whether the node number (`return = "number"`)
+or the node label (`return = "label"`) should be output. If the tree data has no
+label for the output node and `return = "number"` is specified, `NA` is obtained
+(`use.alias = FALSE`) and an alias of the node label is obtained (`use.alias =
+TRUE`). An alias of a node label is created by prefixing "Node_" to the node
+number for internal nodes and "Leaf_" for leaf nodes.
+```{r}
+findSibling(tree = metadata(lse)$tree, 
+            input = sel1$nodeLab_alias[3], 
+            return = "label",
+            use.alias = TRUE)
+```
+
+If users are curious about the descendant leaves of the selected branch, the 
+function `findOS` could be used.
 
 ```{r}
-findSibling(tree = throat.tree, input = brA, return = "label")
+findOS(tree = metadata(lse)$tree, ancestor = sel2$nodeNum[6],
+       return = "number")
 ```
 
 # Appendix {#appendix}
