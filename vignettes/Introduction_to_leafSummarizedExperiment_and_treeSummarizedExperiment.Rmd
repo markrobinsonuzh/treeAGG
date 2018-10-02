@@ -237,7 +237,6 @@ those at its descendant leaves.  More details about how to use
 ```{r}
 # load packages
 suppressPackageStartupMessages({
-    library(dplyr)   # to use rename in the creation of datF
     library(ggtree)  # to plot the tree
     })
 
@@ -246,7 +245,11 @@ ex1 <- assays(tse)[[1]][, 1, drop = FALSE]
 
 # combine it with the data extracted from linkData
 # rename column nodeNum as node
-datF <- cbind.data.frame(ex1, linkData(tse)) %>% rename(node=nodeNum)
+# optional : datF <- cbind.data.frame(ex1, linkData(tse)) %>% rename(node=nodeNum)
+datF <- cbind.data.frame(ex1, linkData(tse)) 
+colN <- colnames(datF)
+colN[colN == "nodeNum"] <- "node"
+colnames(datF) <- colN
 
 # plot
 ggtree(treeData(tse)) %<+% datF +
