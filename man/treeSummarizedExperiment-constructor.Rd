@@ -3,7 +3,7 @@
 \name{treeSummarizedExperiment-constructor}
 \alias{treeSummarizedExperiment-constructor}
 \alias{treeSummarizedExperiment}
-\title{A Constructor for treeSummarizedExperiment}
+\title{Construct a treeSummarizedExperiment object}
 \usage{
 treeSummarizedExperiment(tree = NULL, linkData = NULL, ...)
 }
@@ -11,21 +11,22 @@ treeSummarizedExperiment(tree = NULL, linkData = NULL, ...)
 \item{tree}{A phylo object}
 
 \item{linkData}{A data frame or \code{\link[S4Vectors]{DataFrame}}. It has
-the same number of rows as the matrix-like element in \code{assays.}. The
-row order between \code{linkData} and the matrix-like element in
-\code{assays.} is the same. It includes columns as below.
+the same number of rows as the matrix-like elements of \code{assays}. The
+row order of the \code{linkData} matches with that of  the matrix-like
+element of \code{assays}. It has the following columns.
 \itemize{
-\item \strong{nodeLab} the labels of nodes
-\item \strong{nodeLab_alias} a alias of column \code{nodeLab}. It is
+\item \strong{nodeLab} The labels of nodes on the tree.
+\item \strong{nodeLab_alias} An alias of column \code{nodeLab}. It is
 created only when there are missing value or duplicated value in column
-\code{nodeLab}. Commonly, it is a prefix "Node_" follow by the value in
-column \code{nodeNum}.
-\item \strong{nodeNum} the numbers of nodes
-\item \strong{isLeaf} is it a leaf node
-\item \strong{rowID} the row number in the matrix-like element in
-\code{assays} }}
+\code{nodeLab}. A prefix "Node_" and "Leaf_" is added to the node number
+(column \code{nodeNum}) for the internal nodes and the leaf nodes,
+respectively.
+\item \strong{nodeNum} The numbers of nodes
+\item \strong{isLeaf} It indicates whether the node is a leaf node
+\item \strong{rowID} The corresponding row number of the matrix-like
+elements in \code{assays} }}
 
-\item{...}{see arguments in
+\item{...}{see arguments for the constructor in
 \code{\link[SummarizedExperiment]{RangedSummarizedExperiment-class}}
 \itemize{
 \item{\strong{assays}:}{ a list of matrix-like elements, or a matrix-like
@@ -42,7 +43,7 @@ matrices in \strong{assays}. }
 \item{\strong{colData}:}{ An optional
 \code{\link[S4Vectors]{DataFrame-class}} describing the samples. Row names,
 if present, become the column names of the
-\strong{leafSummarizedExperiment}.}
+\strong{treeSummarizedExperiment}.}
 
 \item{\strong{metadata}:}{ An optional list of arbitrary content describing
 the overall experiment.}
@@ -52,28 +53,31 @@ the overall experiment.}
 a treeSummarizedExperiment object
 }
 \description{
-\code{treeSummarizedExperiment} constructs a treeSummarizedExperiment.
+\code{treeSummarizedExperiment} constructs a treeSummarizedExperiment object.
 }
 \examples{
 data("tinyTree")
 
-# assays
+# the count table
 count <- matrix(rpois(100, 50), nrow = 10)
 rownames(count) <- c(tinyTree$tip.label)
 colnames(count) <- paste("C_", 1:10, sep = "_")
 
-# colData
+# The sample information
 sampC <- data.frame(condition = rep(c("control", "trt"), each = 5),
-gender = sample(x = 1:2, size = 10, replace = TRUE))
+                    gender = sample(x = 1:2, size = 10, replace = TRUE))
 rownames(sampC) <- colnames(count)
-tse <- treeSummarizedExperiment(tree = tinyTree, assays = list(count),
-colData = sampC)
+
+# build a treeSummarizedExperiment object
+tse <- treeSummarizedExperiment(tree = tinyTree,
+                                assays = list(count),
+                                colData = sampC)
 
 }
 \seealso{
-\code{\link{treeSummarizedExperiment}}
+\code{\link{treeSummarizedExperiment-class}}
   \code{\link{treeSummarizedExperiment-accessor}}
-  \code{\link{leafSummarizedExperiment}}
+  \code{\link{leafSummarizedExperiment-class}}
   \code{\link[SummarizedExperiment]{SummarizedExperiment-class}}
 }
 \author{

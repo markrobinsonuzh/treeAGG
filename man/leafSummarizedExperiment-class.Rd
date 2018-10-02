@@ -9,39 +9,37 @@
 The class \strong{leafSummarizedExperiment} is an extension class of standard
 \code{\link[SummarizedExperiment]{SummarizedExperiment}} class. It is
 designed to store rectangular data like a \code{matrix} for entities (e.g.,
-microbes or cell types), and the hiearchical structure information of
+microbes or cell types), and the information of the hiearchical structure of
 entities. The annotations on the rows and columns of the rectangular data are
 strored in \code{rowData} and \code{colData}, respectively. Each row of the
 rectangular data could be mapped to a leaf node of the tree via the rownames
-of \strong{rowData} or a column named as \strong{nodeLab} in
-\strong{rowData}. For example, we could include abundance count of microbes
-collected from different samples in the \strong{assays} and the phylogenetic
-tree of microbes in the \strong{metadata}. Each row of matrix-like data in
-\strong{assays} corresponds to one microbial specie, whose information is
-given in \strong{rowData}. We could find the label of its corresponding leaf
-node in column \strong{nodeLab}, or in the rownames of \strong{rowData}. Each
-column of matrix-like data is a sample, whose information is stored in
-\strong{colData}. The class \strong{leafSummarizedExperiment} has four slots
-\strong{assays}, \strong{rowData} \strong{colData} and \strong{metadata} as
+of \code{rowData} or a column named as \code{nodeLab} in
+\code{rowData}. For example, the abundance count of microbes collected from
+different samples could be stored in the \code{assays} and the phylogenetic
+tree of the microbes in the \code{metadata}. Each row of matrix-like data
+in \code{assays} represents one microbial specie that could be mapped to a
+leaf node of the phylogenetic tree. The link between the row and the node
+could be given via a column (\code{nodeLab}), or the rownames of
+\code{rowData}. Each column of the matrix-like data is a sample. The sample
+information is given in the \code{colData}. The class
+\strong{leafSummarizedExperiment} has four slots \code{assays},
+\code{rowData} \code{colData} and \code{metadata} as the
 \code{\link[SummarizedExperiment]{SummarizedExperiment}} class. More details
 about these four slots could be found in
 \code{\link[SummarizedExperiment]{SummarizedExperiment-class}}.
 }
 \details{
-\strong{leafSummarizedExperiment} has more restrictions in data structure
-than \strong{SummarizedExperiment}.
-In \strong{leafSummarizedExperiment} class, we have restrictions as below.
+The \strong{leafSummarizedExperiment} class has more restrictions in data
+structure than the \strong{SummarizedExperiment} class. In
+\strong{leafSummarizedExperiment} class, it's required that
 \itemize{
-\item It's not allowed to have empty \strong{assays}.
-
-\item A phylo object named as \strong{tree} should be contained in
-\strong{metadata}. The labels of tree leaf nodes are unique.
-
-\item Each rows of matrix-like data in \strong{assays} could be mapped to a
-leaf node of the tree. The label of leaf node is provided in a column
-\strong{nodeLab} in \strong{rowData}, or provides as the rownames of
-\strong{rowData}. If both provided, the information in column
-\strong{nodeLab} is used. }
+\item A \code{phylo} object is stored in \code{metadata} and named as
+\code{tree}. The \code{phylo} object has a unique label for each leaf node.
+\item Each rows of matrix-like data in \code{assays} could be mapped to a
+leaf node of the tree. The label of leaf node is provided as the column
+\code{nodeLab} in \code{rowData}, or as the rownames of \code{rowData} or
+\code{assays}. If both provided, the information in column \code{nodeLab} is
+used. }
 }
 \section{Constructor}{
 
@@ -54,3 +52,10 @@ functions.
 See \code{\link{leafSummarizedExperiment-accessor}} for accessor functions.
 }
 
+\seealso{
+\code{\link{treeSummarizedExperiment}}
+  \code{\link[SummarizedExperiment]{SummarizedExperiment-class}}
+}
+\author{
+Ruizhu Huang
+}

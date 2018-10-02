@@ -125,8 +125,7 @@ tpr <- function(tree, truth, found,
 }
 
 
-#' Calculate the number of true positives and the total number of positives on
-#' a tree structure
+#' Calculate true positives and positives
 #'
 #' \code{tpr0} calculates the number of true positives and the total number of
 #' positives on a tree structure at leaf or node level.

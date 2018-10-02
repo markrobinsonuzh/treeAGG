@@ -33,39 +33,37 @@ setOldClass("phylo")
 #' The class \strong{leafSummarizedExperiment} is an extension class of standard
 #' \code{\link[SummarizedExperiment]{SummarizedExperiment}} class. It is
 #' designed to store rectangular data like a \code{matrix} for entities (e.g.,
-#' microbes or cell types), and the hiearchical structure information of
+#' microbes or cell types), and the information of the hiearchical structure of
 #' entities. The annotations on the rows and columns of the rectangular data are
 #' strored in \code{rowData} and \code{colData}, respectively. Each row of the
 #' rectangular data could be mapped to a leaf node of the tree via the rownames
-#' of \strong{rowData} or a column named as \strong{nodeLab} in
-#' \strong{rowData}. For example, we could include abundance count of microbes
-#' collected from different samples in the \strong{assays} and the phylogenetic
-#' tree of microbes in the \strong{metadata}. Each row of matrix-like data in
-#' \strong{assays} corresponds to one microbial specie, whose information is
-#' given in \strong{rowData}. We could find the label of its corresponding leaf
-#' node in column \strong{nodeLab}, or in the rownames of \strong{rowData}. Each
-#' column of matrix-like data is a sample, whose information is stored in
-#' \strong{colData}. The class \strong{leafSummarizedExperiment} has four slots
-#' \strong{assays}, \strong{rowData} \strong{colData} and \strong{metadata} as
+#' of \code{rowData} or a column named as \code{nodeLab} in
+#' \code{rowData}. For example, the abundance count of microbes collected from
+#' different samples could be stored in the \code{assays} and the phylogenetic
+#' tree of the microbes in the \code{metadata}. Each row of matrix-like data
+#' in \code{assays} represents one microbial specie that could be mapped to a
+#' leaf node of the phylogenetic tree. The link between the row and the node
+#' could be given via a column (\code{nodeLab}), or the rownames of
+#' \code{rowData}. Each column of the matrix-like data is a sample. The sample
+#' information is given in the \code{colData}. The class
+#' \strong{leafSummarizedExperiment} has four slots \code{assays},
+#' \code{rowData} \code{colData} and \code{metadata} as the
 #' \code{\link[SummarizedExperiment]{SummarizedExperiment}} class. More details
 #' about these four slots could be found in
 #' \code{\link[SummarizedExperiment]{SummarizedExperiment-class}}.
 #'
 #'
-#' \strong{leafSummarizedExperiment} has more restrictions in data structure
-#' than \strong{SummarizedExperiment}.
-#' In \strong{leafSummarizedExperiment} class, we have restrictions as below.
+#' The \strong{leafSummarizedExperiment} class has more restrictions in data
+#' structure than the \strong{SummarizedExperiment} class. In
+#' \strong{leafSummarizedExperiment} class, it's required that
 #' \itemize{
-#' \item It's not allowed to have empty \strong{assays}.
-#'
-#' \item A phylo object named as \strong{tree} should be contained in
-#' \strong{metadata}. The labels of tree leaf nodes are unique.
-#'
-#' \item Each rows of matrix-like data in \strong{assays} could be mapped to a
-#' leaf node of the tree. The label of leaf node is provided in a column
-#' \strong{nodeLab} in \strong{rowData}, or provides as the rownames of
-#' \strong{rowData}. If both provided, the information in column
-#' \strong{nodeLab} is used. }
+#' \item A \code{phylo} object is stored in \code{metadata} and named as
+#' \code{tree}. The \code{phylo} object has a unique label for each leaf node.
+#' \item Each rows of matrix-like data in \code{assays} could be mapped to a
+#' leaf node of the tree. The label of leaf node is provided as the column
+#' \code{nodeLab} in \code{rowData}, or as the rownames of \code{rowData} or
+#' \code{assays}. If both provided, the information in column \code{nodeLab} is
+#' used. }
 #'
 #' @section Constructor:
 #' See \code{\link{leafSummarizedExperiment-constructor}} for constructor
@@ -79,6 +77,9 @@ setOldClass("phylo")
 #' @name leafSummarizedExperiment-class
 #' @exportClass leafSummarizedExperiment
 #' @include classValid.R
+#' @seealso \code{\link{treeSummarizedExperiment}}
+#'   \code{\link[SummarizedExperiment]{SummarizedExperiment-class}}
+#' @author Ruizhu Huang
 .lse <- setClass("leafSummarizedExperiment",
                  contains = "SummarizedExperiment",
                  validity = checkLSE)
@@ -92,31 +93,31 @@ setOldClass("phylo")
 #' \code{\link[SummarizedExperiment]{SummarizedExperiment}} class. It has six
 #' slots. Four of them are traditional slots from
 #' \code{\link[SummarizedExperiment]{SummarizedExperiment}} class:
-#' \strong{assays}, \strong{rowData} \strong{colData} and \strong{metadata}. The
-#' other two slots are \strong{linkData} and \strong{tree}. The class
+#' \code{assays}, \code{rowData} \code{colData} and \code{metadata}. The other
+#' two slots are \code{linkData} and \code{treeData}. The class
 #' \strong{treeSummarizedExperiment} is designed to store rectangular data for
-#' entities (e.g., microbes or cell types) (\strong{assays}), information about
-#' the hiearchical structure of entities (\strong{tree}), and information
-#' about the mapping between the rectangular data and the tree
-#' (\strong{linkData}).
+#' entities (e.g., microbes or cell types) (\code{assays}), information about
+#' the hiearchical structure of entities (\code{treeData}), and information
+#' about the mapping between the rows of the rectangular data and the nodes of
+#' the tree (\code{linkData}).
 #'
 #' @slot linkData A \code{\link[S4Vectors]{DataFrame}} object. It gives map
 #'   information between the rows of rectangular data and the nodes of tree.
-#'   The row dimension is the same to that of \code{assays} data
 #'   \itemize{
-#'   \item \strong{nodeLab} the node labels on the tree.
-#'   \item \strong{nodeLab_alias} a alias of column \code{nodeLab}. It is
+#'   \item \strong{nodeLab} The node labels on the tree.
+#'   \item \strong{nodeLab_alias} An alias of column \code{nodeLab}. It is
 #'   created only when there are missing value or duplicated value in column
-#'   \code{nodeLab}. Commonly, it is a prefix "Node_" follow by the value in
-#'   column \code{nodeNum}.
-#'   \item \strong{nodeNum} the node numbers on the tree.
-#'   \item \strong{isLeaf} is it a leaf node?
-#'   \item \strong{rowID} the row number in \code{assays}.
+#'   \code{nodeLab}. A prefix "Node_" and "Leaf_" is added to the node number
+#'   (column \code{nodeNum}) for the internal nodes and the leaf nodes,
+#'   respectively.
+#'   \item \strong{nodeNum} The node numbers on the tree.
+#'   \item \strong{isLeaf} This indicates whether a node is a leaf node.
+#'   \item \strong{rowID} The row number in \code{assays}.
 #'   }
 #' @slot treeData A phylo object. It gives information about the hiearchical
-#'   structure of entities.
+#'   structure of the entities.
 #' @slot ... See \code{\link[SummarizedExperiment]{SummarizedExperiment-class}}
-#'   for more details about slots inherited from \code{SummarizedExperiment}
+#'   for more details about the slots inherited from \code{SummarizedExperiment}
 #'   class.
 #'
 #' @section Constructor:
@@ -143,16 +144,16 @@ setClass("treeSummarizedExperiment",
 
 
 
-# ======================
-### builder
-# ======================
-#' constructor for leafSummarizedExperiment object
+# ==========================================================================
+### Constructor
+# ==========================================================================
+#' Construct a leafSummarizedExperiment object
 #'
-#' \code{leafSummarizedExperiment} is to create a
-#' \strong{leafSummarizedExperiment} object.
+#' \code{leafSummarizedExperiment} is the constructor of the
+#' \strong{leafSummarizedExperiment} class.
 #'
 #' @param tree A phylo object.
-#' @param ... see arguments in
+#' @param ... see the arguments for the constructor in
 #' \code{\link[SummarizedExperiment]{RangedSummarizedExperiment-class}}
 #' \itemize{
 #' \item{\strong{assays}:}{ a list of matrix-like elements, or a matrix-like
@@ -168,7 +169,7 @@ setClass("treeSummarizedExperiment",
 #' rownames, which provides the labels of corresponding nodes on the tree for
 #' each row of the matrices in \strong{assays}, is required.}
 #'
-#' \item{\strong{colData}:}{ An optional
+#' \item{\strong{colData}:}{ An optional argument with
 #' \code{\link[S4Vectors]{DataFrame-class}} describing the samples. Row names,
 #' if present, become the column names of the
 #' \strong{leafSummarizedExperiment}.}
@@ -185,25 +186,30 @@ setClass("treeSummarizedExperiment",
 #' @export
 #' @return A leafSummarizedExperiment object
 #' @seealso \code{\link{leafSummarizedExperiment-class}}
-#'   \code{\link{SummarizedExperiment-class}}
+#'   \code{\link{treeSummarizedExperiment-class}}
+#'   \code{\link[SummarizedExperiment]{SummarizedExperiment-class}}
 #' @name leafSummarizedExperiment-constructor
 #' @author Ruizhu HUANG
 #' @examples
 #' # tree
 #' data("tinyTree")
 #'
-#' # assays
+#' # the count table
 #' count <- matrix(rpois(100, 50), nrow = 10)
 #' rownames(count) <- c(tinyTree$tip.label)
 #' colnames(count) <- paste("C_", 1:10, sep = "_")
 #'
-#' # colData
-#' sampC <- data.frame(condition = rep(c("control", "trt"), each = 5),
-#' gender = sample(x = 1:2, size = 10, replace = TRUE))
+#' # the sample information
+#' sampC <- data.frame(condition = rep(c("control", "trt"),
+#'                                     each = 5),
+#'                     gender = sample(x = 1:2, size = 10,
+#'                                     replace = TRUE))
 #' rownames(sampC) <- colnames(count)
 #'
-#' lse <- leafSummarizedExperiment(tree = tinyTree, assays = list(count),
-#' colData = sampC)
+#' # build a leafSummarizedExperiment object
+#' lse <- leafSummarizedExperiment(tree = tinyTree,
+#'                                 assays = list(count),
+#'                                 colData = sampC)
 #'
 leafSummarizedExperiment <- function(tree, ...) {
     # -------------------------------------------------------------------------
@@ -251,26 +257,27 @@ leafSummarizedExperiment <- function(tree, ...) {
     return(lse)
     }
 
-#' A Constructor for treeSummarizedExperiment
+#' Construct a treeSummarizedExperiment object
 #'
-#' \code{treeSummarizedExperiment} constructs a treeSummarizedExperiment.
+#' \code{treeSummarizedExperiment} constructs a treeSummarizedExperiment object.
 #'
 #' @param tree A phylo object
 #' @param linkData A data frame or \code{\link[S4Vectors]{DataFrame}}. It has
-#'   the same number of rows as the matrix-like element in \code{assays.}. The
-#'   row order between \code{linkData} and the matrix-like element in
-#'   \code{assays.} is the same. It includes columns as below.
+#'   the same number of rows as the matrix-like elements of \code{assays}. The
+#'   row order of the \code{linkData} matches with that of  the matrix-like
+#'   element of \code{assays}. It has the following columns.
 #'   \itemize{
-#'   \item \strong{nodeLab} the labels of nodes
-#'   \item \strong{nodeLab_alias} a alias of column \code{nodeLab}. It is
+#'   \item \strong{nodeLab} The labels of nodes on the tree.
+#'   \item \strong{nodeLab_alias} An alias of column \code{nodeLab}. It is
 #'   created only when there are missing value or duplicated value in column
-#'   \code{nodeLab}. Commonly, it is a prefix "Node_" follow by the value in
-#'   column \code{nodeNum}.
-#'   \item \strong{nodeNum} the numbers of nodes
-#'   \item \strong{isLeaf} is it a leaf node
-#'   \item \strong{rowID} the row number in the matrix-like element in
-#'   \code{assays} }
-#' @param ... see arguments in
+#'   \code{nodeLab}. A prefix "Node_" and "Leaf_" is added to the node number
+#'   (column \code{nodeNum}) for the internal nodes and the leaf nodes,
+#'   respectively.
+#'   \item \strong{nodeNum} The numbers of nodes
+#'   \item \strong{isLeaf} It indicates whether the node is a leaf node
+#'   \item \strong{rowID} The corresponding row number of the matrix-like
+#'   elements in \code{assays} }
+#' @param ... see arguments for the constructor in
 #' \code{\link[SummarizedExperiment]{RangedSummarizedExperiment-class}}
 #' \itemize{
 #' \item{\strong{assays}:}{ a list of matrix-like elements, or a matrix-like
@@ -287,7 +294,7 @@ leafSummarizedExperiment <- function(tree, ...) {
 #' \item{\strong{colData}:}{ An optional
 #' \code{\link[S4Vectors]{DataFrame-class}} describing the samples. Row names,
 #' if present, become the column names of the
-#' \strong{leafSummarizedExperiment}.}
+#' \strong{treeSummarizedExperiment}.}
 #'
 #' \item{\strong{metadata}:}{ An optional list of arbitrary content describing
 #' the overall experiment.}
@@ -299,24 +306,27 @@ leafSummarizedExperiment <- function(tree, ...) {
 #' @return a treeSummarizedExperiment object
 #' @name treeSummarizedExperiment-constructor
 #' @author Ruizhu HUANG
-#' @seealso \code{\link{treeSummarizedExperiment}}
+#' @seealso \code{\link{treeSummarizedExperiment-class}}
 #'   \code{\link{treeSummarizedExperiment-accessor}}
-#'   \code{\link{leafSummarizedExperiment}}
+#'   \code{\link{leafSummarizedExperiment-class}}
 #'   \code{\link[SummarizedExperiment]{SummarizedExperiment-class}}
 #' @examples
 #' data("tinyTree")
 #'
-#' # assays
+#' # the count table
 #' count <- matrix(rpois(100, 50), nrow = 10)
 #' rownames(count) <- c(tinyTree$tip.label)
 #' colnames(count) <- paste("C_", 1:10, sep = "_")
 #'
-#' # colData
+#' # The sample information
 #' sampC <- data.frame(condition = rep(c("control", "trt"), each = 5),
-#' gender = sample(x = 1:2, size = 10, replace = TRUE))
+#'                     gender = sample(x = 1:2, size = 10, replace = TRUE))
 #' rownames(sampC) <- colnames(count)
-#' tse <- treeSummarizedExperiment(tree = tinyTree, assays = list(count),
-#' colData = sampC)
+#'
+#' # build a treeSummarizedExperiment object
+#' tse <- treeSummarizedExperiment(tree = tinyTree,
+#'                                 assays = list(count),
+#'                                 colData = sampC)
 #'
 treeSummarizedExperiment <- function(tree = NULL, linkData = NULL,
                                      ...){

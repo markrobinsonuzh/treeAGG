@@ -1,30 +1,31 @@
-#' Save the analysis results in the rowData of treeSummarizedExperiment object
+#' update the treeSummarizedExperiment object
 #'
-#' \code{updateTSE} adds the analysis results in the rowData of the
-#' treeSummarizedExperiment object. Which tables of the \code{assays} has been
-#' used to do data analysis will be specified in the \code{use.assays} of
-#' \code{metadata}. The design matrix and contrast vectors are also included in
-#' the \code{metadata}.
+#' \code{updateTSE} includes the analysis results to the \code{rowData} of the
+#' treeSummarizedExperiment object. The matrix-like elements of the
+#' \code{assays}, which has been used to do data analysis, will be specified in
+#' the \code{use.assays} of \code{metadata}. The design matrix and contrast
+#' vectors are also included in the \code{metadata}.
 #'
-#' @param result A list with the structure as \code{list(A = list(a1, a2, ...),
-#'   B = list(b1, b2, ...))}. The sub-elements, e.g., a1, is a data frame output
-#'   from the data analysis. The sub-elements,a1, a2, ..., are obtained by
-#'   performing analysis on the same table A in the \code{assays} of \code{tse}
+#' @param result A list has the structure as \code{list(A = list(a1, a2, ...), B
+#'   = list(b1, b2, ...))}. The sub-elements, e.g., a1, is a data frame that is
+#'   output from the data analysis. The sub-elements,a1, a2, ..., are obtained
+#'   by performing analysis on the same matrix-like element of \code{assays}
 #'   with different contrasts. b1 and a1 are obtained by perfoming analysis on
-#'   different tables (A and B, respectively) in the \code{assays} of \code{tse}
-#'   with the same contrast.
-#' @param tse A treeSummarizedExperiment object.
-#' @param use.assays A numeric vector. It specifies which tables are used for
-#'   the analysis. The order should match with the order of \code{results} (A
-#'   and B in the example structure)
+#'   different matrix-like element (A and B, respectively) of \code{assays} with
+#'   the same contrast.
+#' @param tse A treeSummarizedExperiment object to be updated.
+#' @param use.assays A numeric vector. It specifies which matrix-like elements
+#'   in \code{assays} have been used for the analysis to get \code{result}. The
+#'   order should match with the order of \code{results} (A and B in the example
+#'   structure)
 #' @param design A design matrix that is used in the analysis to get
 #'   \code{result}.
 #' @param contrast A list of contrast vectors that are used in the analysis to
 #'   get \code{result}. The order should match with the subelements of the
 #'   \code{results}, like a1, a2, ..., in the example structure.
-#' @param fit NULL. If using \code{\link{edgeR}} package for the analysis, it
-#'   could store the output from \code{\link[edgeR]{glmFit}}. A object of
-#'   \code{\link[edgeR]{DGEGLM-class}}
+#' @param fit An optional argument. A object of
+#'   \code{\link[edgeR]{DGEGLM-class}} that is the output of
+#'   \code{\link[edgeR]{glmFit}}. Default is NULL.
 #' @export
 #' @return A treeSummarizedExperiment object.
 #'
@@ -110,7 +111,8 @@
 #' rowData(toy_tse)
 #' rowData(new_tse)
 #'
-updateTSE <- function(result, tse, use.assays, design, contrast, fit = NULL){
+updateTSE <- function(result, tse, use.assays, design,
+                      contrast, fit = NULL){
 
     # ------------------------------- check -----------------------------------
     # the input result should be a list

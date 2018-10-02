@@ -3,14 +3,14 @@
 \name{leafSummarizedExperiment-constructor}
 \alias{leafSummarizedExperiment-constructor}
 \alias{leafSummarizedExperiment}
-\title{constructor for leafSummarizedExperiment object}
+\title{Construct a leafSummarizedExperiment object}
 \usage{
 leafSummarizedExperiment(tree, ...)
 }
 \arguments{
 \item{tree}{A phylo object.}
 
-\item{...}{see arguments in
+\item{...}{see the arguments for the constructor in
 \code{\link[SummarizedExperiment]{RangedSummarizedExperiment-class}}
 \itemize{
 \item{\strong{assays}:}{ a list of matrix-like elements, or a matrix-like
@@ -39,30 +39,35 @@ the overall experiment.}
 A leafSummarizedExperiment object
 }
 \description{
-\code{leafSummarizedExperiment} is to create a
-\strong{leafSummarizedExperiment} object.
+\code{leafSummarizedExperiment} is the constructor of the
+\strong{leafSummarizedExperiment} class.
 }
 \examples{
 # tree
 data("tinyTree")
 
-# assays
+# the count table
 count <- matrix(rpois(100, 50), nrow = 10)
 rownames(count) <- c(tinyTree$tip.label)
 colnames(count) <- paste("C_", 1:10, sep = "_")
 
-# colData
-sampC <- data.frame(condition = rep(c("control", "trt"), each = 5),
-gender = sample(x = 1:2, size = 10, replace = TRUE))
+# the sample information
+sampC <- data.frame(condition = rep(c("control", "trt"),
+                                    each = 5),
+                    gender = sample(x = 1:2, size = 10,
+                                    replace = TRUE))
 rownames(sampC) <- colnames(count)
 
-lse <- leafSummarizedExperiment(tree = tinyTree, assays = list(count),
-colData = sampC)
+# build a leafSummarizedExperiment object
+lse <- leafSummarizedExperiment(tree = tinyTree,
+                                assays = list(count),
+                                colData = sampC)
 
 }
 \seealso{
 \code{\link{leafSummarizedExperiment-class}}
-  \code{\link{SummarizedExperiment-class}}
+  \code{\link{treeSummarizedExperiment-class}}
+  \code{\link[SummarizedExperiment]{SummarizedExperiment-class}}
 }
 \author{
 Ruizhu HUANG
