@@ -106,6 +106,7 @@ $$\mathbf{x}=(x_1,\dots,x_K) \sim \text{dirmult}(n, \mathbf{\alpha})$$
 {\Gamma\left(n+\alpha_0\right)}\prod_{k=1}^K\frac{\Gamma(x_{k}+\alpha_{k})}{\left(x_{k}!\right)\Gamma(\alpha_{k})}
 (\#eq:dirmult1)
 \end{equation}
+
 $\mathbf{x}=(x_1,\dots,x_K)$ are the counts of $K$ entities, $n$ is the
 library size of a sample, $\mathbf{\alpha} = (\alpha_1, \alpha_2, ...,
 \alpha_K)$ are the parameters for the distribution, and $\alpha_0 = \sum

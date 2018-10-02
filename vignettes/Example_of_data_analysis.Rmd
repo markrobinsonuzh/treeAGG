@@ -26,7 +26,7 @@ bibliography: treeAGG_vignette.bib
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE, message = FALSE)
+knitr::opts_chunk$set(echo = TRUE, message = FALSE, warning = FALSE)
 ```
 
 # Introduction
@@ -157,7 +157,8 @@ $\mathbf{\phi}_{g}$ and build a generalized linear model at each node of the
 tree.
 
 $$
-\text{log}(\mu_{gi}) = \mathbf{x}^{T}_{i} \mathbf{\beta}_{g}, \quad g = 1, 2, ..., n, n+1, ...., n+K
+\text{log}(\mu_{gi}) = \mathbf{x}^{T}_{i} \mathbf{\beta}_{g}, \quad 
+g = 1, 2, ..., n, n+1, ...., n+K
 $$
 where $\mathbf{x}^{T}_{i}$ is a vector of covariates including confounders
 (e.g., age, gender) and the covariate of interest (e.g., diseased and healthy
@@ -234,7 +235,8 @@ Tree <- as.phylo(cytofTree)
 ```
 
 
-The information of each cell cluster, corresponding to a row in the count table, is given in the `cytofCluster` (see `?cytofCluster` for more details). 
+The information of each cell cluster, corresponding to a row in the count table,
+is given in the `cytofCluster` (see `?cytofCluster` for more details).
 
 ```{r}
 # row information 
@@ -244,9 +246,15 @@ cytofCluster <- DataFrame(cytofCluster)
 cytofCluster$nodeLab <- cytofCluster$cluster
 ```
 
-We add a new column named as `nodeLab` to tell which node of the tree a row of the count table corresponds to. If such a column is not given, the rownames of the `cytofCluster` is used for the mapping. Hence, users should be careful about the `nodeLab` column or the rownames, and make sure they use the same label as the node label of the tree. When the `nodeLab` column and the rownames both exist and are different, the `nodeLab` column is used.
+We add a new column named as `nodeLab` to tell which node of the tree a row of
+the count table corresponds to. If such a column is not given, the rownames of
+the `cytofCluster` is used for the mapping. Hence, users should be careful about
+the `nodeLab` column or the rownames, and make sure they use the same label as
+the node label of the tree. When the `nodeLab` column and the rownames both
+exist and are different, the `nodeLab` column is used.
 
-The information of each sample, corresponding to a column in the count table, is given in the `cytofSample` (see `?cytofSample` for more details). 
+The information of each sample, corresponding to a column in the count table, is
+given in the `cytofSample` (see `?cytofSample` for more details).
 
 ```{r}
 # provide sample information: from healthy or CN group
@@ -360,7 +368,8 @@ Then, we follow the routine steps of using the `r Biocpkg("edgeR")` package to
 perform differential abundance analysis as below.
 ```{r}
 # calculate total count for each sample
-# The total count is the sum of cell counts of clusters on the leaf level of the tree.
+# The total count is the sum of cell counts of clusters on the leaf level of the
+# tree.
 tip_tse <- tse[linkData(tse)$isLeaf, ]
 tipCount <- assays(tip_tse, use.nodeLab = TRUE)[[1]]
 libSize <- apply(tipCount, 2, sum)
@@ -437,7 +446,7 @@ rowData(new_tse1, internal = FALSE)
 ### Option 2: Wrapper function
 
 In the package `r Biocpkg("treeAGG")`, we have provided a wrapper function to do
-the work performed in the section \@ref(option1) in one step.
+the work of section \@ref(option1) in one step.
 
 ```{r}
 new_tse2 <- runEdgeR(obj = tse, use.assays = 1, design = NULL, 
@@ -484,6 +493,12 @@ new_tseM <- runEdgeR(obj = tseM, use.assays = c(1, 3), design = NULL,
                      adjust.method = "BH")
 new_tseM
 ```
+We could see that there are now 7 columns in the rowData. The 2 new columns are
+the analysis results from the first and third tables of `assays`,
+*result_assay1*, and *result_assay3*. These two columns are referred as the
+internal part of the `rowData` that are only visible with `internal = TRUE` when
+`rowData()` is used to access the row data. We don't recommend users to access
+or modify these columns as they are required for the tree aggregation step. 
 
 If users want to do some customized settings that are not provided above, they
 could extract the target tables and follow the work in section \@ref(option1)
