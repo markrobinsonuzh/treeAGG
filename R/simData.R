@@ -348,6 +348,7 @@ doData <- function(tree, data, scenario = "S1",
                                                  branch = pk,
                                                  scenario = scenario),
                                              colData = grpDat)
+
     }
 
     if(inherits(count, "matrix")) {
