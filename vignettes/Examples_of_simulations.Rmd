@@ -31,13 +31,16 @@ knitr::opts_chunk$set(echo = TRUE, message = FALSE, warning = FALSE)
 
 # Introduction
 
-We would like to simulate a count table, where some rows have differental
-abundance between samples with different phenotypic outcomes. The easy way to do
-it is to randomly select some rows and increase or decrease the counts of
-samples with certain phenotypic outcomes. However, this might cause issues in
-compositional data because the proportion of a row might change even though its
-count has not changed. To avoid such issues, instead of adding counts to
-specific rows, we swap abundances between groups of rows.
+We would like to simulate a count table, where some rows have differential
+abundance between different phenotypic outcomes. The count table has entities in
+rows and samples in columns. The easy way to do it is to randomly select some
+rows and increase or decrease the counts of samples with certain phenotypic
+outcomes. However, this might cause issues in compositional data because the
+proportion of a row might change even though its abundance has not changed. To
+avoid such issues, instead of adding counts to specific rows, we swap abundances
+between groups of rows. The group is based on the hierarchical structure of the
+entities, and groups with different sizes represent different hierarchical
+level.
 
 # Method
 
@@ -102,8 +105,10 @@ distribution as has been suggested in several articles
 [@Zhao2015,@Tang2016a,@Tang2016b,@Wu2016]:
 $$\mathbf{x}=(x_1,\dots,x_K) \sim \text{dirmult}(n, \mathbf{\alpha})$$
 \begin{equation}
-\Pr(\mathbf{x}\mid\boldsymbol{\alpha})=\frac{\left(n!\right)\Gamma\left(\alpha_0\right)}
-{\Gamma\left(n+\alpha_0\right)}\prod_{k=1}^K\frac{\Gamma(x_{k}+\alpha_{k})}{\left(x_{k}!\right)\Gamma(\alpha_{k})}
+\Pr(\mathbf{x}\mid\boldsymbol{\alpha})=
+\frac{\left(n!\right)\Gamma\left(\alpha_0\right)}
+{\Gamma\left(n+\alpha_0\right)}\prod_{k=1}^K
+\frac{\Gamma(x_{k}+\alpha_{k})}{\left(x_{k}!\right)\Gamma(\alpha_{k})}
 (\#eq:dirmult1)
 \end{equation}
 
@@ -161,16 +166,22 @@ Compared with group G1, the proportions of entities on the colored branches have
 changed by a common factor $r_k$ in group G2. $r_k$ varies among entities in the
 same branch, but they are either all above one or all below one.
 \begin{equation}
+(\#eq:s2)
 \left\{\begin{matrix}
  {\hat{\pi}}'_{k} =\hat{\pi}_{k}; &  k \notin \text{colored branches}\\
-  {\hat{\pi}}'_{k} = r_k \hat{\pi}_{k}, \quad r_k = 1 + \frac{\sum_{t \in Orange} \hat{\pi}_{t} - \sum_{t \in Blue} \hat{\pi}_{t}}{\sum_{k \in Blue} \hat{\pi}_{k} u_k} u_k; & k \in \text{ Blue branch } \\
-  {\hat{\pi}}'_{k} = r_k \hat{\pi}_{k}, \quad r_k = 1 + \frac{\sum_{t \in Blue} \hat{\pi}_{t} - \sum_{t \in Orange} \hat{\pi}_{t}}{\sum_{k \in Orange} \hat{\pi}_{k} u_k} u_k & k \in \text{ Orange branch}
+  {\hat{\pi}}'_{k} = r_k \hat{\pi}_{k}, 
+  \quad r_k = 1 + \frac{\sum_{t \in Orange} \hat{\pi}_{t} -
+  \sum_{t \in Blue} \hat{\pi}_{t}}{\sum_{k \in Blue} \hat{\pi}_{k} u_k} u_k;
+  & k \in \text{ Blue branch } \\
+  {\hat{\pi}}'_{k} = r_k \hat{\pi}_{k}, \quad r_k = 1 + \frac{\sum_{t \in Blue}
+  \hat{\pi}_{t} - \sum_{t \in Orange} \hat{\pi}_{t}}{\sum_{k \in Orange} 
+  \hat{\pi}_{k} u_k} u_k & k \in \text{ Orange branch}
  \end{matrix}\right.
- (\#eq:s2)
 \end{equation}
 where $u_k$ is randomly generated from a uniformly distributed function ($u_k
 \sim \text{U}(0, 1)$). The proof that the proportions of entities on the blue
-branch is swapped with that on the orange branch is in the [Appendix](#appendix).
+branch is swapped with that on the orange branch is in the
+[Appendix](#appendix).
 
 + S3 (the right plot in Figure \@ref(fig:scenarioDiff)): As shown in Figure
 \@ref(fig:scenarioDiff), all entities in one of the selected branches are
@@ -183,7 +194,7 @@ proportion of leaf nodes colored as blue in that zoom branch via an argument
 `pct` in the `SimData` function.
 $$\mathbf{p}^{G1}_{i} \sim \text{Dirichlet}(\mathbf{\hat{\pi}}, \hat{\theta}).$$
 $$\mathbf{p}^{G2}_{i} \sim \text{Dirichlet}(\mathbf{\hat{\pi}}', \hat{\theta})$$
-Compared with group G1, the proportions of entities on the orange branche have
+Compared with group G1, the proportions of entities on the orange branch have
 changed by a common factor $c$ in group G2. The value $c$ could be chosen from 0
 to 1. The entities on the blue branch have been changed by a common factor $r$
 that depends on the value $c$.
@@ -196,7 +207,8 @@ that depends on the value $c$.
  \end{matrix}\right.
  (\#eq:s3)
 \end{equation}
-where $r =  \frac{(1-c)\sum_{k \in Orange} \hat{\pi}_{k} + \sum_{k \in Blue} \hat{\pi}_{k}}{\sum_{k \in Blue} \hat{\pi}_{k}}$ and $0 < c < 1$. 
+where $r =  \frac{(1-c)\sum_{k \in Orange} \hat{\pi}_{k} + \sum_{k \in Blue}
+\hat{\pi}_{k}}{\sum_{k \in Blue} \hat{\pi}_{k}}$ and $0 < c < 1$. 
 
 
 To summarize, there are 3 simulation scenarios available in the function
@@ -209,7 +221,7 @@ knitr::include_graphics("scene.png")
 ```
 
 In Figure \@ref(fig:scene), the height of the bar represent the proportion. We
-see the tree structure as three parts, the two selected branches and the others.
+see the tree structure as three parts, the two selected branches and the rest.
 The phenotypic outcome is represented by the group (G1 or G2). The proportions
 of the orange and blue branches are swapped between different groups in scenario
 S1 and S2. The height of the orange bar in the group G2 is equal to the blue bar
@@ -270,12 +282,10 @@ datA
 class(datA) 
 
 ```
-The output *datA* is a `leafSummarizedExperiment` object. It's an extension of
-`SummarizedExperiment` class that additionally contains a `phylo` object (tree)
-in the `metadata` and has more restrictions on `rowData` compared to
-`SummarizedExperiment`. More details about the `leafSummarizedExperiment` class
-could be found in the help page `?leafSummarizedExperiment` or in the vignette
-*Introduction to leafSummarizedExperiment and treeSummarizedExperiment*.
+The output *datA* is a `leafSummarizedExperiment` object. More details about the
+`leafSummarizedExperiment` class could be found in the help page
+`?leafSummarizedExperiment` or in the vignette *Introduction to
+leafSummarizedExperiment and treeSummarizedExperiment*.
 
 The tree and count table could also be combined into a
 `leafSummarizedExperiment` object before using as the input for `simData`. 
@@ -300,9 +310,9 @@ level (`FC`), the information of branches that have differential abundance
 (`branch`) and the simulation scenario (`scenario`), is also stored in
 `metadata`.
 
-The estimate of parameters from the real data takes a while. In the vignette, we
-will do simulation several times using the same real data. To save time, the
-function `parEstimate` is used to do the estimation once and save results in the
+Estimating parameters from real data takes a while. In the vignette, we will do
+simulation several times using the same real data. To save time, the function
+`parEstimate` is used to do the estimation once and save results in the
 `metadata` of the `leafSummarizedExperiment` object for later use.
 
 ```{r}
@@ -313,9 +323,9 @@ lse <- parEstimate(data = lse)
 names(metadata(lse))
 ```
 
-The function `viewSim` could be used to view the differential abundance pattern
-on the tree structure. The simulation result is assigned to the `obj`. The tree
-could be shown in different shapes via `layout`. If the tree is large, we could 
+The function `viewSim` can be used to view the differential abundance pattern on
+the tree structure. The simulation result is assigned to the `obj`. The tree
+could be shown in different shapes via `layout`. If the tree is large, we could
 shrink branches without differential abundance via `zoomScale` to save space.
 ```{r}
 viewSim(obj = datA, layout = "rectangular", zoomScale = 1/100)
@@ -351,7 +361,7 @@ dat1 <- simData(obj = lse,
 
 ```
 
-The information about the selected branches is given in the `branch` slot of the 
+The information about the selected branches is given in the `branch` slot of the
 `metadata`. `A` and `B` are the labels of nodes that connect the selected
 branches with the other part of the tree. The value in `ratio` is the ratio of
 the abundance of branch `B` to that of branch `A`. It doesn't have to be exactly
@@ -385,10 +395,10 @@ dat2 <- simData(obj = lse,
 viewSim(obj = dat2, layout = "rectangular", zoomScale = 1/100)
 ```
 
-Similarly, if branches with a certain abundance level are desired,
-it can be done via `minPr.A` and `maxPr.A`. These two arguments restrict the
-count proportion level of branch A. One could combine using these two arguments
-with `ratio` to restrict the branch B.
+Similarly, if branches with a certain abundance level are desired, it can be
+done via `minPr.A` and `maxPr.A`. These two arguments restrict the count
+proportion level of branch A. One could combine using these two arguments with
+`ratio` to restrict the branch B.
 
 ```{r}
 set.seed(1122)
@@ -401,9 +411,9 @@ rb <- rbind(metadata(dat2)$branch, metadata(dat3)$branch)
 rownames(rb) <- c("dat2", "dat3")
 rb
 ```
-The proportion of branch A is `r rb[2, "A_prop"]` in `dat3`. This
-fulfills the requirement that the relative abundance level of branch A isn't
-above $0.01$ (`maxPr.A`= 0.01).
+The proportion of branch A is `r rb[2, "A_prop"]` in `dat3`. This fulfills the
+requirement that the relative abundance level of branch A isn't above $0.01$
+(`maxPr.A`= 0.01).
 
 ```{r}
 viewSim(obj = dat3, layout = "rectangular", zoomScale = 1/100)
@@ -434,7 +444,7 @@ Branch A in `dat2` and `dat4` are the same.
 
 ## Different simulation scenarios
 
-We could simulate different differential abundance patterns by changing the
+We can simulate different differential abundance patterns by changing the
 `scenario`. The default scenario is "S1".
 ```{r}
 # use the branches from dat4
@@ -446,14 +456,14 @@ dat5 <- simData(from.A = metadata(dat4)$branch$A,
                 scenario = "S2")
 ```
 
-If use `scenario = "S3"`, the argument `adjB` could also be used. It is the $c$
-value in formula \@ref(eq:s3) and could be chosen between 0 and 1. If
-it's set as NULL, the swap is similar to S1 that the proportions of the selected
-branches are swapped. Note the blue branch here is not the branch specified by
-`from.A`. It should be only part of `from.A` as colored with blue in the S3 of
-Figure  \@ref(fig:scenarioDiff). Users could use `pct` equal to a value between
-0 and 1 to decide the percentage of leaves in `from.A` should be selected as the
-blue branch.
+If `scenario = "S3"` is used, the argument `adjB` could also be used. It is the
+$c$ value in formula \@ref(eq:s3) and could be chosen between 0 and 1. If it's
+set as NULL, the swap is similar to S1 in that the proportions of the selected
+branches are swapped. Note that the blue branch here is not the branch specified
+by `from.A`. It should be only part of `from.A` as colored with blue in the S3
+of Figure  \@ref(fig:scenarioDiff). Users could use `pct` equal to a value
+between 0 and 1 to decide the percentage of leaves in `from.A` should be
+selected as the blue branch.
 
 ```{r}
 # use the branches from dat4
@@ -468,7 +478,7 @@ dat6 <- simData(from.A = metadata(dat4)$branch$A,
 
 If users are interested, the values of $c$ and $r$ in formula \@ref(eq:s3) are
 stored as `FC` in the `metadata`. The names of *fc* are the node labels and the
-numeric value are the fold change of corresponding nodes. Each leaf node has a
+numeric values are the fold changes of corresponding nodes. Each leaf node has a
 fold change value. Those have values above one ($r$) are in the blue branch and
 below one in the orange branch ($c$) (see S3 in Figure \@ref(fig:scenarioDiff))
 ```{r}
@@ -495,15 +505,15 @@ plot_grid(p2)
 ```
 
 In scenario S3, points in a colored branch have the same color but different
-sizes. This means the fold changes of entities in that branch are different
-in values but same in the direction.
+sizes. This means the fold changes of entities in that branch are different in
+values but same in the direction.
 
 ## Select branches {#selectBranch}
 
 It's quite normal that a pair of branches that exactly fulfill the requirements
 specified can't be found, especially when a small tree is provided. To
 efficiently select suitable branches, we could summarize the information of
-branches before the simulation using `selNode` and manually select one or two 
+branches before the simulation using `selNode` and manually select one or two
 branches.
 
 The function `selNode` could be used to list all branches (`all = TRUE`) that
@@ -524,7 +534,7 @@ and 1, is given in the column `proportion`. The numbers of descendant leaves on
 those branches are in column `numTip`.
 
 We could take one of the branches, for example, the branch on the first row, as
-the fixed branch. As a pair of branches is required in simulation, the other
+the fixed branch. As a pair of branches is required in the simulation, the other
 branch could be selected randomly by `simData` or manually as below. Let's say
 the other branch should have roughly twice abundance as the currently selected
 branch (`minPr = 0.06, maxPr = 0.07`). Of course, we don't want a branch that
@@ -553,7 +563,7 @@ findSibling(tree = metadata(lse)$tree,
             use.alias = TRUE)
 ```
 
-If users are curious about the descendant leaves of the selected branch, the 
+If users are curious about the descendant leaves of the selected branch, the
 function `findOS` could be used.
 
 ```{r}
@@ -564,15 +574,21 @@ findOS(tree = metadata(lse)$tree, ancestor = sel2$nodeNum[6],
 # Appendix {#appendix}
 
 Proof: $$\sum_{g \in Blue} \hat{\pi}'_{g} = \sum_{g \in Orange} \hat{\pi}_{g}$$
-Proof: $$\sum_{g \in Blue} \hat{\pi}'_{g} = \sum_{g \in Orange} \hat{\pi}_{g}$$
 $$\begin{aligned}
 \sum_{g \in Blue} \hat{\pi}'_{g} 
 &= \sum_{g \in Blue} r_g \hat{\pi}_{g} \\ 
 &= \sum_{g \in Blue} \hat{\pi}_{g} r_g \\
-&= \sum_{g \in Blue} \hat{\pi}_{g}(1 + \frac{\sum_{t \in Orange} \hat{\pi}_{t} - \sum_{t \in Blue} \hat{\pi}_{t}}{\sum_{t \in Blue} \hat{\pi}_{t} u_t} u_g) \\
-&= \sum_{g \in Blue} \hat{\pi}_{g}(1 + \frac{\sum_{t \in Orange} \hat{\pi}_{t} - \sum_{t \in Blue} \hat{\pi}_{t}}{\sum_{t \in Blue} \hat{\pi}_{t} u_t} u_g) \\
-&= \sum_{g \in Blue} \hat{\pi}_{g} + \sum_{g \in Blue} \hat{\pi}_{g}\frac{\sum_{t \in Orange} \hat{\pi}_{t} - \sum_{t \in Blue} \hat{\pi}_{t}}{\sum_{t \in Blue} \hat{\pi}_{t} u_t} u_g \\
-&= \sum_{g \in Blue} \hat{\pi}_{g} + (\sum_{t \in Orange} \hat{\pi}_{t} - \sum_{t \in Blue} \hat{\pi}_{t}) \frac{\sum_{g \in Blue} \hat{\pi}_{g} u_g}{\sum_{t \in Blue} \hat{\pi}_{t} u_t} \\
+&= \sum_{g \in Blue} \hat{\pi}_{g}(1 + \frac{\sum_{t \in Orange} \hat{\pi}_{t} 
+- \sum_{t \in Blue} \hat{\pi}_{t}}{\sum_{t \in Blue} \hat{\pi}_{t} u_t} u_g) \\
+&= \sum_{g \in Blue} \hat{\pi}_{g}(1 + \frac{\sum_{t \in Orange} \hat{\pi}_{t}
+- \sum_{t \in Blue} \hat{\pi}_{t}}{\sum_{t \in Blue} \hat{\pi}_{t} u_t} u_g) \\
+&= \sum_{g \in Blue} \hat{\pi}_{g} + \sum_{g \in Blue} \hat{\pi}_{g}
+\frac{\sum_{t \in Orange} \hat{\pi}_{t} - \sum_{t \in Blue} 
+\hat{\pi}_{t}}{\sum_{t \in Blue} \hat{\pi}_{t} u_t} u_g \\
+&= \sum_{g \in Blue} \hat{\pi}_{g} + (\sum_{t \in Orange} \hat{\pi}_{t} -
+\sum_{t \in Blue} \hat{\pi}_{t}) 
+\frac{\sum_{g \in Blue} \hat{\pi}_{g} u_g}{\sum_{t \in Blue} 
+\hat{\pi}_{t} u_t} \\
 & = \sum_{t \in Orange} \hat{\pi}_{t} \\
 & = \sum_{g \in Orange} \hat{\pi}_{g}
 \end{aligned}$$

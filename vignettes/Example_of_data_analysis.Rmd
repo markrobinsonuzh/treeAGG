@@ -36,27 +36,26 @@ research fields and often indicates different resolutions at which data can be
 viewed and results can be interpreted. Examples include studies of microbial
 abundance where the OTUs (operational taxonomic units, often assumed to
 represent species) can be arranged as leaves in a phylogenetic tree, and
-single-cell studies where the individual cells can be organized hierarchically
-in increasingly comprehensive clusters, e.g. via hierarchical clustering. In
-both these examples, a question arises on which resolution level the signal in
-the data (e.g. differential abundance of features between groups) is best
-interpreted, or put in another way, on what resolution the main 'driver' of the
-signal can be found. For example, in the microbial abundance data, a whole
-family of species may react similarly to a particular stimulus. In such
-situations, it would be more informative to summarize the differential abundance
-analysis on this level of resolution, rather than providing a long list of
-individual differentially abundant OTUs. An additional reason for aggregating
-data to higher levels of the phylogenetic tree is that the abundances of
-individual species or OTUs may be low, limiting the power of the statistical
-test to pick up any significant differences, whereas by aggregating the signal
-from multiple related OTUs, the detection power can be increased. For the
-single-cell data example, similarly, if a treatment truly acts on a high level,
-affecting the abundance of, e.g., all B-cells, it is helpful if this is picked
-up by the analysis pipeline, rather than returning a large number of
-significantly differentially abundant subclusters of the main B-cell cluster.
-The `r Biocpkg("treeAGG")` package is designed to analyze data that can be
-organized in a hierarchical structure, and to find the most informative
-resolution at which to interpret the signal of interest.
+single-cell studies where the individual cells can be organized hierarchically ,
+e.g. via clustering. In both these examples, a question arises on which
+resolution level the signal in the data (e.g. differential abundance of features
+between groups) is best interpreted, or put another way, on what resolution the
+main 'driver' of the signal can be found. For example, in the microbial
+abundance data, a whole family of species may react similarly to a particular
+stimulus. In such situations, it would be more informative to summarize the
+differential abundance analysis at this level of resolution, rather than
+providing a long list of individual differentially abundant OTUs. An additional
+reason for aggregating data to higher levels of the phylogenetic tree is that
+the abundances of individual species or OTUs may be low, limiting the power of
+the statistical test to pick up any significant differences, whereas by
+aggregating the signal from multiple related OTUs, the detection power can be
+increased. For the single-cell data example, similarly, if a treatment truly
+acts on a high level, affecting the abundance of, e.g., all B-cells, it is
+helpful if this is picked up by the analysis pipeline, rather than returning a
+large number of significantly differentially abundant subclusters of the main
+B-cell cluster. The `r Biocpkg("treeAGG")` package is designed to analyze data
+that can be organized in a hierarchical structure, and to find the most
+informative resolution at which to interpret the signal of interest.
 
 # Methods {#flowchart}
 
@@ -67,40 +66,39 @@ knitr::include_graphics("Flowchart.png")
 
 In the `r Biocpkg("treeAGG")` package, we provide a easy-to-use pipeline (Figure
 \@ref(fig:flowchart)) to perform statistical tests for each leaf and internal
-node of a hierarchical structure, and finally aggregate the results to find the
-most informative resolution for interpretation. The starting point for the
-analysis is a hierarchical structure (e.g., a phylogenetic tree), a data matrix
-with values for all leaves in this hierarchical structure, and annotation tables
-for rows and columns of the matrix. From here, users can follow the standard
-five steps outlined in Figure \@ref(fig:flowchart) to derive data values for
-each internal node, perform a statistical test for each node, and aggregate the
+node of a hierarchical structure, and aggregate the results to find the most
+informative resolution for interpretation. The starting point for the analysis
+is a hierarchical structure (e.g., a phylogenetic tree), a data matrix with
+values for all leaves in this hierarchical structure, and annotation tables for
+rows and columns of the matrix. From here, users can follow the standard five
+steps outlined in Figure \@ref(fig:flowchart) to derive data values for each
+internal node, perform a statistical test for each node, and aggregate the
 results of these tests to find an optimal resolution for interpretation.
 Alternatively, the extended data matrix can be extracted for customized
-analysis, the results of which can be integrated back into the `r
-Biocpkg("treeAGG")` pipeline for aggregation. The table extracted after step 2
-has more rows than the original table because it includes data for entities
+analysis, the results of which can be integrated back into the 
+`r Biocpkg("treeAGG")` pipeline for aggregation. The table extracted after step
+2 has more rows than the original table because it includes data for entities
 corresponding to the internal nodes of the tree. In each step, we have listed
 the available functions to do it in blue texts. The details about each steps are
 summarized below.
 
 * Step 1: Data preparation. Store data on the level of leaf nodes in a
 `leafSummarizedExperiment` container. More details about the construction of a
-`leafSummarizedExperiment` object could be found in the [Introduction to
-leafSummarizedExperiment and treeSummarizedExperiment](Introduction to
-leafSummarizedExperiment and treeSummarizedExperiment_copy.Rmd).
+`leafSummarizedExperiment` object could be found in the vignette *Introduction
+to leafSummarizedExperiment and treeSummarizedExperiment*.
 
 * Step 2: Data preparation. Derive data on the level of internal nodes and store
 data on all nodes in a `treeSummarizedExperiment` container. More details about
 the construction of a `treeSummarizedExperiment` object could be found in the
-[Introduction to leafSummarizedExperiment and
-treeSummarizedExperiment](Introduction to leafSummarizedExperiment and
-treeSummarizedExperiment_copy.Rmd).
+vignette *Introduction to leafSummarizedExperiment and
+treeSummarizedExperiment*.
 
 * Step 3: Data analysis. Users could use the available wrapper function
-`runEdgeR` in our package or other suitable software to do customized analysis.
-Test individual hypotheses at tree leaves and internal nodes simultaneously and
-use the Benjamin-Hochberg procedure to control the FDR. Nominal and adjusted
-p-values for each node are required to do tree aggregation.
+`runEdgeR` if differential analysis of counts is desired, or other suitable
+software to do customized analysis. Individual hypotheses at tree leaves and
+internal nodes are tested simultaneously and the Benjamin-Hochberg procedure to
+control the FDR is used. Nominal and adjusted p-values for each node are
+required to do tree aggregation.
 
 * Step 4: Tree aggregation. Start from the leaf nodes of the tree. Compare
 p-values on leaf nodes to that on their parent node. If the minimum value is on
@@ -112,69 +110,26 @@ finally left and keep only those where the null hypothesis is rejected.
 We suggest users to come back to this workflow (Figure \@ref(fig:flowchart))
 after they read Section \@ref(analysis) and Section \@ref(aggregation).
 
-## Theoretical example
+## Details about the tree aggregation
 
-Here, we shown the example of using `r Biocpkg("edgeR")` to perform the
-individual statistical tests on each leaf and internal node, to explain how this
-pipeline works. Users are free to choose any suitable package or software to do
-the analysis. Consider the case in which a table and a hierarchical structure of
-$n$ entities (e.g. microbial species or cell types) are available. In this
-table, each row represents an entity $g$, and each column a sample. Samples are
-collected from subjects with different phenotypic outcome (e.g., healthy and
-diseased). Let $Y_{gi}$ denote the observed value of an entity (corresponding to
-a node on the tree) $g$ in sample $i$. As assumed in `r Biocpkg("edgeR")`
-[@Robinson2009], $Y_{gi}$ follows a negative binomial distribution
+Consider the case that we have a table that contains measurments of entities
+collected from samples under different conditions (the phenotypic outcome), and
+a tree that represents the hierarchical structure of the entities. The table is
+organized in a way that entities are in the rows and samples are in the columns.
+To arrange hypotheses in the hierarchical structure, we need that each node of
+the tree could mapped to a row of the table. However, in most case, only the
+data of entities corresponding to the leaf nodes of the tree could be observed,
+and the data for the internal nodes have to be generated based on the observed
+values of their descendant leaf nodes. Users can choose any reasonable method to
+generate data for the entities corresponding to internal nodes. For abundance,
+we suggest to create the data of an internal node by summing the count of its
+descendant leaf nodes.
 
-$$\mathbf{Y}_{gi}  \sim NB(\mathbf{M}_{i}\mathbf{p}_{gj}, \mathbf{\phi}_{g})  $$
-$$g = 1, 2, 3, ..., n, n+1, ..., n+K;$$ 
-$$i = 1, 2, ... m;$$ 
-$$j = 1, 2, ..., J.$$
-
-
-Here,  $\mathbf{M}_{i}$ is the effective total count of sample $i$,
-$\mathbf{p}_{gj}$ is the relative abundance of entity $g$ with phenotypic
-outcome $j$ to which sample $i$ belongs, and $\mathbf{\phi}_{g}$ is the
-dispersion parameter used to model the biological variation between samples. The
-negative binomial distribution is parameterized with mean as
-$\mathbb{E}[\mathbf{Y}_{gi}] = \mu_{gi} =  \mathbf{M}_{i}\mathbf{p}_{gj}$, and
-variance as $\text{Var}[\mathbf{Y}_{gi}] = \mu_{gi}(1+\mu_{gi}\phi_{g})$. When
-$\mathbf{\phi}_{g} = 0$, the negative binomial distribution reduces to Poisson
-distribution. In total, we have $n+K$ entities, $m$ samples and $J$ conditions.
-Among $n+K$ entities, $1, 2, ..., n$ correspond to the leaf nodes of the tree,
-and the other $K$ entities to the internal nodes. In most cases, only the former
-could be observed and data analysis is hence often performed only on the level
-of leaf nodes. Here, we suggest to derive data for the internal nodes based on
-the leaves and further perform analysis on all nodes of the tree. This could
-make it possible to do the association investigation on all levels of the tree
-structure. Users can choose any reasonable method to generate data for the
-entities corresponding to internal nodes, based on the observed values for the
-leaves. Here, we create the abundance of an internal node by summing the
-abundance of its descendant leaf nodes.
-
-
-With the data ready, we could firstly estimate the the value of
-$\mathbf{\phi}_{g}$ and build a generalized linear model at each node of the
-tree.
-
-$$
-\text{log}(\mu_{gi}) = \mathbf{x}^{T}_{i} \mathbf{\beta}_{g}, \quad 
-g = 1, 2, ..., n, n+1, ...., n+K
-$$
-where $\mathbf{x}^{T}_{i}$ is a vector of covariates including confounders
-(e.g., age, gender) and the covariate of interest (e.g., diseased and healthy
-sample) applied on sample $i$, and $\mathbf{\beta}_{g}$ is a vector of
-corresponding regression coefficients. Let $\beta^{1}_{g}$ denote the
-coefficient value for the covariate of interest in $\beta_{g}$. We then arrange
-the hypotheses in a tree-like structure and test hypotheses to get a p-value at
-each node.
-$$
-H^{g}_{0}: \beta^{1}_{g} = 0 \quad  (g = 1, 2, ..., n, n+1, ...., n+K ),
-$$
-where $n$ is the number of leaf nodes and $K$ is the number of internal nodes.
-
-Multiple testing correction methods, such as the Benjamin-Hochberg procedure,
-could be applied here to decide whether the null hypothesis at a node should be
-rejected.
+With the data ready, we could test the null hypothesis, which states that there
+is no association between the abundance change and the phenotypic outcome, at
+each node. Multiple testing correction methods, such as the Benjamin-Hochberg
+procedure, could be applied then to decide whether the null hypothesis at a node
+should be rejected.
 
 It's likely that an internal node found to be significantly associated with the
 phenotypic outcome is due to some of its descendant nodes. In other words, only
@@ -206,8 +161,7 @@ suppressPackageStartupMessages({
   library(ggtree)
 })
 ```
-The data analysis includes two steps. One is to do the hypothesis test (for
-example, differential abundance (DA) or differential state (DS) test) on each
+The data analysis includes two steps. One is to do the hypothesis test on each
 node, the other is to combine these results with the tree structure to do tree
 aggregation. The `r Biocpkg("treeAGG")` package provides functions to do the
 second step, and users are free to perform their testing using any suitable
@@ -215,9 +169,10 @@ software. Here, as an example, we show the DA test step performed with the
 `r Biocpkg("edgeR")` package. `r Biocpkg("S4Vectors")` might be required in the
 data preparation step to create `DataFrame` objects.
 
-A count table and a tree structure are required to do data analysis. If the tree
-structure is not a `phylo` object, we need to convert it via `as.phylo` from 
-`r CRANpkg("ape")`.
+A count table and a tree structure are required to do data analysis. Here, we
+use a semi-simulated cytof data [@Weber2018] as an example. More details could
+be found via `?cytofCount`. As the tree structure is not a `phylo` object, we
+need to convert it via `as.phylo` from `r CRANpkg("ape")`.
 
 ```{r}
 # count table
@@ -235,8 +190,8 @@ Tree <- as.phylo(cytofTree)
 ```
 
 
-The information of each cell cluster, corresponding to a row in the count table,
-is given in the `cytofCluster` (see `?cytofCluster` for more details).
+The information for each cell cluster, corresponding to a row in the count
+table, is given in the `cytofCluster` (see `?cytofCluster` for more details).
 
 ```{r}
 # row information 
@@ -246,14 +201,13 @@ cytofCluster <- DataFrame(cytofCluster)
 cytofCluster$nodeLab <- cytofCluster$cluster
 ```
 
-We add a new column named as `nodeLab` to tell which node of the tree a row of
+We add a new column named as `nodeLab` to record which node of the tree a row of
 the count table corresponds to. If such a column is not given, the rownames of
-the `cytofCluster` is used for the mapping. Hence, users should be careful about
-the `nodeLab` column or the rownames, and make sure they use the same label as
-the node label of the tree. When the `nodeLab` column and the rownames both
-exist and are different, the `nodeLab` column is used.
+the `cytofCluster` is used for the mapping. Users should make sure that the
+column `nodeLab` or the row names use node labels of the tree. When both exist
+and are different, the `nodeLab` column is used.
 
-The information of each sample, corresponding to a column in the count table, is
+The information of each sample (a column in the count table) is
 given in the `cytofSample` (see `?cytofSample` for more details).
 
 ```{r}
@@ -261,10 +215,10 @@ given in the `cytofSample` (see `?cytofSample` for more details).
 data("cytofSample")
 ```
 
-We could organize the above data into a `leafSummarizedExperiment` object via
-the  `leafSummarizedExperiment` constructor function. See details about the
-class `leafSummarizedExperiment` (`?'leafSummarizedExperiment-class'`) and its
-constructor.
+We could store the above data in a `leafSummarizedExperiment` container. More
+details about the `leafSummarizedExperiment` class could be found in the help
+page `?leafSummarizedExperiment` or in the vignette *Introduction to
+leafSummarizedExperiment and treeSummarizedExperiment*.
 ```{r}
 # construct a leafSummarizedExperiment object to include tree structure, count,
 # cluster information and sample information
@@ -272,26 +226,16 @@ lse <- leafSummarizedExperiment(tree = Tree,
                                 assays = list(count),
                                 rowData = cytofCluster,
                                 colData = cytofSample)
-class(lse)
-showClass("leafSummarizedExperiment")
 lse
 ```
 
-The output *lse* is a `leafSummarizedExperiment` object. It has the same
-structure as a `SummarizedExperiment` object. The abundance table of clusters is
-stored as a matrix-like element in `assays`. The cluster information is stored
-as `rowData` and the sample information as `colData`. The hierarchical structure
-of cell clusters is stored in `metadata`.
-
 The abundance table in *lse* only provides the counts (abundances) of clusters
-at tree leaf level. We are interested to do a differential abundance test at
-different hierarchical levels of the tree,  and aim to find the optimal level in
-the tree to intepret the association between the differental abundance of
-clusters and the phenotypic outcome (here, CN and healthy). Hence, we also need
-the abundance of internal nodes that represent different hierarchical level of
-the tree and indicate different resolutions at which data can be viewed. We
-generate counts of internal nodes by summing the counts of their descendants,
-using the `nodeValue` function as shown below.
+at tree leaf level.  We generate counts of internal nodes by summing the counts
+of their descendants using the `nodeValue` function. The output
+*tse* is a `treeSummarizedExperiment` object. More details about the
+`treeSummarizedExperiment` class could be found in the help page
+`?treeSummarizedExperiment` or in the vignette *Introduction to
+leafSummarizedExperiment and treeSummarizedExperiment*.
 
 ```{r}
 tse <- nodeValue(data = lse, fun = sum, message = TRUE)
@@ -310,26 +254,26 @@ The `rowData` dimension changes coordinately.
 dim(rowData(lse))
 dim(rowData(tse))
 ```
-How to access the elements of `leafSummarizedExperiment` and
-`treeSummarizedExperiment` could be found in the vignette [Introduction to
-leafSummarizedExperiment and treeSummarizedExperiment](Introduction to
-leafSummarizedExperiment and treeSummarizedExperiment_copy.Rmd).
 
-The information of a cluster (an internal node) is decided by its descendant
-leaves. Here, for example, the column *truth* provides the information whether a
-cluster is truly differentially abundant. The cluster, which corresponds to an
-internal node of a tree, would have value `TRUE` in the *truth* column if all
-its descendant clusters have *truth* and have value `NA` in *truth* column if
-its descendant clusters have different values for *truth*.
+The row information of an internal node is decided by that of all its
+descendants. If there are different values for the descendants, `NA` is used for
+the internal node; otherwise, the internal node shares the same value as its
+desendants. Here, for example, the column *truth* provides the information
+whether a cell cluster is truly differentially abundant. The cluster, which
+corresponds to an internal node of a tree, would have value `TRUE` in the
+*truth* column if all its descendant clusters have *truth* and have value `NA`
+in *truth* column if its descendant clusters have different values for *truth*.
 ```{r}
 # select a cluster that corresponds to an internal node of the tree and has TRUE
 # in the 'truth' column
 sel <- which(rowData(tse)$truth & !linkData(tse)$isLeaf)[1]
 rowData(tse)[sel, ]
 
-# find the descendant clusters (nodes) of the selected cluster
-desd <- findOS(tree = treeData(tse), ancestor = linkData(tse)$nodeNum[sel], 
+# find the descendant nodes of the selected internal node
+desd <- findOS(tree = treeData(tse), 
+               ancestor = linkData(tse)$nodeNum[sel], 
                only.Tip = TRUE, return = "number")
+
 # The descendants all have TRUE in the 'truth' column
 rowData(tse)[match(desd, linkData(tse)$nodeNum), ]
 
@@ -342,10 +286,7 @@ rowData(tse)[match(desd, linkData(tse)$nodeNum), ]
 In a `treeSummarizedExperiment` object, multiple tables can be stored as
 `assays`. Users could choose to perform analysis on one of them or on multiple
 assays simultaneously. We start to show you how to do it on a single table.
-
-Users are free to choose suitable R packages to run DA test. Here, as an
-example, the analysis with `r Biocpkg("edgeR")` is shown. There are two options
-to do it.
+There are two options to do it.
 
 * Option 1: use functions from `r Biocpkg("edgeR")`. This is more flexible and
 allows more customized settings.
@@ -412,28 +353,35 @@ the function `updateTSE`.
 # put *out* in a list. 
 outList <- list(assay1 = list(out))
 new_tse1 <- updateTSE(result = outList, tse = tse, 
-                      use.assays = 1, design = design, contrast = NULL, 
-                      fit = fit)
+                      use.assays = 1, design = design, 
+                      contrast = NULL, fit = fit)
 ```
 The result *out* is changed to a list object *outList* before it is assigned to
-the argument `result`. The reason to do it could be seen later in the section ??
-where analysis on multiple tables with multiple contrasts are performed. Give
-the name of the data container, *tse*,  where the results will be stored. Tell
-the function which tables of `assays` in *tse* have been used to get the
-analysis result *out* by using `use.assays`. Give the design matrix and
-contrasts that have been used in the analysis via `design` and `contrast`, and
-these would be stored in the `metadata` of the new `treeSummarizedExperiment`
-object *new_tse1*. Users could optionally store the result *fit* created before
-by the `glmFit` function for later use, for example, to quickly get new result
-when specifying a new contrast.
+the argument `result`. The reason to do it could be seen later in the section
+\@ref(multipleTable) where analysis on multiple tables with multiple contrasts
+are performed. To update the `treeSummarizedExperiment` object (`tse = tse`),
+the result (`result = outList`) and the information, such as the design matrix
+(`design`), the contrasts (`contrast`) and the number of matrix-like elements in
+`assays` (`use.assays`), should be provided. We could also optionally store the
+result *fit* created by the `glmFit` function for later use, for example, to
+quickly get new result when specifying a new contrast.
 
+In the `rowData`, a new column *result_assay1*, which is only visible with
+`internal = TRUE` , is created to store the result gained from the first assay
+table. This new column has a new class `internal_rowData` that indicates it's
+the internal part of the `rowData` and is only visible with `internal = TRUE`.
+We don't recommend users to modify columns belonging to the internal part of the
+`rowData` as they are required for the tree aggregation step.
 ```{r}
-rowData(new_tse1)
+# the result gained from the first assay table
+(res <- rowData(new_tse1, internal = TRUE)$result_assay1)
 ```
-We see that there is a new column called *result_assay1* that stores the result
-*out*.
+
+As we didn't specify contrast (`contrast = NULL`) in the analysis, there is only
+a column `contrastNULL`.
 ```{r}
-rowData(new_tse1)$result_assay1
+# the result gained with contrast = NULL
+res$contrastNULL
 ```
 
 If users want to see only the original row data, it could be achieved by
@@ -449,9 +397,10 @@ In the package `r Biocpkg("treeAGG")`, we have provided a wrapper function to do
 the work of section \@ref(option1) in one step.
 
 ```{r}
-new_tse2 <- runEdgeR(obj = tse, use.assays = 1, design = NULL, 
-                 contrast = NULL, normalize = TRUE, method = "TMM", 
-                 adjust.method = "BH")
+new_tse2 <- runEdgeR(obj = tse, use.assays = 1,
+                     design = NULL, contrast = NULL, 
+                     normalize = TRUE, method = "TMM", 
+                     adjust.method = "BH")
 new_tse2
 ```
 The prepared data *tse* is assigned to the `obj` argument. If there are more
@@ -463,47 +412,47 @@ saved in the `metadata` of the output for later check. If they are not given,
 the wrapper function will by default use `colData` to generate a design matrix
 and test the last coefficient in the `glmLRT` step.
 
-## Analysis on multiple tables with multiple contrasts
+## Analysis on multiple tables of `assays` {#multipleTable}
 
-Here, we will show how to perform analysis simultaneously on multiple tables.
+In this section, we show how to perform analysis simultaneously on multiple
+elements of `assays` with multiple contrasts.
 
-We create a new `treeSummarizedExperiment` object *tseM* with 3 tables in the
-assay. It is the same to the *tse* except the part of `assays`.
+We create a new `treeSummarizedExperiment` object *tseM* with 3 `elements` in
+the `assays` and the other slots exactly the same as *tse*.
 ```{r}
 # extract the abundace table
 count <- assays(tse, use.nodeLab = TRUE)[[1]]
+
 # new treeSummarizedExperiment with three tables in the assays
-tseM <- treeSummarizedExperiment(assays = list(count, (2*count), (3*count) ),
+countList <- list(count, (2*count), (3*count) )
+tseM <- treeSummarizedExperiment(assays = countList,
                                  tree = treeData(tse), 
                                  linkData = linkData(tse),
                                  rowData = rowData(tse),
                                  colData = colData(tse))
 ```
 
-Assume we want to analyze the first and the third tables. This could be done in
-one step. We feed *tseM* to the `obj`, tell R to use the first and third tables
-by setting `use.assays = c(1, 3)`, and specify the design and contrasts via
-`design` and `contrast`. Then, we get the analysis results updated in the
-`rowData` of *new_tseM*.
+Analysis on the first and the third elements of `assays` can be done in one
+step. We feed *tseM* to the `obj`, tell R to use the first and third tables
+`use.assays = c(1, 3)`, and specify the design and contrasts via `design` and
+`contrast`. The output is *new_tseM*. 
+
 ```{r}
-new_tseM <- runEdgeR(obj = tseM, use.assays = c(1, 3), design = NULL, 
-                     contrast = list(contrast1 = NULL, 
-                                     contrast2 = c(0, 0, 0, 1, -1, 0)),
+contrastList <- list(contrast1 = NULL, 
+                     contrast2 = c(0, 0, 0, 1, -1, 0))
+new_tseM <- runEdgeR(obj = tseM, use.assays = c(1, 3), 
+                     design = NULL,
+                     contrast = contrastList,
                      normalize = TRUE, method = "TMM", 
                      adjust.method = "BH")
 new_tseM
 ```
-We could see that there are now 7 columns in the rowData. The 2 new columns are
-the analysis results from the first and third tables of `assays`,
-*result_assay1*, and *result_assay3*. These two columns are referred as the
-internal part of the `rowData` that are only visible with `internal = TRUE` when
-`rowData()` is used to access the row data. We don't recommend users to access
-or modify these columns as they are required for the tree aggregation step. 
+There are now 7 columns in the `rowData`. The two new columns are
+the analysis results from the first and third elements of `assays`,
+*result_assay1*, and *result_assay3*.  
 
-If users want to do some customized settings that are not provided above, they
-could extract the target tables and follow the work in section \@ref(option1)
-and finally integrate the results into *tseM* using the function `updateTSE` as
-below.
+If users want to do some customized settings, they could do it similarly as
+section \@ref(option1).
 
 ```{r}
 count1 <- assays(tseM, use.nodeLab = TRUE)[[1]]
@@ -511,14 +460,18 @@ count3 <- assays(tseM, use.nodeLab = TRUE)[[3]]
 
 
 # calculate library size
-count1.t <- assays(tseM[linkData(tseM)$isLeaf, ], use.nodeLab = TRUE)[[1]]
-count3.t <- assays(tseM[linkData(tseM)$isLeaf, ], use.nodeLab = TRUE)[[3]]
+count1.t <- assays(tseM[linkData(tseM)$isLeaf, ],
+                   use.nodeLab = TRUE)[[1]]
+count3.t <- assays(tseM[linkData(tseM)$isLeaf, ], 
+                   use.nodeLab = TRUE)[[3]]
 libSize1 <- apply(count1.t, 2, sum)
 libSize3 <- apply(count3.t, 2, sum)
 
 # create DGEList
-y1 <- DGEList(counts = count1, lib.size = libSize1, remove.zeros = FALSE)
-y3 <- DGEList(counts = count3, lib.size = libSize3, remove.zeros = FALSE)
+y1 <- DGEList(counts = count1, lib.size = libSize1,
+              remove.zeros = FALSE)
+y3 <- DGEList(counts = count3, lib.size = libSize3, 
+              remove.zeros = FALSE)
 
 # calculate normalisation factors
 y1 <- calcNormFactors(object = y1, method = "TMM")
@@ -546,44 +499,43 @@ lrt3.2 <- glmLRT(fit3, contrast = c(0, 0, 0, 1, -1, 0))
 
 # Use Benjamin-Hochberg method to do multiple testing correction
 # n is set to Inf below, because we want to have the results of all entities.
-out1.1 <- topTags(lrt1.1, n = Inf, adjust.method = "BH")$table
-out1.2 <- topTags(lrt1.2, n = Inf, adjust.method = "BH")$table
+out1.1 <- topTags(lrt1.1, n = Inf,
+                  adjust.method = "BH")$table
+out1.2 <- topTags(lrt1.2, n = Inf, 
+                  adjust.method = "BH")$table
 
-out3.1 <- topTags(lrt3.1, n = Inf, adjust.method = "BH")$table
-out3.2 <- topTags(lrt3.2, n = Inf, adjust.method = "BH")$table
+out3.1 <- topTags(lrt3.1, n = Inf, 
+                  adjust.method = "BH")$table
+out3.2 <- topTags(lrt3.2, n = Inf, 
+                  adjust.method = "BH")$table
 ```
+Now, we have four result tables. To write the results back to *tseM*, we could
+use the function `updateTSE`.
 
-To write the results back to *tseM*, we could use the function `updateTSE`.
 ```{r}
 # put the contrasts used as a list and name the contrasts
 contrastList <- list(contrast1 = NULL, contrast2 = c(0, 0, 0, 1, -1, 0))
 
-# put the results obtained as a list
-resultList <- list(assay1 = list(contrast1 = out1.1, contrast2 = out1.2), 
-                   assay3 = list(contrast1 = out3.1, contrast2 = out3.2))
+# put the four result tables as a list
+resultList <- list(assay1 = list(contrast1 = out1.1, 
+                                 contrast2 = out1.2), 
+                   assay3 = list(contrast1 = out3.1, 
+                                 contrast2 = out3.2))
 
 # write the result back to the tseM
-new_tseM2 <- updateTSE(result = resultList, tse = tseM, use.assays = c(1, 3),
-                      design = designM, contrast = contrastList, 
-                      fit = list(fit1, fit3))
+new_tseM2 <- updateTSE(result = resultList, 
+                       tse = tseM, 
+                       use.assays = c(1, 3),
+                       design = designM,
+                       contrast = contrastList, 
+                       fit = list(fit1, fit3))
 ```
-Create a list to store the contrasts used in the analysis and name each
-contrast. The results are also organized into a list with the following
-requirements.
 
-* Results from the same assay table with different contrasts are stored in a
-list. They are named according to their contrasts as *contrastList*. 
+* Results from the same assay table are stored in a list. They are named
+according to their contrasts as *contrastList*.
 * Results from different assay tables are further organized in a list. They are
-named with the `assay` followed by the number that the table is in the `assays`
-of *tseM*
-
-The output *out* has five columns, one of which is the nominal p-value
-(*PValue*) and one is the adjusted p-value named *FDR*. These columns are
-required by the tree aggregation step. If users choose other softwares to do
-analysis, we expect they could finally get results similar to *out* with columns
-containing nominal and adjusted p-values and each row representing a node of the
-tree structure. We could further store the result in the `rowData` of *tse* via
-the function `updateTSE`.
+named with the `assay` followed by the number that the element data is in the
+`assays` of *tseM*.
 
 ```{r}
 all.equal(new_tseM, new_tseM2)
@@ -591,33 +543,34 @@ all.equal(new_tseM, new_tseM2)
 
 # Tree aggregation {#aggregation}
 
-The tree aggregation could be done in one step by using the function `treeAGG`.
+The tree aggregation could be done in one step using the function `treeAGG`.
+Based on the analysis output (`data = new_tseM`), we specify the column for the
+aggregation via `agg.by`, and the column storing the adjusted p-value via
+`sigf.by`. The threshold for the adjusted p-value can be assigned via
+`sigf.limit`. To see the running process, `message = TRUE` is used.
 ```{r}
 aggR <- treeAGG(data = new_tseM, sigf.by = "FDR", 
-                sigf.limit = 0.05, agg.by = "FDR", 
+                sigf.limit = 0.05, agg.by = "PValue", 
                 message = TRUE)
 ```
-Feed the argument `data` with the output from the previous analysis section
-*new_tse*. The column used for tree aggregation is specified by the column name
-via `agg.by`, and the column storing the adjusted p-value by `sigf.by`. Users
-could decide the threshold value for the column `sigf.by` via `sigf.limit`. If
-the aggregation takes time, we could set `message = TRUE` to see the running
-process. With `topNodes`, the result table from the DA analysis and tree
-aggregation step could be printed out. The output *aggR* from previous step is
-assigned to `data`. The argument `use.assays = 1` is to show only results
-obtained from the first table stored in `assays`. We could further specify how
-the rows should be ordered via `sort.by` and `decreasing`. If some columns in
-`linkData` or `rowData` are also needed, they could be extracted out
-simutaneously via `col.rowData` and `col.linkData`, respectively.
+
+To print out the result, `topNodes` can be used. The output *aggR*  is assigned
+to `data`. We could decide which result should be shown using `use.assays`.
+Here, `use.assays = 1` is to show only results obtained from the first element
+of `assays`. We could further specify how the rows should be ordered via
+`sort.by` and `decreasing`. If some columns in `linkData` or `rowData` are also
+needed, they could be extracted out simutaneously via `col.rowData` and
+`col.linkData`, respectively.
 
 ```{r}
-tabL <- topNodes(data = aggR, sort.by = "FDR", decreasing = FALSE,
+tabL <- topNodes(data = aggR, sort.by = "FDR", 
+                 decreasing = FALSE,
                  use.assays = 1, col.rowData = NULL, 
                  col.linkData = "nodeNum")
 ```
-Here, *tabL* is simply a list and users could extract any subelements by the
+Here, *tabL* is simply a list and users could extract any sub-elements by the
 operations on the `list` class. Below, we will display the result gained with
-the contrast NULL.
+the *contrast1* (the first contrast of *contrastList*).
 ```{r}
 tabR <- tabL$result_assay1$contrast1
 ```
@@ -626,48 +579,57 @@ column includes values `TRUE` and `FALSE`. Those rows with value `TRUE`
 correspond to nodes that are finally selected as the estimated optimal level to
 interpret the differential abundance pattern on the tree.
 
-# Result visualisation
+# The visualisation of the result
 
 The information of true differential abundance is stored in the column *truth*
 of the `rowData`. We subset the `treeSummarizedExperiment` object *aggR* to keep
-only clusters that are truly differentially abundant between patient and CN
-samples, and then use the function `signalNode` to find nodes that could
-describe the differential abundance pattern of the tree using as few nodes as
-possible while avoiding false discoveries. In other words, `signalNode` gives
-the optimal level to interpret the differential abundance pattern.
+only nodes that are truly differentially abundant between patient and CN
+samples, and use the function `signalNode` to extract the signal nodes. More
+details about `signalNode` could be found in its help page ( `?signalNode` ).
 ```{r}
 # Nodes that are truely differentially abundant
 diffR <- aggR[rowData(aggR)$truth %in% TRUE, ]
-# True signal (the optimal level to describe the differential abundant pattern
-# in the tree)
-trueLoc <- signalNode(tree = treeData(diffR), node = linkData(diffR)$nodeNum)
+
+# the true signal level 
+trueLoc <- signalNode(tree = treeData(diffR),
+                      node = linkData(diffR)$nodeNum)
 ```
 
 The estimated optimal level to interpret the differential abundance pattern from
-`r Biocpkg("treeAGG")` is as below. Here, we extract the node number (`nodeNum`)
-instead of the node label because, depends on how people generate the tree,
-internal nodes might not have labels assigned to them in some trees.
+`r Biocpkg("treeAGG")` is as below. The node number (`nodeNum`) instead of the
+node label is extracted because internal nodes might not have labels in the tree
+provided.
 ```{r}
-# Nodes that are estimated to be differentially abundant
+# the estimated signal level
 estLoc <- tabR$nodeNum[tabR$aggKeep]
 ```
-If users are interested to the node label instead of the node number,
-`transNode` available in our package could simply do the transformaton between
-the two. Check the example in the help page `?transNode` to see more details.
+
+If the node label, instead of the node number, is of interest, `transNode` can
+be used to do the transformaton. More details could be found in the help page
+`?transNode`.
 
 ```{r}
-# transform the node number to node label
-# NA obtained, because in the tree structure, no label is assigned for this internal node.
-transNode(tree = treeData(aggR), input = estLoc, use.alias = FALSE)
+# when there is no label for a node in the tree, NA is returned
+transNode(tree = treeData(aggR), input = estLoc)
+
+# if a character string for a node is really needed for some reasons, an alias
+# could be used.
+(aliasV <- transNode(tree = treeData(aggR),
+                     input = estLoc,
+                     use.alias = TRUE))
+
+# the alias of the node label could be transformed back to the node number
+(aliasN <- transNode(tree = treeData(aggR), input = aliasV))
+estLoc == aliasN 
 ```
 
 To compare the estimated results with the truth, we use `treePlot` to generate a
 tree figure. The function `treePlot` is created based on 
-`r Biocpkg("ggtree")`[@Yu2017] and `r CRANpkg("ggplot2")`[@Wickham2016]. The
-branches with blue edges are truly differentially abundant. The results obtained
-from the minP aggregation algorithm implemented in `r Biocpkg("treeAGG")` are
-shown as orange points. Nodes labelled with orange points are the suggested as
-the optimal level at which to interpret the signal.
+`r Biocpkg("ggtree")`[Yu2017] and `r CRANpkg("ggplot2")`. The branches with blue
+edges are truly differentially abundant. The results obtained from the minP
+aggregation algorithm implemented in `r Biocpkg("treeAGG")` are shown as orange
+points. Nodes labeled with orange points are the suggested as the optimal level
+at which to interpret the signal.
 ```{r fig.height= 2}
 p <- treePlot(tree = treeData(diffR) ,  
               branch = trueLoc,
@@ -676,7 +638,6 @@ p <- treePlot(tree = treeData(diffR) ,
               layout = "circular")
 p
 ```
-
 
 
 

@@ -52,7 +52,7 @@ in [SummarizedExperiment for coordinating experimental assays, samples, and
 regions of
 interest](https://bioconductor.org/packages/release/bioc/vignettes/SummarizedExperiment/inst/doc/SummarizedExperiment.html).
 The difference to `SummarizedExperiment` is that `leafSummarizedExperiment` has
-more restrictions on the data. 
+more restrictions on the data.
 
 * It requires a `phylo` object stored in `metadata` and named `tree`.
 * It requires that the `phylo` object has a unique label for each leaf node.
@@ -245,7 +245,8 @@ ex1 <- assays(tse)[[1]][, 1, drop = FALSE]
 
 # combine it with the data extracted from linkData
 # rename column nodeNum as node
-# optional : datF <- cbind.data.frame(ex1, linkData(tse)) %>% rename(node=nodeNum)
+# optional : datF <- cbind.data.frame(ex1, linkData(tse)) %>%
+# rename(node=nodeNum)
 datF <- cbind.data.frame(ex1, linkData(tse)) 
 colN <- colnames(datF)
 colN[colN == "nodeNum"] <- "node"
