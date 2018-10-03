@@ -12,7 +12,11 @@
 #'   by performing analysis on the same matrix-like element of \code{assays}
 #'   with different contrasts. b1 and a1 are obtained by perfoming analysis on
 #'   different matrix-like element (A and B, respectively) of \code{assays} with
-#'   the same contrast.
+#'   the same contrast. In summary, results from the same assay element with
+#'   different contrasts are stored in a list. They are named according to their
+#'   contrasts; Results from different assay elements are further organized in a
+#'   list. They are named with \dQuote{assay} followed by the number that the
+#'   element is in the \code{assays}
 #' @param tse A treeSummarizedExperiment object to be updated.
 #' @param use.assays A numeric vector. It specifies which matrix-like elements
 #'   in \code{assays} have been used for the analysis to get \code{result}. The
@@ -129,14 +133,27 @@ updateTSE <- function(result, tse, use.assays, design,
     class_subelements <- unlist(lapply(sub_result, class))
 
     if (any(!class_subelements %in% c("data.frame", "DataFrame"))) {
-        stop("Each sub-element of the input result should be a data frame. \n")
+        stop("Each sub-element of *result* should be a data frame. \n")
     }
 
     # the number of elements should equal to the length of use.assays
     # The example structure has A & B (length 2)
     if (length(result) != length(use.assays)) {
-        stop("The length of *result* should match the length of *use.assays*.
-             \n")
+        stop(" *result* should have the same length as *use.assays*. \n")
+    }
+
+    # the name of the result should start with "assay"
+    nam <- names(result)
+    if (!all(startsWith(nam, "assay"))) {
+        stop("The name of *result* should start with 'assay'. \n")
+    }
+
+    # In the name of result, the number after "assay" should match with
+    # use.assay
+    num <- gsub(pattern = "assay", replacement = "", x = nam)
+    num <- as.numeric(num)
+    if (!all(num == use.assays)) {
+        stop("The order of use.array does not match with that of result. \n")
     }
 
     # the number of sub-elements should be the same

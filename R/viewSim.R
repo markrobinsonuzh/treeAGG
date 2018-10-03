@@ -66,10 +66,13 @@ viewSim <- function(obj, layout = "rectangular", zoomScale = 1/20,
 
     # zoomNode
     sNode <- findParallel(tree = tree, input = branch, return = "number")
-    # isT <- isLeaf(tree = tree, input = sNode)
-    # fNode <- sNode[!isT]
+    isT <- isLeaf(tree = tree, input = sNode)
+    fNode <- sNode[!isT]
 
-    fNode <- sNode
+    if (length(fNode) == 0) {
+        fNode <- NULL
+    }
+    #fNode <- sNode
     # fold change
     d <- data.frame(node = transNode(tree = tree,
                                      input = names(md$FC),

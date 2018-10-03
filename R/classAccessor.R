@@ -38,10 +38,10 @@
 #'   the rownames contain NAs (because the rownames of a SummarizedExperiment
 #'   object can contain NAs, but the rownames of a \link[S4Vectors]{DataFrame}
 #'   object cannot).
-#' @param value	An object of a class specified in the S4 method signature. See
+#' @param value	See the argument \code{value} in
 #'   \code{\link[SummarizedExperiment]{SummarizedExperiment}} for more details.
 #' @name leafSummarizedExperiment-accessor
-#' @return Elements from \code{leafSummarizedExperiment}.
+#' @return Elements of \code{leafSummarizedExperiment}.
 #' @author Ruizhu HUANG
 #' @seealso \code{\link{treeSummarizedExperiment}}
 #'   \code{\link{treeSummarizedExperiment-accessor}}
@@ -107,7 +107,7 @@ NULL
 #'   the rownames contain NAs (because the rownames of a SummarizedExperiment
 #'   object can contain NAs, but the rownames of a \link[S4Vectors]{DataFrame}
 #'   object cannot).
-#' @param value	An object of a class specified in the S4 method signature. See
+#' @param value	See the argument \code{value} in
 #'   \code{\link[SummarizedExperiment]{SummarizedExperiment}} for more details.
 #' @param i,j The subscripts that can act to subset the rows and columns of
 #'   \code{x}, that is the matrix elements of assays.
