@@ -13,8 +13,8 @@ sizeScale(col.point, size.point, legend.label, legend.title,
 \item{size.point}{The size for the \strong{point}. It has length equal to
 one.}
 
-\item{legend.label}{A list with three members: "col.branch", "col.other",
-and "col.point". The elements order in each member matches with the
+\item{legend.label}{A list with three members: "col.branch", "col.other", and
+"col.point". The elements order in each member matches with the
 corresponding argument \strong{col.branch}, \strong{col.other} and
 \strong{col.point}, and will display in the legend. See Examples.}
 

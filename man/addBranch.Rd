@@ -10,12 +10,12 @@ addBranch(tree, branch, col.branch, col.other, addTo = NULL, ...)
 \item{tree}{A phylo object}
 
 \item{branch}{A vector of node numbers labels to specify the branches to be
-colored. Each branch is represented by its branch node. A leaf node reprents
-the edge connecting the leaf and its parent.}
+colored. Each branch is represented by its branch node. A leaf node
+reprents the edge connecting the leaf and its parent.}
 
 \item{col.branch}{A vector of colors. Its length should be one or equals to
-the length of \strong{branch}. If \strong{col.branch} has the same length as
- \strong{branch}, the branches are colored correspondingly with the
+the length of \strong{branch}. If \strong{col.branch} has the same length
+as \strong{branch}, the branches are colored correspondingly with the
 \strong{col.branch}. The default is blue.}
 
 \item{col.other}{A color for the branches other than those specified in

@@ -26,7 +26,7 @@ matrices in \strong{assays}. Note: a column named \strong{nodeLab} or
 rownames, which provides the labels of corresponding nodes on the tree for
 each row of the matrices in \strong{assays}, is required.}
 
-\item{\strong{colData}:}{ An optional
+\item{\strong{colData}:}{ An optional argument with
 \code{\link[S4Vectors]{DataFrame-class}} describing the samples. Row names,
 if present, become the column names of the
 \strong{leafSummarizedExperiment}.}

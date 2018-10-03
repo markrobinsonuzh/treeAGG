@@ -9,15 +9,15 @@ colScale(branch, point, col.branch, col.other, col.point, legend.label,
 }
 \arguments{
 \item{branch}{A vector of node numbers labels to specify the branches to be
-colored. Each branch is represented by its branch node. A leaf node reprents
-the edge connecting the leaf and its parent.}
+colored. Each branch is represented by its branch node. A leaf node
+reprents the edge connecting the leaf and its parent.}
 
-\item{point}{A vector of node numbers or node labels to specify the
-locations to add points in the tree.}
+\item{point}{A vector of node numbers or node labels to specify the locations
+to add points in the tree.}
 
 \item{col.branch}{A vector of colors. Its length should be one or equals to
-the length of \strong{branch}. If \strong{col.branch} has the same length as
- \strong{branch}, the branches are colored correspondingly with the
+the length of \strong{branch}. If \strong{col.branch} has the same length
+as \strong{branch}, the branches are colored correspondingly with the
 \strong{col.branch}. The default is blue.}
 
 \item{col.other}{A color for the branches other than those specified in
@@ -25,8 +25,8 @@ the length of \strong{branch}. If \strong{col.branch} has the same length as
 
 \item{col.point}{A color for the \strong{point}. It has length equal to one.}
 
-\item{legend.label}{A list with three members: "col.branch", "col.other",
-and "col.point". The elements order in each member matches with the
+\item{legend.label}{A list with three members: "col.branch", "col.other", and
+"col.point". The elements order in each member matches with the
 corresponding argument \strong{col.branch}, \strong{col.other} and
 \strong{col.point}, and will display in the legend. See Examples.}
 

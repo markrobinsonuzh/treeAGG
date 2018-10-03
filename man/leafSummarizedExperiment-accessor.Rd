@@ -41,7 +41,7 @@ assays. For rowData, arguments passed through ... are forwarded to mcols.
 For cbind, rbind, ... contains leafSummarizedExperiment objects to be
 combined. For other accessors, ignored.}
 
-\item{value}{An object of a class specified in the S4 method signature. See
+\item{value}{See the argument \code{value} in
 \code{\link[SummarizedExperiment]{SummarizedExperiment}} for more details.}
 
 \item{withDimnames}{A logical(1), indicating whether dimnames should be
@@ -64,7 +64,7 @@ object can contain NAs, but the rownames of a \link[S4Vectors]{DataFrame}
 object cannot).}
 }
 \value{
-Elements from \code{leafSummarizedExperiment}.
+Elements of \code{leafSummarizedExperiment}.
 }
 \description{
 Accessor functions to extract different elements from

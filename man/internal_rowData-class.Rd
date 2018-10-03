@@ -3,13 +3,13 @@
 \docType{class}
 \name{internal_rowData-class}
 \alias{internal_rowData-class}
-\title{int_rowData: A virtual class
+\title{internal_rowData: A virtual class
 -----------------------------------------------------------------------------
 A virtual class to be assigned to a column of \code{rowData} in a
 \code{treeSummarizedExperiment} object. The columns with this class could be
 optionally exported or hidden when using \code{rowData}.}
 \description{
-int_rowData: A virtual class
+internal_rowData: A virtual class
 -----------------------------------------------------------------------------
 A virtual class to be assigned to a column of \code{rowData} in a
 \code{treeSummarizedExperiment} object. The columns with this class could be

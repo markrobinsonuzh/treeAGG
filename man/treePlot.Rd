@@ -15,12 +15,12 @@ treePlot(tree, branch = NULL, col.branch = "blue",
 \item{tree}{A phylo object}
 
 \item{branch}{A vector of node numbers labels to specify the branches to be
-colored. Each branch is represented by its branch node. A leaf node reprents
-the edge connecting the leaf and its parent.}
+colored. Each branch is represented by its branch node. A leaf node
+reprents the edge connecting the leaf and its parent.}
 
 \item{col.branch}{A vector of colors. Its length should be one or equals to
-the length of \strong{branch}. If \strong{col.branch} has the same length as
- \strong{branch}, the branches are colored correspondingly with the
+the length of \strong{branch}. If \strong{col.branch} has the same length
+as \strong{branch}, the branches are colored correspondingly with the
 \strong{col.branch}. The default is blue.}
 
 \item{col.other}{A color for the branches other than those specified in
@@ -41,26 +41,26 @@ tree is not zoomed in.}
 length of \strong{zoomNode}. If default (NULL), a leaf is zoomed in its
 direct parent level and an internal node is zoomed in its own level.}
 
-\item{zoomScale}{A numeric vector. Its length is equal to one or equal to
-the length of \strong{zoomNode}. If \strong{zoomScale} has the same length as
- \strong{zoomNode}, the branches are zoomed in with different scales
+\item{zoomScale}{A numeric vector. Its length is equal to one or equal to the
+length of \strong{zoomNode}. If \strong{zoomScale} has the same length as
+\strong{zoomNode}, the branches are zoomed in with different scales
 corresponding to the value of \strong{zoomScale}. If default (NULL), tree
 is not zoomed in.}
 
 \item{legend}{TRUE or FALSE. Default is FALSE. If TRUE, the legend is
 created.}
 
-\item{legend.theme}{A list of arguments used for the theme in ggplot2
-package (see \code{\link[ggplot2]{theme}} ) and starting with "legend."}
+\item{legend.theme}{A list of arguments used for the theme in ggplot2 package
+(see \code{\link[ggplot2]{theme}} ) and starting with "legend."}
 
-\item{legend.title}{A vector to specify the title of the legend. It must
-be named with "branch" and "point" to match with the argument
-\strong{branch} and \strong{point}.}
+\item{legend.title}{A vector to specify the title of the legend. It must be
+named with "branch" and "point" to match with the argument \strong{branch}
+and \strong{point}.}
 
-\item{legend.label}{A list with three members: "col.branch", "col.other",
-and "col.point". The elements order in each member matches with the
+\item{legend.label}{A list with three members: "col.branch", "col.other", and
+"col.point". The elements order in each member matches with the
 corresponding argument \strong{col.branch}, \strong{col.other} and
-\strong{col.point}, and will display in the legend. See Examples.}
+\strong{col.point}, and will display in the legend.}
 
 \item{size.line.legend}{The line size shown in the legend for \strong{branch}}
 
@@ -76,9 +76,9 @@ A tree plot
 \code{treePlot} visualizes a phylogenetic tree.
 }
 \details{
-treePlot is created based on the \pkg{ggtree} and \pkg{ggplot2}.
-So other geoms from these two packages could be combined with
-\code{treePlot} to add geoms in the figure created by \code{treePlot}.
+treePlot is created based on the \pkg{ggtree} and \pkg{ggplot2}. So
+  other geoms from these two packages could be combined with \code{treePlot}
+  to add geoms in the figure created by \code{treePlot}.
 }
 \examples{
 

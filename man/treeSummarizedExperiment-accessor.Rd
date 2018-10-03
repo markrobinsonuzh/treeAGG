@@ -59,7 +59,7 @@ assays. For rowData, arguments passed through ... are forwarded to mcols.
 For cbind, rbind, ... contains leafSummarizedExperiment objects to be
 combined. For other accessors, ignored.}
 
-\item{value}{An object of a class specified in the S4 method signature. See
+\item{value}{See the argument \code{value} in
 \code{\link[SummarizedExperiment]{SummarizedExperiment}} for more details.}
 
 \item{use.nodeLab}{A logical(1), indicating whether the rownames of assay

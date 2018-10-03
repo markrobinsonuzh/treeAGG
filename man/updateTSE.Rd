@@ -2,24 +2,29 @@
 % Please edit documentation in R/updateTSE.R
 \name{updateTSE}
 \alias{updateTSE}
-\title{Save the analysis results in the rowData of treeSummarizedExperiment object}
+\title{update the treeSummarizedExperiment object}
 \usage{
 updateTSE(result, tse, use.assays, design, contrast, fit = NULL)
 }
 \arguments{
-\item{result}{A list with the structure as \code{list(A = list(a1, a2, ...),
-B = list(b1, b2, ...))}. The sub-elements, e.g., a1, is a data frame output
-from the data analysis. The sub-elements,a1, a2, ..., are obtained by
-performing analysis on the same table A in the \code{assays} of \code{tse}
+\item{result}{A list has the structure as \code{list(A = list(a1, a2, ...), B
+= list(b1, b2, ...))}. The sub-elements, e.g., a1, is a data frame that is
+output from the data analysis. The sub-elements,a1, a2, ..., are obtained
+by performing analysis on the same matrix-like element of \code{assays}
 with different contrasts. b1 and a1 are obtained by perfoming analysis on
-different tables (A and B, respectively) in the \code{assays} of \code{tse}
-with the same contrast.}
+different matrix-like element (A and B, respectively) of \code{assays} with
+the same contrast. In summary, results from the same assay element with
+different contrasts are stored in a list. They are named according to their
+contrasts; Results from different assay elements are further organized in a
+list. They are named with \dQuote{assay} followed by the number that the
+element is in the \code{assays}}
 
-\item{tse}{A treeSummarizedExperiment object.}
+\item{tse}{A treeSummarizedExperiment object to be updated.}
 
-\item{use.assays}{A numeric vector. It specifies which tables are used for
-the analysis. The order should match with the order of \code{results} (A
-and B in the example structure)}
+\item{use.assays}{A numeric vector. It specifies which matrix-like elements
+in \code{assays} have been used for the analysis to get \code{result}. The
+order should match with the order of \code{results} (A and B in the example
+structure)}
 
 \item{design}{A design matrix that is used in the analysis to get
 \code{result}.}
@@ -28,19 +33,19 @@ and B in the example structure)}
 get \code{result}. The order should match with the subelements of the
 \code{results}, like a1, a2, ..., in the example structure.}
 
-\item{fit}{NULL. If using \code{\link{edgeR}} package for the analysis, it
-could store the output from \code{\link[edgeR]{glmFit}}. A object of
-\code{\link[edgeR]{DGEGLM-class}}}
+\item{fit}{An optional argument. A object of
+\code{\link[edgeR]{DGEGLM-class}} that is the output of
+\code{\link[edgeR]{glmFit}}. Default is NULL.}
 }
 \value{
 A treeSummarizedExperiment object.
 }
 \description{
-\code{updateTSE} adds the analysis results in the rowData of the
-treeSummarizedExperiment object. Which tables of the \code{assays} has been
-used to do data analysis will be specified in the \code{use.assays} of
-\code{metadata}. The design matrix and contrast vectors are also included in
-the \code{metadata}.
+\code{updateTSE} includes the analysis results to the \code{rowData} of the
+treeSummarizedExperiment object. The matrix-like elements of the
+\code{assays}, which has been used to do data analysis, will be specified in
+the \code{use.assays} of \code{metadata}. The design matrix and contrast
+vectors are also included in the \code{metadata}.
 }
 \examples{
 

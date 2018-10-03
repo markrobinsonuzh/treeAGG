@@ -2,8 +2,7 @@
 % Please edit documentation in R/tpr.R
 \name{tpr0}
 \alias{tpr0}
-\title{Calculate the number of true positives and the total number of positives on
-a tree structure}
+\title{Calculate true positives and positives}
 \usage{
 tpr0(tree, truth = NULL, found = NULL, level = c("node", "leaf"))
 }

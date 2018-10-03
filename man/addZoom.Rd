@@ -17,11 +17,11 @@ tree is not zoomed in.}
 length of \strong{zoomNode}. If default (NULL), a leaf is zoomed in its
 direct parent level and an internal node is zoomed in its own level.}
 
-\item{zoomScale}{A numeric vector. Its length is equal to one or equal to
-the length of \strong{zoomNode}. If \strong{zoomScale} has the same length as
- \strong{zoomNode}, the branches are zoomed in with different scales
-corresponding to the value of \strong{zoomScale}. If default (NULL), tree is
-not zoomed in.}
+\item{zoomScale}{A numeric vector. Its length is equal to one or equal to the
+length of \strong{zoomNode}. If \strong{zoomScale} has the same length as
+\strong{zoomNode}, the branches are zoomed in with different scales
+corresponding to the value of \strong{zoomScale}. If default (NULL), tree
+is not zoomed in.}
 
 \item{addTo}{NULL or a plot of a phylo object.}
 
