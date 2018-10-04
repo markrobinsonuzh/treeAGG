@@ -416,7 +416,8 @@ treeSummarizedExperiment <- function(tree = NULL, linkData = NULL,
 
     # -------------------------------------------------------------------------
     # create treeSummarizedExperiment
-    rowData(se) <- rowData(se)[, colnames(rowData(se)) != "nodeLab"]
+    rowData(se) <- rowData(se)[, colnames(rowData(se)) != "nodeLab",
+                               drop = FALSE]
     tse <- new("treeSummarizedExperiment", se,
                linkData = linkD, treeData = tree)
 
