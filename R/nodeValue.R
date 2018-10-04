@@ -170,7 +170,7 @@ nodeValue.B <- function(data, fun = sum, message = FALSE) {
     }
 
     # update rowdata; column nodeLab is removed
-     rdataA <- rD[, !colnames(rD) %in% c("nodeLab")]
+     rdataA <- rD[, !colnames(rD) %in% c("nodeLab"), drop = FALSE]
      rownames(rdataA) <- NULL
 
      if (anyDuplicated(nodeLab)) {
