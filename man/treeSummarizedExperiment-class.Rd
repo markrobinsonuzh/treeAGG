@@ -20,8 +20,8 @@ the tree (\code{linkData}).
 \section{Slots}{
 
 \describe{
-\item{\code{linkData}}{A \code{\link[S4Vectors]{DataFrame}} object. It gives map
-information between the rows of rectangular data and the nodes of tree.
+\item{\code{linkData}}{A \code{\link[S4Vectors]{DataFrame-class}} object. It gives
+map information between the rows of rectangular data and the nodes of tree.
 \itemize{
 \item \strong{nodeLab} The node labels on the tree.
 \item \strong{nodeLab_alias} An alias of column \code{nodeLab}. It is

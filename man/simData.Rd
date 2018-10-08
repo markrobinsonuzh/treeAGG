@@ -79,17 +79,33 @@ descendant leaves, e.g. sum, mean. The argument of the function is a numeric
 vector with the counts of an internal node's descendant leaves.}
 }
 \value{
-a list of objects \item{FC}{the fold change of entities correspondint
- to the tree leaves.} \item{Count}{a list of count table or a count table.
- Entities on the row and samples in the column. Each count table includes
- entities corresponding to all nodes on the tree structure.}
- \item{Branch}{the information about two selected branches.} \describe{
- \item{A}{the branch node label of branch A} \item{B}{the branch node label
- of branch B} \item{ratio}{the count proportion ratio of branch B to branch
- A} \item{A_tips}{the number of leaves on branch A} \item{B_tips}{the number
- of leaves on branch B} \item{A_prop}{the count proportion of branch A (a
- value not above 1)} \item{B_prop}{the count proportion of branch B (the
- maximum is 1a value not above 1)} }
+a treeSummarizedExperiment object.
+\itemize{
+ \item \strong{assays} a list of count table or a count table. Entities on
+ the row and samples in the column. Each row could be mapped to a node of the
+ tree.
+ \item \strong{rowData} the annotation data for the rows of tables in
+ \code{assays}.
+ \item \strong{colData} the annotation data for the columns of tables in
+ \code{assays}.
+ \item \strong{metadata} more details about the simulation.
+   \itemize{
+   \item \strong{FC} the fold change of entities correspondint to the tree
+   leaves.
+   \item \strong{Branch} the information about two selected branches.
+     \itemize{
+       \item \strong{A} the branch node label (or number) of branch A
+       \item \strong{B} the branch node label (or number) of branch B
+       \item \strong{ratio} the count proportion ratio of branch B to branch
+       A
+       \item \strong{A_tips} the number of leaves on branch A
+       \item \strong{B_tips} the number of leaves on branch B
+       \item \strong{A_prop} the count proportion of branch A
+       (a value between 0 and 1)
+       \item \strong{B_prop} the count proportion of branch B
+       (a value between 0 and 1)
+     }
+     }}
 }
 \description{
 \code{simData} simulates different abundance patterns for entities under
@@ -103,7 +119,7 @@ More details about the simulated patterns could be found in the vignette via
  samples from different groups or conditions are in columns. The library size
  of each sample is sampled from a Negative Binomial distribution with mean
  and size specified by the arguments \code{mu} and \code{size}. The counts of
- entities, which are located on the tree leaves, in the same sample are
+ entities, that are mapped ot the leaf nodes, in a same sample are
  assumed to follow a Dirichlet-Multinomial distribution. The parameters for
  the Dirichlet-Multinomial distribution are estimated from a real data set
  specified by the argument \code{data} via the function \code{dirmult} (see

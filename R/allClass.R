@@ -101,8 +101,8 @@ setOldClass("phylo")
 #' about the mapping between the rows of the rectangular data and the nodes of
 #' the tree (\code{linkData}).
 #'
-#' @slot linkData A \code{\link[S4Vectors]{DataFrame}} object. It gives map
-#'   information between the rows of rectangular data and the nodes of tree.
+#' @slot linkData A \code{\link[S4Vectors]{DataFrame-class}} object. It gives
+#'   map information between the rows of rectangular data and the nodes of tree.
 #'   \itemize{
 #'   \item \strong{nodeLab} The node labels on the tree.
 #'   \item \strong{nodeLab_alias} An alias of column \code{nodeLab}. It is
@@ -262,9 +262,9 @@ leafSummarizedExperiment <- function(tree, ...) {
 #' \code{treeSummarizedExperiment} constructs a treeSummarizedExperiment object.
 #'
 #' @param tree A phylo object
-#' @param linkData A data frame or \code{\link[S4Vectors]{DataFrame}}. It has
-#'   the same number of rows as the matrix-like elements of \code{assays}. The
-#'   row order of the \code{linkData} matches with that of  the matrix-like
+#' @param linkData A data frame or \code{\link[S4Vectors]{DataFrame-class}}. It
+#'   has the same number of rows as the matrix-like elements of \code{assays}.
+#'   The row order of the \code{linkData} matches with that of  the matrix-like
 #'   element of \code{assays}. It has the following columns.
 #'   \itemize{
 #'   \item \strong{nodeLab} The labels of nodes on the tree.

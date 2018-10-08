@@ -32,7 +32,20 @@
 #'   \code{\link[edgeR]{glmFit}}. Default is NULL.
 #' @export
 #' @return A treeSummarizedExperiment object.
-#'
+#' \item{assays}{A list of tables}
+#' \item{rowData}{It stores the information of rows in \code{assays}, and the
+#' result tables obtained in the data analysis. The later is stored as the
+#' internal part of the \code{rowData}. More details or example could be found
+#' in the vignette \code{Example of data analysis}}
+#' \item{colData}{NULL}
+#' \item{metadata}{
+#'    \itemize{
+#'    \item \code{use.assays} which elements in the \code{assays} have been
+#'    used to run differential abundance analysis.
+#'    \item \code{design} the design matrix as input.
+#'    \item \code{contrast} the contrast vector as input.
+#'    }
+#' }
 #' @author Ruizhu HUANG
 #'
 #' @examples

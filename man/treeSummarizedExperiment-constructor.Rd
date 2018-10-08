@@ -10,9 +10,9 @@ treeSummarizedExperiment(tree = NULL, linkData = NULL, ...)
 \arguments{
 \item{tree}{A phylo object}
 
-\item{linkData}{A data frame or \code{\link[S4Vectors]{DataFrame}}. It has
-the same number of rows as the matrix-like elements of \code{assays}. The
-row order of the \code{linkData} matches with that of  the matrix-like
+\item{linkData}{A data frame or \code{\link[S4Vectors]{DataFrame-class}}. It
+has the same number of rows as the matrix-like elements of \code{assays}.
+The row order of the \code{linkData} matches with that of  the matrix-like
 element of \code{assays}. It has the following columns.
 \itemize{
 \item \strong{nodeLab} The labels of nodes on the tree.
