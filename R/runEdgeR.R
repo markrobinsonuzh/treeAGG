@@ -214,6 +214,12 @@ runEdgeR <- function(obj, design = NULL, contrast = NULL,
 
     }
 
+    # contrast should have the same length as the sub-element of tt3
+    if (is.null(contrast)) {
+        contrast <- lapply(seq_along(tt3[[1]]), function(x) {NULL})
+        names(contrast) <- "contrastNULL"
+    }
+
 
     ## put the analysis result in the metadata
     metadata(obj)$output_glmFit <- fit

@@ -154,7 +154,7 @@ setMethod("rowData", "treeSummarizedExperiment",
         vv <- callNextMethod()
         cv <- unlist(lapply(vv, class))
         isInternal <- cv == "internal_rowData"
-        vv[, !isInternal]
+        vv[, !isInternal, drop = FALSE]
     }
 
 })

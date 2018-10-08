@@ -85,7 +85,7 @@ signalNode <- function(tree, node, return = c("number", "label"),
                     x[sum(y)]
                 })
     sNode <- unique(selF)
-
+    sNode <- sNode[!is.na(sNode)]
 
     # final output (node number or label)
     return <- match.arg(return)
