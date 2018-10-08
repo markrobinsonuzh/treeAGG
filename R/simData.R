@@ -45,8 +45,8 @@
 #'@param nSam A numeric vector of length 2, containing the sample size for two
 #'  different conditions
 #'@param mu,size The parameters of the Negative Binomial distribution. (see mu
-#'  and size in \code{\link[stats]{rnbinom}}). Parameters used to generate the
-#'  library size for each simulated sample.
+#'  and size in \code{\link[stats:NegBinomial]{rnbinom}}). Parameters used to
+#'  generate the library size for each simulated sample.
 #'@param n A numeric value to specify how many count tables would be generated
 #'  with the same settings. Default is one and one count table would be obtained
 #'  at the end. If above one, the output of \code{doData} is a list of matrices
@@ -229,8 +229,8 @@ simData <- function(tree = NULL, data = NULL,
 #'@param nSam A numeric vector of length 2, containing the sample size for two
 #'  different conditions
 #'@param mu,size The parameters of the Negative Binomial distribution. (see mu
-#'  and size in \code{\link[stats]{rnbinom}}). Parameters used to generate the
-#'  library size for each simulated sample.
+#'  and size in \code{\link[stats:NegBinomial]{rnbinom}}). Parameters used to
+#'  generate the library size for each simulated sample.
 #'@param n A numeric value to specify how many count tables would be generated
 #'  with the same settings. Default is one and one count table would be obtained
 #'  at the end. If above one, the output of \code{doData} is a list of matrices
@@ -975,7 +975,7 @@ doFC <- function(tree, data, scenario,
 #' @param nSam A vector of length two containing the number of samples in two
 #' different groups or conditions.
 #' @param mu,size The parameters of the Negative Binomial distribution (see mu
-#' and size in \code{\link[stats]{rnbinom}}.)
+#' and size in \code{\link[stats:NegBinomial]{rnbinom}}.)
 #' @param n A numeric value, representing the number of count tables generated.
 #' If above one, the output is a list of matrices.
 #'

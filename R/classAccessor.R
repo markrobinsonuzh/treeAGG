@@ -28,18 +28,20 @@
 #'   assignments (e.g., updating names of assays, names(assays(x,
 #'   withDimnames=FALSE)) = ... is more efficient than names(assays(x)) = ...);
 #'   it does not influence actual assignment of dimnames to assays.
-#' @param use.names Like \code{\link[S4Vectors]{mcols}(x)}, by default
-#'   \code{rowData(x)} propagates the rownames of \code{x} to the returned
-#'   \link[S4Vectors]{DataFrame} object (note that for a SummarizedExperiment
-#'   object, the rownames are also the names i.e. \code{rownames(x)} is always
-#'   the same as \code{names(x)}). Setting \code{use.names=FALSE} suppresses
-#'   this propagation i.e. it returns a \link[S4Vectors]{DataFrame} object with
-#'   no rownames. Use this when \code{rowData(x)} fails, which can happen when
-#'   the rownames contain NAs (because the rownames of a SummarizedExperiment
-#'   object can contain NAs, but the rownames of a \link[S4Vectors]{DataFrame}
-#'   object cannot).
+#' @param use.names Like \code{\link[S4Vectors:Vector-class]{mcols}(x)}, by
+#'   default \code{rowData(x)} propagates the rownames of \code{x} to the
+#'   returned \link[S4Vectors:DataFrame-class]{DataFrame} object (note that for
+#'   a SummarizedExperiment object, the rownames are also the names i.e.
+#'   \code{rownames(x)} is always the same as \code{names(x)}). Setting
+#'   \code{use.names=FALSE} suppresses this propagation i.e. it returns a
+#'   \link[S4Vectors:DataFrame-class]{DataFrame} object with no rownames. Use
+#'   this when \code{rowData(x)} fails, which can happen when the rownames
+#'   contain NAs (because the rownames of a SummarizedExperiment object can
+#'   contain NAs, but the rownames of a
+#'   \link[S4Vectors:DataFrame-class]{DataFrame} object cannot).
 #' @param value	See the argument \code{value} in
-#'   \code{\link[SummarizedExperiment]{SummarizedExperiment}} for more details.
+#'   \code{\link[SummarizedExperiment]{SummarizedExperiment-class}} for more
+#'   details.
 #' @name leafSummarizedExperiment-accessor
 #' @return Elements of \code{leafSummarizedExperiment}.
 #' @author Ruizhu HUANG
@@ -97,18 +99,20 @@ NULL
 #'   assignments (e.g., updating names of assays, names(assays(x,
 #'   withDimnames=FALSE)) = ... is more efficient than names(assays(x)) = ...);
 #'   it does not influence actual assignment of dimnames to assays.
-#' @param use.names Like \code{\link[S4Vectors]{mcols}(x)}, by default
-#'   \code{rowData(x)} propagates the rownames of \code{x} to the returned
-#'   \link[S4Vectors]{DataFrame} object (note that for a SummarizedExperiment
-#'   object, the rownames are also the names i.e. \code{rownames(x)} is always
-#'   the same as \code{names(x)}). Setting \code{use.names=FALSE} suppresses
-#'   this propagation i.e. it returns a \link[S4Vectors]{DataFrame} object with
-#'   no rownames. Use this when \code{rowData(x)} fails, which can happen when
-#'   the rownames contain NAs (because the rownames of a SummarizedExperiment
-#'   object can contain NAs, but the rownames of a \link[S4Vectors]{DataFrame}
-#'   object cannot).
+#' @param use.names Like \code{\link[S4Vectors:Vector-class]{mcols}(x)}, by
+#'   default \code{rowData(x)} propagates the rownames of \code{x} to the
+#'   returned \link[S4Vectors:DataFrame-class]{DataFrame} object (note that for
+#'   a SummarizedExperiment object, the rownames are also the names i.e.
+#'   \code{rownames(x)} is always the same as \code{names(x)}). Setting
+#'   \code{use.names=FALSE} suppresses this propagation i.e. it returns a
+#'   \link[S4Vectors:DataFrame-class]{DataFrame} object with no rownames. Use
+#'   this when \code{rowData(x)} fails, which can happen when the rownames
+#'   contain NAs (because the rownames of a SummarizedExperiment object can
+#'   contain NAs, but the rownames of a
+#'   \link[S4Vectors:DataFrame-class]{DataFrame} object cannot).
 #' @param value	See the argument \code{value} in
-#'   \code{\link[SummarizedExperiment]{SummarizedExperiment}} for more details.
+#'   \code{\link[SummarizedExperiment]{SummarizedExperiment-class}} for more
+#'   details.
 #' @param i,j The subscripts that can act to subset the rows and columns of
 #'   \code{x}, that is the matrix elements of assays.
 #' @name treeSummarizedExperiment-accessor
