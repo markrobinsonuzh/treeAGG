@@ -16,7 +16,7 @@ data}
 different groups or conditions.}
 
 \item{mu, size}{The parameters of the Negative Binomial distribution (see mu
-and size in \code{\link[stats]{rnbinom}}.)}
+and size in \code{\link[stats:NegBinomial]{rnbinom}}.)}
 
 \item{n}{A numeric value, representing the number of count tables generated.
 If above one, the output is a list of matrices.}

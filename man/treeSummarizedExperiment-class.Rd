@@ -6,9 +6,9 @@
 \title{An S4 class treeSummarizedExperiment}
 \description{
 The class \strong{treeSummarizedExperiment} is an extension class of standard
-\code{\link[SummarizedExperiment]{SummarizedExperiment}} class. It has six
+\code{\link[SummarizedExperiment]{SummarizedExperiment-class}} class. It has six
 slots. Four of them are traditional slots from
-\code{\link[SummarizedExperiment]{SummarizedExperiment}} class:
+\code{\link[SummarizedExperiment]{SummarizedExperiment-class}} class:
 \code{assays}, \code{rowData} \code{colData} and \code{metadata}. The other
 two slots are \code{linkData} and \code{treeData}. The class
 \strong{treeSummarizedExperiment} is designed to store rectangular data for

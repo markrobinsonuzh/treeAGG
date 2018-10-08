@@ -60,7 +60,8 @@ For cbind, rbind, ... contains leafSummarizedExperiment objects to be
 combined. For other accessors, ignored.}
 
 \item{value}{See the argument \code{value} in
-\code{\link[SummarizedExperiment]{SummarizedExperiment}} for more details.}
+\code{\link[SummarizedExperiment]{SummarizedExperiment-class}} for more
+details.}
 
 \item{use.nodeLab}{A logical(1), indicating whether the rownames of assay
 elements should use node labels (the column \code{nodeLab} in
@@ -75,16 +76,17 @@ assignments (e.g., updating names of assays, names(assays(x,
 withDimnames=FALSE)) = ... is more efficient than names(assays(x)) = ...);
 it does not influence actual assignment of dimnames to assays.}
 
-\item{use.names}{Like \code{\link[S4Vectors]{mcols}(x)}, by default
-\code{rowData(x)} propagates the rownames of \code{x} to the returned
-\link[S4Vectors]{DataFrame} object (note that for a SummarizedExperiment
-object, the rownames are also the names i.e. \code{rownames(x)} is always
-the same as \code{names(x)}). Setting \code{use.names=FALSE} suppresses
-this propagation i.e. it returns a \link[S4Vectors]{DataFrame} object with
-no rownames. Use this when \code{rowData(x)} fails, which can happen when
-the rownames contain NAs (because the rownames of a SummarizedExperiment
-object can contain NAs, but the rownames of a \link[S4Vectors]{DataFrame}
-object cannot).}
+\item{use.names}{Like \code{\link[S4Vectors:Vector-class]{mcols}(x)}, by
+default \code{rowData(x)} propagates the rownames of \code{x} to the
+returned \link[S4Vectors:DataFrame-class]{DataFrame} object (note that for
+a SummarizedExperiment object, the rownames are also the names i.e.
+\code{rownames(x)} is always the same as \code{names(x)}). Setting
+\code{use.names=FALSE} suppresses this propagation i.e. it returns a
+\link[S4Vectors:DataFrame-class]{DataFrame} object with no rownames. Use
+this when \code{rowData(x)} fails, which can happen when the rownames
+contain NAs (because the rownames of a SummarizedExperiment object can
+contain NAs, but the rownames of a
+\link[S4Vectors:DataFrame-class]{DataFrame} object cannot).}
 
 \item{internal}{TRUE or FALSE. Only for \code{rowData}. If TRUE, the columns
 with \code{int_rowData} class are visible; otherwise, they would be hiden.

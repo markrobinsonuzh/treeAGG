@@ -59,8 +59,8 @@ for scenario \dQuote{S3})}
 different conditions}
 
 \item{mu, size}{The parameters of the Negative Binomial distribution. (see mu
-and size in \code{\link[stats]{rnbinom}}). Parameters used to generate the
-library size for each simulated sample.}
+and size in \code{\link[stats:NegBinomial]{rnbinom}}). Parameters used to
+generate the library size for each simulated sample.}
 
 \item{n}{A numeric value to specify how many count tables would be generated
 with the same settings. Default is one and one count table would be obtained
