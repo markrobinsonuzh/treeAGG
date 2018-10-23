@@ -119,7 +119,7 @@ nodeValue.B <- function(data, fun = sum, message = FALSE) {
     })
 
     # create rowData for nodes
-    rD <- rData[rep(1, nN), ]
+    rD <- rData[rep(1, nN), , drop = FALSE]
     nc <- ncol(rData)
 
     # use the alias of the node label as the rownames
@@ -127,6 +127,7 @@ nodeValue.B <- function(data, fun = sum, message = FALSE) {
 
     # calculate values at nodes
     for (i in seq_len(nN)) {
+        #cat(i, "\n")
         node.i <- nodeA[i]
         tips.i <- findOS(ancestor = node.i, tree = tree,
                          only.Tip = TRUE, self.include = TRUE,
@@ -137,9 +138,9 @@ nodeValue.B <- function(data, fun = sum, message = FALSE) {
         # if multiple rows of the descendants exist, do calculation as follows
         if (length(row.i) > 1){
             # rowdata: if all rows have the value, keep value; otherwise, use NA
-            rdata.i <- rData[row.i, ]
+            rdata.i <- rData[row.i, , drop = FALSE]
             for (k in seq_len(nc)) {
-                iu <- unique(rdata.i[, k])
+                iu <- unique(rdata.i[[k]])
                 rD[i, k] <- ifelse(length(iu) == 1, iu, NA)
                 }
 
@@ -153,7 +154,10 @@ nodeValue.B <- function(data, fun = sum, message = FALSE) {
 
         if (length(row.i) == 1){
             # rowdata
-            rD[i, ] <- rData[row.i, ]
+            for (k in seq_len(nc)) {
+                rD[i, k] <- rData[row.i, k]
+            }
+
 
             for(j in seq_along(tableA)){
                 table.j <- table[[j]]
