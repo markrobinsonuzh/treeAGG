@@ -1004,7 +1004,7 @@ doFC <- function(tree, data, scenario,
 doCount <- function(data, FC, nSam, mu,
                     size, n) {
     # parameters
-    pars <- parEstimate(data = data)
+    pars <- parEstimate(data = data)$pi
     theta <- pars$theta
     gplus <- (1 - theta) / theta
 
