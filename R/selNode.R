@@ -21,6 +21,7 @@
 #'   requirements are returned.
 #'
 #' @export
+#' @importFrom methods is
 #' @return The node whose descendant branch has the lowest proportion
 #' @author Ruizhu Huang
 #' @examples
@@ -50,7 +51,7 @@ selNode <- function(obj = NULL, tree = NULL, data = NULL,
 
     # if the obj is provided with a leafSummarizedExperiment object
     # use it; otherwise use tree and data
-    if (inherits(obj, "leafSummarizedExperiment")) {
+    if (is(obj, "leafSummarizedExperiment")) {
         if (any(!is.null(tree), !is.null(data))) {
             stop("Set tree and data as NULL when obj is given. \n")
         }

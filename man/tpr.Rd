@@ -4,7 +4,7 @@
 \alias{tpr}
 \title{Calculate true positive rate (TPR) on a tree structure}
 \usage{
-tpr(tree, truth, found, level = c("node", "leaf"), direction = FALSE)
+tpr(tree, truth, found, only.Tip = TRUE, direction = FALSE)
 }
 \arguments{
 \item{tree}{A phylo object}
@@ -30,8 +30,9 @@ out and used in the TPR calculation; when TPR at leaf level is required,
 then the descendant leaf nodes will be found out and used in the TPR
 calculation.}
 
-\item{level}{If "leaf", true positive rate is calculated at leaf level; if
-"node", it is calculated at node level.}
+\item{only.Tip}{A logical value, TRUE or FALSE. If TRUE, true positive rate
+is calculated at the leaf (tip) level; otherwise it is calculated at node
+level. The default is TRUE}
 
 \item{direction}{TRUE or FALSE. Default is FALSE. If TRUE, the signal
 direction is taken into account; the argument \strong{truth} and
@@ -59,10 +60,10 @@ ggtree(tinyTree) + geom_text2(aes(label = node))
 # Found: branches with node 17 and node 14
  # TPR at the tip level
 tpr1 <- tpr(tree = tinyTree, truth = c(16, 13),
-            found = c(17, 14), level = "leaf")
+            found = c(17, 14), only.Tip = TRUE)
  # TPR at the node level
 tpr2 <- tpr(tree = tinyTree, truth = c(16, 13),
-            found = c(17, 14), level = "node")
+            found = c(17, 14), only.Tip = FALSE)
 
 
 # ------------ direction matters-------------------
@@ -70,11 +71,11 @@ tpr2 <- tpr(tree = tinyTree, truth = c(16, 13),
 
  # the order of direction for truth and found should be the same
 (tpr3 <- tpr(tree = tinyTree, truth = list(16, 13),
-            found = list(16, 13), level = "leaf",
+            found = list(16, 13), only.Tip = TRUE,
             direction = TRUE))  # correct order
 
 (tpr4 <- tpr(tree = tinyTree, truth = list(16, 13),
-            found = list(13, 16), level = "node",
+            found = list(13, 16), only.Tip = FALSE,
             direction = TRUE)) # wrong order
 
 }

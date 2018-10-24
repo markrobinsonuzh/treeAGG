@@ -23,8 +23,9 @@
 #'   out and used in the fdr calculation; when fdr at leaf level is required,
 #'   then the descendant leaf nodes will be found out and used in the fdr
 #'   calculation.
-#' @param level If "leaf", false discovery rate is calculated at leaf level; if
-#'   "node", it is calculated at node level.
+#' @param only.Tip A logical value, TRUE or FALSE. If TRUE, false discovery rate
+#'   is calculated at the leaf (tip) level; otherwise it is calculated at node
+#'   level. The default is TRUE
 #' @param direction TRUE or FALSE. Default is FALSE. If TRUE, the signal
 #'   direction is taken into account; the argument \strong{truth} and
 #'   \strong{found} should both be a list of two members and the order of
@@ -49,10 +50,10 @@
 #'  # Found: branches with node 17 and node 14
 #'  # fdr at the tip level
 #' fdr1 <- fdr(tree = tinyTree, truth = c(16, 13),
-#'             found = c(17, 14), level = "leaf")
+#'             found = c(17, 14), only.Tip = TRUE)
 #'  # fdr at the node level
 #' fdr2 <- fdr(tree = tinyTree, truth = c(16, 13),
-#'             found = c(17, 14), level = "node")
+#'             found = c(17, 14), only.Tip = FALSE)
 #'
 #'
 #' # ------------ direction matters-------------------
@@ -60,18 +61,18 @@
 #'
 #'  # the order of direction for truth and found should be the same
 #' (fdr3 <- fdr(tree = tinyTree, truth = list(16, 13),
-#'             found = list(16, 13), level = "leaf",
+#'             found = list(16, 13), only.Tip = TRUE,
 #'             direction = TRUE))  # correct order
 #'
 #' (fdr4 <- fdr(tree = tinyTree, truth = list(16, 13),
-#'             found = list(13, 16), level = "node",
+#'             found = list(13, 16), only.Tip = FALSE,
 #'             direction = TRUE)) # wrong order
 #'
 #'
 #'
 
 fdr <- function(tree, truth, found,
-                level = c("node", "leaf"),
+                only.Tip = TRUE,
                 direction = FALSE) {
 
     if (!inherits(tree, "phylo")) {
@@ -100,7 +101,7 @@ fdr <- function(tree, truth, found,
                 }
 
                 fdr0(tree = tree, truth = x,
-                     found = y, level = level)
+                     found = y, only.Tip = only.Tip)
             }, x = truth, y = found)
 
             fdr <- rowSums(tt)[1]/rowSums(tt)[2]
@@ -124,7 +125,7 @@ fdr <- function(tree, truth, found,
                                message = FALSE)
         }
         tt <- fdr0(tree = tree, truth = truth,
-                   found = found, level = level)
+                   found = found, only.Tip = only.Tip)
         if (tt[2] == 0) {
             if (tt[1] > 0 ) {
                 stop("the number of discovery is lower than
@@ -151,8 +152,9 @@ fdr <- function(tree, truth, found,
 #' @param truth Nodes that have signals (eg. differentally abundant at different
 #'   experimental conditions).
 #' @param found Nodes that have been found to have signal
-#' @param level If "leaf", false discovery rate is calculated at leaf level; if
-#'   "node", it is calculated at node level.
+#' @param only.Tip A logical value, TRUE or FALSE. If TRUE, false discovery rate
+#'   is calculated at the leaf (tip) level; otherwise it is calculated at node
+#'   level. The default is TRUE
 #' @return a vector
 #' @author Ruizhu Huang
 #' @keywords internal
@@ -160,7 +162,7 @@ fdr <- function(tree, truth, found,
 fdr0 <- function(tree,
                  truth = NULL,
                  found = NULL,
-                 level = c("node", "leaf")) {
+                 only.Tip = TRUE) {
 
     # if no discovery (found = NULL), the false discovery is 0 and the discovery
     # is 0
@@ -181,103 +183,148 @@ fdr0 <- function(tree,
         # then false discovery equals to discovery and the number depends on the
         # level
         if (is.null(truth)) {
-            level <- match.arg(level)
-            switch(level,
-                   leaf = {
-                       tipF <- lapply(
-                           found,
-                           findOS,
-                           tree = tree,
-                           only.Tip = TRUE,
-                           self.include = TRUE,
-                           return = "number"
-                       )
-                       tip <- unlist(tipF)
-                       c(fp = length(tip), disc = length(tip))
-                   },
-                   node = {
-                       # the internal node whose descendant leaf nodes all have
-                       # signal has signal too.
-                       nodeF <- lapply(
-                           found,
-                           findOS,
-                           tree = tree,
-                           only.Tip = FALSE,
-                           self.include = TRUE,
-                           return = "number"
-                       )
-                       nod <- unlist(nodeF)
-                       c(fp = length(nod), disc = length(nod))
-                   })
+            if (only.Tip) {
+                tipF <- lapply(found, findOS, tree = tree,
+                               only.Tip = TRUE,
+                               self.include = TRUE,
+                               return = "number")
+                tip <- unlist(tipF)
+                c(fp = length(tip), disc = length(tip))
+            } else {
+                # the internal node whose descendant leaf nodes all have
+                # signal has signal too.
+                nodeF <- lapply(found, findOS, tree = tree,
+                                only.Tip = FALSE, self.include = TRUE,
+                                return = "number")
+                nod <- unlist(nodeF)
+                c(fp = length(nod), disc = length(nod))
+            }
+            # level <- match.arg(level)
+            # switch(level,
+            #        leaf = {
+            #            tipF <- lapply(
+            #                found,
+            #                findOS,
+            #                tree = tree,
+            #                only.Tip = TRUE,
+            #                self.include = TRUE,
+            #                return = "number"
+            #            )
+            #            tip <- unlist(tipF)
+            #            c(fp = length(tip), disc = length(tip))
+            #        },
+            #        node = {
+            #            # the internal node whose descendant leaf nodes all have
+            #            # signal has signal too.
+            #            nodeF <- lapply(
+            #                found,
+            #                findOS,
+            #                tree = tree,
+            #                only.Tip = FALSE,
+            #                self.include = TRUE,
+            #                return = "number"
+            #            )
+            #            nod <- unlist(nodeF)
+            #            c(fp = length(nod), disc = length(nod))
+            #        })
         } else {
 
             # if discovery (found) exists and has correct input format, and
             # truth isn't null check whether the input format of truth is
             # correct
-            if (!(
-                inherits(truth, "character") |
-                inherits(truth, "numeric") |
-                inherits(truth, "integer")
-            )) {
+            if (!(is.character(truth) |
+                  is.numeric(truth) |
+                  is.integer(truth))) {
                 stop("truth should include character or numeric")
             }
 
             # if both found and truth are not NULL, the false discovery and the
             # discovery could be calculated after their input formats are
             # correct as below.
-            level <- match.arg(level)
-            switch(level,
-                   leaf = {
-                       tipT <- lapply(
-                           truth,
-                           findOS,
-                           tree = tree,
-                           only.Tip = TRUE,
-                           self.include = TRUE,
-                           return = "number"
-                       )
-                       tipF <- lapply(
-                           found,
-                           findOS,
-                           tree = tree,
-                           only.Tip = TRUE,
-                           self.include = TRUE,
-                           return = "number"
-                       )
-                       # the true positive & positive
-                       fp <- setdiff(unlist(tipF), unlist(tipT))
-                       tip <- unlist(tipF)
-                       c(fp = length(fp), disc = length(tip))
-                   },
-                   node = {
-                       # the internal node whose descendant leaf nodes
-                       # all have signal has signal too.
-                       nodeS <- signalNode(node = truth,
-                                           tree = tree,
-                                           return = "number")
-                       # all nodes have signal
-                       nodeT <- lapply(
-                           nodeS,
-                           findOS,
-                           tree = tree,
-                           only.Tip = FALSE,
-                           self.include = TRUE,
-                           return = "number"
-                       )
-                       # nodes found with signal
-                       nodeF <- lapply(
-                           found,
-                           findOS,
-                           tree = tree,
-                           only.Tip = FALSE,
-                           self.include = TRUE,
-                           return = "number"
-                       )
-                       # false discovery & discovery
-                       fp <- setdiff(unlist(nodeF), unlist(nodeT))
-                       nod <- unlist(nodeF)
-                       c(fp = length(fp), disc = length(nod))
-                   })
+            if (only.Tip) {
+                tipT <- lapply(truth, findOS, tree = tree,
+                               only.Tip = TRUE,
+                               self.include = TRUE,
+                               return = "number")
+                tipF <- lapply(found, findOS, tree = tree,
+                               only.Tip = TRUE,
+                               self.include = TRUE,
+                               return = "number")
+                # the true positive & positive
+                fp <- setdiff(unlist(tipF), unlist(tipT))
+                tip <- unlist(tipF)
+                c(fp = length(fp), disc = length(tip))
+            } else {
+                nodeS <- signalNode(node = truth, tree = tree,
+                                    return = "number")
+                # all nodes have signal
+                nodeT <- lapply(nodeS, findOS, tree = tree,
+                                only.Tip = FALSE,
+                                self.include = TRUE,
+                                return = "number")
+                # nodes found with signal
+                nodeF <- lapply(found, findOS, tree = tree,
+                                only.Tip = FALSE,
+                                self.include = TRUE,
+                                return = "number")
+                # false discovery & discovery
+                fp <- setdiff(unlist(nodeF), unlist(nodeT))
+                nod <- unlist(nodeF)
+                c(fp = length(fp), disc = length(nod))
+            }
+            # level <- match.arg(level)
+            # switch(level,
+            #        leaf = {
+            #            tipT <- lapply(
+            #                truth,
+            #                findOS,
+            #                tree = tree,
+            #                only.Tip = TRUE,
+            #                self.include = TRUE,
+            #                return = "number"
+            #            )
+            #            tipF <- lapply(
+            #                found,
+            #                findOS,
+            #                tree = tree,
+            #                only.Tip = TRUE,
+            #                self.include = TRUE,
+            #                return = "number"
+            #            )
+            #            # the true positive & positive
+            #            fp <- setdiff(unlist(tipF), unlist(tipT))
+            #            tip <- unlist(tipF)
+            #            c(fp = length(fp), disc = length(tip))
+            #        },
+            #        node = {
+            #            # the internal node whose descendant leaf nodes
+            #            # all have signal has signal too.
+            #            nodeS <- signalNode(node = truth,
+            #                                tree = tree,
+            #                                return = "number")
+            #            # all nodes have signal
+            #            nodeT <- lapply(
+            #                nodeS,
+            #                findOS,
+            #                tree = tree,
+            #                only.Tip = FALSE,
+            #                self.include = TRUE,
+            #                return = "number"
+            #            )
+            #            # nodes found with signal
+            #            nodeF <- lapply(
+            #                found,
+            #                findOS,
+            #                tree = tree,
+            #                only.Tip = FALSE,
+            #                self.include = TRUE,
+            #                return = "number"
+            #            )
+            #            # false discovery & discovery
+            #            fp <- setdiff(unlist(nodeF), unlist(nodeT))
+            #            nod <- unlist(nodeF)
+            #            c(fp = length(fp), disc = length(nod))
+            #        })
         }
     }
 }

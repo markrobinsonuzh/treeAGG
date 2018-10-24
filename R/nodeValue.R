@@ -1,8 +1,8 @@
 
 # when data is a data frame or a matrix
 nodeValue.A <- function(data, fun = sum, tree, message = FALSE) {
-    if (!(inherits(data, "data.frame") |
-          inherits(data, "matrix"))) {
+    if (!(is.data.frame(data) |
+          is.matrix(data))) {
         stop("data should be a matrix or data.frame")
     }
 
@@ -259,27 +259,14 @@ nodeValue.B <- function(data, fun = sum, message = FALSE) {
 #' ggtree(tinyTree) %<+% d + geom_text2(aes(label = count))
 #'}
 #'
-setGeneric("nodeValue", function(data, fun = sum, tree, message = FALSE) {
+setGeneric("nodeValue", function(data, fun = sum,
+                                 tree, message = FALSE) {
     standardGeneric("nodeValue")
 })
 
 #' @rdname nodeValue
 #' @importFrom utils flush.console
-setMethod("nodeValue",
-          signature(data = "matrix"),
-          nodeValue.A)
-
-#' @rdname nodeValue
-#' @importFrom utils flush.console
-setMethod("nodeValue",
-          signature(data = "data.frame"),
-          nodeValue.A)
-
-#' @rdname nodeValue
-#' @importFrom utils flush.console
-#' @importClassesFrom S4Vectors DataFrame
-setMethod("nodeValue",
-          signature(data = "DataFrame"),
+setMethod("nodeValue", signature(data = "ANY"),
           nodeValue.A)
 
 #' @rdname nodeValue
