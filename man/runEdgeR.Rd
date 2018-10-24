@@ -105,9 +105,6 @@ message = TRUE)
 contrastList <- list(contrast1 = c(0, 0, 0, -1, 1),
                      contrast2 = c(0, -1, 1, 0, 0))
 mod <- runEdgeR(obj = toy_tse, contrast = contrastList)
-# results are stored as the column result_assay1, result_assay2, and
-# result_assay3
-(res <- rowData(mod, internal = TRUE))
 # show results gained from the second element of the assasy
 # sort by PValue
 topNodes(mod, sort.by = "PValue", use.assays = 2)

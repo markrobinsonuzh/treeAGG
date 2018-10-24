@@ -49,7 +49,8 @@ functions.
 
 \section{Accessor}{
 
-See \code{\link{leafSummarizedExperiment-accessor}} for accessor functions.
+See \code{\link[SummarizedExperiment]{SummarizedExperiment-class}} for
+accessor functions.
 }
 
 \seealso{

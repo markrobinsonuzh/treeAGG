@@ -1,7 +1,7 @@
 Package: treeAGG
 Type: Package
 Title: Tree Aggregation
-Version: 0.99.7
+Version: 0.99.8
 Authors@R: c(
     person("Ruizhu", "Huang", email = "ruizhuRH@gmail.com",
            role = c("aut", "cre")),
@@ -23,7 +23,6 @@ Imports:
     ape,
     dirmult,
     utils,
-    SummarizedExperiment,
     methods,
     S4Vectors
 RoxygenNote: 6.1.0

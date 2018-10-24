@@ -1,114 +1,7 @@
-# -----------------------------------------------------------------------------
-### Accessors for leafSummarizedExperiment
-# -----------------------------------------------------------------------------
-
-#' @importMethodsFrom SummarizedExperiment assayNames
-#' @importFrom methods callNextMethod
-#' @rdname leafSummarizedExperiment-accessor
-#' @export
-setMethod("assayNames", signature("leafSummarizedExperiment"),
-          function(x, ...){
-              callNextMethod()
-          })
-
-#' @importMethodsFrom SummarizedExperiment "assayNames<-"
-#' @importFrom methods callNextMethod
-#' @rdname leafSummarizedExperiment-accessor
-#' @export
-setMethod("assayNames<-", signature("leafSummarizedExperiment"),
-          function(x, ..., value){
-              callNextMethod()
-          })
-
-#' @importMethodsFrom SummarizedExperiment assays
-#' @importFrom methods callNextMethod
-#' @rdname leafSummarizedExperiment-accessor
-#' @export
-setMethod("assays", signature("leafSummarizedExperiment"),
-          function(x, ..., withDimnames = TRUE){
-              callNextMethod()
-          })
-
-#' @importMethodsFrom SummarizedExperiment "assays<-"
-#' @importFrom methods callNextMethod
-#' @rdname leafSummarizedExperiment-accessor
-#' @export
-setMethod("assays<-", signature("leafSummarizedExperiment"),
-          function(x, ..., withDimnames = TRUE, value){
-              callNextMethod()
-          })
-
-#' @importMethodsFrom SummarizedExperiment rowData
-#' @importFrom methods callNextMethod
-#' @rdname leafSummarizedExperiment-accessor
-#' @export
-setMethod("rowData", "leafSummarizedExperiment",
-          function(x, use.names = TRUE,...) {
-    callNextMethod()
-})
-
-
-#' @importMethodsFrom SummarizedExperiment "rowData<-"
-#' @importFrom methods callNextMethod
-#' @rdname leafSummarizedExperiment-accessor
-#' @export
-setMethod("rowData<-", "leafSummarizedExperiment",
-          function(x, ..., value) {
-    callNextMethod()
-})
-
-#' @importMethodsFrom SummarizedExperiment colData
-#' @importFrom methods callNextMethod
-#' @rdname leafSummarizedExperiment-accessor
-#' @export
-setMethod("colData", signature("leafSummarizedExperiment"),
-          function(x, ...){
-              callNextMethod()
-          })
-
-#' @importMethodsFrom SummarizedExperiment "colData<-"
-#' @importFrom methods callNextMethod
-#' @rdname leafSummarizedExperiment-accessor
-#' @export
-setMethod("colData<-", signature(x = "leafSummarizedExperiment"),
-          function(x, ..., value){
-              callNextMethod()
-          })
-
-
-
-#' @importMethodsFrom S4Vectors metadata
-#' @importFrom methods callNextMethod
-#' @rdname leafSummarizedExperiment-accessor
-#' @export
-setMethod("metadata", signature("leafSummarizedExperiment"),
-          function(x) {
-              callNextMethod()
-          } )
-
 
 # -----------------------------------------------------------------------------
 ### Accessors for treeSummarizedExperiment
 # -----------------------------------------------------------------------------
-#' @importMethodsFrom SummarizedExperiment assayNames
-#' @importFrom methods callNextMethod
-#' @rdname treeSummarizedExperiment-accessor
-#' @export
-setMethod("assayNames", signature("treeSummarizedExperiment"),
-          function(x, ...){
-              callNextMethod()
-          })
-
-#' @importMethodsFrom SummarizedExperiment "assayNames<-"
-#' @importFrom methods callNextMethod
-#' @rdname treeSummarizedExperiment-accessor
-#' @export
-setMethod("assayNames<-", signature("treeSummarizedExperiment", "character"),
-          function(x, ..., value){
-              callNextMethod()
-          })
-
-
 #' @importMethodsFrom SummarizedExperiment assays
 #' @importFrom methods callNextMethod
 #' @rdname treeSummarizedExperiment-accessor
@@ -133,71 +26,18 @@ setMethod("assays", signature("treeSummarizedExperiment"),
               return(outR)
           })
 
-#' @importMethodsFrom SummarizedExperiment "assays<-"
-#' @importFrom methods callNextMethod
-#' @rdname treeSummarizedExperiment-accessor
-#' @export
-setMethod("assays<-", signature(x = "treeSummarizedExperiment"),
-          function(x, ..., withDimnames = TRUE, value){
-              callNextMethod()
-          })
 
 #' @importMethodsFrom SummarizedExperiment rowData
 #' @importFrom methods callNextMethod
 #' @rdname treeSummarizedExperiment-accessor
 #' @export
 setMethod("rowData", "treeSummarizedExperiment",
-          function(x, use.names = TRUE, internal = TRUE, ...) {
-    if (internal) {
-        callNextMethod()
-    } else {
-        vv <- callNextMethod()
-        cv <- unlist(lapply(vv, class))
-        isInternal <- cv == "internal_rowData"
-        vv[, !isInternal, drop = FALSE]
-    }
-
-})
-
-
-#' @importMethodsFrom SummarizedExperiment "rowData<-"
-#' @importFrom methods callNextMethod
-#' @rdname treeSummarizedExperiment-accessor
-#' @export
-setMethod("rowData<-", "treeSummarizedExperiment",
-          function(x, ..., value) {
-    callNextMethod()
-})
-
-
-
-#' @importMethodsFrom SummarizedExperiment colData
-#' @importFrom methods callNextMethod
-#' @rdname treeSummarizedExperiment-accessor
-#' @export
-setMethod("colData", signature("treeSummarizedExperiment"),
-          function(x, ...){
-              callNextMethod()
+          function(x, use.names = TRUE, ...) {
+              vv <- callNextMethod()
+              cv <- unlist(lapply(vv, class))
+              isInternal <- cv == "internal_rowData"
+              vv[, !isInternal, drop = FALSE]
           })
-
-#' @importMethodsFrom SummarizedExperiment "colData<-"
-#' @importFrom methods callNextMethod
-#' @rdname treeSummarizedExperiment-accessor
-#' @export
-setMethod("colData<-", signature(x = "treeSummarizedExperiment"),
-          function(x, ..., value){
-              callNextMethod()
-          })
-
-
-#' @importMethodsFrom S4Vectors metadata
-#' @importFrom methods callNextMethod
-#' @rdname treeSummarizedExperiment-accessor
-#' @export
-setMethod("metadata", signature("treeSummarizedExperiment"),
-          function(x) {
-              callNextMethod()
-          } )
 
 #' @rdname treeSummarizedExperiment-accessor
 #' @export
@@ -231,29 +71,33 @@ setMethod("treeData", signature("treeSummarizedExperiment"),
 #' @importFrom S4Vectors metadata
 #' @rdname treeSummarizedExperiment-accessor
 #' @export
+# @importFrom BiocGenerics replaceSlots
 setMethod("[", signature(x = "treeSummarizedExperiment"),
           function(x, i, j){
-                xx <- SummarizedExperiment(assays = assays(x),
+              # subset slots inherited from SummarizedExperiment
+              xx <- SummarizedExperiment(assays = assays(x),
                                          rowData = rowData(x),
                                          colData = colData(x),
                                          metadata = metadata(x))
               out <- callNextMethod(x = xx, i = i, j = j)
 
+              # subset new slots
               linkD <- x@linkData
               if (missing(i)) {
                   i <- seq_len(nrow(linkD))
               }
-
               linkD <- linkD[i, , drop = FALSE]
 
-              # final <- new("treeSummarizedExperiment", out, linkData = linkD,
-              #              tree = x@tree)
-              final <- treeSummarizedExperiment(tree = x@treeData,
-                                                linkData = linkD,
-                                                assays = assays(out),
-                                                rowData = rowData(out),
-                                                colData = colData(out),
-                                                metadata = metadata(out))
+              # final <- BiocGenerics:::replaceSlots(x,
+              #                                      linkData = linkD,
+              #                                      assays = assays(out),
+              #                                      rowData = rowData(out),
+              #                                      colData = colData(out),
+              #                                      metadata = metadata(out))
+
+              final <- new("treeSummarizedExperiment", out,
+                           treeData = x@treeData,
+                           linkData = linkD)
               return(final)
           })
 
@@ -270,6 +114,7 @@ setMethod("show", "treeSummarizedExperiment", function(object) {
         sep=""
     )
 })
+
 
 
 

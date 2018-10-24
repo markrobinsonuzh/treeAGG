@@ -87,23 +87,23 @@ treeAGG.B <- function(data, sigf.by,
     nodeI <- setdiff(emat[, 1], leaf)
 
     # extract row data
-    rowD <- rowData(data, internal = FALSE) # orignial rowData
-    rowDI <- rowData(data, internal = TRUE) # orignial rowData + result
-    namI <- colnames(rowDI)
+    rowD <- rowData(data)
+    # extract results
+    rowI <- data@elementMetadata$Results_internal_treeAGG
+    namI <- colnames(rowI)
     indI <- grepl(pattern = "result_assay", x = namI) # result
-    rowI <- rowDI[, indI, drop = FALSE]
+    # rowI <- rowDI[, indI, drop = FALSE]
 
     # convert to a list
-    #  - each element is a data frame whose column is also a data frame
-    #  - each element is the result for an element of assays
+    #  - each element stores a result from an assay table
     rowList1 <- lapply(seq_len(sum(indI)), FUN = function(x) {
         xl <- rowI[, x]
         return(xl)
     })
     names(rowList1) <- colnames(rowI)
 
-    #  - each element is a data frame
-    #    it is the result under a specified contrast for an element of assays
+    #  - each element stores a result from an assay table
+    #  - each sub-element stores a result from a contrast
     rowList2 <- lapply(rowList1, FUN = function(x) {
         xv <- vector("list", ncol(x))
         names(xv) <- colnames(x)
@@ -180,30 +180,52 @@ treeAGG.B <- function(data, sigf.by,
         }
     }
 
-    # reshape: convert a list into a dataFrame
-    rowList4 <- lapply(seq_along(rowList3), FUN = function(j) {
-            x <- rowList3[[j]]
-            dx <- x[[1]][, 0]
-            for (i in seq_along(x)) {
-                xi <- x[[i]]
-                nxi <- names(x)[i]
-                dx[[nxi]] <- xi
+    # reshape to a dataFrame: one column for a result from one assay table
+    rowList4 <- lapply(rowList3, FUN = function(x) {
+        dx <- x[[1]][, 0]
+        for (i in seq_along(x)) {
+            xi <- x[[i]]
+            nxi <- names(x)[i]
+            if (is.null(nxi)) { nxi <- "contrastNULL"}
+            dx[[nxi]] <- xi
+        }
+        return(dx)
+    })
 
-            }
-            return(dx)
-        })
-    names(rowList4) <- names(rowList3)
+
+    # reshape to a dataFrame: one column for a result from one assay table
+    rowList5 <- rowList4[[1]][, 0]
+    for (i in seq_along(rowList4)) {
+        nxi <- names(rowList4)[i]
+        rowList5[[nxi]] <- rowList4[[i]]
+    }
+    rowData(data)[["Results_internal_treeAGG"]] <- as(rowList5,
+                                                     "internal_rowData")
+
+    # # reshape: convert a list into a dataFrame
+    # rowList4 <- lapply(seq_along(rowList3), FUN = function(j) {
+    #         x <- rowList3[[j]]
+    #         dx <- x[[1]][, 0]
+    #         for (i in seq_along(x)) {
+    #             xi <- x[[i]]
+    #             nxi <- names(x)[i]
+    #             dx[[nxi]] <- xi
+    #
+    #         }
+    #         return(dx)
+    #     })
+    # names(rowList4) <- names(rowList3)
 
     # update rowData
-    res <- data
-    rowData(res) <- rowData(data, internal = FALSE)
+    # res <- data
+    # rowData(res) <- rowData(data, internal = FALSE)
+    #
+    # for (i in seq_along(rowList4)) {
+    #    rowData(res)[[names(rowList4)[i]]] <- as(rowList4[[i]],
+    #                                             "internal_rowData")
+    # }
 
-    for (i in seq_along(rowList4)) {
-       rowData(res)[[names(rowList4)[i]]] <- as(rowList4[[i]],
-                                                "internal_rowData")
-    }
-
-   return(res)
+   return(data)
 
 }
 
@@ -244,47 +266,10 @@ treeAGG.B <- function(data, sigf.by,
 #' @name treeAGG
 #' @export
 #' @examples
-#'
-#' # We recommend to use treeAGG as example 2. It works in the case of example
-#' # 1.However, it is difficult to rownames a data frame when some internal
-#' # nodesof the tree doesn't have labels. Furthermore, it could do tree agg
-#' # Example 1
-#' library(ggtree)
-#' data(tinyTree)
-#'
-#' # data
-#' set.seed(3)
-#' pv <- runif(19)
-#' pValue <- rank(pv)/length(pv)*pv
-#' treeLab <- c(tinyTree$tip.label, tinyTree$node.label)
-#' df <- cbind.data.frame(pV = pValue,
-#' stringsAsFactors = FALSE)
-#' rownames(df) <- treeLab
-#'
-#'
-#'
-#' # tree aggregation
-#' (tt <- treeAGG(tree = tinyTree, data = df, sigf.limit = 0.05,
-#' sigf.by = "pV", agg.by = "pV"))
-#'
-#' # display the tree structure and p value at each node
-#' tt$node <- transNode(tree = tinyTree, input = rownames(tt),
-#'                      message = FALSE)
-#'
-#' # p value at each node is given as blue number in tree
-#' # the selected nodes after aggregation is labelled with orange points
-#' # these selected nodes have lower p-value than its descendant nodes if they
-#' # have descendant nodes.
-#' ggtree(tinyTree) %<+% tt + geom_text2(aes(label = label), hjust = -0.2) +
-#' geom_text2(aes(label = round(pv, 3)), vjust = -0.5, color = "blue",
-#'  hjust = -0.15) +
-#' geom_point2(aes(subset = aggKeep), color = "orange", size = 2)
-#'
-#'
-#' # Example 2
 #' set.seed(1)
-#' y <- matrix(rnbinom(300,size=1,mu=10),nrow=10)
-#' colnames(y) <- paste(rep(LETTERS[1:3], each = 10), rep(1:10,3), sep = "_")
+#' y <- matrix(rnbinom(300, size = 1, mu = 10), nrow = 10)
+#' colnames(y) <- paste(rep(LETTERS[1:3], each = 10),
+#'                      rep(1:10,3), sep = "_")
 #' rownames(y) <- tinyTree$tip.label
 #'
 #' rowInf <- data.frame(nodeLab = rownames(y),
@@ -303,17 +288,10 @@ treeAGG.B <- function(data, sigf.by,
 #' new_tse <- runEdgeR(obj = toy_tse, use.assays = 1, design = NULL,
 #'                     contrast = NULL, normalize = TRUE, method = "TMM",
 #'                     adjust.method = "BH")
-#' # option 1: provide treeSummarizedExperiment
+#'
+#' # the aggKeep column stores the information whether a node is kept after the
+#' # aggregation
 #' outR1 <- treeAGG(data = new_tse)
-#'
-#'  # or we could extract the result and the tree structure to do aggregation
-#'  (res <- rowData(new_tse)$result_assay1$contrastNULL)
-#'  rownames(res) <- linkData(new_tse)$nodeLab
-#'  (Tree <- treeData(new_tse))
-#'
-#'  # option2: provide data frame and tree structure
-#' outR2 <- treeAGG(data = res, tree = Tree)
-#'
 #'
 #'
 #'

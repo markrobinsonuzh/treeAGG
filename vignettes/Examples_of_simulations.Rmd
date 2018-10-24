@@ -488,13 +488,19 @@ fc <- metadata(dat6)$FC
 
 ```{r}
 p1 <- viewSim(obj = dat4, layout = "circular", zoomScale = 1/200, 
-              legend.theme = list(legend.position = c(0.6, 0.4)), 
+              legend.theme = list(legend.position = c(0.6, 0.4),
+                                  legend.background = element_rect(
+                                fill="transparent")), 
               legend.title = "S1")
 p2 <- viewSim(obj = dat5, layout = "circular", zoomScale = 1/200, 
-              legend.theme = list(legend.position = c(0.6, 0.4)),
+              legend.theme = list(legend.position = c(0.6, 0.4),
+                                  legend.background = element_rect(
+                                fill="transparent")),
               legend.title = "S2")
 p3 <- viewSim(obj = dat6, layout = "circular", zoomScale = 1/200, 
-              legend.theme = list(legend.position = c(0.6, 0.4)),
+              legend.theme = list(legend.position = c(0.6, 0.4),
+                                  legend.background = element_rect(
+                                fill="transparent")),
               legend.title = "S3")
 ```
 
@@ -552,7 +558,7 @@ the abundance level and has propor size (number of desendant leaves).
 If the sibling branch of a selected branch is need, the function `findSibling`
 could be used. Users could decide whether the node number (`return = "number"`)
 or the node label (`return = "label"`) should be output. If the tree data has no
-label for the output node and `return = "number"` is specified, `NA` is obtained
+label for the output node and `return = "label"` is specified, `NA` is obtained
 (`use.alias = FALSE`) and an alias of the node label is obtained (`use.alias =
 TRUE`). An alias of a node label is created by prefixing "Node_" to the node
 number for internal nodes and "Leaf_" for leaf nodes.
@@ -564,7 +570,8 @@ findSibling(tree = metadata(lse)$tree,
 ```
 
 If users are curious about the descendant leaves of the selected branch, the
-function `findOS` could be used.
+function `findOS` could be used. To see the descendants of a specific node, we 
+could put the node number or label in `ancestor`.
 
 ```{r}
 findOS(tree = metadata(lse)$tree, ancestor = sel2$nodeNum[6],

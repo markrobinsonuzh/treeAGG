@@ -258,11 +258,19 @@ updateTSE <- function(result, tse, use.assays, design,
 
     # put the analysis result in the rowData
     # set the class as internal_rowData
+    tt4 <- tt3[[1]][, 0]
     for (i in seq_along(tt3)) {
-        if (!is.null(tt3[[i]])) {
-            rowData(tse)[[names(tt3)[i]]] <- as(tt3[[i]], "internal_rowData")
-        }
+        nxi <- names(tt3)[i]
+        tt4[[nxi]] <- tt3[[i]]
     }
+    rowData(tse)[["Results_internal_treeAGG"]] <- as(tt4, "internal_rowData")
+
+
+    # for (i in seq_along(tt3)) {
+    #     if (!is.null(tt3[[i]])) {
+    #         rowData(tse)[[names(tt3)[i]]] <- as(tt3[[i]], "internal_rowData")
+    #     }
+    # }
 
     # put the contrast, matrix, use.assays in the metadata
     metadata(tse)$output_glmFit <- fit

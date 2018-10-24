@@ -57,47 +57,10 @@ A data frame
 which nodes to be aggregated to based on the min-p algorithm.
 }
 \examples{
-
-# We recommend to use treeAGG as example 2. It works in the case of example
-# 1.However, it is difficult to rownames a data frame when some internal
-# nodesof the tree doesn't have labels. Furthermore, it could do tree agg
-# Example 1
-library(ggtree)
-data(tinyTree)
-
-# data
-set.seed(3)
-pv <- runif(19)
-pValue <- rank(pv)/length(pv)*pv
-treeLab <- c(tinyTree$tip.label, tinyTree$node.label)
-df <- cbind.data.frame(pV = pValue,
-stringsAsFactors = FALSE)
-rownames(df) <- treeLab
-
-
-
-# tree aggregation
-(tt <- treeAGG(tree = tinyTree, data = df, sigf.limit = 0.05,
-sigf.by = "pV", agg.by = "pV"))
-
-# display the tree structure and p value at each node
-tt$node <- transNode(tree = tinyTree, input = rownames(tt),
-                     message = FALSE)
-
-# p value at each node is given as blue number in tree
-# the selected nodes after aggregation is labelled with orange points
-# these selected nodes have lower p-value than its descendant nodes if they
-# have descendant nodes.
-ggtree(tinyTree) \%<+\% tt + geom_text2(aes(label = label), hjust = -0.2) +
-geom_text2(aes(label = round(pv, 3)), vjust = -0.5, color = "blue",
- hjust = -0.15) +
-geom_point2(aes(subset = aggKeep), color = "orange", size = 2)
-
-
-# Example 2
 set.seed(1)
-y <- matrix(rnbinom(300,size=1,mu=10),nrow=10)
-colnames(y) <- paste(rep(LETTERS[1:3], each = 10), rep(1:10,3), sep = "_")
+y <- matrix(rnbinom(300, size = 1, mu = 10), nrow = 10)
+colnames(y) <- paste(rep(LETTERS[1:3], each = 10),
+                     rep(1:10,3), sep = "_")
 rownames(y) <- tinyTree$tip.label
 
 rowInf <- data.frame(nodeLab = rownames(y),
@@ -116,17 +79,10 @@ toy_tse <- nodeValue(data = toy_lse, fun = sum, message = TRUE)
 new_tse <- runEdgeR(obj = toy_tse, use.assays = 1, design = NULL,
                     contrast = NULL, normalize = TRUE, method = "TMM",
                     adjust.method = "BH")
-# option 1: provide treeSummarizedExperiment
+
+# the aggKeep column stores the information whether a node is kept after the
+# aggregation
 outR1 <- treeAGG(data = new_tse)
-
- # or we could extract the result and the tree structure to do aggregation
- (res <- rowData(new_tse)$result_assay1$contrastNULL)
- rownames(res) <- linkData(new_tse)$nodeLab
- (Tree <- treeData(new_tse))
-
- # option2: provide data frame and tree structure
-outR2 <- treeAGG(data = res, tree = Tree)
-
 
 
 

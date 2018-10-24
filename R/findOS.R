@@ -59,8 +59,8 @@ findOS <- function(tree,
     matN <- cbind(L1)
     repeat {
         li <- mat[match(matN[, i], mat[, 2]), 1]
-        ll <- length(unique(li))
-        if (ll == 1) {
+        ll <- length(unique(li[!is.na(li)]))
+        if (ll == 0) {
             break
         }
         matN <- cbind(matN, li)

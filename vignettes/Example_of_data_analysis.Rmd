@@ -36,7 +36,7 @@ research fields and often indicates different resolutions at which data can be
 viewed and results can be interpreted. Examples include studies of microbial
 abundance where the OTUs (operational taxonomic units, often assumed to
 represent species) can be arranged as leaves in a phylogenetic tree, and
-single-cell studies where the individual cells can be organized hierarchically ,
+single-cell studies where the individual cells can be organized hierarchically,
 e.g. via clustering. In both these examples, a question arises on which
 resolution level the signal in the data (e.g. differential abundance of features
 between groups) is best interpreted, or put another way, on what resolution the
@@ -257,21 +257,6 @@ correspondingly via `design` and `contrast`, and they will be saved in the
 contrast is not provided (`contrast = NULL`), the last coefficient is tested in
 the `glmLRT` step (see `?edgeR::glmLRT` and Section \@ref(pline2)).
 
-The output of the data analysis is stored in the internal part of the `rowData`
-that is only visible when using `rowData` with `internal = TRUE`. We don't
-recommend users to modify the internal part of the `rowData` because it's
-prepared for the aggregation step.
-```{r}
-# This extracts the original row data
-rD1 <- rowData(new_tse, internal = FALSE)
-colnames(rD1)
-
-# The result is store in the column result_assay1
-rD2 <- rowData(new_tse, internal = TRUE)
-colnames(rD2)
-
-```
-
 To print out the result, `topNodes` can be used. The output is a `list`. More
 details about its structure could be found in Section \@ref(mtab).
 ```{r}
@@ -342,9 +327,9 @@ p + geom_text2(aes(label = label), hjust = -0.3)
 We use `treePlot` (`?treePlot`) to visualize the results. The branches with blue
 edges are truly differentially abundant. The results obtained from the minP
 aggregation algorithm implemented in `r Biocpkg("treeAGG")` are shown as orange
-points. Nodes with orange points are the suggested as the optimal level at which
-to interpret the signal. More details about how to use `r Biocpkg("ggtree")`
-could be seen
+points. Compared to Figure \@ref(fig:sigTree), the orange points are exactly in
+the same location as the violet squares. That indicates the true signal is found
+correctly. More details about how to use `r Biocpkg("ggtree")` could be seen
 [here](https://bioconductor.org/packages/release/bioc/html/ggtree.html).
 
 ## The customized part of the pipeline {#pline2}
@@ -466,18 +451,6 @@ new_tseM <- runEdgeR(obj = tseM, use.assays = c(1, 2),
 
 ```
 
-Compared to the original row data, there are two new columns, *result_assay1*
-and *result_assay2*. The former stores the output from the first element of the
-`assays`, and the later stores the second one.
-```{r}
-# the new row data
-rD3 <- rowData(new_tseM, internal = TRUE)
-colnames(rD3)
-
-# show new columns
-setdiff(colnames(rD3), colnames(rD1))
-```
-
 If the customized analysis was performed, the results from multiple elements
 could be written back in one step.
 
@@ -489,16 +462,19 @@ cList <- list(contrast1 = c(0, 1, -1, 0),
               contrast2 = c(0, 0, 0, 1))
 
 # the results from the first element of assays
-# name the results as the list of the contrasts
+# name the results as the list of the contrasts (cList)
 res1 <- list(contrast1 = out,
              contrast2 = 2*out)
 
 # the results from the second element of assays
-# name the results as the list of the contrasts
+# name the results as the list of the contrasts (cList)
 res2 <- list(contrast1 = 0.5*out,
              contrast2 = 3*out)
 
 # combine the results into a list
+# name the results with 'assay' followed by a number 
+# e.g., if the first and the third table in the assays were used for analysis
+# then, we name the result with assay1  assay3
 res <- list(assay1 = res1, 
             assay2 = res2)
 # keep both results and data in the container
@@ -508,17 +484,27 @@ test_tseM <- updateTSE(result = res, tse = tseM,
                        contrast = cList)
 ```
 
-Now, the output could be found in the internal part of the `rowData`.
+Now, the output could be obtained using `topNodes` as mentioned before. The 
+output is a `list`.
 ```{r}
-# the new row data
-rD4 <- rowData(test_tseM, internal = TRUE)
-
-# two new columns created
-colnames(rD4)
-
-# Result gained from each contrast is stored as a column
-colnames(rD4$result_assay1)
+rD4 <- topNodes(test_tseM)
+class(rD4)
 ```
+
+Each element of the list is the analysis result of a table in `assays`.
+```{r}
+# Here, we have two elements: one is the result of the first table,
+# and the other is the result of the second table
+names(rD4)
+```
+
+Each sub-element is a `list` too. It stores the analysis result of a table in 
+`assays` under a specific contrast.
+```{r}
+class(rD4$result_assay1)
+names(rD4$result_assay1)
+```
+
 
 Here, the table below is exactly the data *out* that was put in.
 ```{r}

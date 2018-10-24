@@ -55,13 +55,26 @@ topNodes <- function(data, sort.by = "FDR", decreasing = FALSE,
                      col.rowData = NULL, col.linkData = NULL,
                      use.assays = NULL){
 
+    # extract row data
+    # rData <- rowData(data, internal = TRUE)
+    rData <- data@elementMetadata$Results_internal_treeAGG
+
+    # which assay tables have available result
+    av <- gsub(pattern = "result_assay", replacement = "",
+               x = colnames(rData))
+    av <- as.numeric(av)
 
     if (is.null(use.assays)) {
-        use.assays <- 1
+        use.assays <- av
+    } else {
+        use.assays <- use.assays
     }
 
-    # extract row data
-    rData <- rowData(data, internal = TRUE)
+    if (! use.assays %in% av) {
+        stop("The result of assay table",
+             use.assays[! use.assays %in% av],
+             "is not available. /n")
+    }
 
     # the name of column that stores results we are interested
     cNam <- paste("result_assay", use.assays, sep = "")

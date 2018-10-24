@@ -90,9 +90,6 @@
 #' contrastList <- list(contrast1 = c(0, 0, 0, -1, 1),
 #'                      contrast2 = c(0, -1, 1, 0, 0))
 #' mod <- runEdgeR(obj = toy_tse, contrast = contrastList)
-#' # results are stored as the column result_assay1, result_assay2, and
-#' # result_assay3
-#' (res <- rowData(mod, internal = TRUE))
 #' # show results gained from the second element of the assasy
 #' # sort by PValue
 #' topNodes(mod, sort.by = "PValue", use.assays = 2)
@@ -100,7 +97,8 @@
 runEdgeR <- function(obj, design = NULL, contrast = NULL,
                      normalize = TRUE, method = "TMM",
                      adjust.method = "BH",
-                     prior.count = 0.125, use.assays = NULL){
+                     prior.count = 0.125,
+                     use.assays = NULL){
 
     # which elements from assays will be used for analysis.
     if (is.null(use.assays)) {
@@ -209,12 +207,18 @@ runEdgeR <- function(obj, design = NULL, contrast = NULL,
         return(dx) })
     names(tt3) <- paste("result_assay", use.assays, sep = "" )
 
-    # put the analysis result in the rowData
-    # set the class as internal_rowData
+    # reshape to a dataFrame: one column for a result from one assay table
+    tt4 <- tt3[[1]][, 0]
     for (i in seq_along(tt3)) {
-       rowData(obj)[[names(tt3)[i]]] <- as(tt3[[i]], "internal_rowData")
-
+        nxi <- names(tt3)[i]
+        tt4[[nxi]] <- tt3[[i]]
     }
+    rowData(obj)[["Results_internal_treeAGG"]] <- as(tt4, "internal_rowData")
+
+    # for (i in seq_along(tt3)) {
+    #    rowData(obj)[[names(tt3)[i]]] <- as(tt3[[i]], "internal_rowData")
+    #
+    # }
 
     # contrast should have the same length as the sub-element of tt3
     if (is.null(contrast)) {

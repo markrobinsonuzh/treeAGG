@@ -9,6 +9,7 @@
 #' A virtual class to be assigned to a column of \code{rowData} in a
 #' \code{treeSummarizedExperiment} object. The columns with this class could be
 #' optionally exported or hidden when using \code{rowData}.
+#' @importFrom S4Vectors DataFrame
 #' @keywords internal
 setClass("internal_rowData", contains = "DataFrame")
 
@@ -70,7 +71,8 @@ setOldClass("phylo")
 #' functions.
 #'
 #' @section Accessor:
-#' See \code{\link{leafSummarizedExperiment-accessor}} for accessor functions.
+#' See \code{\link[SummarizedExperiment]{SummarizedExperiment-class}} for
+#' accessor functions.
 #'
 #' @importFrom methods setClass
 #' @importClassesFrom SummarizedExperiment SummarizedExperiment
@@ -153,30 +155,7 @@ setClass("treeSummarizedExperiment",
 #' \strong{leafSummarizedExperiment} class.
 #'
 #' @param tree A phylo object.
-#' @param ... see the arguments for the constructor in
-#' \code{\link[SummarizedExperiment]{RangedSummarizedExperiment-class}}
-#' \itemize{
-#' \item{\strong{assays}:}{ a list of matrix-like elements, or a matrix-like
-#' object. All elements of the list must have the same dimensions, and
-#' dimension names (if present) must be consistent across elements and with
-#' the row names of \strong{rowData} and \strong{colData}}.
-#'
-#' \item{\strong{rowData}:}{ A \code{\link[S4Vectors]{DataFrame-class}} object
-#' describing the rows. Row names, if present, become the row names of the
-#' \strong{leafSummarizedExperiment}. The number of rows of the
-#' \code{\link[S4Vectors]{DataFrame-class}} must equal the number of rows of the
-#' matrices in \strong{assays}. Note: a column named \strong{nodeLab} or
-#' rownames, which provides the labels of corresponding nodes on the tree for
-#' each row of the matrices in \strong{assays}, is required.}
-#'
-#' \item{\strong{colData}:}{ An optional argument with
-#' \code{\link[S4Vectors]{DataFrame-class}} describing the samples. Row names,
-#' if present, become the column names of the
-#' \strong{leafSummarizedExperiment}.}
-#'
-#' \item{\strong{metadata}:}{ An optional list of arbitrary content describing
-#' the overall experiment.}
-#' }
+#' @inheritParams SummarizedExperiment::SummarizedExperiment
 #'
 #' @importFrom utils head
 #' @importFrom SummarizedExperiment SummarizedExperiment assays rowData
@@ -277,28 +256,7 @@ leafSummarizedExperiment <- function(tree, ...) {
 #'   \item \strong{isLeaf} It indicates whether the node is a leaf node
 #'   \item \strong{rowID} The corresponding row number of the matrix-like
 #'   elements in \code{assays} }
-#' @param ... see arguments for the constructor in
-#' \code{\link[SummarizedExperiment]{RangedSummarizedExperiment-class}}
-#' \itemize{
-#' \item{\strong{assays}:}{ a list of matrix-like elements, or a matrix-like
-#' object. All elements of the list must have the same dimensions, and
-#' dimension names (if present) must be consistent across elements and with
-#' the row names of \strong{rowData} and \strong{colData}}.
-#'
-#' \item{\strong{rowData}:}{ A \code{\link[S4Vectors]{DataFrame-class}} object
-#' describing the rows. Row names, if present, become the row names of the
-#' \strong{leafSummarizedExperiment}. The number of rows of the
-#' \code{\link[S4Vectors]{DataFrame-class}} must equal the number of rows of the
-#' matrices in \strong{assays}. }
-#'
-#' \item{\strong{colData}:}{ An optional
-#' \code{\link[S4Vectors]{DataFrame-class}} describing the samples. Row names,
-#' if present, become the column names of the
-#' \strong{treeSummarizedExperiment}.}
-#'
-#' \item{\strong{metadata}:}{ An optional list of arbitrary content describing
-#' the overall experiment.}
-#' }
+#' @inheritParams SummarizedExperiment::SummarizedExperiment
 #' @importFrom SummarizedExperiment SummarizedExperiment rowData
 #' @importFrom S4Vectors DataFrame
 #' @importFrom methods new

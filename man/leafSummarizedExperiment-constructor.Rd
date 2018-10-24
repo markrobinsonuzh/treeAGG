@@ -10,30 +10,13 @@ leafSummarizedExperiment(tree, ...)
 \arguments{
 \item{tree}{A phylo object.}
 
-\item{...}{see the arguments for the constructor in
-\code{\link[SummarizedExperiment]{RangedSummarizedExperiment-class}}
-\itemize{
-\item{\strong{assays}:}{ a list of matrix-like elements, or a matrix-like
-object. All elements of the list must have the same dimensions, and
-dimension names (if present) must be consistent across elements and with
-the row names of \strong{rowData} and \strong{colData}}.
+\item{...}{For \code{SummarizedExperiment}, S4 methods \code{list}
+    and \code{matrix}, arguments identical to those of the
+    \code{SimpleList} method.
 
-\item{\strong{rowData}:}{ A \code{\link[S4Vectors]{DataFrame-class}} object
-describing the rows. Row names, if present, become the row names of the
-\strong{leafSummarizedExperiment}. The number of rows of the
-\code{\link[S4Vectors]{DataFrame-class}} must equal the number of rows of the
-matrices in \strong{assays}. Note: a column named \strong{nodeLab} or
-rownames, which provides the labels of corresponding nodes on the tree for
-each row of the matrices in \strong{assays}, is required.}
+    For \code{rowRanges}, ignored.
 
-\item{\strong{colData}:}{ An optional argument with
-\code{\link[S4Vectors]{DataFrame-class}} describing the samples. Row names,
-if present, become the column names of the
-\strong{leafSummarizedExperiment}.}
-
-\item{\strong{metadata}:}{ An optional list of arbitrary content describing
-the overall experiment.}
-}}
+  }
 }
 \value{
 A leafSummarizedExperiment object
