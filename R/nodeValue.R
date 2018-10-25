@@ -13,7 +13,7 @@ nodeValue.A <- function(data, fun = sum, tree, message = FALSE) {
     if (!setequal(rownames(data), tree$tip.label)) {
         chx <- setdiff(rownames(data), tree$tip.label)
         chs <- head(chx)
-        stop(cat("The rownames of data don't match the tree tip labels:",
+        stop(cat("Some row names can't be matched to the labels of leaf nodes:",
                  chs, "\n"))
     }
     # rename data with the alias of the node label
@@ -51,9 +51,7 @@ nodeValue.A <- function(data, fun = sum, tree, message = FALSE) {
 
         # print out the running process
         if (message) {
-           # Sys.sleep(0.001)
             message(i, " out of ", nN , " finished", "\r", appendLF = FALSE)
-            # message(i, "\r", appendLF = FALSE)
             flush.console()
         }
     }
@@ -77,7 +75,7 @@ nodeValue.A <- function(data, fun = sum, tree, message = FALSE) {
 
 # when data is a leafSummarizedExperiment
 nodeValue.B <- function(data, fun = sum, message = FALSE) {
-    if (!inherits(data, "leafSummarizedExperiment")) {
+    if (!is(data, "leafSummarizedExperiment")) {
         stop("\n data should be a leafSummarizedExperiment. \n")
     }
 
@@ -273,6 +271,7 @@ setMethod("nodeValue", signature(data = "ANY"),
 
 #' @rdname nodeValue
 #' @importFrom utils flush.console
+#' @importFrom methods is
 setMethod("nodeValue",
           signature(data = "leafSummarizedExperiment"),
           nodeValue.B)
