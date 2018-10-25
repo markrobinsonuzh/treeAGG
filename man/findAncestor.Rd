@@ -4,8 +4,7 @@
 \alias{findAncestor}
 \title{Find the ancestors of specified nodes}
 \usage{
-findAncestor(tree, node, level, return = c("number", "label"),
-  use.alias = FALSE)
+findAncestor(tree, node, level, use.alias = FALSE)
 }
 \arguments{
 \item{tree}{A phylo object}
@@ -15,18 +14,18 @@ findAncestor(tree, node, level, return = c("number", "label"),
 \item{level}{A vector of numbers to define nth generation before the
 specified nodes}
 
-\item{return}{"number" (return the node number) or "label" (return the node
-label).}
-
-\item{use.alias}{A logical value, TRUE or FALSE. This is an optional argument
-that only requried when \code{return = "label"}. The default is FALSE, and
-the node label would be returned; otherwise, the alias of node label would
-be output. The alias of node label is created by adding a prefix
-\code{"Node_"} to the node number if the node is an internal node or adding
-a prefix \code{"Leaf_"} if the node is a leaf node.}
+\item{use.alias}{A logical value, TRUE or FALSE. The default is FALSE, and
+the node label would be used to name the output; otherwise, the alias of
+node label would be used to name the output. The alias of node label is
+created by adding a prefix \code{"Node_"} to the node number if the node is
+an internal node or adding a prefix \code{"Leaf_"} if the node is a leaf
+node.}
 }
 \value{
-a vector of node numbers
+A vector of nodes. The numeric value is the node number, and the
+  vector name is the corresponding node label. If a node has no label, it
+  would have NA as name when \code{use.alias = FALSE}, and have the alias of
+  node label as name when \code{use.alias = TRUE}.
 }
 \description{
 \code{findAncestor} finds the ancestor in the nth generation above
@@ -34,15 +33,14 @@ specified nodes.
 }
 \examples{
 library(ggtree)
-data(exTree)
-ggtree(exTree, branch.length = 'none') \%>\%
-    scaleClade(node = 52, scale = 10)+
+data(tinyTree)
+ggtree(tinyTree, branch.length = 'none') +
  geom_text2(aes(label = label), color = "darkorange",
            hjust = -0.1, vjust = -0.7) +
  geom_text2(aes(label = node), color = "darkblue",
                hjust = -0.5, vjust = 0.7)
 
- findAncestor(tree = exTree, node = c(53, 61), level = 1)
+ findAncestor(tree = tinyTree, node = c(18, 13), level = 1)
 }
 \author{
 Ruizhu Huang

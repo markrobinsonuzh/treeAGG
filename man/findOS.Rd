@@ -5,7 +5,7 @@
 \title{Find descendants (or offsprings)}
 \usage{
 findOS(tree, ancestor, only.Tip = TRUE, self.include = TRUE,
-  return = c("number", "label"), use.alias = FALSE)
+  use.alias = FALSE)
 }
 \arguments{
 \item{tree}{A phylo object.}
@@ -20,18 +20,18 @@ default, only the leaf nodes in the descendant nodes would be returned.}
 default, the node specified in \strong{ancestor} is included. The leaf node
 itself is returned as its descendant.}
 
-\item{return}{"number" (return the node number) or "label" (return the node
-label).}
-
-\item{use.alias}{A logical value, TRUE or FALSE. This is an optional argument
-that only requried when \code{return = "label"}. The default is FALSE, and
-the node label would be returned; otherwise, the alias of node label would
-be output. The alias of node label is created by adding a prefix
-\code{"Node_"} to the node number if the node is an internal node or adding
-a prefix \code{"Leaf_"} if the node is a leaf node.}
+\item{use.alias}{A logical value, TRUE or FALSE. The default is FALSE, and
+the node label would be used to name the output; otherwise, the alias of
+node label would be used to name the output. The alias of node label is
+created by adding a prefix \code{"Node_"} to the node number if the node is
+an internal node or adding a prefix \code{"Leaf_"} if the node is a leaf
+node.}
 }
 \value{
-A vector
+A vector of nodes. The numeric value is the node number, and the
+  vector name is the corresponding node label. If a node has no label, it
+  would have NA as name when \code{use.alias = FALSE}, and have the alias of
+  node label as name when \code{use.alias = TRUE}.
 }
 \description{
 \code{findOS} finds descendants of a node.
@@ -41,10 +41,13 @@ data(tinyTree)
 
 library(ggtree)
 ggtree(tinyTree) +
-geom_text2(aes(label = node)) +
-geom_hilight(node = 15, fill = 'steelblue', alpha = 0.5)
+geom_text2(aes(label = node), color = "darkblue",
+               hjust = -0.5, vjust = 0.7) +
+geom_hilight(node = 17, fill = 'steelblue', alpha = 0.5) +
+geom_text2(aes(label = label), color = "darkorange",
+           hjust = -0.1, vjust = -0.7)
 
-(tips <- findOS(tree = tinyTree, ancestor = 15, only.Tip = TRUE))
+(tips <- findOS(tree = tinyTree, ancestor = 17, only.Tip = TRUE))
 }
 \author{
 Ruizhu Huang

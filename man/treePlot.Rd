@@ -76,16 +76,17 @@ A tree plot
 \code{treePlot} visualizes a phylogenetic tree.
 }
 \details{
-treePlot is created based on the \pkg{ggtree} and \pkg{ggplot2}. So
-  other geoms from these two packages could be combined with \code{treePlot}
-  to add geoms in the figure created by \code{treePlot}.
+treePlot is created based on the \pkg{ggtree} and \pkg{ggplot2}. We
+  could combine geoms from these two packages with \code{treePlot} to add
+  geoms.
 }
 \examples{
 
 data(bigTree)
 
 # If we want to color two branches with branch node 1000 and 1400
-treePlot(tree = bigTree, branch = c(1000, 1400))
+treePlot(tree = bigTree, branch = c(1000, 1400),
+ zoomNode = 1000, zoomScale = 10)
 
 
 # use col.branch and col.other to specify colors

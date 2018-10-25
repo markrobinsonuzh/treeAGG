@@ -45,7 +45,8 @@ nodeValue.A <- function(data, fun = sum, tree, message = FALSE) {
         node.i <- nodeI[i]
         tips.i <- findOS(ancestor = node.i, tree = tree,
                          only.Tip = TRUE, self.include = TRUE,
-                         return = "label", use.alias = TRUE)
+                         use.alias = TRUE)
+        tips.i <- names(tips.i)
         cNode[i, ] <- apply(data[tips.i, ], 2, fun)
 
         # print out the running process
@@ -128,9 +129,12 @@ nodeValue.B <- function(data, fun = sum, message = FALSE) {
     # calculate values at nodes
     for (i in seq_len(nN)) {
         node.i <- nodeA[i]
+        # the node number
         tips.i <- findOS(ancestor = node.i, tree = tree,
                          only.Tip = TRUE, self.include = TRUE,
-                         return = "label", use.alias = TRUE)
+                         use.alias = TRUE)
+        # the node label
+        tips.i <- names(tips.i)
 
         row.i <- match(tips.i, tipLab_alias)
 

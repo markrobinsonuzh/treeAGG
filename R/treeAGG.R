@@ -34,8 +34,7 @@ treeAGG.A <- function(data, sigf.by,
     for (i in seq_along(nodeIE)) {
         node.i <- nodeIE[i]
         desc.i <- findOS(tree = tree, ancestor = node.i,
-                         only.Tip = FALSE, self.include = FALSE,
-                         return = "number" )
+                         only.Tip = FALSE, self.include = FALSE)
         row.n <- match(node.i, nodeN)
         row.d <- match(desc.i, nodeN)
 
@@ -132,7 +131,7 @@ treeAGG.B <- function(data, sigf.by,
         parent.k <- nodeI[k]
         desc.k <- findOS(tree = tree, ancestor = parent.k,
                          only.Tip = FALSE,
-                         self.include = FALSE, return = "number")
+                         self.include = FALSE)
 
         # row index
         row.p <- match(parent.k, linkD$nodeNum)

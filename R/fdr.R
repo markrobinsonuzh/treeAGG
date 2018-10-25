@@ -186,47 +186,18 @@ fdr0 <- function(tree,
             if (only.Tip) {
                 tipF <- lapply(found, findOS, tree = tree,
                                only.Tip = TRUE,
-                               self.include = TRUE,
-                               return = "number")
+                               self.include = TRUE)
                 tip <- unlist(tipF)
                 c(fp = length(tip), disc = length(tip))
             } else {
                 # the internal node whose descendant leaf nodes all have
                 # signal has signal too.
                 nodeF <- lapply(found, findOS, tree = tree,
-                                only.Tip = FALSE, self.include = TRUE,
-                                return = "number")
+                                only.Tip = FALSE, self.include = TRUE)
                 nod <- unlist(nodeF)
                 c(fp = length(nod), disc = length(nod))
             }
-            # level <- match.arg(level)
-            # switch(level,
-            #        leaf = {
-            #            tipF <- lapply(
-            #                found,
-            #                findOS,
-            #                tree = tree,
-            #                only.Tip = TRUE,
-            #                self.include = TRUE,
-            #                return = "number"
-            #            )
-            #            tip <- unlist(tipF)
-            #            c(fp = length(tip), disc = length(tip))
-            #        },
-            #        node = {
-            #            # the internal node whose descendant leaf nodes all have
-            #            # signal has signal too.
-            #            nodeF <- lapply(
-            #                found,
-            #                findOS,
-            #                tree = tree,
-            #                only.Tip = FALSE,
-            #                self.include = TRUE,
-            #                return = "number"
-            #            )
-            #            nod <- unlist(nodeF)
-            #            c(fp = length(nod), disc = length(nod))
-            #        })
+
         } else {
 
             # if discovery (found) exists and has correct input format, and
@@ -244,87 +215,29 @@ fdr0 <- function(tree,
             if (only.Tip) {
                 tipT <- lapply(truth, findOS, tree = tree,
                                only.Tip = TRUE,
-                               self.include = TRUE,
-                               return = "number")
+                               self.include = TRUE)
                 tipF <- lapply(found, findOS, tree = tree,
                                only.Tip = TRUE,
-                               self.include = TRUE,
-                               return = "number")
+                               self.include = TRUE)
                 # the true positive & positive
                 fp <- setdiff(unlist(tipF), unlist(tipT))
                 tip <- unlist(tipF)
                 c(fp = length(fp), disc = length(tip))
             } else {
-                nodeS <- signalNode(node = truth, tree = tree,
-                                    return = "number")
+                nodeS <- signalNode(node = truth, tree = tree)
                 # all nodes have signal
                 nodeT <- lapply(nodeS, findOS, tree = tree,
                                 only.Tip = FALSE,
-                                self.include = TRUE,
-                                return = "number")
+                                self.include = TRUE)
                 # nodes found with signal
                 nodeF <- lapply(found, findOS, tree = tree,
                                 only.Tip = FALSE,
-                                self.include = TRUE,
-                                return = "number")
+                                self.include = TRUE)
                 # false discovery & discovery
                 fp <- setdiff(unlist(nodeF), unlist(nodeT))
                 nod <- unlist(nodeF)
                 c(fp = length(fp), disc = length(nod))
             }
-            # level <- match.arg(level)
-            # switch(level,
-            #        leaf = {
-            #            tipT <- lapply(
-            #                truth,
-            #                findOS,
-            #                tree = tree,
-            #                only.Tip = TRUE,
-            #                self.include = TRUE,
-            #                return = "number"
-            #            )
-            #            tipF <- lapply(
-            #                found,
-            #                findOS,
-            #                tree = tree,
-            #                only.Tip = TRUE,
-            #                self.include = TRUE,
-            #                return = "number"
-            #            )
-            #            # the true positive & positive
-            #            fp <- setdiff(unlist(tipF), unlist(tipT))
-            #            tip <- unlist(tipF)
-            #            c(fp = length(fp), disc = length(tip))
-            #        },
-            #        node = {
-            #            # the internal node whose descendant leaf nodes
-            #            # all have signal has signal too.
-            #            nodeS <- signalNode(node = truth,
-            #                                tree = tree,
-            #                                return = "number")
-            #            # all nodes have signal
-            #            nodeT <- lapply(
-            #                nodeS,
-            #                findOS,
-            #                tree = tree,
-            #                only.Tip = FALSE,
-            #                self.include = TRUE,
-            #                return = "number"
-            #            )
-            #            # nodes found with signal
-            #            nodeF <- lapply(
-            #                found,
-            #                findOS,
-            #                tree = tree,
-            #                only.Tip = FALSE,
-            #                self.include = TRUE,
-            #                return = "number"
-            #            )
-            #            # false discovery & discovery
-            #            fp <- setdiff(unlist(nodeF), unlist(nodeT))
-            #            nod <- unlist(nodeF)
-            #            c(fp = length(fp), disc = length(nod))
-            #        })
         }
     }
 }

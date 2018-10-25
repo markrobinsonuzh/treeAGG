@@ -43,9 +43,9 @@
 #' \strong{point}.
 #' @param ... see also \code{\link[ggtree]{ggtree}}
 #'
-#' @details treePlot is created based on the \pkg{ggtree} and \pkg{ggplot2}. So
-#'   other geoms from these two packages could be combined with \code{treePlot}
-#'   to add geoms in the figure created by \code{treePlot}.
+#' @details treePlot is created based on the \pkg{ggtree} and \pkg{ggplot2}. We
+#'   could combine geoms from these two packages with \code{treePlot} to add
+#'   geoms.
 #'
 #' @import ggplot2
 #' @import ggtree
@@ -57,7 +57,8 @@
 #' data(bigTree)
 #'
 #' # If we want to color two branches with branch node 1000 and 1400
-#' treePlot(tree = bigTree, branch = c(1000, 1400))
+#' treePlot(tree = bigTree, branch = c(1000, 1400),
+#'  zoomNode = 1000, zoomScale = 10)
 #'
 #'
 #' # use col.branch and col.other to specify colors
@@ -253,14 +254,15 @@ addBranch <- function(tree, branch, col.branch,
 
     # The edges selected to be colored
     eList <- lapply(branch, findOS, tree = tree,
-                    only.Tip = FALSE, self.include = TRUE,
-                    return = "number")
+                    only.Tip = FALSE, self.include = TRUE)
     el <- unlist(lapply(eList, length))
     eList <- eList[order(el, decreasing = TRUE)]
     if (length(col.branch) == length(branch)) {
         col.branch <- col.branch[order(el, decreasing = TRUE)]
     }
     dList <- mapply(function(x, y) {
+         names(x) <- NULL
+         names(y) <- NULL
         cbind.data.frame(node = y, group = x,
                          stringsAsFactors = FALSE)},
         x = col.branch, y = eList, SIMPLIFY = FALSE,
@@ -374,11 +376,11 @@ addZoom <- function(tree, zoomNode = NULL, zoomLevel = NULL,
     } else {
         zoomNode <- zoomNode
     }
-
+    labAlias <- transNode(tree = tree, input = zoomNode,
+                          use.alias = TRUE)
     zList <- lapply(zoomNode, findOS, tree = tree,
-                    only.Tip = FALSE, self.include = TRUE,
-                    return = "number")
-    names(zList) <- zoomNode
+                    only.Tip = FALSE, self.include = TRUE)
+    names(zList) <- labAlias
     z_len <- unlist(lapply(zList, length))
 
     # define zoomLevel
@@ -391,7 +393,7 @@ addZoom <- function(tree, zoomNode = NULL, zoomLevel = NULL,
             zoomLevel <- zoomLevel
         }
     }
-    names(zoomLevel) <- zoomNode
+    names(zoomLevel) <- labAlias
 
     # define zoomScale
     if (is.null(zoomScale)) {
@@ -402,11 +404,11 @@ addZoom <- function(tree, zoomNode = NULL, zoomLevel = NULL,
 
     # the nodes to be zoomed in
     nodZ <- findAncestor(tree = tree, node = zoomNode,
-                         level = zoomLevel,
-                         return = "number")
-    names(nodZ) <- names(zoomScale) <- zoomNode
+                         level = zoomLevel)
+    names(nodZ) <- names(zoomScale) <- labAlias
+
     # remove nodes which are the descendants of the others
-    nodZW <- rmDesc(node = nodZ, tree = tree)
+    nodZW <- rmDesc(node = nodZ, tree = tree, use.alias = TRUE)
     zoomScale[!names(zoomScale) %in% names(nodZW)] <- 1
 
     if (is.null(addTo)) {

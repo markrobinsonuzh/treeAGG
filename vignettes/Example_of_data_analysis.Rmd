@@ -302,8 +302,7 @@ outP_sel <- outP[rowData(outP)$Diff %in% TRUE, ]
 # the true optimal level of the signal 
 # use signalNode to remove the redundant nodes
 truth <- signalNode(tree = treeData(outP_sel),
-                    node = linkData(outP_sel)$nodeNum,
-                    return = "number")
+                    node = linkData(outP_sel)$nodeNum)
 ```
 
 The estimated optimal level to interpret the differential abundance pattern from

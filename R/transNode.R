@@ -111,9 +111,7 @@ transNode <- function(tree, input, use.alias = FALSE,
         } else {
             sel <- match(input, nodeA)
             final <- nodeLab[sel]
-        }
-
-    }
+        }}
 
     # output
     return(final)

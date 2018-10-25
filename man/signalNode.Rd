@@ -4,26 +4,25 @@
 \alias{signalNode}
 \title{find the optimal nodes to short result.}
 \usage{
-signalNode(tree, node, return = c("number", "label"),
-  use.alias = FALSE)
+signalNode(tree, node, use.alias = FALSE)
 }
 \arguments{
 \item{tree}{A tree (phylo object)}
 
 \item{node}{A vector of node numbers or node labels}
 
-\item{return}{"label" or "number". Default is "number", the node number is
-returned. If "label", the selected node label is returned.}
-
-\item{use.alias}{A logical value, TRUE or FALSE. This is an optional argument
-that only requried when \code{return = "label"}. The default is FALSE, and
-the node label would be returned; otherwise, the alias of node label would
-be output. The alias of node label is created by adding a prefix
-\code{"Node_"} to the node number if the node is an internal node or adding
-a prefix \code{"Leaf_"} if the node is a leaf node.}
+\item{use.alias}{A logical value, TRUE or FALSE. The default is FALSE, and
+the node label would be used to name the output; otherwise, the alias of
+node label would be used to name the output. The alias of node label is
+created by adding a prefix \code{"Node_"} to the node number if the node is
+an internal node or adding a prefix \code{"Leaf_"} if the node is a leaf
+node.}
 }
 \value{
-The label of the shared node
+A vector of nodes. The numeric value is the node number, and the
+  vector name is the corresponding node label. If a node has no label, it
+  would have NA as name when \code{use.alias = FALSE}, and have the alias of
+  node label as name when \code{use.alias = TRUE}.
 }
 \description{
 \code{signalNode} is to represent some nodes with their ancestor to make
@@ -44,14 +43,12 @@ ggtree(tinyTree,branch.length = 'none')+
                hjust = -0.5, vjust = 0.7)
 
 ## find the node shared by provided node labels
-signalNode(node = c('t4','t9'), tree = tinyTree,
- return = "label")
-signalNode(node = c('t4','t9'), tree = tinyTree,
- return = "number")
+signalNode(node = c('t4','t9'), tree = tinyTree)
+signalNode(node = c('t4','t9'), tree = tinyTree)
 signalNode(node = c('t10','Node_18', 't8'), tree = tinyTree,
- return = "label", use.alias = FALSE)
+ use.alias = FALSE)
 signalNode(node = c('t10','Node_18', 't8'), tree = tinyTree,
- return = "label", use.alias = TRUE)
+ use.alias = TRUE)
 
 ## find the node shared by provided node numbers
 signalNode(node = c(2, 3), tree = tinyTree)

@@ -10,16 +10,17 @@
 #' @param self.include A logical value, TRUE or FALSE. The default is TRUE. If
 #'   default, the node specified in \strong{ancestor} is included. The leaf node
 #'   itself is returned as its descendant.
-#' @param return "number" (return the node number) or "label" (return the node
-#'   label).
-#' @param use.alias A logical value, TRUE or FALSE. This is an optional argument
-#'   that only requried when \code{return = "label"}. The default is FALSE, and
-#'   the node label would be returned; otherwise, the alias of node label would
-#'   be output. The alias of node label is created by adding a prefix
-#'   \code{"Node_"} to the node number if the node is an internal node or adding
-#'   a prefix \code{"Leaf_"} if the node is a leaf node.
+#' @param use.alias A logical value, TRUE or FALSE. The default is FALSE, and
+#'   the node label would be used to name the output; otherwise, the alias of
+#'   node label would be used to name the output. The alias of node label is
+#'   created by adding a prefix \code{"Node_"} to the node number if the node is
+#'   an internal node or adding a prefix \code{"Leaf_"} if the node is a leaf
+#'   node.
 #' @export
-#' @return A vector
+#' @return A vector of nodes. The numeric value is the node number, and the
+#'   vector name is the corresponding node label. If a node has no label, it
+#'   would have NA as name when \code{use.alias = FALSE}, and have the alias of
+#'   node label as name when \code{use.alias = TRUE}.
 #' @author Ruizhu Huang
 #'
 #' @examples
@@ -27,16 +28,18 @@
 #'
 #' library(ggtree)
 #' ggtree(tinyTree) +
-#' geom_text2(aes(label = node)) +
-#' geom_hilight(node = 15, fill = 'steelblue', alpha = 0.5)
+#' geom_text2(aes(label = node), color = "darkblue",
+#'                hjust = -0.5, vjust = 0.7) +
+#' geom_hilight(node = 17, fill = 'steelblue', alpha = 0.5) +
+#' geom_text2(aes(label = label), color = "darkorange",
+#'            hjust = -0.1, vjust = -0.7)
 #'
-#' (tips <- findOS(tree = tinyTree, ancestor = 15, only.Tip = TRUE))
+#' (tips <- findOS(tree = tinyTree, ancestor = 17, only.Tip = TRUE))
 
 findOS <- function(tree,
                    ancestor,
                    only.Tip = TRUE,
                    self.include = TRUE,
-                   return = c("number", "label"),
                    use.alias = FALSE) {
     if (length(ancestor) > 1) {
         stop("ancestor should have length equal to one")
@@ -99,11 +102,9 @@ findOS <- function(tree,
     }
 
     # final output (node number or label)
-    return <- match.arg(return)
-    switch(return,
-           number = res,
-           label = transNode(tree = tree, input = res,
-                             use.alias = use.alias,
-                             message = FALSE))
-
+    out <- res
+    names(out) <- transNode(tree = tree, input = out,
+                            use.alias = use.alias,
+                            message = FALSE)
+    return(out)
 }

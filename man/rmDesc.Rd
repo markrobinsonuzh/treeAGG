@@ -4,15 +4,25 @@
 \alias{rmDesc}
 \title{Remove nodes which are the descendants of other nodes}
 \usage{
-rmDesc(tree, node)
+rmDesc(tree, node, use.alias = FALSE)
 }
 \arguments{
-\item{tree}{A list of phylo objects.}
+\item{tree}{A phylo object.}
 
 \item{node}{A vector of node labels or node numbers}
+
+\item{use.alias}{A logical value, TRUE or FALSE. The default is FALSE, and
+the node label would be used to name the output; otherwise, the alias of
+node label would be used to name the output. The alias of node label is
+created by adding a prefix \code{"Node_"} to the node number if the node is
+an internal node or adding a prefix \code{"Leaf_"} if the node is a leaf
+node.}
 }
 \value{
-A vector of node numbers
+A vector of nodes. The numeric value is the node number, and the
+  vector name is the corresponding node label. If a node has no label, it
+  would have NA as name when \code{use.alias = FALSE}, and have the alias of
+  node label as name when \code{use.alias = TRUE}.
 }
 \description{
 \code{rmDesc} removes branches, which are the subbranches of the others.
@@ -22,8 +32,12 @@ A vector of node numbers
 data(tinyTree)
 library(ggtree)
 # PLOT
-ggtree(tinyTree,branch.length = 'none') +
-  geom_text2(aes(label=node), hjust=-.3)
+ggtree(tinyTree, branch.length = 'none') +
+ geom_text2(aes(label = label), color = "darkorange",
+           hjust = -0.1, vjust = -0.7) +
+ geom_text2(aes(label = node), color = "darkblue",
+               hjust = -0.5, vjust = 0.7)
+
 
 # find the shared nodes from the tree plot
 aV <- c(5, 4, 18, 3, 2)

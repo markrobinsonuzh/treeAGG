@@ -436,8 +436,8 @@ pickLoc <- function(tree = NULL, data = NULL,
     desI <- lapply(nodI, findOS, tree = tree,
                    only.Tip = TRUE,
                    self.include = TRUE,
-                   return = "label",
                    use.alias = TRUE)
+    desI <- lapply(desI, names)
     names(desI) <- transNode(tree = tree, input = nodI,
                              use.alias = TRUE, message = FALSE)
     nodP <- mapply(function(x, y) {
@@ -600,8 +600,8 @@ infLoc <- function(tree = NULL, data = NULL,
     desI <- lapply(nodI, findOS, tree = tree,
                    only.Tip = TRUE,
                    self.include = TRUE,
-                   return = "label",
                    use.alias = TRUE)
+    desI <- lapply(desI, names)
     nodP <- mapply(function(x, y) {
         sum(x[y])
     }, x = list(pars), y = desI)
@@ -683,19 +683,22 @@ doFC <- function(tree = NULL, data = NULL, scenario = "S1",
     # leaves
     tip.A <- findOS(tree = tree, ancestor = branchA,
                    only.Tip = TRUE, self.include = TRUE,
-                   return = "label", use.alias = TRUE)
+                   use.alias = TRUE)
+    tip.A <- names(tip.A)
     # nodes
     nodA.A <- findOS(tree = tree, ancestor = branchA,
                     only.Tip = FALSE, self.include = TRUE,
-                    return = "label", use.alias = TRUE)
+                    use.alias = TRUE)
+    nodA.A <- names(nodA.A)
     # internal nodes
     nodI.A <- setdiff(nodA.A, tip.A)
 
     # descendants of internal nodes
     des.IA <- lapply(nodI.A, findOS, tree = tree,
                    only.Tip = TRUE,
-                   self.include = TRUE, return = "label",
+                   self.include = TRUE,
                    use.alias = TRUE)
+    des.IA <- lapply(des.IA, names)
 
     # tip proportions estimated from real data
     # rename using the alias of node label
@@ -712,7 +715,8 @@ doFC <- function(tree = NULL, data = NULL, scenario = "S1",
         # leaves on branch B
         tip.B <- findOS(tree = tree, ancestor = branchB,
                        only.Tip = TRUE, self.include = TRUE,
-                       return = "label", use.alias = TRUE)
+                       use.alias = TRUE)
+        tip.B <- names(tip.B)
         beta[tip.A] <- ratio
         beta[tip.B] <- 1/ratio
     }
@@ -723,7 +727,9 @@ doFC <- function(tree = NULL, data = NULL, scenario = "S1",
     if (scenario == "S2") {
         tip.B <- findOS(tree = tree, ancestor = branchB,
                        only.Tip = TRUE, self.include = TRUE,
-                       return = "label", use.alias = TRUE)
+                       use.alias = TRUE)
+        tip.B <- names(tip.B)
+
         # proportion on two branches
         propA <- sum(pars[tip.A])
         propB <- sum(pars[tip.B])
@@ -731,8 +737,6 @@ doFC <- function(tree = NULL, data = NULL, scenario = "S1",
         # swap proportions on two branches and randomly assign a fold change
         # value to the the leaves on a branch (log fold change in the same
         # branch should have the same sign)
-
-
         a1 <- runif(length(tip.A))
         sa <- sum(a1 * propA)
         a2 <- (propB - propA)/sa
@@ -780,7 +784,8 @@ doFC <- function(tree = NULL, data = NULL, scenario = "S1",
         }
         tip.B <- findOS(tree = tree, ancestor = branchB,
                         only.Tip = TRUE, self.include = TRUE,
-                        return = "label", use.alias = TRUE)
+                        use.alias = TRUE)
+        tip.B <- names(tip.B)
         sumB <- sum(pars[tip.B])
 
         if(is.null(adjB)){

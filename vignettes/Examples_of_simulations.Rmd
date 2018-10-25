@@ -556,16 +556,16 @@ With the information above, we could take a branch that meets the requirement of
 the abundance level and has propor size (number of desendant leaves).
 
 If the sibling branch of a selected branch is need, the function `findSibling`
-could be used. Users could decide whether the node number (`return = "number"`)
-or the node label (`return = "label"`) should be output. If the tree data has no
-label for the output node and `return = "label"` is specified, `NA` is obtained
-(`use.alias = FALSE`) and an alias of the node label is obtained (`use.alias =
-TRUE`). An alias of a node label is created by prefixing "Node_" to the node
-number for internal nodes and "Leaf_" for leaf nodes.
+could be used. The node that connects the sibling branch and the other part of
+the tree is found and the its node number is returned. The node number is named
+with the node label. If the tree has no label for the output node and `use.alias
+= FALSE` is specified, `NA` is used as the name; otherwise, an alias of the node
+label is used (`use.alias = TRUE`). An alias of a node label is created by
+prefixing "Node_" to the node number for internal nodes and "Leaf_" for leaf
+nodes.
 ```{r}
 findSibling(tree = metadata(lse)$tree, 
-            input = sel1$nodeLab_alias[3], 
-            return = "label",
+            input = sel1$nodeLab_alias[3],
             use.alias = TRUE)
 ```
 
@@ -574,8 +574,7 @@ function `findOS` could be used. To see the descendants of a specific node, we
 could put the node number or label in `ancestor`.
 
 ```{r}
-findOS(tree = metadata(lse)$tree, ancestor = sel2$nodeNum[6],
-       return = "number")
+findOS(tree = metadata(lse)$tree, ancestor = sel2$nodeNum[6])
 ```
 
 # Appendix {#appendix}

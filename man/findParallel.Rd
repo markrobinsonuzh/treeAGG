@@ -4,26 +4,25 @@
 \alias{findParallel}
 \title{find parallel nodes}
 \usage{
-findParallel(tree, input, return = c("number", "label"),
-  use.alias = FALSE)
+findParallel(tree, input, use.alias = FALSE)
 }
 \arguments{
 \item{tree}{A phylo object.}
 
 \item{input}{A numeric or character vector. Node labels or node numbers.}
 
-\item{return}{"number" (return the node number) or "label" (return the node
-label).}
-
-\item{use.alias}{A logical value, TRUE or FALSE. This is an optional argument
-that only requried when \code{return = "label"}. The default is FALSE, and
-the node label would be returned; otherwise, the alias of node label would
-be output. The alias of node label is created by adding a prefix
-\code{"Node_"} to the node number if the node is an internal node or adding
-a prefix \code{"Leaf_"} if the node is a leaf node.}
+\item{use.alias}{A logical value, TRUE or FALSE. The default is FALSE, and
+the node label would be used to name the output; otherwise, the alias of
+node label would be used to name the output. The alias of node label is
+created by adding a prefix \code{"Node_"} to the node number if the node is
+an internal node or adding a prefix \code{"Leaf_"} if the node is a leaf
+node.}
 }
 \value{
-A vector of node labels or node numbers
+A vector of nodes. The numeric value is the node number, and the
+  vector name is the corresponding node label. If a node has no label, it
+  would have NA as name when \code{use.alias = FALSE}, and have the alias of
+  node label as name when \code{use.alias = TRUE}.
 }
 \description{
 \code{findParallel} is to find target nodes that could build up a tree with
@@ -35,7 +34,7 @@ node represents the edge connecting the leaf and its parent.
 }
 \examples{
 # data(tinyTree)
-# findParallel(tree = tinyTree, input = 12, return = "label",
+# findParallel(tree = tinyTree, input = 12,
 #             use.alias = FALSE)
 
 

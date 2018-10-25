@@ -37,7 +37,8 @@
 #'
 viewSim <- function(obj, layout = "rectangular", zoomScale = 1/20,
                     legend.theme = list(
-                        legend.position = c(0.15, 0.6)),
+                        legend.position = c(0.15, 0.6),
+                        legend.background = element_rect(fill="transparent")),
                     tip.label = FALSE, legend.title = "Abundance"){
 
     md <- metadata(obj)
@@ -65,7 +66,7 @@ viewSim <- function(obj, layout = "rectangular", zoomScale = 1/20,
     sc <- md$scenario
 
     # zoomNode
-    sNode <- findParallel(tree = tree, input = branch, return = "number")
+    sNode <- findParallel(tree = tree, input = branch)
     isT <- isLeaf(tree = tree, input = sNode)
     fNode <- sNode[!isT]
 
@@ -118,7 +119,8 @@ viewSim <- function(obj, layout = "rectangular", zoomScale = 1/20,
         difN <- transNode(tree = tree, input = difN,
                           message = FALSE)
         difS <- signalNode(node = difN, tree = tree,
-                           return = "label", use.alias = TRUE)
+                           use.alias = TRUE)
+        difS <- names(difS)
         difL <- transNode(tree = tree, input = difS,
                           message = FALSE)
         colL2 <- ifelse(difL == md$branch$B,
@@ -155,25 +157,25 @@ viewSim <- function(obj, layout = "rectangular", zoomScale = 1/20,
 #'
 #' @param tree A phylo object.
 #' @param input A numeric or character vector. Node labels or node numbers.
-#' @param return "number" (return the node number) or "label" (return the node
-#'   label).
-#' @param use.alias A logical value, TRUE or FALSE. This is an optional argument
-#'   that only requried when \code{return = "label"}. The default is FALSE, and
-#'   the node label would be returned; otherwise, the alias of node label would
-#'   be output. The alias of node label is created by adding a prefix
-#'   \code{"Node_"} to the node number if the node is an internal node or adding
-#'   a prefix \code{"Leaf_"} if the node is a leaf node.
+#' @param use.alias A logical value, TRUE or FALSE. The default is FALSE, and
+#'   the node label would be used to name the output; otherwise, the alias of
+#'   node label would be used to name the output. The alias of node label is
+#'   created by adding a prefix \code{"Node_"} to the node number if the node is
+#'   an internal node or adding a prefix \code{"Leaf_"} if the node is a leaf
+#'   node.
 #'
 #' @keywords internal
-#' @return A vector of node labels or node numbers
+#' @return A vector of nodes. The numeric value is the node number, and the
+#'   vector name is the corresponding node label. If a node has no label, it
+#'   would have NA as name when \code{use.alias = FALSE}, and have the alias of
+#'   node label as name when \code{use.alias = TRUE}.
 #' @examples
 #' # data(tinyTree)
-#' # findParallel(tree = tinyTree, input = 12, return = "label",
+#' # findParallel(tree = tinyTree, input = 12,
 #' #             use.alias = FALSE)
 #'
 #'
 findParallel <- function(tree, input,
-                         return = c("number", "label"),
                          use.alias = FALSE){
 
     if (inherits(input, "character")) {
@@ -187,8 +189,7 @@ findParallel <- function(tree, input,
                   FUN = function(x){
                       findOS(tree = tree,
                              ancestor = x,
-                             only.Tip = TRUE,
-                             return = "number")})
+                             only.Tip = TRUE)})
     inT <- unlist(inT)
     # find all leaves of tree
     allT <- setdiff(tree$edge[,2], tree$edge[, 1])
@@ -197,15 +198,15 @@ findParallel <- function(tree, input,
     exT <- setdiff(allT, inT)
 
     # replace leaves with their ancestor branch node
-    fT <- signalNode(tree = tree, node = exT, return = "number")
+    fT <- signalNode(tree = tree, node = exT)
 
-    # final output (node number or label)
-    return <- match.arg(return)
-    switch(return,
-           number = fT,
-           label = transNode(tree = tree, input = fT,
-                             use.alias = use.alias,
-                             message = FALSE))
+    # return a vector of the found node (the node number of the node)
+    # name the vector with the node label
+    out <- fT
+    names(out) <- transNode(tree = tree, input = out,
+                            use.alias = use.alias,
+                            message = FALSE)
+    return(out)
 
 }
 
