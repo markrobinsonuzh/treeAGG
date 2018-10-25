@@ -68,34 +68,48 @@ setMethod("treeData", signature("treeSummarizedExperiment"),
 
 #' @importFrom methods callNextMethod
 #' @importFrom SummarizedExperiment assays rowData colData
+#  @importFrom BiocGenerics normalize
 #' @importFrom S4Vectors metadata
 #' @rdname treeSummarizedExperiment-accessor
 #' @export
-# @importFrom BiocGenerics replaceSlots
 setMethod("[", signature(x = "treeSummarizedExperiment"),
           function(x, i, j){
               # subset slots inherited from SummarizedExperiment
               xx <- SummarizedExperiment(assays = assays(x),
-                                         rowData = rowData(x),
+                                         rowData = x@elementMetadata,
                                          colData = colData(x),
                                          metadata = metadata(x))
-              out <- callNextMethod(x = xx, i = i, j = j)
-
-              # subset new slots
+              # new slot
               linkD <- x@linkData
-              if (missing(i)) {
-                  i <- seq_len(nrow(linkD))
+              if (!missing(i)) {
+                  if (is.character(i)) {
+                      fmt <- paste0("<", class(x),
+                                    ">[i,] index out of bounds: %s")
+                      i <- SummarizedExperiment:::.SummarizedExperiment.charbound(
+                          i, rownames(x), fmt)}
+                  i <- as.vector(i)
+                  xx <- xx[i, ]
+                  linkD <- linkD[i, , drop = FALSE]
               }
-              linkD <- linkD[i, , drop = FALSE]
+
+              if (!missing(j)) {
+                  if (is.character(j)) {
+                      fmt <- paste0("<", class(x), ">[,j] index out of bounds: %s")
+                      j <- SummarizedExperiment:::.SummarizedExperiment.charbound(
+                          j, colnames(x), fmt) }
+                  j <- as.vector(j)
+                  xx <- xx[, j]
+
+              }
 
               # final <- BiocGenerics:::replaceSlots(x,
               #                                      linkData = linkD,
-              #                                      assays = assays(out),
-              #                                      rowData = rowData(out),
-              #                                      colData = colData(out),
-              #                                      metadata = metadata(out))
+              #                                      assays = assays(xx),
+              #                                      rowData = rowData(xx),
+              #                                      colData = colData(xx),
+              #                                      metadata = metadata(xx))
 
-              final <- new("treeSummarizedExperiment", out,
+              final <- new("treeSummarizedExperiment", xx,
                            treeData = x@treeData,
                            linkData = linkD)
               return(final)
