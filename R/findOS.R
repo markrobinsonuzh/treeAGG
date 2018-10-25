@@ -66,21 +66,19 @@ findOS <- function(tree,
         if (!numA %in% mat) {
             stop("Node ", numA,
                  " can't be found in the ",
-                 deparse(substitute(tree)),
-                 "\n")
-        }
+                 deparse(substitute(tree)), "\n")
+            }
 
     }
 
     # convert to a list. (each element in the list is one path)
-    desA <- lapply(
-        seq_len(nrow(matN)),
-        FUN = function(x) {
-            xx <- match(numA, matN[x, ])
-            yy <- ifelse(is.na(xx), 0, xx)
-            matN[x, seq_len(yy)]
-        }
-    )
+    desA <- lapply(seq_len(nrow(matN)),
+                   FUN = function(x) {
+                       xx <- match(numA, matN[x, ])
+                       yy <- ifelse(is.na(xx), 0, xx)
+                       matN[x, seq_len(yy)]
+                       })
+
     # descendants: internal nodes & tips
     desA <- unique(unlist(desA))
 
@@ -88,11 +86,7 @@ findOS <- function(tree,
     tipA <- unique(setdiff(desA, mat[, 1]))
 
     res <- if (self.include) {
-        if (only.Tip) {
-            tipA
-        } else {
-            desA
-        }
+        if (only.Tip) {tipA} else {desA}
     } else {
         if (only.Tip) {
             setdiff(tipA, numA)
