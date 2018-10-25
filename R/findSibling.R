@@ -29,12 +29,12 @@
 #'  findSibling(tree = tinyTree, input = 17)
 #'  findSibling(tree = tinyTree, input = c(13, 17))
 findSibling <- function(tree, input, use.alias = FALSE){
+
     # find descendant leaves of input
-    inT <- lapply(input,
-                  FUN = function(x){
-                      findOS(tree = tree,
-                             ancestor = x,
-                             only.Tip = TRUE)})
+    inT <- lapply(input, FUN = function(x){
+        findOS(tree = tree,
+               ancestor = x,
+               only.Tip = TRUE)})
     # find the parent node of the input
     pN <- findAncestor(tree = tree, node = input, level = 1)
 
