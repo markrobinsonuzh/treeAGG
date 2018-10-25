@@ -44,11 +44,9 @@ findAncestor <- function(tree, node, level,
 
 
     if (is.character(node)) {
-        aggNod <- transNode(tree = tree, input = node,
+        node <- transNode(tree = tree, input = node,
                             use.alias = TRUE,
                             message = FALSE)
-    } else {
-        aggNod <- node
     }
 
     if (length(level) == 1) {
@@ -61,9 +59,9 @@ findAncestor <- function(tree, node, level,
         }
     }
 
-    selNod <- lapply(seq_along(aggNod), FUN = function(x) {
+    selNod <- lapply(seq_along(node), FUN = function(x) {
         # the node
-        nod.x <- aggNod[x]
+        nod.x <- node[x]
 
         # where is the node
         ind <- which(treeMat == nod.x, arr.ind = TRUE)
@@ -86,11 +84,10 @@ findAncestor <- function(tree, node, level,
         return(uv)
     })
 
-    final <- unlist(selNod)
+    out <- unlist(selNod)
 
     # return a vector of the found node (the node number of the node)
     # name the vector with the node label
-    out <- final
     names(out) <- transNode(tree = tree, input = out,
                             use.alias = use.alias,
                             message = FALSE)
