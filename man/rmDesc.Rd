@@ -42,7 +42,7 @@ ggtree(tinyTree, branch.length = 'none') +
 # find the shared nodes from the tree plot
 aV <- c(5, 4, 18, 3, 2)
 # final result
-(rn <- rmDesc(node = aV, tree = tinyTree))
+(rn <- rmDesc(tree = tinyTree, node = aV))
 }
 
 }

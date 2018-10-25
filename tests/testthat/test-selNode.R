@@ -6,10 +6,9 @@ test_that("selNode could find correct information", {
     toyTable <- matrix(rnbinom(40, size = 1, mu = 10), nrow = 10)
     colnames(toyTable) <- paste(rep(LETTERS[1:2], each = 2), rep(1:2, 2), sep = "_")
     rownames(toyTable) <- tinyTree$tip.label
-
-
     dat <- parEstimate(data = toyTable)
     sN <- selNode(tree = tinyTree, data = dat, all = TRUE)
+
     expect_equal(dim(sN), c(9, 4))
     expect_equal(dim(
         selNode(tree = tinyTree, data = dat, minTip = 4, maxTip = 9,
