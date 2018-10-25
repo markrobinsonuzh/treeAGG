@@ -100,7 +100,7 @@ fdr <- function(tree, truth, found,
                                    message = FALSE)
                 }
 
-                fdr0(tree = tree, truth = x,
+                .fdr0(tree = tree, truth = x,
                      found = y, only.Tip = only.Tip)
             }, x = truth, y = found)
 
@@ -124,7 +124,7 @@ fdr <- function(tree, truth, found,
                                use.alias = TRUE,
                                message = FALSE)
         }
-        tt <- fdr0(tree = tree, truth = truth,
+        tt <- .fdr0(tree = tree, truth = truth,
                    found = found, only.Tip = only.Tip)
         if (tt[2] == 0) {
             if (tt[1] > 0 ) {
@@ -145,7 +145,7 @@ fdr <- function(tree, truth, found,
 
 #' Calculate false discoveries and discoveries
 #'
-#' \code{fdr0} calculates the number of false discoveries and the total number
+#' \code{.fdr0} calculates the number of false discoveries and the total number
 #' of discoveries at leaf or node level on a tree structure .
 #'
 #' @param tree A phylo object
@@ -159,7 +159,7 @@ fdr <- function(tree, truth, found,
 #' @author Ruizhu Huang
 #' @keywords internal
 
-fdr0 <- function(tree,
+.fdr0 <- function(tree,
                  truth = NULL,
                  found = NULL,
                  only.Tip = TRUE) {

@@ -139,7 +139,7 @@ runEdgeR <- function(obj, design = NULL, contrast = NULL,
 
     # default design matrix
     if (is.null(design)) {
-        design <- designMatrix(data = colData(obj))
+        design <- .designMatrix(data = colData(obj))
     } else { design <- design }
 
     # estimate dispersion
@@ -237,13 +237,13 @@ runEdgeR <- function(obj, design = NULL, contrast = NULL,
 
 #' Create design matrix
 #'
-#' \code{designMatrix} creates a design matrix by expanding factors to a set of
+#' \code{.designMatrix} creates a design matrix by expanding factors to a set of
 #' dummay variables and epanding interactions similarly.
 #'
 #'
-#' \code{designMatrix} creates a design matrix using the data extracted from
+#' \code{.designMatrix} creates a design matrix using the data extracted from
 #' \code{data}. \code{cols} specifies the columns to extract.
-#' \code{designMatrix} is built on \code{\link[stats]{model.matrix}} with
+#' \code{.designMatrix} is built on \code{\link[stats]{model.matrix}} with
 #' \code{contrasts.arg = NULL}.
 #'
 #' @param data A \code{data.frame} or \code{DataFrame}.
@@ -254,7 +254,7 @@ runEdgeR <- function(obj, design = NULL, contrast = NULL,
 #' @keywords internal
 #' @return a matrix.
 
-designMatrix <- function(data, cols = NULL) {
+.designMatrix <- function(data, cols = NULL) {
 
     stopifnot(class(data) %in% c("data.frame", "DataFrame"))
 

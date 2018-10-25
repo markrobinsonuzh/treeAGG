@@ -148,7 +148,7 @@ treePlot <- function(tree,
 
     # color branch
     if (!is.null(branch)) {
-        p <-  addBranch(tree = tree, branch = branch,
+        p <-  .addBranch(tree = tree, branch = branch,
                         col.branch = col.branch,
                         col.other = col.other,
                         addTo = p)
@@ -156,24 +156,25 @@ treePlot <- function(tree,
 
     # add points
     if (!is.null(point)) {
-        p <- addPoint(tree = tree, point = point,
+        p <- .addPoint(tree = tree, point = point,
                       col.point = col.point, addTo = p)
     }
 
     # customize the size scale for added points
     if (!is.null(point)) {
-        p <- p + sizeScale(size.point = size.point,
-                           legend.label = legend.label,
-                           legend.title = legend.title["point"],
-                           col.point = col.point,
-                           size.point.legend = size.point.legend,
-                           legend = legend)
+        p <- p +
+            .sizeScale(size.point = size.point,
+                      legend.label = legend.label,
+                      legend.title = legend.title["point"],
+                      col.point = col.point,
+                      size.point.legend = size.point.legend,
+                      legend = legend)
     }
 
     # customize the color
     if (!is.null(branch)) {
         p <- p +
-            colScale(branch = branch,
+            .colScale(branch = branch,
                      point = point,
                      col.branch = col.branch,
                      col.other = col.other,
@@ -186,14 +187,14 @@ treePlot <- function(tree,
 
     # zoom in selected branches
     if (!is.null(zoomNode)) {
-        p <- addZoom(tree = tree, zoomNode = zoomNode,
+        p <- .addZoom(tree = tree, zoomNode = zoomNode,
                      zoomLevel = zoomLevel, zoomScale = zoomScale,
                      addTo = p)
     }
 
     # add legend
     if (legend) {
-        p <- p + addLegend(legend.theme)
+        p <- p + .addLegend(legend.theme)
     }
 
     if (is.null(legend.label$col.point)) {
@@ -209,7 +210,7 @@ treePlot <- function(tree,
 
 #' Color a branch
 #'
-#' \code{addBranch} colors a branch or some edges.
+#' \code{.addBranch} colors a branch or some edges.
 #'
 #' @param tree A phylo object
 #' @param branch A vector of node numbers labels to specify the branches to be
@@ -231,10 +232,10 @@ treePlot <- function(tree,
 #' @keywords internal
 #' @examples
 #' # data(tinyTree)
-#' # addBranch(tree = tinyTree, branch = 17,
+#' # .addBranch(tree = tinyTree, branch = 17,
 #' # col.branch = "blue", col.other = "grey")
 
-addBranch <- function(tree, branch, col.branch,
+.addBranch <- function(tree, branch, col.branch,
                       col.other, addTo = NULL, ...) {
 
     # node number required
@@ -286,7 +287,7 @@ addBranch <- function(tree, branch, col.branch,
 
 #' Add points to the tree plot
 #'
-#' \code{addPoint} adds points to a plot of phylogenetic tree.
+#' \code{.addPoint} adds points to a plot of phylogenetic tree.
 #'
 #' @param tree A phylo object
 #' @param point A vector of node numbers or node labels to specify the
@@ -304,7 +305,7 @@ addBranch <- function(tree, branch, col.branch,
 #' data(tinyTree)
 #'
 #'
-addPoint <- function(tree, point, col.point,
+.addPoint <- function(tree, point, col.point,
                      addTo = NULL, ...) {
     p <- ggtree(tree)
     d <- p$data[, "node", drop = FALSE]
@@ -339,7 +340,7 @@ addPoint <- function(tree, point, col.point,
 
 #' Visualize the phylogenetic tree
 #'
-#' \code{addZoom} zooms in a phylogenetic tree.
+#' \code{.addZoom} zooms in a phylogenetic tree.
 #'
 #' @param tree A phylo object
 #' @param zoomNode A vector of nodes to be zoomed in. If default (NULL), the
@@ -363,10 +364,10 @@ addPoint <- function(tree, point, col.point,
 #' @keywords internal
 #' @examples
 #' # data(tinyTree)
-#' # addZoom(tree = tinyTree, zoomNode = 17,
+#' # .addZoom(tree = tinyTree, zoomNode = 17,
 #' # zoomScale = 3)
 
-addZoom <- function(tree, zoomNode = NULL, zoomLevel = NULL,
+.addZoom <- function(tree, zoomNode = NULL, zoomLevel = NULL,
                     zoomScale = NULL, addTo = NULL, ...) {
 
     # node number required
@@ -439,7 +440,7 @@ addZoom <- function(tree, zoomNode = NULL, zoomLevel = NULL,
 }
 
 #' Add legend
-#' \code{addLegend} customizes the legend.
+#' \code{.addLegend} customizes the legend.
 #'
 #' @param legend.theme A list of arguments used for the theme in ggplot2 package
 #'   (see \code{\link[ggplot2]{theme}} ) and starting with "legend."
@@ -451,7 +452,7 @@ addZoom <- function(tree, zoomNode = NULL, zoomLevel = NULL,
 #' @keywords internal
 
 
-addLegend <- function(legend.theme = list(NULL)) {
+.addLegend <- function(legend.theme = list(NULL)) {
 
     # default way to put legend
     li1 <- list(legend.position = "right",
@@ -475,7 +476,7 @@ addLegend <- function(legend.theme = list(NULL)) {
 
 #' Customize the scale
 #'
-#' \code{sizeScale} customizes the size scale.
+#' \code{.sizeScale} customizes the size scale.
 #'
 #' @param col.point A color for the \strong{point}. It has length equal to one.
 #' @param size.point The size for the \strong{point}. It has length equal to
@@ -498,7 +499,7 @@ addLegend <- function(legend.theme = list(NULL)) {
 #' @keywords internal
 
 
-sizeScale <- function(col.point, size.point,
+.sizeScale <- function(col.point, size.point,
                       legend.label, legend.title,
                       size.point.legend, legend) {
     # if legend is required, correct the label with guide_legend
@@ -521,7 +522,7 @@ sizeScale <- function(col.point, size.point,
 
 #' Customize the color
 #'
-#' \code{colScale} customizes the color scale.
+#' \code{.colScale} customizes the color scale.
 #'
 #' @param branch A vector of node numbers labels to specify the branches to be
 #'   colored. Each branch is represented by its branch node. A leaf node
@@ -554,7 +555,7 @@ sizeScale <- function(col.point, size.point,
 #' @keywords internal
 #'
 
-colScale <- function(branch,
+.colScale <- function(branch,
                      point,
                      col.branch,
                      col.other,

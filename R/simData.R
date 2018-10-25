@@ -18,7 +18,7 @@
 #' @param from.A,from.B The branch node labels of branches A and B for which the
 #'   signal is swapped. Default, both are NULL. In simulation, we select two
 #'   branches (A & B) to have differential abundance under different conditions.
-#'   One could specify these two branches or let \code{doData} choose. (Note: If
+#'   One could specify these two branches or let \code{simData} choose. (Note: If
 #'   \code{from.A} is NULL, \code{from.B} is set to NULL).
 #' @param minTip.A The minimum number of leaves in branch A
 #' @param maxTip.A The maximum number of leaves in branch A
@@ -49,9 +49,8 @@
 #'   generate the library size for each simulated sample.
 #' @param n A numeric value to specify how many count tables would be generated
 #'   with the same settings. Default is one and one count table would be
-#'   obtained at the end. If above one, the output of \code{doData} is a list of
-#'   matrices (count tables). This is useful, when one needs multiple
-#'   simulations.
+#'   obtained at the end. If above one, the output is a list of matrices (count
+#'   tables). This is useful, when one needs multiple simulations.
 #' @param fun A function to derive the count at each internal node based on its
 #'   descendant leaves, e.g. sum, mean. The argument of the function is a
 #'   numeric vector with the counts of an internal node's descendant leaves.
@@ -150,7 +149,7 @@ simData <- function(tree = NULL, data = NULL,
         if (is.null(tree) | is.null(data)) {
             stop("tree or data is not provided")
         } else {
-            obj <- doData(tree = tree, data = data, scenario = scenario,
+            obj <- .doData(tree = tree, data = data, scenario = scenario,
                           from.A = from.A, from.B = from.B,
                           minTip.A = minTip.A, maxTip.A = maxTip.A,
                           minTip.B = minTip.B, maxTip.B = maxTip.B,
@@ -188,7 +187,7 @@ simData <- function(tree = NULL, data = NULL,
                             only the first one would be used. \n")}
             data <- assays(obj)[[1]]
         }
-        obj <- doData(tree = metadata(obj)$tree, data = pars,
+        obj <- .doData(tree = metadata(obj)$tree, data = pars,
                       scenario = scenario, from.A = from.A,
                       from.B = from.B,
                       minTip.A = minTip.A, maxTip.A = maxTip.A,
@@ -206,7 +205,7 @@ simData <- function(tree = NULL, data = NULL,
 
 #' Simulate a count table
 #'
-#' \code{doData} creates a count table for all nodes of a tree under two
+#' \code{.doData} creates a count table for all nodes of a tree under two
 #' different groups such that the tree would have different abundance patterns
 #' in the different conditions.
 #'
@@ -218,7 +217,7 @@ simData <- function(tree = NULL, data = NULL,
 #' @param from.A,from.B The branch node labels of branches A and B for which the
 #'   signal is swapped. Default, both are NULL. In simulation, we select two
 #'   branches (A & B) to have differential abundance under different conditions.
-#'   One could specify these two branches or let \code{doData} choose. (Note: If
+#'   One could specify these two branches or let \code{.doData} choose. (Note: If
 #'   \code{from.A} is NULL, \code{from.B} is set to NULL).
 #' @param minTip.A The minimum number of leaves in branch A
 #' @param maxTip.A The maximum number of leaves in branch A
@@ -249,7 +248,7 @@ simData <- function(tree = NULL, data = NULL,
 #'   generate the library size for each simulated sample.
 #' @param n A numeric value to specify how many count tables would be generated
 #'   with the same settings. Default is one and one count table would be
-#'   obtained at the end. If above one, the output of \code{doData} is a list of
+#'   obtained at the end. If above one, the output of \code{.doData} is a list of
 #'   matrices (count tables). This is useful, when one needs multiple
 #'   simulations.
 #' @param fun A function to derive the count at each internal node based on its
@@ -270,7 +269,7 @@ simData <- function(tree = NULL, data = NULL,
 #'   of leaves on branch B} \item{A_prop}{the count proportion of branch A (not
 #'   above 1)} \item{B_prop}{the count proportion of branch B (not above 1)} }
 #'
-#' @details \code{doData} simulates a count table for entities which are
+#' @details \code{.doData} simulates a count table for entities which are
 #'   corresponding to the nodes of a tree. The entities are in rows and the
 #'   samples from different groups or conditions are in columns. The library
 #'   size of each sample is sampled from a Negative Binomial distribution with
@@ -297,13 +296,13 @@ simData <- function(tree = NULL, data = NULL,
 #' data("throat.otu.tab")
 #' data("throat.tree")
 #'
-#' dat <- doData(tree = throat.tree,
+#' dat <- .doData(tree = throat.tree,
 #' data = as.matrix(t(throat.otu.tab)),
 #' ratio = 2)
 #' }
 #'}
 
-doData <- function(tree = NULL, data = NULL,
+.doData <- function(tree = NULL, data = NULL,
                    scenario = "S1",
                    from.A = NULL, from.B = NULL,
                    minTip.A = 0, maxTip.A = Inf,
@@ -334,10 +333,10 @@ doData <- function(tree = NULL, data = NULL,
     data <- parEstimate(data = data)
 
     if (!is.null(from.A) && !is.null(from.B)) {
-        pk <- infLoc(tree = tree, data = data,
+        pk <- .infLoc(tree = tree, data = data,
         from.A = from.A, from.B = from.B)
     } else {
-        pk <- pickLoc(tree = tree, data = data,
+        pk <- .pickLoc(tree = tree, data = data,
                       from.A  = from.A, minTip.A = minTip.A,
                       maxTip.A = maxTip.A, minTip.B = minTip.B,
                       maxTip.B = maxTip.B, minPr.A = minPr.A,
@@ -345,7 +344,7 @@ doData <- function(tree = NULL, data = NULL,
     }
 
 
-    beta <- doFC(tree = tree, data = data,
+    beta <- .doFC(tree = tree, data = data,
                  scenario = scenario,
                  branchA = pk$A,
                  branchB = pk$B,
@@ -354,7 +353,7 @@ doData <- function(tree = NULL, data = NULL,
 
 
 
-    count <- doCount(data = data, FC = beta,
+    count <- .doCount(data = data, FC = beta,
                      nSam = nSam, mu = mu,
                      size = size, n = n)
 
@@ -387,7 +386,7 @@ doData <- function(tree = NULL, data = NULL,
 
 #' Select branches
 #'
-#' \code{pickLoc} selects two branches which meet the criteria specified by
+#' \code{.pickLoc} selects two branches which meet the criteria specified by
 #' the arguments
 #'
 #' @param tree A phylo object
@@ -414,7 +413,7 @@ doData <- function(tree = NULL, data = NULL,
 #' @keywords internal
 
 
-pickLoc <- function(tree = NULL, data = NULL,
+.pickLoc <- function(tree = NULL, data = NULL,
                     from.A = NULL,
                     minTip.A = 0, maxTip.A = Inf,
                     minTip.B = 0, maxTip.B = Inf,
@@ -567,7 +566,7 @@ pickLoc <- function(tree = NULL, data = NULL,
 
 #' Provide the information of two branches
 #'
-#' \code{infLoc} is to give information of two branches about the count
+#' \code{.infLoc} is to give information of two branches about the count
 #' proportion and the number of leaves
 #'
 #' @param tree A phylo object
@@ -578,7 +577,7 @@ pickLoc <- function(tree = NULL, data = NULL,
 #' @author Ruizhu Huang
 #' @keywords internal
 
-infLoc <- function(tree = NULL, data = NULL,
+.infLoc <- function(tree = NULL, data = NULL,
                    from.A = NULL, from.B = NULL) {
 
     # tip proportions estimated from real data
@@ -640,7 +639,7 @@ infLoc <- function(tree = NULL, data = NULL,
 
 #' Generate the fold change
 #'
-#' \code{doFC} generates fold changes for different scenarios
+#' \code{.doFC} generates fold changes for different scenarios
 #'
 #' @param tree A phylo object
 #' @param data The real data (count table)
@@ -665,7 +664,7 @@ infLoc <- function(tree = NULL, data = NULL,
 #' @author Ruizhu Huang
 #' @keywords internal
 
-doFC <- function(tree = NULL, data = NULL, scenario = "S1",
+.doFC <- function(tree = NULL, data = NULL, scenario = "S1",
                  branchA = NULL, branchB = NULL,
                  ratio = 1, adjB = NULL, pct = 1) {
     # nodes
@@ -808,7 +807,7 @@ doFC <- function(tree = NULL, data = NULL, scenario = "S1",
 
 #' generate a count table
 #'
-#' \code{doCount} generates a count table given some available information.
+#' \code{.doCount} generates a count table given some available information.
 #' Here, the information includes the fold change between two conditions,
 #' the parameters of Negative Binomial distritubion (which the sample library
 #' size follows), a data table from real data (to estimate the proportion of
@@ -831,7 +830,7 @@ doFC <- function(tree = NULL, data = NULL, scenario = "S1",
 #' @author Ruizhu Huang
 #' @keywords internal
 
-doCount <- function(data, FC, nSam, mu,
+.doCount <- function(data, FC, nSam, mu,
                     size, n) {
     # parameters
     pars <- parEstimate(data = data)

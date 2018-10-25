@@ -66,7 +66,7 @@ viewSim <- function(obj, layout = "rectangular", zoomScale = 1/20,
     sc <- md$scenario
 
     # zoomNode
-    sNode <- findParallel(tree = tree, input = branch)
+    sNode <- .findParallel(tree = tree, input = branch)
     isT <- isLeaf(tree = tree, input = sNode)
     fNode <- sNode[!isT]
 
@@ -148,7 +148,7 @@ viewSim <- function(obj, layout = "rectangular", zoomScale = 1/20,
 
 #' find parallel nodes
 #'
-#' \code{findParallel} is to find target nodes that could build up a tree with
+#' \code{.findParallel} is to find target nodes that could build up a tree with
 #' some specified nodes. The returned target nodes is the combination that has
 #' the minimum number of nodes. In other words, a tree is cut in a way that the
 #' number of branches is the minimum in all possibilities and the specified
@@ -171,11 +171,11 @@ viewSim <- function(obj, layout = "rectangular", zoomScale = 1/20,
 #'   node label as name when \code{use.alias = TRUE}.
 #' @examples
 #' # data(tinyTree)
-#' # findParallel(tree = tinyTree, input = 12,
+#' # .findParallel(tree = tinyTree, input = 12,
 #' #             use.alias = FALSE)
 #'
 #'
-findParallel <- function(tree, input,
+.findParallel <- function(tree, input,
                          use.alias = FALSE){
 
     if (is.character(input)) {

@@ -92,7 +92,7 @@ tpr <- function(tree, truth, found,
                     y <- transNode(tree = tree, input = y,
                                    message = FALSE)
                 }
-                tpr0(tree = tree, truth = x,
+                .tpr0(tree = tree, truth = x,
                      found = y, only.Tip = only.Tip)
             }, x = truth, y = found)
 
@@ -115,7 +115,7 @@ tpr <- function(tree, truth, found,
                                message = FALSE)
         }
 
-        tt <- tpr0(tree = tree, truth = truth,
+        tt <- .tpr0(tree = tree, truth = truth,
                    found = found, only.Tip = only.Tip)
         tpr <- tt[1]/tt[2]
     }
@@ -128,7 +128,7 @@ tpr <- function(tree, truth, found,
 
 #' Calculate true positives and positives
 #'
-#' \code{tpr0} calculates the number of true positives and the total number of
+#' \code{.tpr0} calculates the number of true positives and the total number of
 #' positives on a tree structure at leaf or node level.
 #'
 #' @param tree A phylo object
@@ -142,7 +142,7 @@ tpr <- function(tree, truth, found,
 #' @keywords internal
 
 
-tpr0 <- function(tree,
+.tpr0 <- function(tree,
                  truth = NULL,
                  found = NULL,
                  only.Tip = TRUE) {
