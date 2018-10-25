@@ -62,31 +62,28 @@ findAncestor <- function(tree, node, level,
     }
 
     selNod <- lapply(seq_along(aggNod), FUN = function(x) {
-        # find rows with selected nodes
-        ind <- which(treeMat == aggNod[x], arr.ind = TRUE)
-        valP <- apply(treeMat, 1, FUN = function(x) {
-            max(which(!is.na(x)))
-        })
-        selP <- valP[ind[, "row"]]
+        # the node
+        nod.x <- aggNod[x]
 
-        # move up levels as specified until the root
-        vv <- ind[, "col"] + level[x]
-        if (all(vv <= selP)) {
-            ind.f <- cbind(ind[, "row"], vv)
-        } else {
-            stop("The level specified for nodes ", node[x], " exceed the root
-                 level; try a small level value. \n")
+        # where is the node
+        ind <- which(treeMat == nod.x, arr.ind = TRUE)
 
+        # the level
+        level.x <- level[x]
+        ind.x <- ind
+        ind.x[, "col"] <- ind[, "col"] + level.x
+
+        if (any (ind.x[, "col"] > ncol(treeMat))) {
+            stop("Exceed the root; try a lower level.")
         }
 
-        # there is only one path to go to the root when the starting point is
-        # fixed
-        vu <- unique(treeMat[ind.f])
-        if (length(vu) > 1) {
-            stop("more than one node has been found.")
-        } else {
-            return(vu)
+        vv <- treeMat[ind.x]
+        uv <- unique(as.vector(vv))
+
+        if (length(uv) > 1) {
+            stop("More than one node are found.")
         }
+        return(uv)
     })
 
     final <- unlist(selNod)
