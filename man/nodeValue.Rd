@@ -3,13 +3,13 @@
 \docType{methods}
 \name{nodeValue}
 \alias{nodeValue}
-\alias{nodeValue,Any-method}
+\alias{nodeValue,ANY-method}
 \alias{nodeValue,leafSummarizedExperiment-method}
 \title{Calculate entity values at internal nodes}
 \usage{
 nodeValue(data, fun = sum, tree, message = FALSE)
 
-\S4method{nodeValue}{Any}(data, fun = sum, tree, message = FALSE)
+\S4method{nodeValue}{ANY}(data, fun = sum, tree, message = FALSE)
 
 \S4method{nodeValue}{leafSummarizedExperiment}(data, fun = sum,
   message = FALSE)
