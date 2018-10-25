@@ -440,9 +440,8 @@ pickLoc <- function(tree = NULL, data = NULL,
     desI <- lapply(desI, names)
     names(desI) <- transNode(tree = tree, input = nodI,
                              use.alias = TRUE, message = FALSE)
-    nodP <- mapply(function(x, y) {
-        sum(x[y])
-    }, x = list(pars), y = desI)
+    nodP <- mapply(function(x, y) {sum(x[y])},
+                   x = list(pars), y = desI)
 
     # matrix: abundance proprotion & the number of descendant leaves
     lenI <- unlist(lapply(desI, length))
