@@ -52,21 +52,6 @@ findOS <- function(tree,
     }
     # the edge matrix
     mat <- tree$edge
-    # each path connects a tip with the root.
-    # i <- 1
-    # mat <- tree$edge
-    # L1 <- setdiff(mat[, 2], mat[, 1])
-    # matN <- cbind(L1)
-    # repeat {
-    #     li <- mat[match(matN[, i], mat[, 2]), 1]
-    #     ll <- length(unique(li[!is.na(li)]))
-    #     if (ll == 0) {
-    #         break
-    #     }
-    #     matN <- cbind(matN, li)
-    #     i <- i + 1
-    # }
-    # rownames(matN) <- colnames(matN) <- NULL
     matN <- matTree(tree = tree)
 
     if (is.character(ancestor)) {

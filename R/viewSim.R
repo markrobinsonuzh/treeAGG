@@ -72,7 +72,7 @@ viewSim <- function(obj, layout = "rectangular", zoomScale = 1/20,
     if (length(fNode) == 0) {
         fNode <- NULL
     }
-    #fNode <- sNode
+
     # fold change
     d <- data.frame(node = transNode(tree = tree,
                                      input = names(md$FC),
@@ -199,8 +199,6 @@ findParallel <- function(tree, input,
     # replace leaves with their ancestor branch node
     fT <- signalNode(tree = tree, node = exT, return = "number")
 
-    # isT <- isLeaf(tree = tree, input = fT)
-    # fn <- fT[!isT]
     # final output (node number or label)
     return <- match.arg(return)
     switch(return,

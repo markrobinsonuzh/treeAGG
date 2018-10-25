@@ -4,7 +4,7 @@
 \alias{infLoc}
 \title{Provide the information of two branches}
 \usage{
-infLoc(tree, data, from.A, from.B)
+infLoc(tree = NULL, data = NULL, from.A = NULL, from.B = NULL)
 }
 \arguments{
 \item{tree}{A phylo object}

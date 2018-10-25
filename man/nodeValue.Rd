@@ -27,9 +27,8 @@ matrix.}
 out the currenet status of a process.}
 }
 \value{
-A treeSummarizedExperiment if input data is a
-treeSummarizedExperiment object. A matrix if input data is a matrix or
-data frame.
+If input data is a treeSummarizedExperiment object, a
+  treeSummarizedExperiment is returned; otherwise, a matrix is returned
 }
 \description{
 \code{nodeValue} calculates value, e.g., count, for each internal

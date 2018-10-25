@@ -4,7 +4,8 @@
 \alias{doFC}
 \title{Generate the fold change}
 \usage{
-doFC(tree, data, scenario, branchA, branchB, ratio, adjB, pct)
+doFC(tree = NULL, data = NULL, scenario = "S1", branchA = NULL,
+  branchB = NULL, ratio = 1, adjB = NULL, pct = 1)
 }
 \arguments{
 \item{tree}{A phylo object}
@@ -29,7 +30,7 @@ A has 10 and branch B has 40 in C1. If adjB is set to 0.1, then in C2 branch
 B becomes 4 and branch A 46 so that the total proportion stays the same.}
 
 \item{pct}{The percentage (in number) of the leaves in branchA that will
-swap with branchB.}
+swap with branchB. The default is 1.}
 }
 \value{
 numeric vector

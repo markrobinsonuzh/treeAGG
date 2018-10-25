@@ -153,9 +153,9 @@ tpr0 <- function(tree,
     } else {
         # if signal exists, check whether the truth has correct input format
         if (!(
-            inherits(truth, "character") |
-            inherits(truth, "numeric") |
-            inherits(truth, "integer")
+            is.character(truth) |
+            is.numeric(truth) |
+            is.integer(truth)
         )) {
             stop("truth should include character or numeric")
         }

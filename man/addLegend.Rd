@@ -5,7 +5,7 @@
 \title{Add legend
 \code{addLegend} customizes the legend.}
 \usage{
-addLegend(legend.theme)
+addLegend(legend.theme = list(NULL))
 }
 \arguments{
 \item{legend.theme}{A list of arguments used for the theme in ggplot2 package

@@ -4,8 +4,7 @@
 \name{treeAGG}
 \alias{treeAGG}
 \alias{treeAGG,treeSummarizedExperiment-method}
-\alias{treeAGG,data.frame-method}
-\alias{treeAGG,DataFrame-method}
+\alias{treeAGG,ANY-method}
 \title{Tree aggregation}
 \usage{
 treeAGG(data, sigf.by = "FDR", sigf.limit = 0.05, agg.by = "FDR",
@@ -14,10 +13,7 @@ treeAGG(data, sigf.by = "FDR", sigf.limit = 0.05, agg.by = "FDR",
 \S4method{treeAGG}{treeSummarizedExperiment}(data, sigf.by, sigf.limit,
   agg.by, message)
 
-\S4method{treeAGG}{data.frame}(data, sigf.by = "FDR",
-  sigf.limit = 0.05, agg.by = "FDR", tree, message = FALSE)
-
-\S4method{treeAGG}{DataFrame}(data, sigf.by = "FDR", sigf.limit = 0.05,
+\S4method{treeAGG}{ANY}(data, sigf.by = "FDR", sigf.limit = 0.05,
   agg.by = "FDR", tree, message = FALSE)
 }
 \arguments{

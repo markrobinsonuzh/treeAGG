@@ -52,7 +52,7 @@ shareNode <- function(tree, node,
     }
 
     # transfer node label to node number
-    if (inherits(node, "character")) {
+    if (is.character(node)) {
         node <- transNode(tree, input = node,
                           message = FALSE)
     } else {
@@ -78,7 +78,7 @@ shareNode <- function(tree, node,
     df <- as.data.frame(count, stringsAsFactors = FALSE)
 
     # select the node with the lowest frequency.  closest to the leaf level.
-    sNode <- as.numeric(df[df$Freq == min(df$Freq), 1])
+    sNode <- as.numeric(df[df$Freq == min(df$Freq), "vec"])
 
     # final output (node number or label)
     return <- match.arg(return)

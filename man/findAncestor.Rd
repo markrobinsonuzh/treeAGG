@@ -4,8 +4,8 @@
 \alias{findAncestor}
 \title{Find the ancestors of specified nodes}
 \usage{
-findAncestor(tree, node, level, treeMat = NULL, return = c("number",
-  "label"), use.alias = FALSE)
+findAncestor(tree, node, level, return = c("number", "label"),
+  use.alias = FALSE)
 }
 \arguments{
 \item{tree}{A phylo object}
@@ -14,12 +14,6 @@ findAncestor(tree, node, level, treeMat = NULL, return = c("number",
 
 \item{level}{A vector of numbers to define nth generation before the
 specified nodes}
-
-\item{treeMat}{A matrix with each row representing a path. The entry is node
-number. The first column is leaf node numbers. The columns are organized as
-the order of nodes in the paths connecting leaves and the root. Default is
-null, treeMat is generated automatically. The treeMat is provided when the
-tree is very large to save running time.}
 
 \item{return}{"number" (return the node number) or "label" (return the node
 label).}

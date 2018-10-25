@@ -4,8 +4,9 @@
 \alias{pickLoc}
 \title{Select branches}
 \usage{
-pickLoc(tree, data, from.A, minTip.A, maxTip.A, minTip.B, maxTip.B,
-  minPr.A, maxPr.A, ratio)
+pickLoc(tree = NULL, data = NULL, from.A = NULL, minTip.A = 0,
+  maxTip.A = Inf, minTip.B = 0, maxTip.B = Inf, minPr.A = 0,
+  maxPr.A = 1, ratio = 1)
 }
 \arguments{
 \item{tree}{A phylo object}

@@ -118,7 +118,8 @@ runEdgeR <- function(obj, design = NULL, contrast = NULL,
     })
 
     # extract elements from assays for analysis
-    tableA <- assays(obj, use.nodeLab = TRUE, withDimnames = TRUE)[use.assays]
+    tableA <- assays(obj, use.nodeLab = TRUE,
+                     withDimnames = TRUE)[use.assays]
 
     # create DEGList
     y <- lapply(seq_along(tableA), FUN = function(x) {
@@ -147,7 +148,6 @@ runEdgeR <- function(obj, design = NULL, contrast = NULL,
         return(y)})
 
     # build model
-    # fit <- lapply(y, glmFit, design = design, prior.count = prior.count)
     fit <- lapply(seq_along(y), FUN = function(x) {
         glmFit(y[[x]], design = design, prior.count = prior.count)})
 
@@ -191,7 +191,9 @@ runEdgeR <- function(obj, design = NULL, contrast = NULL,
             # sort rows
             dfA <- dfA[od,]
             return(dfA) })
-        return(res) })
+
+        return(res)
+        })
 
     # reshape: convert a list into a dataFrame
     tt3 <- lapply(seq_along(tt2), FUN = function(j) {
@@ -202,9 +204,9 @@ runEdgeR <- function(obj, design = NULL, contrast = NULL,
             nxi <- names(x)[i]
             if (is.null(nxi)) { nxi <- "contrastNULL"}
             dx[[nxi]] <- xi
-
         }
-        return(dx) })
+        return(dx)
+        })
     names(tt3) <- paste("result_assay", use.assays, sep = "" )
 
     # reshape to a dataFrame: one column for a result from one assay table
@@ -215,17 +217,11 @@ runEdgeR <- function(obj, design = NULL, contrast = NULL,
     }
     rowData(obj)[["Results_internal_treeAGG"]] <- as(tt4, "internal_rowData")
 
-    # for (i in seq_along(tt3)) {
-    #    rowData(obj)[[names(tt3)[i]]] <- as(tt3[[i]], "internal_rowData")
-    #
-    # }
-
     # contrast should have the same length as the sub-element of tt3
     if (is.null(contrast)) {
         contrast <- lapply(seq_along(tt3[[1]]), function(x) {NULL})
         names(contrast) <- "contrastNULL"
     }
-
 
     ## put the analysis result in the metadata
     metadata(obj)$output_glmFit <- fit

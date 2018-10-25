@@ -127,7 +127,6 @@ nodeValue.B <- function(data, fun = sum, message = FALSE) {
 
     # calculate values at nodes
     for (i in seq_len(nN)) {
-        #cat(i, "\n")
         node.i <- nodeA[i]
         tips.i <- findOS(ancestor = node.i, tree = tree,
                          only.Tip = TRUE, self.include = TRUE,

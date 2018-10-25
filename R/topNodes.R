@@ -12,11 +12,13 @@
 #' @param col.rowData The names of columns to be extracted from \code{rowData}.
 #' @param col.linkData The names of columns to be extracted from
 #'   \code{linkData}.
-#' @param use.assays A numeric vector. It specifies which table to show. If
-#'   NULL, the table correspoinding to the first number storing in the
-#'   \code{use.assays} (in \code{metadata} of \code{input} data) will be shown.
-#'   To recall, numbers in the \code{use.assays} record which matrix-like
-#'   elements in the \code{assaysTable} have been used to do data analysis.
+#' @param use.assays A numeric vector. It specifies the result of which table
+#'   should be shown. The default is NULL, all available results are shown;
+#'   otherwise, the result of the specified table (via the table number) is
+#'   shown. To recall, the table number is the number of table in \code{assays}
+#'   (e.g. 1 represents the first table). If users forgot which tables have been
+#'   used to do data analysis, they could check \code{use.assays} in the
+#'   \code{metadata} of input \code{data}.
 #'
 #' @export
 #' @return a list of data frame
@@ -56,7 +58,6 @@ topNodes <- function(data, sort.by = "FDR", decreasing = FALSE,
                      use.assays = NULL){
 
     # extract row data
-    # rData <- rowData(data, internal = TRUE)
     rData <- data@elementMetadata$Results_internal_treeAGG
 
     # which assay tables have available result
@@ -94,7 +95,8 @@ topNodes <- function(data, sort.by = "FDR", decreasing = FALSE,
     # convert to a list: results from different contrasts as different
     # sub-elements
     list2 <- lapply(list1, FUN = function(x) {
-        xx <- lapply(seq_len(ncol(x)), FUN = function(y) { x[, y]})
+        xx <- lapply(seq_len(ncol(x)),
+                     FUN = function(y) { x[, y]})
         names(xx) <- colnames(x)
         return(xx)
     })

@@ -21,11 +21,13 @@ decreasing or not.}
 \item{col.linkData}{The names of columns to be extracted from
 \code{linkData}.}
 
-\item{use.assays}{A numeric vector. It specifies which table to show. If
-NULL, the table correspoinding to the first number storing in the
-\code{use.assays} (in \code{metadata} of \code{input} data) will be shown.
-To recall, numbers in the \code{use.assays} record which matrix-like
-elements in the \code{assaysTable} have been used to do data analysis.}
+\item{use.assays}{A numeric vector. It specifies the result of which table
+should be shown. The default is NULL, all available results are shown;
+otherwise, the result of the specified table (via the table number) is
+shown. To recall, the table number is the number of table in \code{assays}
+(e.g. 1 represents the first table). If users forgot which tables have been
+used to do data analysis, they could check \code{use.assays} in the
+\code{metadata} of input \code{data}.}
 }
 \value{
 a list of data frame

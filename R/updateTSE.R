@@ -139,7 +139,7 @@ updateTSE <- function(result, tse, use.assays, design,
     #  - B                (result gained from B count table)
     #  -- b1, b2, b3, b4  (each gained from B under contrast c1, c2, c3, c4)
     # example: list(A = list(a1, a2, a3, a4), B = list(b1, b2, b3, b4))
-    if (!inherits(result, "list")) {
+    if (!is.list(result)) {
             stop("\n The input result should be a list. \n")
     }
     sub_result <- unlist(result, recursive = FALSE)
@@ -210,10 +210,6 @@ updateTSE <- function(result, tse, use.assays, design,
     names(tt1) <- paste("result_assay",
                         use.assays,
                         sep = "" )
-    # tt1 <- lapply(tt1, function(x) {
-    #     names(x) <- names(contrast)
-    #     return(x)
-    #     })
 
     # add NA rows for the deleted rows in the analysis
     # This is to make sure the result table has the same rows as the count table
@@ -264,13 +260,6 @@ updateTSE <- function(result, tse, use.assays, design,
         tt4[[nxi]] <- tt3[[i]]
     }
     rowData(tse)[["Results_internal_treeAGG"]] <- as(tt4, "internal_rowData")
-
-
-    # for (i in seq_along(tt3)) {
-    #     if (!is.null(tt3[[i]])) {
-    #         rowData(tse)[[names(tt3)[i]]] <- as(tt3[[i]], "internal_rowData")
-    #     }
-    # }
 
     # put the contrast, matrix, use.assays in the metadata
     metadata(tse)$output_glmFit <- fit

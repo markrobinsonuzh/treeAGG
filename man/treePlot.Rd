@@ -7,7 +7,7 @@
 treePlot(tree, branch = NULL, col.branch = "blue",
   col.other = "grey", point = NULL, col.point = "orange",
   size.point = 2, zoomNode = NULL, zoomLevel = NULL, zoomScale = 8,
-  legend = FALSE, legend.theme = NULL, legend.title = c(point =
+  legend = FALSE, legend.theme = list(NULL), legend.title = c(point =
   "Title_point", branch = "Title_branch"), legend.label = NULL,
   size.line.legend = 2, size.point.legend = 3, ...)
 }

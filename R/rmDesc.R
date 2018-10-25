@@ -28,7 +28,7 @@ rmDesc <- function(tree, node) {
         stop("tree: should be a phylo object")
     }
 
-    if (inherits(node, "character")) {
+    if (is.character(node)) {
         node <- transNode(tree = tree, input = node,
                           message = FALSE)
     } else {

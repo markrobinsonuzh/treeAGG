@@ -5,7 +5,7 @@
 # and directly return data as output
 parEstimate.A <- function(data) {
 
-    if (is(data, "list")) {
+    if (is.list(data)) {
         ind <- setequal(names(data), c("pi", "theta"))
         if (!ind) {
             stop("Error: data is a list;
@@ -104,19 +104,14 @@ parEstimate.C <- function(data) {
 #'
 parEstimate <- function(data) {
 
+    stopifnot(class(data) %in% c("matrix", "list",
+                                 "leafSummarizedExperiment"))
 
-    if (!is(data, "matrix") &&
-        !is(data, "list") &&
-        !is(data, "leafSummarizedExperiment")) {
-        stop("data should be a matrix",
-             " list or leafSummarizedExperiment object. \n")
-    }
-
-    if (is(data, "matrix")) {
+    if (is.matrix(data)) {
         out <- parEstimate.A(data = data)
     }
 
-    if (is(data, "list")) {
+    if (is.list(data)) {
         out <- parEstimate.B(data = data)
     }
 

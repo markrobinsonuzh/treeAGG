@@ -1,67 +1,69 @@
-#'Simulate different scenarios of abundance change in entities
+#' Simulate different scenarios of abundance change in entities
 #'
-#'\code{simData} simulates different abundance patterns for entities under
-#'different conditions. These entities have their corresponding nodes on a tree.
-#'More details about the simulated patterns could be found in the vignette via
-#'\code{browseVignettes("treeAGG")}.
+#' \code{simData} simulates different abundance patterns for entities under
+#' different conditions. These entities have their corresponding nodes on a
+#' tree. More details about the simulated patterns could be found in the
+#' vignette via \code{browseVignettes("treeAGG")}.
 #'
-#'@param tree A phylo object. Only use when \code{obj} is NULL.
-#'@param data A matrix, representing a table of values, such as count, collected
-#'  from real data. It has the entities corresponding to tree leaves in the row
-#'  and samples in the column. Only use when \code{obj} is NULL.
-#'@param obj A leafSummarizedExperiment object that includes a list of
-#'  matrix-like elements, or a matrix-like element in assays, and a phylo object
-#'  in metadata. In other words, \strong{obj} provides the same information
-#'  given by \strong{tree} and \strong{data}.
-#'@param scenario \dQuote{S1}, \dQuote{S2}, or \dQuote{S3} (see \bold{Details}).
-#'  Default is \dQuote{S1}.
-#'@param from.A,from.B The branch node labels of branches A and B for which the
-#'  signal is swapped. Default, both are NULL. In simulation, we select two
-#'  branches (A & B) to have differential abundance under different conditions.
-#'  One could specify these two branches or let \code{doData} choose. (Note: If
-#'  \code{from.A} is NULL, \code{from.B} is set to NULL).
-#'@param minTip.A The minimum number of leaves in branch A
-#'@param maxTip.A The maximum number of leaves in branch A
-#'@param minTip.B The minimum number of leaves in branch B
-#'@param maxTip.B The maximum number of leaves in branch B
-#'@param minPr.A A numeric value selected from 0 to 1. The minimum abundance
-#'  proportion of leaves in branch A
-#'@param maxPr.A A numeric value selected from 0 to 1. The maximum abundance
-#'  proportion of leaves in branch A
-#'@param ratio A numeric value. The proportion ratio of branch B to branch A.
-#'  This value is used to select branches(see \bold{Details}). If there are no
-#'  branches having exactly this ratio, the pair with the value closest to
-#'  \code{ratio} would be selected.
-#'@param adjB a numeric value selected from 0 and 1 (only for \code{scenario} is
-#'  \dQuote{S3}). Default is NULL. If NULL, branch A and the selected part of
-#'  branch B swap their proportions. If a numeric value, e.g. 0.1, then the
-#'  selected part of branch B decreases to its one tenth proportion and the
-#'  decrease in branch B is added to branch A. For example, assume there are two
-#'  experimental conditions (C1 & C2), branch A has 10 and branch B has 40 in
-#'  C1. If adjB is set to 0.1, then in C2 branch B becomes 4 and branch A 46 so
-#'  that the total proportion stays the same.
-#'@param pct The percentage of leaves in branch B that have differential
-#'  abundance under different conditions (only for scenario \dQuote{S3})
-#'@param nSam A numeric vector of length 2, containing the sample size for two
-#'  different conditions
-#'@param mu,size The parameters of the Negative Binomial distribution. (see mu
-#'  and size in \code{\link[stats:NegBinomial]{rnbinom}}). Parameters used to
-#'  generate the library size for each simulated sample.
-#'@param n A numeric value to specify how many count tables would be generated
-#'  with the same settings. Default is one and one count table would be obtained
-#'  at the end. If above one, the output of \code{doData} is a list of matrices
-#'  (count tables). This is useful, when one needs multiple simulations.
-#'@param fun A function to derive the count at each internal node based on its
-#'  descendant leaves, e.g. sum, mean. The argument of the function is a numeric
-#'  vector with the counts of an internal node's descendant leaves.
+#' @param tree A phylo object. Only use when \code{obj} is NULL.
+#' @param data A matrix, representing a table of values, such as count,
+#'   collected from real data. It has the entities corresponding to tree leaves
+#'   in the row and samples in the column. Only use when \code{obj} is NULL.
+#' @param obj A leafSummarizedExperiment object that includes a list of
+#'   matrix-like elements, or a matrix-like element in assays, and a phylo
+#'   object in metadata. In other words, \strong{obj} provides the same
+#'   information given by \strong{tree} and \strong{data}.
+#' @param scenario \dQuote{S1}, \dQuote{S2}, or \dQuote{S3} (see
+#'   \bold{Details}). Default is \dQuote{S1}.
+#' @param from.A,from.B The branch node labels of branches A and B for which the
+#'   signal is swapped. Default, both are NULL. In simulation, we select two
+#'   branches (A & B) to have differential abundance under different conditions.
+#'   One could specify these two branches or let \code{doData} choose. (Note: If
+#'   \code{from.A} is NULL, \code{from.B} is set to NULL).
+#' @param minTip.A The minimum number of leaves in branch A
+#' @param maxTip.A The maximum number of leaves in branch A
+#' @param minTip.B The minimum number of leaves in branch B
+#' @param maxTip.B The maximum number of leaves in branch B
+#' @param minPr.A A numeric value selected from 0 to 1. The minimum abundance
+#'   proportion of leaves in branch A
+#' @param maxPr.A A numeric value selected from 0 to 1. The maximum abundance
+#'   proportion of leaves in branch A
+#' @param ratio A numeric value. The proportion ratio of branch B to branch A.
+#'   This value is used to select branches(see \bold{Details}). If there are no
+#'   branches having exactly this ratio, the pair with the value closest to
+#'   \code{ratio} would be selected.
+#' @param adjB a numeric value selected from 0 and 1 (only for \code{scenario}
+#'   is \dQuote{S3}). Default is NULL. If NULL, branch A and the selected part
+#'   of branch B swap their proportions. If a numeric value, e.g. 0.1, then the
+#'   selected part of branch B decreases to its one tenth proportion and the
+#'   decrease in branch B is added to branch A. For example, assume there are
+#'   two experimental conditions (C1 & C2), branch A has 10 and branch B has 40
+#'   in C1. If adjB is set to 0.1, then in C2 branch B becomes 4 and branch A 46
+#'   so that the total proportion stays the same.
+#' @param pct The percentage of leaves in branch B that have differential
+#'   abundance under different conditions (only for scenario \dQuote{S3})
+#' @param nSam A numeric vector of length 2, containing the sample size for two
+#'   different conditions
+#' @param mu,size The parameters of the Negative Binomial distribution. (see mu
+#'   and size in \code{\link[stats:NegBinomial]{rnbinom}}). Parameters used to
+#'   generate the library size for each simulated sample.
+#' @param n A numeric value to specify how many count tables would be generated
+#'   with the same settings. Default is one and one count table would be
+#'   obtained at the end. If above one, the output of \code{doData} is a list of
+#'   matrices (count tables). This is useful, when one needs multiple
+#'   simulations.
+#' @param fun A function to derive the count at each internal node based on its
+#'   descendant leaves, e.g. sum, mean. The argument of the function is a
+#'   numeric vector with the counts of an internal node's descendant leaves.
 #'
-#'@importFrom dirmult dirmult
-#'@importFrom S4Vectors metadata
-#'@importFrom SummarizedExperiment assays
-#'@export
+#' @importFrom dirmult dirmult
+#' @importFrom S4Vectors metadata
+#' @importFrom methods is
+#' @importFrom SummarizedExperiment assays
+#' @export
 #'
-#'@return a treeSummarizedExperiment object.
-#' \itemize{
+#' @return a treeSummarizedExperiment object.
+#'  \itemize{
 #'  \item \strong{assays} a list of count table or a count table. Entities on
 #'  the row and samples in the column. Each row could be mapped to a node of the
 #'  tree.
@@ -88,28 +90,28 @@
 #'      }
 #'      }}
 #'
-#'@details \code{simData} simulates a count table for entities which are
-#'  corresponding to the nodes of a tree. The entities are in rows and the
-#'  samples from different groups or conditions are in columns. The library size
-#'  of each sample is sampled from a Negative Binomial distribution with mean
-#'  and size specified by the arguments \code{mu} and \code{size}. The counts of
-#'  entities, that are mapped ot the leaf nodes, in a same sample are
-#'  assumed to follow a Dirichlet-Multinomial distribution. The parameters for
-#'  the Dirichlet-Multinomial distribution are estimated from a real data set
-#'  specified by the argument \code{data} via the function \code{dirmult} (see
-#'  \code{\link[dirmult]{dirmult}}). To generate different abundance patterns
-#'  under different conditions, we provide three different scenarios,
-#'  \dQuote{S1}, \dQuote{S2}, and \dQuote{S3} (specified via \code{scenario}).
-#'  Our vignette provides figures to explain these three scenarios (try
-#'  \code{browseVignettes("treeAGG")}). \itemize{ \item S1: two branches are
-#'  selected to swap their proportions, and leaves on the same branch have the
-#'  same fold change. \item S2: two branches are selected to swap their
-#'  proportions. Leaves in the same branch have different fold changes but same
-#'  direction (either increase or decrease). \item S3: two branches are
-#'  selected. One branch has its proportion swapped with the proportion of some
-#'  leaves from the other branch.}
+#' @details \code{simData} simulates a count table for entities which are
+#'   corresponding to the nodes of a tree. The entities are in rows and the
+#'   samples from different groups or conditions are in columns. The library
+#'   size of each sample is sampled from a Negative Binomial distribution with
+#'   mean and size specified by the arguments \code{mu} and \code{size}. The
+#'   counts of entities, that are mapped ot the leaf nodes, in a same sample are
+#'   assumed to follow a Dirichlet-Multinomial distribution. The parameters for
+#'   the Dirichlet-Multinomial distribution are estimated from a real data set
+#'   specified by the argument \code{data} via the function \code{dirmult} (see
+#'   \code{\link[dirmult]{dirmult}}). To generate different abundance patterns
+#'   under different conditions, we provide three different scenarios,
+#'   \dQuote{S1}, \dQuote{S2}, and \dQuote{S3} (specified via \code{scenario}).
+#'   Our vignette provides figures to explain these three scenarios (try
+#'   \code{browseVignettes("treeAGG")}). \itemize{ \item S1: two branches are
+#'   selected to swap their proportions, and leaves on the same branch have the
+#'   same fold change. \item S2: two branches are selected to swap their
+#'   proportions. Leaves in the same branch have different fold changes but same
+#'   direction (either increase or decrease). \item S3: two branches are
+#'   selected. One branch has its proportion swapped with the proportion of some
+#'   leaves from the other branch.}
 #'
-#'@author Ruizhu Huang
+#' @author Ruizhu Huang
 #'
 #' @examples
 #'
@@ -141,7 +143,7 @@ simData <- function(tree = NULL, data = NULL,
                     pct = 0.6, nSam = c(50, 50),
                     mu = 10000, size = 50,
                     n = 1, fun = sum){
-    #set.seed(seed)
+
     # -------------------------------------------------------------------------
     # provide (tree & data)
     if (is.null(obj)) {
@@ -160,14 +162,12 @@ simData <- function(tree = NULL, data = NULL,
     # -------------------------------------------------------------------------
     # provide obj
     } else {
-        if(!inherits(obj, "leafSummarizedExperiment")){
+        if(!is(obj, "leafSummarizedExperiment")){
             stop("obj should be a leafSummarizedExperiment object.")
         } else{
             # -------------------------------
             # don't use tree & data argument
-            if ( (!missing(tree)) |
-                 (!is.null(tree)) |
-                (!missing(data)) |
+            if ((!is.null(tree)) |
                 (!is.null(data)) ) {
                 stop("Set tree = NULL and data = NULL when obj is a
                      leafSummarizedExperiment object. \n")
@@ -204,90 +204,92 @@ simData <- function(tree = NULL, data = NULL,
 
 
 
-#'Simulate a count table
+#' Simulate a count table
 #'
-#'\code{doData} creates a count table for all nodes of a tree under two
-#'different groups such that the tree would have different abundance patterns in
-#'the different conditions.
+#' \code{doData} creates a count table for all nodes of a tree under two
+#' different groups such that the tree would have different abundance patterns
+#' in the different conditions.
 #'
-#'@param tree A phylo object
-#'@param data A matrix, representing a count table from real data. It has the
-#'  entities corresponding to tree leaves in the row and samples in the column.
-#'@param scenario \dQuote{S1}, \dQuote{S2}, or \dQuote{S3} (see \bold{Details}).
-#'  Default is \dQuote{S1}.
-#'@param from.A,from.B The branch node labels of branches A and B for which the
-#'  signal is swapped. Default, both are NULL. In simulation, we select two
-#'  branches (A & B) to have differential abundance under different conditions.
-#'  One could specify these two branches or let \code{doData} choose. (Note: If
-#'  \code{from.A} is NULL, \code{from.B} is set to NULL).
-#'@param minTip.A The minimum number of leaves in branch A
-#'@param maxTip.A The maximum number of leaves in branch A
-#'@param minTip.B The minimum number of leaves in branch B
-#'@param maxTip.B The maximum number of leaves in branch B
-#'@param minPr.A A numeric value selected from 0 to 1. The minimum abundance
-#'  proportion of leaves in branch A
-#'@param maxPr.A A numeric value selected from 0 to 1.The maximum abundance
-#'  proportion of leaves in branch A
-#'@param ratio The proportion ratio of branch B to branch A. This value is used
-#'  to select branches(see \bold{Details}). If there are no branches having
-#'  exactly this ratio, the pair with the value closest to \code{ratio} would be
-#'  selected.
-#'@param adjB a numeric value selected from 0 and 1 (only for \code{scenario} is
-#'  \dQuote{S3}). Default is NULL. If NULL, branch A and branch B swap their
-#'  proportions. If a numeric value, e.g. 0.1, then branch B decreases to its
-#'  one tenth proportion and the decrease in branch B is added to branch A. For
-#'  example, assume there are two experimental conditions (C1 & C2), branch A
-#'  has 10 and branch B has 40 in C1. If adjB is set to 0.1, then in C2 branch B
-#'  becomes 4 and branch A 46 so that the total proportion stays the same.
-#'@param pct a numeric value selected from 0 and 1. The percentage of leaves in
-#'  branch B that have differential abundance under different conditions (only
-#'  for scenario \dQuote{S3})
-#'@param nSam A numeric vector of length 2, containing the sample size for two
-#'  different conditions
-#'@param mu,size The parameters of the Negative Binomial distribution. (see mu
-#'  and size in \code{\link[stats:NegBinomial]{rnbinom}}). Parameters used to
-#'  generate the library size for each simulated sample.
-#'@param n A numeric value to specify how many count tables would be generated
-#'  with the same settings. Default is one and one count table would be obtained
-#'  at the end. If above one, the output of \code{doData} is a list of matrices
-#'  (count tables). This is useful, when one needs multiple simulations.
-#'@param fun A function to derive the count at each internal node based on its
-#'  descendant leaves, e.g. sum, mean. The argument of the function is a numeric
-#'  vector with the counts of an internal node's descendant leaves.
+#' @param tree A phylo object
+#' @param data A matrix, representing a count table from real data. It has the
+#'   entities corresponding to tree leaves in the row and samples in the column.
+#' @param scenario \dQuote{S1}, \dQuote{S2}, or \dQuote{S3} (see
+#'   \bold{Details}). Default is \dQuote{S1}.
+#' @param from.A,from.B The branch node labels of branches A and B for which the
+#'   signal is swapped. Default, both are NULL. In simulation, we select two
+#'   branches (A & B) to have differential abundance under different conditions.
+#'   One could specify these two branches or let \code{doData} choose. (Note: If
+#'   \code{from.A} is NULL, \code{from.B} is set to NULL).
+#' @param minTip.A The minimum number of leaves in branch A
+#' @param maxTip.A The maximum number of leaves in branch A
+#' @param minTip.B The minimum number of leaves in branch B
+#' @param maxTip.B The maximum number of leaves in branch B
+#' @param minPr.A A numeric value selected from 0 to 1. The minimum abundance
+#'   proportion of leaves in branch A
+#' @param maxPr.A A numeric value selected from 0 to 1.The maximum abundance
+#'   proportion of leaves in branch A
+#' @param ratio The proportion ratio of branch B to branch A. This value is used
+#'   to select branches(see \bold{Details}). If there are no branches having
+#'   exactly this ratio, the pair with the value closest to \code{ratio} would
+#'   be selected.
+#' @param adjB a numeric value selected from 0 and 1 (only for \code{scenario}
+#'   is \dQuote{S3}). Default is NULL. If NULL, branch A and branch B swap their
+#'   proportions. If a numeric value, e.g. 0.1, then branch B decreases to its
+#'   one tenth proportion and the decrease in branch B is added to branch A. For
+#'   example, assume there are two experimental conditions (C1 & C2), branch A
+#'   has 10 and branch B has 40 in C1. If adjB is set to 0.1, then in C2 branch
+#'   B becomes 4 and branch A 46 so that the total proportion stays the same.
+#' @param pct a numeric value selected from 0 and 1. The percentage of leaves in
+#'   branch B that have differential abundance under different conditions (only
+#'   for scenario \dQuote{S3})
+#' @param nSam A numeric vector of length 2, containing the sample size for two
+#'   different conditions
+#' @param mu,size The parameters of the Negative Binomial distribution. (see mu
+#'   and size in \code{\link[stats:NegBinomial]{rnbinom}}). Parameters used to
+#'   generate the library size for each simulated sample.
+#' @param n A numeric value to specify how many count tables would be generated
+#'   with the same settings. Default is one and one count table would be
+#'   obtained at the end. If above one, the output of \code{doData} is a list of
+#'   matrices (count tables). This is useful, when one needs multiple
+#'   simulations.
+#' @param fun A function to derive the count at each internal node based on its
+#'   descendant leaves, e.g. sum, mean. The argument of the function is a
+#'   numeric vector with the counts of an internal node's descendant leaves.
 #'
-#'@importFrom dirmult dirmult
-#'@keywords internal
+#' @importFrom dirmult dirmult
+#' @keywords internal
 #'
-#'@return a list of objects \item{FC}{the fold change of entities correspondint
-#'  to the tree leaves.} \item{Count}{a list of count table or a count table.
-#'  Entities on the row and samples in the column. Each count table includes
-#'  entities corresponding to all nodes on the tree structure.}
-#'  \item{Branch}{the information about two selected branches.} \describe{
-#'  \item{A}{the branch node label of branch A} \item{B}{the branch node label
-#'  of branch B} \item{ratio}{the count proportion ratio of branch B to branch
-#'  A} \item{A_tips}{the number of leaves on branch A} \item{B_tips}{the number
-#'  of leaves on branch B} \item{A_prop}{the count proportion of branch A (not
-#'  above 1)} \item{B_prop}{the count proportion of branch B (not above 1)} }
+#' @return a list of objects \item{FC}{the fold change of entities correspondint
+#'   to the tree leaves.} \item{Count}{a list of count table or a count table.
+#'   Entities on the row and samples in the column. Each count table includes
+#'   entities corresponding to all nodes on the tree structure.}
+#'   \item{Branch}{the information about two selected branches.} \describe{
+#'   \item{A}{the branch node label of branch A} \item{B}{the branch node label
+#'   of branch B} \item{ratio}{the count proportion ratio of branch B to branch
+#'   A} \item{A_tips}{the number of leaves on branch A} \item{B_tips}{the number
+#'   of leaves on branch B} \item{A_prop}{the count proportion of branch A (not
+#'   above 1)} \item{B_prop}{the count proportion of branch B (not above 1)} }
 #'
-#'@details \code{doData} simulates a count table for entities which are
-#'  corresponding to the nodes of a tree. The entities are in rows and the
-#'  samples from different groups or conditions are in columns. The library size
-#'  of each sample is sampled from a Negative Binomial distribution with mean
-#'  and size specified by the arguments \code{mu} and \code{size}. The counts of
-#'  entities, which are located on the tree leaves, in the same sample are
-#'  assumed to follow a Dirichlet-Multinomial distribution. The parameters for
-#'  the Dirichlet-Multinomial distribution are estimated from a real data set
-#'  specified by the argument \code{data} via the function \code{dirmult} (see
-#'  \code{\link[dirmult]{dirmult}}). To generate different abundance patterns
-#'  under different conditions, we provide three different scenarios,
-#'  \dQuote{S1}, \dQuote{S2}, and \dQuote{S3} (specified via \code{scenario}).
-#'  \itemize{ \item S1: two branches are selected to swap their proportions, and
-#'  leaves on the same branch have the same fold change. \item S2: two branches
-#'  are selected to swap their proportions. Leaves in the same branch have
-#'  different fold changes but same direction (either increase or decrease).
-#'  \item S3: two branches are selected. One branch has its proportion swapped
-#'  with the proportion of some leaves from the other branch.}
-#'@author Ruizhu Huang
+#' @details \code{doData} simulates a count table for entities which are
+#'   corresponding to the nodes of a tree. The entities are in rows and the
+#'   samples from different groups or conditions are in columns. The library
+#'   size of each sample is sampled from a Negative Binomial distribution with
+#'   mean and size specified by the arguments \code{mu} and \code{size}. The
+#'   counts of entities, which are located on the tree leaves, in the same
+#'   sample are assumed to follow a Dirichlet-Multinomial distribution. The
+#'   parameters for the Dirichlet-Multinomial distribution are estimated from a
+#'   real data set specified by the argument \code{data} via the function
+#'   \code{dirmult} (see \code{\link[dirmult]{dirmult}}). To generate different
+#'   abundance patterns under different conditions, we provide three different
+#'   scenarios, \dQuote{S1}, \dQuote{S2}, and \dQuote{S3} (specified via
+#'   \code{scenario}). \itemize{ \item S1: two branches are selected to swap
+#'   their proportions, and leaves on the same branch have the same fold change.
+#'   \item S2: two branches are selected to swap their proportions. Leaves in
+#'   the same branch have different fold changes but same direction (either
+#'   increase or decrease). \item S3: two branches are selected. One branch has
+#'   its proportion swapped with the proportion of some leaves from the other
+#'   branch.}
+#' @author Ruizhu Huang
 #'
 #' @examples
 #' \dontrun{
@@ -301,23 +303,24 @@ simData <- function(tree = NULL, data = NULL,
 #' }
 #'}
 
-doData <- function(tree, data, scenario = "S1",
-                    from.A = NULL, from.B = NULL,
-                    minTip.A = 0, maxTip.A = Inf,
-                    minTip.B = 0, maxTip.B = Inf,
-                    minPr.A = 0, maxPr.A = 1,
-                    ratio = 2, adjB = NULL,
-                    pct = 0.6, nSam = c(50, 50),
-                    mu = 50, size = 10000,
-                    n = 1, fun = sum){
+doData <- function(tree = NULL, data = NULL,
+                   scenario = "S1",
+                   from.A = NULL, from.B = NULL,
+                   minTip.A = 0, maxTip.A = Inf,
+                   minTip.B = 0, maxTip.B = Inf,
+                   minPr.A = 0, maxPr.A = 1,
+                   ratio = 2, adjB = NULL,
+                   pct = 0.6, nSam = c(50, 50),
+                   mu = 50, size = 10000,
+                   n = 1, fun = sum){
 
     # ---check input is in correct format --------
     if(!inherits(tree, "phylo")){
         stop("tree should be a phylo object")
     }
 
-    if (!inherits(data, "list")) {
-        if (!inherits(data, "matrix")) {
+    if (!is.list(data)) {
+        if (!is.matrix(data)) {
             stop("data should be a matrix")
         } else {
             if (!setequal(rownames(data), tree$tip.label)) {
@@ -356,7 +359,7 @@ doData <- function(tree, data, scenario = "S1",
                      size = size, n = n)
 
 
-    if(inherits(count, "list")) {
+    if(is.list(count)) {
         grpDat <- data.frame(group = substr(colnames(count[[1]]), 1, 2))
         countLSE <- leafSummarizedExperiment(tree = tree, assays = count,
                                              metadata = list(
@@ -367,7 +370,7 @@ doData <- function(tree, data, scenario = "S1",
 
     }
 
-    if(inherits(count, "matrix")) {
+    if(is.matrix(count)) {
         grpDat <- data.frame(group = substr(colnames(count), 1, 2))
         countLSE <- leafSummarizedExperiment(tree = tree,
                                              assays = list(count),
@@ -411,10 +414,12 @@ doData <- function(tree, data, scenario = "S1",
 #' @keywords internal
 
 
-pickLoc <- function(tree, data, from.A,
-                    minTip.A, maxTip.A,
-                    minTip.B, maxTip.B,
-                    minPr.A, maxPr.A, ratio) {
+pickLoc <- function(tree = NULL, data = NULL,
+                    from.A = NULL,
+                    minTip.A = 0, maxTip.A = Inf,
+                    minTip.B = 0, maxTip.B = Inf,
+                    minPr.A = 0, maxPr.A = 1,
+                    ratio = 1) {
 
     # tip proportions estimated from real data
     # rename using the alias of node label
@@ -465,7 +470,7 @@ pickLoc <- function(tree, data, from.A,
         tt.sel <- tt
     } else {
         # if node numbers, change them to node labels
-        if (inherits(from.A, "character")) {
+        if (is.character(from.A)) {
             from.A <- from.A
         } else {
             from.A <- transNode(tree = tree, input = from.A,
@@ -507,24 +512,6 @@ pickLoc <- function(tree, data, from.A,
              "\n")
     }
 
-    # An entry in mm is set to NA if one node is the descendant of the other
-    # nm <- matrix(sapply(seq_len(ncol(mm)), FUN = function(x) {
-    #   # each column
-    #   cn <- colnames(mm)
-    #   cx <- cn[x]
-    #
-    #   # all rows
-    #   rn <- rownames(mm)
-    #   tx <- desI[rn]
-    #
-    #   cs <- lapply(tx,FUN = function(x) {
-    #     length(intersect(x, desI[[cx]])) > 0
-    #   })
-    #   cv <- unlist(cs)
-    #   fm <- mm[, x]
-    #   fm[cv] <- NA
-    #   fm}), nrow = nrow(mm))
-    # preserve attributes of mm
     nm <- mm
     nm[] <- vapply(
         seq_len(ncol(mm)),
@@ -541,8 +528,7 @@ pickLoc <- function(tree, data, from.A,
                 tx,
                 FUN = function(x) {
                     length(intersect(x, desI[[cx]])) > 0
-                }
-            )
+                })
             cv <- unlist(cs)
             fm <- mm[, x]
             fm[cv] <- NA
@@ -554,20 +540,6 @@ pickLoc <- function(tree, data, from.A,
     colnames(nm) <- colnames(mm)
     rownames(nm) <- rownames(mm)
 
-    # iter <- 1
-    # while (iter <= 200) {
-    #   fs <- sample(rownames(nm),1)
-    #   np <- nm[fs,]
-    #
-    #   ab <- abs(np-ratio)
-    #   ind <- which( ab < 0.5 & ab==min(ab, na.rm = TRUE) )
-    #   ind
-    #   up <- np[ind[1]]
-    #   up <- up[!is.na(up)]
-    #   if( length(up) == 1 ){break}
-    #   iter <-  iter+1
-    # }
-    # select the pair with the value closest to the ratio
     dif <- abs(nm - ratio)
     wi <- which(dif == min(dif, na.rm = TRUE), arr.ind = TRUE)
     si <- sample(seq_len(nrow(wi)), 1)
@@ -607,8 +579,8 @@ pickLoc <- function(tree, data, from.A,
 #' @author Ruizhu Huang
 #' @keywords internal
 
-infLoc <- function(tree, data, from.A,
-                   from.B) {
+infLoc <- function(tree = NULL, data = NULL,
+                   from.A = NULL, from.B = NULL) {
 
     # tip proportions estimated from real data
     # rename using the alias of node label
@@ -686,7 +658,7 @@ infLoc <- function(tree, data, from.A,
 #' A has 10 and branch B has 40 in C1. If adjB is set to 0.1, then in C2 branch
 #' B becomes 4 and branch A 46 so that the total proportion stays the same.
 #' @param pct The percentage (in number) of the leaves in branchA that will
-#' swap with branchB.
+#' swap with branchB. The default is 1.
 
 #'
 #' @importFrom stats runif
@@ -694,9 +666,9 @@ infLoc <- function(tree, data, from.A,
 #' @author Ruizhu Huang
 #' @keywords internal
 
-doFC <- function(tree, data, scenario,
-                 branchA, branchB,
-                 ratio, adjB, pct) {
+doFC <- function(tree = NULL, data = NULL, scenario = "S1",
+                 branchA = NULL, branchB = NULL,
+                 ratio = 1, adjB = NULL, pct = 1) {
     # nodes
     leaf <- setdiff(tree$edge[, 2], tree$edge[, 1])
     nodI <- setdiff(tree$edge[, 1], leaf)
@@ -828,152 +800,6 @@ doFC <- function(tree, data, scenario,
                       use.alias = FALSE)
     return(beta)
 }
-
-# doFC <- function(tree, data, scenario,
-#                  branchA, branchB,
-#                  ratio, adjB, pct) {
-#
-#     # beta: fold change for tips
-#     tips <- tree$tip.label
-#     beta <- rep(1, length(tips))
-#     names(beta) <- tips
-#
-#     # tips on two branches
-#     tipA <- findOS(tree = tree, ancestor = branchA,
-#                    only.Tip = TRUE, self.include = TRUE,
-#                    return = "label")
-#
-#     nod <- findOS(tree = tree, ancestor = branchA,
-#                   only.Tip = FALSE, self.include = TRUE,
-#                   return = "label")
-#     nodeA <- setdiff(nod, tipA)
-#     desA <- lapply(nodeA, findOS, tree = tree,
-#                    only.Tip = TRUE,
-#                    self.include = TRUE, return = "label")
-#
-#     # swap proportion of two branches: tips in the same branch
-#     # have the same fold change
-#     if (scenario == "S1") {
-#         tipB <- findOS(tree = tree, ancestor = branchB,
-#                        only.Tip = TRUE, self.include = TRUE)
-#
-#         beta[tipA] <- ratio
-#         beta[tipB] <- 1/ratio
-#     }
-#
-#     # swap proportion of two branches: tips in the same branch
-#     # have different fold changes but same direction (either
-#     # increase or decrease)
-#     if (scenario == "S2") {
-#         tipB <- findOS(tree = tree, ancestor = branchB,
-#                        only.Tip = TRUE, self.include = TRUE)
-#
-#         # proportion on two branches
-#         propA <- sum(data$pi[tipA])
-#         propB <- sum(data$pi[tipB])
-#
-#         # swap proportions on two branches and randomly assign a fold change
-#         # value to the the leaves on a branch (log fold change in the same
-#         # branch should have the same sign)
-#
-#
-#             a1 <- runif(length(tipA))
-#             sa <- sum(a1 * propA)
-#             a2 <- (propB - propA)/sa
-#             a3 <- a1 * a2 + 1
-#             beta[tipA] <- a3
-#
-#             b1 <- runif(length(tipB))
-#             sb <- sum(b1 * propB)
-#             b2 <- (propA - propB)/sb
-#             b3 <- b1 * b2 + 1
-#             beta[tipB] <- b3
-#     }
-#
-#     # distribute signal randomly in one branch and evenly in
-#     # another branch
-#     # tip proportions estimated from real data
-#     pars <- parEstimate(data = data)$pi
-#     if (scenario == "S3") {
-#         iter <- 1
-#         while (iter <= 200) {
-#             # select only some tips
-#             selA <- sample(tipA, ceiling(length(tipA)*pct))
-#             # to make the selected tips disperse evenly in the branch
-#             subA <- lapply(desA, FUN = function(x) {
-#                 ix <- intersect(x, selA)
-#                 length(ix)/length(x)
-#             })
-#             subA <- unlist(subA)
-#             sumA <- sum(pars[selA])
-#
-#             # the abundance proportion of the selected tips
-#             # are roughly equal to its number proportion in the branch
-#             # avoid (select all low or high abundance tips in the branch)
-#
-#             spr <- sumA/sum(pars[tipA])
-#             ind.pr <- spr <= (pct + 0.05) & spr >= (pct - 0.05)
-#
-#             if(all(subA <= 0.6) & ind.pr){break}
-#             iter <- iter+1
-#         }
-#         # ==================================================
-#         # cancel the random selection using selNode
-#         # ==================================================
-#         # if(is.null(branchB)){
-#         #   BranchL <- selNode(tree = tree,
-#         #                      minTip =length(selA),
-#         #                      maxTip = Inf,
-#         #                      minPr = max(ratio)*sumA,
-#         #                      maxPr = max(ratio)*sumA*1.5,
-#         #                      skip = branchA,
-#         #                      data = data)$node
-#         # }else{
-#         BranchL = branchB
-#         #}
-#
-#         if (length(BranchL) == 0) {
-#             stop("No suitable branches.
-#            Try another branchA or another max of ratio... \n")
-#         }
-#         tipL <-  findOS(tree = tree, ancestor = BranchL,
-#                         only.Tip = TRUE, self.include = TRUE,
-#                         return = "label")
-#         sumL <- sum(pars[tipL])
-#
-#         # ratio : 2, 5, 7, 8
-#         # if(length(ratio)==1){
-#         #  warning("For scenario S3, if multiple fold changes would be tried
-#         #  later to compare their results, it would be better to specify
-#         #  ratio as a vector so that the random tips selected would stay
-#         #  the same")
-#         # }
-#
-#         # decide beta
-#         # beta <- sapply(ratio, FUN = function(x, y){
-#         #   y[selA] <- x
-#         #   xl <- (sumL-(x-1)*sumA)/sumL
-#         #   y[tipL] <- xl
-#         #   return(y)
-#         # }, y=beta)
-#         # colnames(beta) <- ratio
-#         if(is.null(adjB)){
-#             beta[selA] <- sumL/sumA
-#             beta[tipL] <- sumA/sumL
-#         }else{
-#             if(!is.numeric(adjB)){
-#                 stop("adjB should be numeric")
-#             }
-#             beta[tipL] <- adjB
-#             beta[selA] <- (sumL*(1-adjB)+sumA)/sumA
-#             # beta[selA] <- fcA
-#             # beta[tipL] <- (sumL-(fcA-1)*sumA)/sumL
-#         }
-#
-#     }
-#
-#     return(beta)
-# }
 
 
 #' generate a count table

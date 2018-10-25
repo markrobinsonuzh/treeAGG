@@ -158,8 +158,6 @@ selNode <- function(obj = NULL, tree = NULL, data = NULL,
     }
 
     # return the one has the lowest proportion if all = FALSE
-    #ind <- which.min(abs(new.st$proportion - minPr))
-    #final <- new.st[ind,]
     if (all) {
         final <- new.st
     } else {

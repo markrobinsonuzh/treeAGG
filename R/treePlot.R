@@ -131,7 +131,7 @@ treePlot <- function(tree,
                      zoomLevel = NULL,
                      zoomScale = 8,
                      legend = FALSE,
-                     legend.theme = NULL,
+                     legend.theme = list(NULL),
                      legend.title = c(
                          "point" = "Title_point",
                          "branch" = "Title_branch"),
@@ -151,16 +151,12 @@ treePlot <- function(tree,
                         col.branch = col.branch,
                         col.other = col.other,
                         addTo = p)
-    } else {
-        p <- p
     }
 
     # add points
     if (!is.null(point)) {
         p <- addPoint(tree = tree, point = point,
                       col.point = col.point, addTo = p)
-    } else {
-        p <- p
     }
 
     # customize the size scale for added points
@@ -171,8 +167,6 @@ treePlot <- function(tree,
                            col.point = col.point,
                            size.point.legend = size.point.legend,
                            legend = legend)
-    } else {
-        p <- p
     }
 
     # customize the color
@@ -187,8 +181,6 @@ treePlot <- function(tree,
                      legend.title = legend.title,
                      size.line.legend = size.line.legend,
                      legend = legend )
-    } else {
-        p <- p
     }
 
     # zoom in selected branches
@@ -196,15 +188,11 @@ treePlot <- function(tree,
         p <- addZoom(tree = tree, zoomNode = zoomNode,
                      zoomLevel = zoomLevel, zoomScale = zoomScale,
                      addTo = p)
-    } else {
-        p <- p
     }
 
     # add legend
     if (legend) {
         p <- p + addLegend(legend.theme)
-    } else {
-        p <- p
     }
 
     if (is.null(legend.label$col.point)) {
@@ -249,7 +237,7 @@ addBranch <- function(tree, branch, col.branch,
                       col.other, addTo = NULL, ...) {
 
     # node number required
-    if (inherits(branch, "character")) {
+    if (is.character(branch)) {
         branch <- transNode(tree = tree, input = branch,
                             message = FALSE)
     } else {
@@ -320,7 +308,7 @@ addPoint <- function(tree, point, col.point,
     d <- p$data[, "node", drop = FALSE]
 
     # node number required
-    if (inherits(point, "character")) {
+    if (is.character(point)) {
         point <- transNode(tree = tree, input = point,
                            message = FALSE)
     } else {
@@ -461,7 +449,7 @@ addZoom <- function(tree, zoomNode = NULL, zoomLevel = NULL,
 #' @keywords internal
 
 
-addLegend <- function(legend.theme) {
+addLegend <- function(legend.theme = list(NULL)) {
 
     # default way to put legend
     li1 <- list(legend.position = "right",
@@ -475,9 +463,6 @@ addLegend <- function(legend.theme) {
                 #legend.box.background = element_rect()
     )
     # user defined
-    if (is.null(legend.theme)) {
-        legend.theme <- list(NULL)
-    }
     li2 <- legend.theme
     # overwrite the default
     li <- modifyList(li1, li2)
@@ -576,15 +561,6 @@ colScale <- function(branch,
                      legend.title,
                      size.line.legend,
                      legend) {
-    # colG is to correct the label
-    # colV is to correct the value
-    # if(is.null(point)){
-    #   colG <- colV <- c(col.branch, col.other)
-    #   names(colV) <- c(col.branch, "grp_other")
-    # }else{
-    #   colG <- colV <- c(col.branch, col.other, col.point)
-    #   names(colV) <- c(col.branch, "grp_other", "YES_Found")
-    # }
 
     # colG is created to correct the color
     # vG is created to output the label
@@ -642,20 +618,9 @@ colScale <- function(branch,
                            duplicated(names(colG)))]
         lab <- names(colG)
         ww <- tail(which(lab %in% legend.label$col.point),1)
-        # lab <- ifelse(names(colG) %in% legend.label$col.point, "",
-        #names(colG))
-
         lab[ww] <- ""
-        #colG <- unlist(setNames(namG, NULL))
 
-        # if there are duplicates for the pairs of color and lable,
-        # remove them.
-        #colG <- colG[!(duplicated(colG) & duplicated(names(colG)))]
-        # lab <- ifelse(names(colG) %in% legend.label$col.point, "",
-        #names(colG))
-        #lab <- names(colG)
-        #lab[3] <- ifelse(lab[3] %in% legend.label$col.point,
-        #                "", lab[3] )
+
         lty <- ifelse(lab %in% "", "blank", "solid")
         du <- duplicated(colG) & duplicated(names(colG))
         lab <- ifelse(du, "", lab)

@@ -1,7 +1,7 @@
 Package: treeAGG
 Type: Package
 Title: Tree Aggregation
-Version: 0.99.9
+Version: 0.99.10
 Authors@R: c(
     person("Ruizhu", "Huang", email = "ruizhuRH@gmail.com",
            role = c("aut", "cre")),
@@ -43,7 +43,6 @@ Collate:
     'matTree.R'
     'nodeValue.R'
     'parEstimate.R'
-    'pathTree.R'
     'rmDesc.R'
     'runEdgeR.R'
     'selNode.R'
@@ -55,6 +54,5 @@ Collate:
     'transNode.R'
     'treeAGG.R'
     'treePlot.R'
-    'updateContrast.R'
     'updateTSE.R'
     'viewSim.R'

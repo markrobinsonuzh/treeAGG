@@ -9,6 +9,7 @@ treeAGG.A <- function(data, sigf.by,
     if (!inherits(tree, "phylo")) {
         stop("object tree is not of class phylo. \n")
     }
+    stopifnot(class(data) %in% c("data.frame", "DataFrame"))
 
     # nodes
     nodeL <- rownames(data)
@@ -56,7 +57,6 @@ treeAGG.A <- function(data, sigf.by,
         }
 
         if (message) {
-            #Sys.sleep(0.001)
             message(i, " out of ", length(nodeIE),
                     " finished", "\r", appendLF = FALSE)
             flush.console()
@@ -92,7 +92,6 @@ treeAGG.B <- function(data, sigf.by,
     rowI <- data@elementMetadata$Results_internal_treeAGG
     namI <- colnames(rowI)
     indI <- grepl(pattern = "result_assay", x = namI) # result
-    # rowI <- rowDI[, indI, drop = FALSE]
 
     # convert to a list
     #  - each element stores a result from an assay table
@@ -201,30 +200,6 @@ treeAGG.B <- function(data, sigf.by,
     }
     rowData(data)[["Results_internal_treeAGG"]] <- as(rowList5,
                                                      "internal_rowData")
-
-    # # reshape: convert a list into a dataFrame
-    # rowList4 <- lapply(seq_along(rowList3), FUN = function(j) {
-    #         x <- rowList3[[j]]
-    #         dx <- x[[1]][, 0]
-    #         for (i in seq_along(x)) {
-    #             xi <- x[[i]]
-    #             nxi <- names(x)[i]
-    #             dx[[nxi]] <- xi
-    #
-    #         }
-    #         return(dx)
-    #     })
-    # names(rowList4) <- names(rowList3)
-
-    # update rowData
-    # res <- data
-    # rowData(res) <- rowData(data, internal = FALSE)
-    #
-    # for (i in seq_along(rowList4)) {
-    #    rowData(res)[[names(rowList4)[i]]] <- as(rowList4[[i]],
-    #                                             "internal_rowData")
-    # }
-
    return(data)
 
 }
@@ -307,13 +282,10 @@ setMethod("treeAGG", signature(data = "treeSummarizedExperiment"),
           treeAGG.B)
 
 #' @rdname treeAGG
-setMethod("treeAGG", signature(data = "data.frame"),
+setMethod("treeAGG", signature(data = "ANY"),
           treeAGG.A)
 
-#' @rdname treeAGG
-#' @importClassesFrom S4Vectors DataFrame
-setMethod("treeAGG", signature(data = "DataFrame"),
-          treeAGG.A)
+
 
 
 

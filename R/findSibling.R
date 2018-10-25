@@ -51,7 +51,5 @@ findSibling <- function(tree, input, return = c("number", "label"),
         signalNode(tree = tree, node = x,
                    return = return, use.alias = use.alias)} )
     fT <- unlist(fT)
-    # isT <- isTip(tree = tree, input = fT)
-    # fn <- fT[!isT]
     return(fT)
 }
