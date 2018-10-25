@@ -83,8 +83,8 @@ fdr <- function(tree, truth, found,
     if (direction) {
         # it requires list input for both truth and found
         # the length of list should equal to 2 (direction up & down)
-        if (inherits(truth, "list") &&
-            inherits(found, "list") &&
+        if (is.list(truth) &&
+            is.list(found) &&
             length(truth) == length(found)) {
 
             tt <- mapply(function(x, y) {
@@ -172,9 +172,9 @@ fdr0 <- function(tree,
         # if discovery exists, check whether the discovery has correct input
         # format
         if (!(
-            inherits(found, "character") |
-            inherits(found, "numeric") |
-            inherits(found, "integer")
+            is.character(found) |
+            is.numeric(found) |
+            is.integer(found)
         )) {
             stop("found should include character or numeric")
         }
