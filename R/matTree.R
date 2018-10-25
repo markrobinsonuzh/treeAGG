@@ -27,11 +27,17 @@ matTree <- function(tree) {
         stop("tree: should be a phylo object")
     }
 
-    # each path connects a tip with the root.
-    i <- 1
+
+    # the edge matrix
     mat <- tree$edge
+
+    # the leaves
     L1 <- setdiff(mat[, 2], mat[, 1])
+    # each path connects a tip with the root.
+    # each path is stored as a row of matN
+    # the first column stores the tips (or leaves)
     matN <- cbind(L1)
+    i <- 1
     repeat {
         li <- mat[match(matN[, i], mat[, 2]), 1]
         ll <- length(unique(li))
