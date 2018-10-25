@@ -7,11 +7,6 @@
 #' @param node A vector of node numbers or node labels
 #' @param level A vector of numbers to define nth generation before the
 #' specified nodes
-#' @param treeMat A matrix with each row representing a path. The entry is node
-#'   number. The first column is leaf node numbers. The columns are organized as
-#'   the order of nodes in the paths connecting leaves and the root. Default is
-#'   null, treeMat is generated automatically. The treeMat is provided when the
-#'   tree is very large to save running time.
 #' @param return "number" (return the node number) or "label" (return the node
 #'   label).
 #' @param use.alias A logical value, TRUE or FALSE. This is an optional argument
@@ -36,7 +31,7 @@
 #'
 #'  findAncestor(tree = exTree, node = c(53, 61), level = 1)
 
-findAncestor <- function(tree, node, level, treeMat = NULL,
+findAncestor <- function(tree, node, level,
                          return = c("number", "label"),
                          use.alias = FALSE) {
 
@@ -44,13 +39,12 @@ findAncestor <- function(tree, node, level, treeMat = NULL,
         stop("tree: should be a phylo object")
     }
 
-    if (is.null(treeMat)) {
-        treeMat <- matTree(tree)
-    } else {
-        treeMat <- treeMat
-    }
+    # convert a tree to a matrix
+    # each row is a path connecting the root and a leaf
+    treeMat <- matTree(tree)
 
-    if (inherits(node, "character")) {
+
+    if (is.character(node)) {
         aggNod <- transNode(tree = tree, input = node,
                             use.alias = TRUE,
                             message = FALSE)
@@ -74,17 +68,16 @@ findAncestor <- function(tree, node, level, treeMat = NULL,
         valP <- apply(treeMat, 1, FUN = function(x) {
             max(which(!is.na(x)))
         })
-        selP <- valP[ind[, 1]]
+        selP <- valP[ind[, "row"]]
 
         # move up levels as specified until the root
-        vv <- ind[, 2] + level[x]
+        vv <- ind[, "col"] + level[x]
         if (all(vv <= selP)) {
-            ind.f <- cbind(ind[, 1], vv)
+            ind.f <- cbind(ind[, "row"], vv)
         } else {
-            # v2 <- ifelse(vv <= selP, vv, selP)
             stop("The level specified for nodes ", node[x], " exceed the root
                  level; try a small level value. \n")
-            # ind.f <- cbind(ind[, 1], v2)
+
         }
 
         # there is only one path to go to the root when the starting point is
