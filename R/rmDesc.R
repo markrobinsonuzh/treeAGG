@@ -31,7 +31,7 @@
 #' # find the shared nodes from the tree plot
 #' aV <- c(5, 4, 18, 3, 2)
 #' # final result
-#' (rn <- rmDesc(node = aV, tree = tinyTree))
+#' (rn <- rmDesc(tree = tinyTree, node = aV))
 #'}
 #'
 
@@ -48,26 +48,32 @@ rmDesc <- function(tree, node, use.alias = FALSE) {
         node <- node
     }
 
+    # find descendant leaves
     ListTip <- lapply(as.list(node),
                       FUN = function(x) {
                           findOS(ancestor = x, tree = tree,
                                  only.Tip = TRUE, self.include = TRUE)
     })
-    ListTip1 <- ListTip[!duplicated(ListTip)]
-    indList <- lapply(ListTip1, FUN = function(x) {
-        aa <- lapply(ListTip1, FUN = function(y, z) {
-            all(z %in% y)
-        }, z = x)
-        atf <- sum(unlist(aa)) == 1
-        return(atf)
-    })
 
-    ind <- unlist(indList)
-    fNT <- node[!duplicated(ListTip)][ind]
+    # remove duplicates
+    ListTip1 <- ListTip[!duplicated(ListTip)]
+
+    # find out elements that are not the subset of the others
+    ind <- rep(TRUE, length(ListTip1))
+    for (i in seq_along(ListTip1)) {
+        xi <- ListTip1[[i]]
+        ti <- lapply(ListTip1, FUN = function(x) {
+            all(xi %in% x)
+        })
+        ti <- unlist(ti)
+        if (sum(ti) > 1) {
+            ind[i] <- FALSE
+        }
+    }
+    out <- node[!duplicated(ListTip)][ind]
 
     # return a vector of the found node (the node number of the node)
     # name the vector with the node label
-    out <- fNT
     names(out) <- transNode(tree = tree, input = out,
                             use.alias = use.alias,
                             message = FALSE)
