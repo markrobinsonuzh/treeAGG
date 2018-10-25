@@ -41,7 +41,8 @@ matTree <- function(tree) {
         matN <- cbind(matN, li)
         i <- i + 1
     }
-    rownames(matN) <- colnames(matN) <- NULL
+    rownames(matN) <- NULL
+    colnames(matN) <- paste("L", seq_len(ncol(matN)), sep = "")
 
     return(matN)
 }
