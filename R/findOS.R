@@ -85,7 +85,7 @@ findOS <- function(tree,
     # descendants: tips
     tipA <- unique(setdiff(desA, mat[, 1]))
 
-    res <- if (self.include) {
+    out <- if (self.include) {
         if (only.Tip) {tipA} else {desA}
     } else {
         if (only.Tip) {
@@ -96,7 +96,6 @@ findOS <- function(tree,
     }
 
     # final output (node number or label)
-    out <- res
     names(out) <- transNode(tree = tree, input = out,
                             use.alias = use.alias,
                             message = FALSE)

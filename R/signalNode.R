@@ -84,10 +84,9 @@ signalNode <- function(tree, node,
                     x[sum(y)]
                 })
     sNode <- unique(selF)
-    sNode <- sNode[!is.na(sNode)]
+    out <- sNode[!is.na(sNode)]
 
     # final output
-    out <- sNode
     names(out) <- transNode(tree = tree, input = out,
                             use.alias = use.alias,
                             message = FALSE)

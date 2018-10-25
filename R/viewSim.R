@@ -178,8 +178,9 @@ viewSim <- function(obj, layout = "rectangular", zoomScale = 1/20,
 findParallel <- function(tree, input,
                          use.alias = FALSE){
 
-    if (inherits(input, "character")) {
-        input <- transNode(tree = tree, input = input, message = FALSE)
+    if (is.character(input)) {
+        input <- transNode(tree = tree, input = input,
+                           message = FALSE)
     } else {
         input <- input
     }
@@ -198,11 +199,10 @@ findParallel <- function(tree, input,
     exT <- setdiff(allT, inT)
 
     # replace leaves with their ancestor branch node
-    fT <- signalNode(tree = tree, node = exT)
+    out <- signalNode(tree = tree, node = exT)
 
     # return a vector of the found node (the node number of the node)
     # name the vector with the node label
-    out <- fT
     names(out) <- transNode(tree = tree, input = out,
                             use.alias = use.alias,
                             message = FALSE)

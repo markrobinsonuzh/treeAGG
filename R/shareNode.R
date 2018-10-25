@@ -78,10 +78,9 @@ shareNode <- function(tree, node,
     df <- as.data.frame(count, stringsAsFactors = FALSE)
 
     # select the node with the lowest frequency.  closest to the leaf level.
-    sNode <- as.numeric(df[df$Freq == min(df$Freq), "vec"])
+    out <- as.numeric(df[df$Freq == min(df$Freq), "vec"])
 
     # final output
-    out <- sNode
     names(out) <- transNode(tree = tree, input = out,
                             use.alias = use.alias,
                             message = FALSE)
