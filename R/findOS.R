@@ -45,38 +45,38 @@ findOS <- function(tree,
         stop("tree: should be a phylo object")
     }
 
-    if (!(
-        inherits(ancestor, "character") |
-        inherits(ancestor, "numeric") | inherits(ancestor,
-                                                 "integer")
-    )) {
+    if (!(is.character(ancestor) |
+          is.numeric(ancestor) |
+          is.integer(ancestor))) {
         stop("ancestor should be character or numeric")
     }
-    # each path connects a tip with the root.
-    i <- 1
+    # the edge matrix
     mat <- tree$edge
-    L1 <- setdiff(mat[, 2], mat[, 1])
-    matN <- cbind(L1)
-    repeat {
-        li <- mat[match(matN[, i], mat[, 2]), 1]
-        ll <- length(unique(li[!is.na(li)]))
-        if (ll == 0) {
-            break
-        }
-        matN <- cbind(matN, li)
-        i <- i + 1
-    }
-    rownames(matN) <- colnames(matN) <- NULL
+    # each path connects a tip with the root.
+    # i <- 1
+    # mat <- tree$edge
+    # L1 <- setdiff(mat[, 2], mat[, 1])
+    # matN <- cbind(L1)
+    # repeat {
+    #     li <- mat[match(matN[, i], mat[, 2]), 1]
+    #     ll <- length(unique(li[!is.na(li)]))
+    #     if (ll == 0) {
+    #         break
+    #     }
+    #     matN <- cbind(matN, li)
+    #     i <- i + 1
+    # }
+    # rownames(matN) <- colnames(matN) <- NULL
+    matN <- matTree(tree = tree)
 
-    if (inherits(ancestor, "character")) {
+    if (is.character(ancestor)) {
         numA <- transNode(tree = tree, input = ancestor,
                           use.alias = TRUE,
                           message = FALSE)
     } else {
         numA <- ancestor
         if (!numA %in% mat) {
-            stop("Node ",
-                 numA,
+            stop("Node ", numA,
                  " can't be found in the ",
                  deparse(substitute(tree)),
                  "\n")
