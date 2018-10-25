@@ -86,10 +86,8 @@ topNodes <- function(data, sort.by = "FDR", decreasing = FALSE,
         stop("Results can't be found in the internal part of row data")
         }
     # convert to a list: results from different assays as different elements
-    list1 <- lapply(seq_len(ncol(fData)), FUN = function(x) {
-        fData[, x]
-
-    })
+    list1 <- lapply(seq_len(ncol(fData)),
+                    FUN = function(x) {fData[, x]})
     names(list1) <- colnames(fData)
 
     # convert to a list: results from different contrasts as different
