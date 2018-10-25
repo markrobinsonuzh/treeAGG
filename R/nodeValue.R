@@ -224,9 +224,8 @@ nodeValue.B <- function(data, fun = sum, message = FALSE) {
 #' @importFrom S4Vectors metadata DataFrame
 #' @importFrom SummarizedExperiment SummarizedExperiment
 #'
-#' @return A treeSummarizedExperiment if input data is a
-#' treeSummarizedExperiment object. A matrix if input data is a matrix or
-#' data frame.
+#' @return If input data is a treeSummarizedExperiment object, a
+#'   treeSummarizedExperiment is returned; otherwise, a matrix is returned
 #'
 #' @export
 #' @docType methods
