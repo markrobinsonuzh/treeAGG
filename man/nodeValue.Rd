@@ -5,6 +5,7 @@
 \alias{nodeValue}
 \alias{nodeValue,ANY-method}
 \alias{nodeValue,leafSummarizedExperiment-method}
+\alias{nodeValue,treeSummarizedExperiment-method}
 \title{Calculate entity values at internal nodes}
 \usage{
 nodeValue(data, fun = sum, tree, message = FALSE)
@@ -12,6 +13,9 @@ nodeValue(data, fun = sum, tree, message = FALSE)
 \S4method{nodeValue}{ANY}(data, fun = sum, tree, message = FALSE)
 
 \S4method{nodeValue}{leafSummarizedExperiment}(data, fun = sum,
+  message = FALSE)
+
+\S4method{nodeValue}{treeSummarizedExperiment}(data, fun = sum,
   message = FALSE)
 }
 \arguments{

@@ -368,7 +368,7 @@ sample_inf <- colData(tse)
 design <- model.matrix(~ trt + group, data = sample_inf)
 
 # estimate dispersion
-y <- estimateGLMRobustDisp(y, design = design)
+y <- estimateDisp(y, design = design)
 
 # fit the negative binomial GLMs
 fit <- glmFit(y, design = design, prior.count = 0.125)
