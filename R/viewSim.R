@@ -51,7 +51,10 @@ viewSim <- function(obj, layout = "rectangular", zoomScale = 1/20,
                      "go down" = "blue")
 
     # legend
-    fc <- c(md$branch$"A_prop(%)", md$branch$"B_prop(%)")
+    fc <- c(md$branch$"A_prop", md$branch$"B_prop")
+    if (is.null(fc)) {
+        stop("The information of signal branches are not available")
+    }
     vv <- sum(diff(fc) > 0) + 1 # TRUE take 2; FALSE take 1
     nam <- switch(vv,
                   c("go down", "go up"),
