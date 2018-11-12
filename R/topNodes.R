@@ -71,7 +71,7 @@ topNodes <- function(data, sort.by = "FDR", decreasing = FALSE,
         use.assays <- use.assays
     }
 
-    if (! use.assays %in% av) {
+    if (! all(use.assays %in% av)) {
         stop("The result of assay table",
              use.assays[! use.assays %in% av],
              "is not available. /n")
