@@ -144,7 +144,7 @@ runEdgeR <- function(obj, design = NULL, contrast = NULL,
 
     # estimate dispersion
     y <- lapply(seq_along(y), FUN = function(x) {
-        y <- estimateGLMRobustDisp(y[[x]], design = design)
+        y <- estimateDisp(y[[x]], design = design)
         return(y)})
 
     # build model
