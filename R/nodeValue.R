@@ -16,14 +16,14 @@ nodeValue.A <- function(data, fun = sum, tree, message = FALSE) {
         stop(cat("Some row names can't be matched to the labels of leaf nodes:",
                  chs, "\n"))
     }
-    # rename data with the alias of the node label
+    ## rename data with the alias of the node label
     rn <- rownames(data)
     leafNum <- transNode(tree = tree, input = rn, message = FALSE)
     leafLab_alias <- transNode(tree = tree, input = leafNum,
                                use.alias = TRUE, message = FALSE)
     rownames(data) <- leafLab_alias
 
-    # nodes
+    ## nodes
     emat <- tree$edge
     leaf <- setdiff(emat[, 2], emat[, 1])
     nodeI <- setdiff(emat[, 1], leaf)
@@ -72,7 +72,6 @@ nodeValue.A <- function(data, fun = sum, tree, message = FALSE) {
     return(final)
 }
 
-
 # when data is a leafSummarizedExperiment
 nodeValue.B <- function(data, fun = sum, message = FALSE) {
     if (!is(data, "leafSummarizedExperiment")) {
@@ -82,7 +81,7 @@ nodeValue.B <- function(data, fun = sum, message = FALSE) {
 
     # extract table and tree from treeSummarizedExperiment.
     tree <- metadata(data)$tree
-    table <- assays(data)
+    tabA <- assays(data)
     rData <- rowData(data, use.names = FALSE)
     mData <- metadata(data)
     cData <- colData(data)
@@ -100,108 +99,177 @@ nodeValue.B <- function(data, fun = sum, message = FALSE) {
     nodeI <- setdiff(emat[, 1], leaf)
     nodeA <- c(leaf, nodeI)
 
-    ## all nodes
     nN <- length(nodeA)
-    nodeLab <- transNode(tree = tree, input = nodeA,
-                         use.alias = FALSE,
-                         message = FALSE)
-    nodeLab_alias <- transNode(tree = tree, input = nodeA,
-                      use.alias = TRUE,
-                      message = FALSE)
+    ## Find the rows of descendants
+    leafRow <- lapply(seq_along(nodeA), FUN = function(x) {
+        # get a node
+        xx <- nodeA[x]
 
-    # -------------------------------------------------------------------
-    # create empty table nodes
-    tableA <- lapply(table, FUN = function(x){
-        y <- matrix(0, nrow = nN, ncol = ncol(x))
-        colnames(y) <- colnames(data)
-        return(y)
+        # find its descendant leaves
+        lx <- findOS(tree = tree, ancestor = xx,
+                     only.Tip = TRUE, self.include = TRUE,
+                     use.alias = TRUE)
+
+        # find the rows of descendant leaves in the assay table
+        rx <- match(lx, tipNum)
+        return(rx)
     })
 
-    # create rowData for nodes
-    rD <- rData[rep(1, nN), , drop = FALSE]
-    nc <- ncol(rData)
+    ## generate values for nodes from their descendant leaves
+    # assays
+    tabNA <- vector("list", length = length(tabA))
+    for (i in seq_along(tabA)) {
+        tabL.i <- lapply(leafRow, FUN = function(x) {
+            tabA.i <- tabA[[i]]
+            xi <- tabA.i[x, , drop = FALSE]
+            ri <- apply(xi, 2, fun)
+            return(ri)
+        })
+        tab.i <- do.call(rbind, tabL.i)
+        tabNA[[i]] <- tab.i
 
-    # use the alias of the node label as the rownames
-    rownames(rData) <- tipLab_alias
-
-    # calculate values at nodes
-    for (i in seq_len(nN)) {
-        node.i <- nodeA[i]
-        # the node number
-        tips.i <- findOS(ancestor = node.i, tree = tree,
-                         only.Tip = TRUE, self.include = TRUE,
-                         use.alias = TRUE)
-        # the node label
-        tips.i <- names(tips.i)
-
-        row.i <- match(tips.i, tipLab_alias)
-
-        # if multiple rows of the descendants exist, do calculation as follows
-        if (length(row.i) > 1){
-            # rowdata: if all rows have the value, keep value; otherwise, use NA
-            rdata.i <- rData[row.i, , drop = FALSE]
-            for (k in seq_len(nc)) {
-                iu <- unique(rdata.i[[k]])
-                rD[i, k] <- ifelse(length(iu) == 1, iu, NA)
-                }
-
-            # calculate values (e.g., abundance or intensity) for each node
-            for(j in seq_along(tableA)){
-                table.j <- table[[j]]
-                tableA[[j]][i, ] <- apply(table.j[row.i, , drop = FALSE],
-                                          2, fun)
-            }
-        }
-
-        if (length(row.i) == 1){
-            # rowdata
-            for (k in seq_len(nc)) {
-                rD[i, k] <- rData[row.i, k]
-            }
-
-
-            for(j in seq_along(tableA)){
-                table.j <- table[[j]]
-                tableA[[j]][i, ] <- as.matrix(table.j[row.i, ])
-            }
-        }
-
-        # print out the running process
-        if (message) {
-            #Sys.sleep(0.001)
-            message(i, " out of ", nN , " finished", "\r", appendLF = FALSE)
-            flush.console()
-        }
     }
 
-    # update rowdata; column nodeLab is removed
-     rdataA <- rD[, !colnames(rD) %in% c("nodeLab"), drop = FALSE]
-     rownames(rdataA) <- NULL
+    # Create the rowData
+    rD <- lapply(leafRow, FUN = function(x) {
+        xi <- rData[x, , drop = FALSE]
+        ri <- apply(xi, 2, FUN = function(x) {
+            ui <- unique(x)
+            si <- ifelse(length(ui) > 1, NA, ui)
+            return(si)
+        })
+        return(ri)
+    })
+    rdataA <- do.call(rbind, rD)
+    rownames(rdataA) <- NULL
 
-     if (anyDuplicated(nodeLab)) {
-         linkD <- DataFrame(nodeLab = nodeLab,
-                            nodeLab_alias = nodeLab_alias,
-                            nodeNum = nodeA,
-                            isLeaf = nodeA %in% leaf,
-                            rowID = seq_len(nN))
-     } else {
-         linkD <- DataFrame(nodeLab = nodeLab,
-                            nodeNum = nodeA,
-                            isLeaf = nodeA %in% leaf,
-                            rowID = seq_len(nN))
-     }
+    ## Create the node labels
+    nodeLab <- transNode(tree = tree, input = nodeA,
+                         use.alias = FALSE, message = FALSE)
+
+    ## Check whether there are duplicated values in nodeLab
+    # If yes, add another column nodeLab_alias
+    if (anyDuplicated(nodeLab)) {
+        nodeLab_alias <- transNode(tree = tree, input = nodeA,
+                                   use.alias = TRUE, message = FALSE)
+        linkD <- DataFrame(nodeLab = nodeLab,
+                           nodeLab_alias = nodeLab_alias,
+                           nodeNum = nodeA,
+                           isLeaf = nodeA %in% leaf,
+                           rowID = seq_len(nN))
+    } else {
+        linkD <- DataFrame(nodeLab = nodeLab,
+                           nodeNum = nodeA,
+                           isLeaf = nodeA %in% leaf,
+                           rowID = seq_len(nN))
+    }
 
 
-    mData.new <- mData[names(mData) != "tree"]
+    mData.new <- mData
     tse <- treeSummarizedExperiment(linkData = linkD, tree = tree,
-                                    assays = tableA, metadata = mData.new,
+                                    assays = tabNA, metadata = mData.new,
+                                    colData = cData, rowData = rdataA)
+    return(tse)
+
+
+}
+
+# when data is a treeSummarizedExperiment
+nodeValue.C <- function(data, fun = sum, message = FALSE) {
+    if (!is(data, "treeSummarizedExperiment")) {
+        stop("\n data should be a leafSummarizedExperiment. \n")
+    }
+
+
+    # extract table and tree from treeSummarizedExperiment.
+    tree <- treeData(data)
+    tabA <- assays(data, use.nodeLab = TRUE)
+    rData <- rowData(data, use.names = FALSE)
+    lData <- linkData(data)
+    cData <- colData(data)
+    mData <- metadata(data)
+
+    # leaf nodes and internal nodes
+    emat <- tree$edge
+    leaf <- setdiff(emat[, 2], emat[, 1])
+    nodeI <- setdiff(emat[, 1], leaf)
+    nodeA <- c(leaf, nodeI)
+
+    ## all nodes
+    nN <- length(nodeA)
+
+    # find the rows of descendants
+    leafRow <- lapply(seq_along(nodeA), FUN = function(x) {
+        # get a node
+        xx <- nodeA[x]
+
+        # find its descendant leaves
+        lx <- findOS(tree = tree, ancestor = xx,
+                     only.Tip = TRUE, self.include = TRUE,
+                     use.alias = TRUE)
+
+        # find the rows of descendant leaves in the assay table
+        ind <- match(lx, lData[["nodeNum"]])
+        rx <- lData[["rowID"]][ind]
+        return(rx)
+    })
+
+    ## generate values for nodes from their descendant leaves
+    # assays
+    tabNA <- vector("list", length = length(tabA))
+
+    for (i in seq_along(tabA)) {
+        tabL.i <- lapply(leafRow, FUN = function(x) {
+            tabA.i <- tabA[[i]]
+            xi <- tabA.i[x, , drop = FALSE]
+            ri <- apply(xi, 2, fun)
+            return(ri)
+        })
+        tab.i <- do.call(rbind, tabL.i)
+        tabNA[[i]] <- tab.i
+
+    }
+
+    # rowData
+    rD <- lapply(leafRow, FUN = function(x) {
+        xi <- rData[x, , drop = FALSE]
+        ri <- apply(xi, 2, FUN = function(x) {
+            ui <- unique(x)
+            si <- ifelse(length(ui) > 1, NA, ui)
+            return(si)
+        })
+        return(ri)
+    })
+    rdataA <- do.call(rbind, rD)
+    rownames(rdataA) <- NULL
+
+    ## Create the node labels
+    nodeLab <- transNode(tree = tree, input = nodeA,
+                         use.alias = FALSE, message = FALSE)
+
+    if (anyDuplicated(nodeLab)) {
+        nodeLab_alias <- transNode(tree = tree, input = nodeA,
+                                   use.alias = TRUE, message = FALSE)
+        linkD <- DataFrame(nodeLab = nodeLab,
+                           nodeLab_alias = nodeLab_alias,
+                           nodeNum = nodeA,
+                           isLeaf = nodeA %in% leaf,
+                           rowID = seq_len(nN))
+    } else {
+        linkD <- DataFrame(nodeLab = nodeLab,
+                           nodeNum = nodeA,
+                           isLeaf = nodeA %in% leaf,
+                           rowID = seq_len(nN))
+    }
+
+
+    mData.new <- mData
+    tse <- treeSummarizedExperiment(linkData = linkD, tree = tree,
+                                    assays = tabNA, metadata = mData.new,
                                     colData = cData, rowData = rdataA)
     return(tse)
 
 }
-
-
-
 
 #' Calculate entity values at internal nodes
 #'
@@ -276,3 +344,9 @@ setMethod("nodeValue",
           signature(data = "leafSummarizedExperiment"),
           nodeValue.B)
 
+#' @rdname nodeValue
+#' @importFrom utils flush.console
+#' @importFrom methods is
+setMethod("nodeValue",
+          signature(data = "treeSummarizedExperiment"),
+          nodeValue.C)
