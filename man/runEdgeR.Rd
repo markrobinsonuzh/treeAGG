@@ -62,7 +62,7 @@ Test differential abundance of entities using functions from the
 \code{\link{edgeR}} (Robinson et al. 2010, \emph{Bioinformatics}; McCarthy et
 al. 2012, \emph{Nucleic Acids Research}) to fit models and calculate
 moderated test for each entity. We have used
-\code{\link[edgeR]{estimateGLMRobustDisp}} to estimate the dispersion. The
+\code{\link[edgeR]{estimateDisp}} to estimate the dispersion. The
 statistical methods implemented in the \code{edgeR} package were originally
 designed for the analysis of gene expression data such as RNA-sequencing
 counts. Here, we apply these methods to counts that might be from microbes or
