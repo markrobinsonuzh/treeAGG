@@ -1,6 +1,7 @@
-
 # when data is a data frame or a matrix
-nodeValue.A <- function(data, fun = sum, tree, message = FALSE) {
+nodeValue.A <- function(data, fun = sum,
+                        tree, message = FALSE,
+                        level = NULL) {
     if (!(is.data.frame(data) |
           is.matrix(data))) {
         stop("data should be a matrix or data.frame")
@@ -16,64 +17,74 @@ nodeValue.A <- function(data, fun = sum, tree, message = FALSE) {
         stop(cat("Some row names can't be matched to the labels of leaf nodes:",
                  chs, "\n"))
     }
-    ## rename data with the alias of the node label
-    rn <- rownames(data)
-    leafNum <- transNode(tree = tree, input = rn, message = FALSE)
-    leafLab_alias <- transNode(tree = tree, input = leafNum,
+    ## rename data with the alias of the node labels
+    tabA <- data
+    rn <- rownames(tabA)
+    tipNum <- transNode(tree = tree, input = rn, message = FALSE)
+    leafLab_alias <- transNode(tree = tree, input = tipNum,
                                use.alias = TRUE, message = FALSE)
-    rownames(data) <- leafLab_alias
+    rownames(tabA) <- leafLab_alias
 
     ## nodes
     emat <- tree$edge
     leaf <- setdiff(emat[, 2], emat[, 1])
     nodeI <- setdiff(emat[, 1], leaf)
+    if (is.null(level)) {
+        nodeA <- c(leaf, nodeI)
+    } else {
+        if (is.character(level)) {
+            level <- transNode(tree = tree, input = level,
+                               use.alias = FALSE, message = FALSE)
+        }
+        ll <- level
+        lo <- .findParallel(tree = tree, input = level, use.alias = FALSE)
+        nodeA <- c(ll, lo)
+    }
+
+    ## Find the rows of descendants
+    leafRow <- lapply(seq_along(nodeA), FUN = function(x) {
+        # get a node
+        xx <- nodeA[x]
+
+        # find its descendant leaves
+        lx <- findOS(tree = tree, ancestor = xx,
+                     only.Tip = TRUE, self.include = TRUE,
+                     use.alias = TRUE)
+
+        # find the rows of descendant leaves in the assay table
+        rx <- match(lx, tipNum)
+        return(rx)
+    })
+
+    ## generate values for nodes from their descendant leaves
+    # assays
+    tabNA <- lapply(leafRow, FUN = function(x) {
+        tab.x <- tabA[x, , drop = FALSE]
+        rx <- apply(tab.x, 2, fun)
+        rx
+    })
+
+    tabN <- do.call(rbind, tabNA)
 
     ## the node labels
-    nN <- length(nodeI)
-    nodeLab <- transNode(tree = tree, input = nodeI,
-                      use.alias = FALSE,
-                      message = FALSE)
-    nodeLab_alias <- transNode(tree = tree, input = nodeI,
-                         use.alias = TRUE,
-                         message = FALSE)
-
-    # calculate counts at nodes
-    cNode <- matrix(NA, nrow = nN, ncol = ncol(data))
-    rownames(cNode) <- nodeLab_alias
-
-    for (i in seq_len(nN)) {
-        node.i <- nodeI[i]
-        tips.i <- findOS(ancestor = node.i, tree = tree,
-                         only.Tip = TRUE, self.include = TRUE,
-                         use.alias = TRUE)
-        tips.i <- names(tips.i)
-        cNode[i, ] <- apply(data[tips.i, ], 2, fun)
-
-        # print out the running process
-        if (message) {
-            message(i, " out of ", nN , " finished", "\r", appendLF = FALSE)
-            flush.console()
-        }
-    }
-    colnames(cNode) <- colnames(data)
-
-    final <- rbind(data, cNode)
-
-    # if there are duplicated value the node label, use the alias of the node
-    # labels as the row names
-    if (anyDuplicated(c(rn, nodeLab))) {
-        rownames(final) <- c(leafLab_alias, nodeLab_alias)
+    nodeLab <- transNode(tree = tree, input = nodeA,
+                         use.alias = FALSE, message = FALSE)
+    if (anyDuplicated(nodeLab)) {
+        nodeLab_alias <- transNode(tree = tree, input = nodeA,
+                                   use.alias = TRUE, message = FALSE)
+        rownames(tabN) <- nodeLab_alias
     } else {
-        rownames(final) <- c(rn, nodeLab)
-
+        rownames(tabN) <- nodeLab
     }
+
 
     # output
-    return(final)
+    return(tabN)
 }
 
 # when data is a leafSummarizedExperiment
-nodeValue.B <- function(data, fun = sum, message = FALSE) {
+nodeValue.B <- function(data, fun = sum, message = FALSE,
+                        level = NULL) {
     if (!is(data, "leafSummarizedExperiment")) {
         stop("\n data should be a leafSummarizedExperiment. \n")
     }
@@ -97,7 +108,17 @@ nodeValue.B <- function(data, fun = sum, message = FALSE) {
     emat <- tree$edge
     leaf <- setdiff(emat[, 2], emat[, 1])
     nodeI <- setdiff(emat[, 1], leaf)
-    nodeA <- c(leaf, nodeI)
+    if (is.null(level)) {
+        nodeA <- c(leaf, nodeI)
+    } else {
+        if (is.character(level)) {
+            level <- transNode(tree = tree, input = level,
+                               use.alias = FALSE, message = FALSE)
+        }
+        ll <- level
+        lo <- .findParallel(tree = tree, input = level, use.alias = FALSE)
+        nodeA <- c(ll, lo)
+    }
 
     nN <- length(nodeA)
     ## Find the rows of descendants
@@ -175,7 +196,8 @@ nodeValue.B <- function(data, fun = sum, message = FALSE) {
 }
 
 # when data is a treeSummarizedExperiment
-nodeValue.C <- function(data, fun = sum, message = FALSE) {
+nodeValue.C <- function(data, fun = sum, message = FALSE,
+                        level = NULL) {
     if (!is(data, "treeSummarizedExperiment")) {
         stop("\n data should be a leafSummarizedExperiment. \n")
     }
@@ -193,18 +215,30 @@ nodeValue.C <- function(data, fun = sum, message = FALSE) {
     emat <- tree$edge
     leaf <- setdiff(emat[, 2], emat[, 1])
     nodeI <- setdiff(emat[, 1], leaf)
-    nodeA <- c(leaf, nodeI)
+
+    if (is.null(level)) {
+        nodeA <- c(leaf, nodeI)
+    } else {
+        if (is.character(level)) {
+            level <- transNode(tree = tree, input = level,
+                               use.alias = FALSE, message = FALSE)
+        }
+        ll <- level
+        lo <- .findParallel(tree = tree, input = level, use.alias = FALSE)
+        nodeA <- c(ll, lo)
+    }
+
 
     ## all nodes
     nN <- length(nodeA)
 
     # find the rows of descendants
     leafRow <- lapply(seq_along(nodeA), FUN = function(x) {
-        # get a node
-        xx <- nodeA[x]
+        # get nodes
+        y <- nodeA[x]
 
-        # find its descendant leaves
-        lx <- findOS(tree = tree, ancestor = xx,
+        # find the descendant leaves
+        lx <- findOS(tree = tree, ancestor = y,
                      only.Tip = TRUE, self.include = TRUE,
                      use.alias = TRUE)
 
@@ -247,6 +281,7 @@ nodeValue.C <- function(data, fun = sum, message = FALSE) {
     nodeLab <- transNode(tree = tree, input = nodeA,
                          use.alias = FALSE, message = FALSE)
 
+
     if (anyDuplicated(nodeLab)) {
         nodeLab_alias <- transNode(tree = tree, input = nodeA,
                                    use.alias = TRUE, message = FALSE)
@@ -270,7 +305,6 @@ nodeValue.C <- function(data, fun = sum, message = FALSE) {
     return(tse)
 
 }
-
 #' Calculate entity values at internal nodes
 #'
 #' \code{nodeValue} calculates value, e.g., count, for each internal
