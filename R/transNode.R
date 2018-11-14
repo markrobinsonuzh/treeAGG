@@ -43,6 +43,9 @@ transNode <- function(tree, input, use.alias = FALSE,
         stop("tree: should be a phylo object. \n")
     }
 
+    if (is.factor(input)) {
+        stop("factor detected; The node label is required to be character or numeric.")
+    }
     # node number & tip number
     mat <- tree$edge
     nodI <- sort(unique(mat[, 1]))

@@ -120,7 +120,7 @@ library size of a sample, $\mathbf{\alpha} = (\alpha_1, \alpha_2, ...,
 In the `r CRANpkg("dirmult")` package, the Dirichlet Multinomial distribution
 (equation \@ref(eq:dirmult1)) is reparameterized with $\mathbf{\pi} = (\pi_1,
 ..., \pi_K)$ and $\theta$ so that $\alpha_0 = \frac{(1-\theta)}{\theta}$ and
-$\alpha_k = \pi_k \theta$. Here, $\pi_k$ is the expected proportion of entity
+$\alpha_k = \pi_k \alpha_0$. Here, $\pi_k$ is the expected proportion of entity
 $k$ in a sample.
 
 The technical details in the simulation procedure are as below.
