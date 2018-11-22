@@ -1,7 +1,7 @@
 Package: treeAGG
 Type: Package
 Title: Tree Aggregation
-Version: 0.99.13
+Version: 0.99.14
 Authors@R: c(
     person("Ruizhu", "Huang", email = "ruizhuRH@gmail.com",
            role = c("aut", "cre")),
@@ -25,7 +25,7 @@ Imports:
     utils,
     methods,
     S4Vectors
-RoxygenNote: 6.1.0
+RoxygenNote: 6.1.1
 VignetteBuilder: knitr
 Suggests: testthat, BiocStyle, knitr, rmarkdown, GUniFrac, cowplot
 biocViews: Software, Microbiome, SingleCell, DecisionTree, FeatureExtraction

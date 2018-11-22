@@ -34,7 +34,7 @@
 #' geom_text2(aes(label = label), color = "darkorange",
 #'            hjust = -0.1, vjust = -0.7)
 #'
-#' (tips <- findOS(tree = tinyTree, ancestor = 17, only.Tip = TRUE))
+#' (tips <- findOS(tree = tinyTree, ancestor = c(17), only.Tip = TRUE))
 
 findOS <- function(tree,
                    ancestor,
