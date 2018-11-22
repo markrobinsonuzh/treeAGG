@@ -4,7 +4,7 @@
 \alias{fdr}
 \title{Calculate false discovery rate (fdr) on a tree structure}
 \usage{
-fdr(tree, truth, found, only.Tip = TRUE, direction = FALSE)
+fdr(tree, truth, found, only.leaf = TRUE, direction = FALSE)
 }
 \arguments{
 \item{tree}{A phylo object}
@@ -30,7 +30,7 @@ out and used in the fdr calculation; when fdr at leaf level is required,
 then the descendant leaf nodes will be found out and used in the fdr
 calculation.}
 
-\item{only.Tip}{A logical value, TRUE or FALSE. If TRUE, false discovery rate
+\item{only.leaf}{A logical value, TRUE or FALSE. If TRUE, false discovery rate
 is calculated at the leaf (tip) level; otherwise it is calculated at node
 level. The default is TRUE}
 
@@ -62,10 +62,10 @@ ggtree(tinyTree) + geom_text2(aes(label = node))
  # Found: branches with node 17 and node 14
  # fdr at the tip level
 fdr1 <- fdr(tree = tinyTree, truth = c(16, 13),
-            found = c(17, 14), only.Tip = TRUE)
+            found = c(17, 14), only.leaf = TRUE)
  # fdr at the node level
 fdr2 <- fdr(tree = tinyTree, truth = c(16, 13),
-            found = c(17, 14), only.Tip = FALSE)
+            found = c(17, 14), only.leaf = FALSE)
 
 
 # ------------ direction matters-------------------
@@ -73,11 +73,11 @@ fdr2 <- fdr(tree = tinyTree, truth = c(16, 13),
 
  # the order of direction for truth and found should be the same
 (fdr3 <- fdr(tree = tinyTree, truth = list(16, 13),
-            found = list(16, 13), only.Tip = TRUE,
+            found = list(16, 13), only.leaf = TRUE,
             direction = TRUE))  # correct order
 
 (fdr4 <- fdr(tree = tinyTree, truth = list(16, 13),
-            found = list(13, 16), only.Tip = FALSE,
+            found = list(13, 16), only.leaf = FALSE,
             direction = TRUE)) # wrong order
 
 

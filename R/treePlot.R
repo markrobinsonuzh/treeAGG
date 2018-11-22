@@ -254,8 +254,8 @@ treePlot <- function(tree,
     d <- p$data[, "node", drop = FALSE]
 
     # The edges selected to be colored
-    eList <- lapply(branch, findOS, tree = tree,
-                    only.Tip = FALSE, self.include = TRUE)
+    eList <- findOS(tree = tree, ancestor = branch,
+                    only.leaf = FALSE, self.include = TRUE)
     el <- unlist(lapply(eList, length))
     eList <- eList[order(el, decreasing = TRUE)]
     if (length(col.branch) == length(branch)) {
@@ -379,8 +379,8 @@ treePlot <- function(tree,
     }
     labAlias <- transNode(tree = tree, input = zoomNode,
                           use.alias = TRUE)
-    zList <- lapply(zoomNode, findOS, tree = tree,
-                    only.Tip = FALSE, self.include = TRUE)
+    zList <- findOS(tree = tree, ancestor = zoomNode,
+                    only.leaf = FALSE, self.include = TRUE)
     names(zList) <- labAlias
     z_len <- unlist(lapply(zList, length))
 

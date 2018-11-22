@@ -8,15 +8,16 @@
 \alias{nodeValue,treeSummarizedExperiment-method}
 \title{Calculate entity values at internal nodes}
 \usage{
-nodeValue(data, fun = sum, tree, message = FALSE)
+nodeValue(data, fun = sum, tree, message = FALSE, level = NULL, ...)
 
-\S4method{nodeValue}{ANY}(data, fun = sum, tree, message = FALSE)
+\S4method{nodeValue}{ANY}(data, fun = sum, tree, message = FALSE,
+  level = NULL)
 
 \S4method{nodeValue}{leafSummarizedExperiment}(data, fun = sum,
-  message = FALSE)
+  message = FALSE, level = NULL)
 
 \S4method{nodeValue}{treeSummarizedExperiment}(data, fun = sum,
-  message = FALSE)
+  message = FALSE, level = NULL, col.linkData = "nodeNum")
 }
 \arguments{
 \item{data}{A leafSummarizedExperiment object or a data frame/matrix.}
@@ -29,6 +30,20 @@ matrix.}
 
 \item{message}{A logical value. The default is TRUE. If TRUE, it will print
 out the currenet status of a process.}
+
+\item{level}{A vector of nodes. This indicates the level to which the
+aggregation is made. For example, a tree has two main branches (A & B).
+Each branch (A or B) has multiple sub-branches. If the aggregation to the
+two main branches is desired, we could use \code{ level = c(A, B)},
+\code{level = A} or \code{level = B}. In other words, users could specify
+the level by provide some branches that covers parts of the tree. The rest
+part of the tree is pruned automactially with the minimum number of
+branches.}
+
+\item{...}{The additional argument allows only for
+\code{treeSummarizedExperiment}.}
+
+\item{col.linkData}{the column names from \code{linkData}.}
 }
 \value{
 If input data is a treeSummarizedExperiment object, a
@@ -47,23 +62,40 @@ could be achieved by specifying different functions in the argument
 \examples{
 data("tinyTree")
 if (require(ggtree)) {
-(p <- ggtree(tinyTree) + geom_text(aes(label = label)))
+## The node labels are in orange and the node numbers are in blue
+(ggtree(tinyTree,branch.length = 'none')+
+    geom_text2(aes(label = label), color = "darkorange",
+           hjust = -0.1, vjust = -0.7) +
+    geom_text2(aes(label = node), color = "darkblue",
+               hjust = -0.5, vjust = 0.7))
 set.seed(1)
 count <- matrix(rpois(100, 10), nrow =10)
 rownames(count) <- tinyTree$tip.label
 colnames(count) <- paste(c("C1_", "C2_"),
 c(1:5, 1:5), sep = "")
 
-count_tinyTree <- nodeValue(data = count,
-tree = tinyTree, fun = sum)
+## if the level isn't specified, the aggregation is made at each level
+(agg1 <- nodeValue(data = count, tree = tinyTree,
+                  fun = sum, level = NULL))
+
+## specify the level that the aggregation should be made to
+ # 13 (a branch); 16 (a branch); 9 & 10 (are automatically found and
+ #  separate because they are not in a same branch)
+(agg2 <- nodeValue(data = count, tree = tinyTree,
+                  fun = sum, level = c(13, 16)))
+
+ # 13 (a branch); 15, 10 (are automatically found and
+ #  separate because they are not in a same branch)
+(agg3 <- nodeValue(data = count, tree = tinyTree,
+                  fun = sum, level = c(13)))
 
 # check to see whether the count of an internal node is the sum
 # of counts of its descendant leaves.
 # here, check the first sample as an example
 
-nod <- transNode(tree = tinyTree, input = rownames(count_tinyTree),
+nod <- transNode(tree = tinyTree, input = rownames(agg1),
                  message = FALSE)
-d <- cbind.data.frame(node = nod, count = count_tinyTree[, 1])
+d <- cbind.data.frame(node = nod, count = agg1[, 1])
 
 ggtree(tinyTree) \%<+\% d + geom_text2(aes(label = count))
 }

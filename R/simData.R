@@ -432,8 +432,8 @@ simData <- function(tree = NULL, data = NULL,
     # proportion of internal nodes
     leaf <- setdiff(tree$edge[, 2], tree$edge[, 1])
     nodI <- setdiff(tree$edge[, 1], leaf)
-    desI <- lapply(nodI, findOS, tree = tree,
-                   only.Tip = TRUE,
+    desI <- findOS(tree = tree, ancestor = nodI,
+                   only.leaf = TRUE,
                    self.include = TRUE,
                    use.alias = TRUE)
     desI <- lapply(desI, names)
@@ -595,8 +595,8 @@ simData <- function(tree = NULL, data = NULL,
     nodA <- c(leaf, nodI)
 
     # find descendants
-    desI <- lapply(nodI, findOS, tree = tree,
-                   only.Tip = TRUE,
+    desI <- findOS(tree = tree, ancestor = nodI,
+                   only.leaf = TRUE,
                    self.include = TRUE,
                    use.alias = TRUE)
     desI <- lapply(desI, names)
@@ -680,22 +680,22 @@ simData <- function(tree = NULL, data = NULL,
     ## the label of nodes on branch A
     # leaves
     tip.A <- findOS(tree = tree, ancestor = branchA,
-                   only.Tip = TRUE, self.include = TRUE,
+                   only.leaf = TRUE, self.include = TRUE,
                    use.alias = TRUE)
     tip.A <- names(tip.A)
     # nodes
     nodA.A <- findOS(tree = tree, ancestor = branchA,
-                    only.Tip = FALSE, self.include = TRUE,
+                    only.leaf = FALSE, self.include = TRUE,
                     use.alias = TRUE)
     nodA.A <- names(nodA.A)
     # internal nodes
     nodI.A <- setdiff(nodA.A, tip.A)
 
     # descendants of internal nodes
-    des.IA <- lapply(nodI.A, findOS, tree = tree,
-                   only.Tip = TRUE,
-                   self.include = TRUE,
-                   use.alias = TRUE)
+    des.IA <- findOS(tree = tree, ancestor = nodI.A,
+                     only.leaf = TRUE,
+                     self.include = TRUE,
+                     use.alias = TRUE)
     des.IA <- lapply(des.IA, names)
 
     # tip proportions estimated from real data
@@ -712,7 +712,7 @@ simData <- function(tree = NULL, data = NULL,
     if (scenario == "S1") {
         # leaves on branch B
         tip.B <- findOS(tree = tree, ancestor = branchB,
-                       only.Tip = TRUE, self.include = TRUE,
+                       only.leaf = TRUE, self.include = TRUE,
                        use.alias = TRUE)
         tip.B <- names(tip.B)
         beta[tip.A] <- ratio
@@ -724,7 +724,7 @@ simData <- function(tree = NULL, data = NULL,
     # increase or decrease)
     if (scenario == "S2") {
         tip.B <- findOS(tree = tree, ancestor = branchB,
-                       only.Tip = TRUE, self.include = TRUE,
+                       only.leaf = TRUE, self.include = TRUE,
                        use.alias = TRUE)
         tip.B <- names(tip.B)
 
@@ -781,7 +781,7 @@ simData <- function(tree = NULL, data = NULL,
                  Try another branchA or another max of ratio... \n")
         }
         tip.B <- findOS(tree = tree, ancestor = branchB,
-                        only.Tip = TRUE, self.include = TRUE,
+                        only.leaf = TRUE, self.include = TRUE,
                         use.alias = TRUE)
         tip.B <- names(tip.B)
         sumB <- sum(pars[tip.B])

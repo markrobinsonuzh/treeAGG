@@ -164,16 +164,16 @@ tpr <- function(tree, truth, found,
         # the true positive is 0, and the positive depends on the level
         if (is.null(found)) {
             if (only.Tip) {
-                tipT <- lapply(truth, findOS, tree = tree,
-                               only.Tip = TRUE, self.include = TRUE)
+                tipT <- findOS(tree = tree, ancestor = truth,
+                               only.leaf = TRUE, self.include = TRUE)
                 tip <- unlist(tipT)
                 c(tp = 0, pos = length(tip))
             } else {
                 # the internal node whose descendant leaf nodes all have
                 # signal has signal too.
                 nodeS <- signalNode(node = truth, tree = tree)
-                nodeT <- lapply(nodeS, findOS, tree = tree,
-                                only.Tip = FALSE,
+                nodeT <- findOS(tree = tree, ancestor = nodeS,
+                                only.leaf = FALSE,
                                 self.include = TRUE)
                 nod <- unlist(nodeT)
                 c(tp = 0, pos = length(nod))
@@ -191,10 +191,10 @@ tpr <- function(tree, truth, found,
             # the positive could be calculated after their input formats are
             # correct.
             if (only.Tip) {
-                tipT <- lapply(truth, findOS, tree = tree,
-                               only.Tip = TRUE, self.include = TRUE)
-                tipF <- lapply(found, findOS, tree = tree,
-                               only.Tip = TRUE, self.include = TRUE)
+                tipT <- findOS(tree = tree, ancestor = truth,
+                               only.leaf = TRUE, self.include = TRUE)
+                tipF <- findOS(tree = tree, ancestor = found,
+                               only.leaf = TRUE, self.include = TRUE)
                 # the true positive & positive
                 TP <- intersect(unlist(tipT), unlist(tipF))
                 tip <- unlist(tipT)
@@ -204,11 +204,11 @@ tpr <- function(tree, truth, found,
                 # all have signal has signal too.
                 nodeS <- signalNode(node = truth, tree = tree)
                 # all nodes have signal
-                nodeT <- lapply(nodeS, findOS, tree = tree,
-                                only.Tip = FALSE, self.include = TRUE)
+                nodeT <- findOS(tree = tree, ancestor = nodeS,
+                                only.leaf = FALSE, self.include = TRUE)
                 # nodes found with signal
-                nodeF <- lapply(found, findOS, tree = tree,
-                                only.Tip = FALSE,
+                nodeF <- findOS(tree = tree, ancestor = found,
+                                only.leaf = FALSE,
                                 self.include = TRUE)
                 # true positive & positive
                 TP <- intersect(unlist(nodeT), unlist(nodeF))

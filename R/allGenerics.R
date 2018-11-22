@@ -11,13 +11,24 @@ setMethod("assays", signature("treeSummarizedExperiment"),
               out <- callNextMethod(x, withDimnames)
 
               if (use.nodeLab) {
+                  # The pair between rows of assays and rows of linkData
+                  rowID <- x@linkData$rowID
+                  pl <- lapply(seq_along(rowID), FUN = function(x) {
+                     xx <- rowID[[x]]
+                     cbind(iLink = rep(x, length(xx)), iAssay = xx)
+                  })
+                  pm <- do.call(rbind, pl)
+                  ps <- pm[order(pm[, "iAssay"], decreasing = FALSE), ]
+                  ind <- ps[, "iLink"]
                   nodeLab <- x@linkData$nodeLab
                   if (any(duplicated(nodeLab))) {
-                      nodeLab <- x@linkData$nodeLab_alias
+                      lab <- x@linkData$nodeLab_alias[ind]
+                  } else {
+                      lab <- nodeLab[ind]
                   }
 
                   outR <- lapply(out, function(x) {
-                      rownames(x) <- nodeLab
+                      rownames(x) <- lab
                       x
                   })
               } else {
@@ -72,47 +83,64 @@ setMethod("treeData", signature("treeSummarizedExperiment"),
 #' @importFrom S4Vectors metadata
 #' @rdname treeSummarizedExperiment-accessor
 #' @export
+#'
 setMethod("[", signature(x = "treeSummarizedExperiment"),
           function(x, i, j){
-              # subset slots inherited from SummarizedExperiment
-              xx <- SummarizedExperiment(assays = assays(x),
-                                         rowData = x@elementMetadata,
-                                         colData = colData(x),
-                                         metadata = metadata(x))
-              # new slot
-              linkD <- x@linkData
+
+             # Subset the traditional slots from SummarizedExperiment
+              nx <- callNextMethod()
+
+              # Extract the map information between rows of assays and
+              # nodes of the tree
+              lk <- x@linkData
+              rid <- lk$rowID
+              nodeNum <- lk$nodeNum
+              node <- lapply(seq_along(rid), FUN = function(x) {
+                  rep(x, length(rid[[x]]))
+              })
+              pair <- cbind(rid = unlist(rid), nodeID = nodeNum[unlist(node)])
+              pair <- pair[order(pair[, "rid"], decreasing = FALSE), ]
+
               if (!missing(i)) {
-                  if (is.character(i)) {
-                      fmt <- paste0("<", class(x),
-                                    ">[i,] index out of bounds: %s")
-                      i <- SummarizedExperiment:::.SummarizedExperiment.charbound(
-                          i, rownames(x), fmt)}
-                  i <- as.vector(i)
-                  xx <- xx[i, ]
-                  linkD <- linkD[i, , drop = FALSE]
+                  pair <- pair[i, ]
               }
 
-              if (!missing(j)) {
-                  if (is.character(j)) {
-                      fmt <- paste0("<", class(x), ">[,j] index out of bounds: %s")
-                      j <- SummarizedExperiment:::.SummarizedExperiment.charbound(
-                          j, colnames(x), fmt) }
-                  j <- as.vector(j)
-                  xx <- xx[, j]
+             # Update the column 'rowID' in new slot (linkData)
+              rowID <- lapply(seq_along(nodeNum), FUN = function(x) {
+                  nID <- pair[, "nodeID"]
+                  which(nID %in% x)
 
-              }
+              })
+              lk$rowID <- rowID
 
-              # final <- BiocGenerics:::replaceSlots(x,
-              #                                      linkData = linkD,
-              #                                      assays = assays(xx),
-              #                                      rowData = rowData(xx),
-              #                                      colData = colData(xx),
-              #                                      metadata = metadata(xx))
-
-              final <- new("treeSummarizedExperiment", xx,
-                           treeData = x@treeData,
-                           linkData = linkD)
+              # update slots
+              final <- BiocGenerics:::replaceSlots(nx,
+                                                   linkData = lk,
+                                                   treeData = x@treeData)
               return(final)
+          })
+
+
+#' @rdname treeSummarizedExperiment-accessor
+#' @export
+setGeneric("getByLink", function(x, subset) {
+    standardGeneric("getByLink")
+})
+
+#' @rdname treeSummarizedExperiment-accessor
+#' @export
+setMethod("getByLink", signature(x = "treeSummarizedExperiment"),
+          function(x, subset) {
+              # Access the link data
+              lx <- x@linkData
+
+              # Get the column 'rowID'
+              e <- substitute(subset)
+              lID <- base::subset(lx, subset = eval(e),
+                                  select = "rowID", drop = TRUE)
+              rID <- unlist(lID)
+              # # Subset the object
+              x[rID, ]
           })
 
 
