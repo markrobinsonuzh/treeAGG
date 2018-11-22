@@ -1,7 +1,7 @@
 Package: treeAGG
 Type: Package
 Title: Tree Aggregation
-Version: 0.99.14
+Version: 0.99.15
 Authors@R: c(
     person("Ruizhu", "Huang", email = "ruizhuRH@gmail.com",
            role = c("aut", "cre")),
