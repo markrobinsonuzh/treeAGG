@@ -1,7 +1,7 @@
 Package: treeAGG
 Type: Package
 Title: Tree Aggregation
-Version: 0.99.15
+Version: 0.99.16
 Authors@R: c(
     person("Ruizhu", "Huang", email = "ruizhuRH@gmail.com",
            role = c("aut", "cre")),
@@ -11,7 +11,7 @@ Maintainer: Ruizhu Huang <ruizhuRH@gmail.com>
 Description: The package is designed to analyze data that can be organized in a 
     hierarchical structure, and to find the most informative resolution at 
     which to interpret the signal of interest.
-Depends: R(>= 3.5.0), SummarizedExperiment
+Depends: R(>= 3.6.0), SummarizedExperiment
 License: GPL (>=2)
 Encoding: UTF-8
 LazyData: true
