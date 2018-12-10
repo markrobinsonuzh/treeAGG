@@ -72,110 +72,9 @@ nodeValue.A <- function(data, fun = sum, tree, message = FALSE) {
     return(final)
 }
 
-# when data is a leafSummarizedExperiment
+
+# when data is a TreeSummarizedExperiment
 nodeValue.B <- function(data, fun = sum, message = FALSE) {
-    if (!is(data, "leafSummarizedExperiment")) {
-        stop("\n data should be a leafSummarizedExperiment. \n")
-    }
-
-
-    # extract table and tree from treeSummarizedExperiment.
-    tree <- metadata(data)$tree
-    tabA <- assays(data)
-    rData <- rowData(data, use.names = FALSE)
-    mData <- metadata(data)
-    cData <- colData(data)
-
-    # the row names of table
-    tipLab <- rData$nodeLab
-    if (is.null(tipLab)) { tipLab <- rownames(data)}
-    tipNum <- transNode(tree = tree, input = tipLab, message = FALSE)
-    tipLab_alias <- transNode(tree = tree, input = tipNum,
-                              use.alias = TRUE, message = FALSE)
-
-    # leaves and internal nodes
-    emat <- tree$edge
-    leaf <- setdiff(emat[, 2], emat[, 1])
-    nodeI <- setdiff(emat[, 1], leaf)
-    nodeA <- c(leaf, nodeI)
-
-    nN <- length(nodeA)
-    ## Find the rows of descendants
-    leafRow <- lapply(seq_along(nodeA), FUN = function(x) {
-        # get a node
-        xx <- nodeA[x]
-
-        # find its descendant leaves
-        lx <- findOS(tree = tree, ancestor = xx,
-                     only.Tip = TRUE, self.include = TRUE,
-                     use.alias = TRUE)
-
-        # find the rows of descendant leaves in the assay table
-        rx <- match(lx, tipNum)
-        return(rx)
-    })
-
-    ## generate values for nodes from their descendant leaves
-    # assays
-    tabNA <- vector("list", length = length(tabA))
-    for (i in seq_along(tabA)) {
-        tabL.i <- lapply(leafRow, FUN = function(x) {
-            tabA.i <- tabA[[i]]
-            xi <- tabA.i[x, , drop = FALSE]
-            ri <- apply(xi, 2, fun)
-            return(ri)
-        })
-        tab.i <- do.call(rbind, tabL.i)
-        tabNA[[i]] <- tab.i
-
-    }
-
-    # Create the rowData
-    rD <- lapply(leafRow, FUN = function(x) {
-        xi <- rData[x, , drop = FALSE]
-        ri <- apply(xi, 2, FUN = function(x) {
-            ui <- unique(x)
-            si <- ifelse(length(ui) > 1, NA, ui)
-            return(si)
-        })
-        return(ri)
-    })
-    rdataA <- do.call(rbind, rD)
-    rownames(rdataA) <- NULL
-
-    ## Create the node labels
-    nodeLab <- transNode(tree = tree, input = nodeA,
-                         use.alias = FALSE, message = FALSE)
-
-    ## Check whether there are duplicated values in nodeLab
-    # If yes, add another column nodeLab_alias
-    if (anyDuplicated(nodeLab)) {
-        nodeLab_alias <- transNode(tree = tree, input = nodeA,
-                                   use.alias = TRUE, message = FALSE)
-        linkD <- DataFrame(nodeLab = nodeLab,
-                           nodeLab_alias = nodeLab_alias,
-                           nodeNum = nodeA,
-                           isLeaf = nodeA %in% leaf,
-                           rowID = seq_len(nN))
-    } else {
-        linkD <- DataFrame(nodeLab = nodeLab,
-                           nodeNum = nodeA,
-                           isLeaf = nodeA %in% leaf,
-                           rowID = seq_len(nN))
-    }
-
-
-    mData.new <- mData
-    tse <- treeSummarizedExperiment(linkData = linkD, tree = tree,
-                                    assays = tabNA, metadata = mData.new,
-                                    colData = cData, rowData = rdataA)
-    return(tse)
-
-
-}
-
-# when data is a treeSummarizedExperiment
-nodeValue.C <- function(data, fun = sum, message = FALSE) {
     if (!is(data, "treeSummarizedExperiment")) {
         stop("\n data should be a leafSummarizedExperiment. \n")
     }
@@ -341,12 +240,5 @@ setMethod("nodeValue", signature(data = "ANY"),
 #' @importFrom utils flush.console
 #' @importFrom methods is
 setMethod("nodeValue",
-          signature(data = "leafSummarizedExperiment"),
-          nodeValue.B)
-
-#' @rdname nodeValue
-#' @importFrom utils flush.console
-#' @importFrom methods is
-setMethod("nodeValue",
           signature(data = "treeSummarizedExperiment"),
-          nodeValue.C)
+          nodeValue.B)

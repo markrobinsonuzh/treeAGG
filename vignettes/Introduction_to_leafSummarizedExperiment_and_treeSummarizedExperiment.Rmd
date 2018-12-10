@@ -1,5 +1,5 @@
 ---
-title: "Introduction to leafSummarizedExperiment and treeSummarizedExperiment"
+title: "Introduction to treeSummarizedExperiment"
 author: 
 - name: Ruizhu HUANG
   affiliation: 
@@ -32,39 +32,26 @@ knitr::opts_chunk$set(echo = TRUE, message = FALSE, warning = FALSE)
 
 # Introduction 
 
-The `leafSummarizedExperiment` and `treeSummarizedExperiment` classes are both
-extensions of the `SummarizedExperiment` class. They are used to store
-rectangular data of experimental results as in a `SummarizedExperiment`, and
-also support the storage of a hierarchical structure and its link information to
-the rectangular data. The `leafSummarizedExperiment` is intended to store
-experimental data and annotation information for the leaf nodes of a tree, while
-the `treeSummarizedExperiment` class contains experimental (or derived) data and
-annotation information also for the internal nodes of the tree.
+The `treeSummarizedExperiment` class is an extensions of the
+`SummarizedExperiment` class. It's used to store rectangular data of
+experimental results as in a `SummarizedExperiment`, and also support the
+storage of a hierarchical structure and its link information to the rectangular
+data. 
 
-# The leafSummarizedExperiment class
+# treeSummarizedExperiment {#tse-class}
 
-## The comparision between leafSummarizedExperiment and SummarizedExperiment
+## Anatomy of treeSummarizedExperiment
 
-The `leafSummarizedExperiment` class has exactly the same structure as the
-`SummarizedExperiment` class, including `assays`, `rowData`, `colData` and
-`metadata`. More details about the `SummarizedExperiment` structure can be found
-in [SummarizedExperiment for coordinating experimental assays, samples, and
-regions of
-interest](https://bioconductor.org/packages/release/bioc/vignettes/SummarizedExperiment/inst/doc/SummarizedExperiment.html).
-The difference to `SummarizedExperiment` is that `leafSummarizedExperiment` has
-more restrictions on the data.
+```{r strTSE, echo=FALSE, fig.cap= "The structure of the treeSummarizedExperiment class."}
+knitr::include_graphics("tse.png")
+```
+Compared with the `SummarizedExperiment` class, there are two more slots, the
+tree data (`treeData`) and the link data (`linkData`), in the
+`treeSummarizedExperiment` class. Other slots, including `assays`, `rowData`,
+`colData` and `metadata`, are the same as those in `SummarizedExperiment`.
 
-* It requires a `phylo` object stored in `metadata` and named `tree`.
-* It requires that the `phylo` object has a unique label for each leaf node.
-* It requires a column `nodeLab` in `rowData`, or row names of `rowData`, to
-provide the label of the node that each row is mapped to.
 
-The link between the `assays` data and the nodes of the tree strucutre is
-checked when the `leafSummarizedExperiment` object is build. Only rows that
-could be mapped to the nodes of the tree are kept in the matrix-like
-elements of `assays`.
-
-## The construction of leafSummarizedExperiment
+## The construction of treeSummarizedExperiment
 
 We generate a *toyTable* with observations of 5 entities collected from 4
 samples.
@@ -116,15 +103,15 @@ plot(toyTree)
 ```
 
 To store the toy data, *toyTable*, *rowInf*, *colInf*, and *toyTree*, we could
-use a `leafSummarizedExperiment` container. The map between the rows of
+use a `treeSummarizedExperiment` container. The map between the rows of
 *toyTable* and the leaf nodes of *toyTree* is checked when creating a
-`leafSummarizedExperiment` object. If the object is built as below, we get a
+`treeSummarizedExperiment` object. If the object is built as below, we get a
 message that 5 rows of *toyTable* are removed because they can't be matched to
 any node of the tree. The `assays` table of the resulting *test1* object
 consequently has no rows.
 ```{r}
-# use the toy data to create a leafSummarizedExperiment object.
-test1 <- leafSummarizedExperiment(assays = list(toyTable), rowData = rowInf,
+# use the toy data to create a treeSummarizedExperiment object.
+test1 <- treeSummarizedExperiment(assays = list(toyTable), rowData = rowInf,
                                   colData = colInf, tree = toyTree)
 assays(test1)[[1]]
 ```
@@ -133,7 +120,7 @@ To correctly store data, we need to additionally provide the link information
 between the rows of *toyTable* and the nodes of the *toyTree* via a column
 `nodeLab` in `rowData` or via the row names of `rowData`.
 
-Option 1: Create a `leafSummarizedExperiment` object by changing the row names
+Option 1: Create a `treeSummarizedExperiment` object by changing the row names
 of `rowData`.
 ```{r}
 # change the row names of the row data
@@ -141,58 +128,43 @@ rowInf_1 <- rowInf
 rownames(rowInf_1) <- toyTree$tip.label
 toyTable_1 <- toyTable
 rownames(toyTable_1) <- toyTree$tip.label
-test2 <- leafSummarizedExperiment(assays = list(toyTable_1), 
+test2 <- treeSummarizedExperiment(assays = list(toyTable_1), 
                                    rowData = rowInf_1,
                                    colData = colInf, 
                                    tree = toyTree)
 assays(test2)[[1]]
 ```
 
-Option 2: Create a `leafSummarizedExperiment` object by adding a column
+Option 2: Create a `treeSummarizedExperiment` object by adding a column
 `nodeLab` to the `rowData`.
 ```{r}
 # add a column (nodeLab) to the row data
 rowInf$nodeLab <- toyTree$tip.label
-lse <- leafSummarizedExperiment(assays = list(toyTable),
+lse <- treeSummarizedExperiment(assays = list(toyTable),
                                 rowData = rowInf,
                                 colData = colInf,
                                 tree = toyTree)
 assays(lse)[[1]]
 ```
 
-Although the `leafSummarizedExperiment` object could be sucessfully created in
+Although the `treeSummarizedExperiment` object could be sucessfully created in
 either way, the row names of the table in `assays` are different. We recommend
 to do it as option 2 because it keeps the original row names and works better
 especially when there are multiple rows mapped to a same leaf node of the tree.
 
+If the data on internal nodes of the tree is available, we could stored it
+similarly as above. If it needs to be generated from the values of their
+descendant leaves, we could do it as shown in Section \@ref(agg).
 
-The `leafSummarizedExperiment` only supports data on the level of the leaf
-nodes. If users have rows mapped to internal nodes of a tree, then the
-`treeSummarizedExperiment` class should be used instead. Technically, the
-`treeSummarizedExperiment` could also store data on the level of leaf nodes.
-Users could choose either `leafSummarizedExperiment` or
-`treeSummarizedExperiment` to store data on the level of leaf node as shown in
-Section \@ref(sec:tse-build)).
+## Data aggregation {#agg}
 
-# treeSummarizedExperiment {#tse-class}
-
-## Anatomy of treeSummarizedExperiment
-
-```{r strTSE, echo=FALSE, fig.cap= "The structure of the treeSummarizedExperiment class."}
-knitr::include_graphics("tse.png")
-```
-Compared with the `SummarizedExperiment` class, there are two more slots, the
-tree data (`treeData`) and the link data (`linkData`), in the
-`treeSummarizedExperiment` class. Other slots, including `assays`, `rowData`,
-`colData` and `metadata`, are the same as those in `SummarizedExperiment`.
-
-Here, we construct a `treeSummarizedExperiment` object using the toy example
-from the previous section. With the function `nodeValue`, data at all nodes of
-the tree is created based on the available data on the leaf node level. The
-argument `fun` specifies how the value at an internal node is calculated from
-its descendant nodes. Here, the sum is used, and thus the value for each node is
-equal to the sum of the values of all its descendants. To view the running
-process, `message = TRUE` is used.
+To aggregate data to a specific level of the tree, the function `nodeValue`
+could be used. Here, we use it to aggregate data to all internal nodes of the
+tree. The output of `nodeValue` is still a `treeSummarizedExperiment` object.
+The argument `fun` specifies how the value at an internal node is calculated
+from its descendant nodes. Here, the `sum` is used, and thus the value for each
+node is equal to the sum of the values of all its descendants. To view the
+running process, `message = TRUE` is used.
 
 ```{r}
 tse <- nodeValue(data = lse, fun = sum, message = TRUE)
@@ -318,84 +290,5 @@ ggtree(treeD) +
                hjust = -0.1, vjust = -0.7, size = 6) +
     geom_text2(aes(label = node), color = "darkblue", 
                hjust = -0.5, vjust = 0.7, size = 5)
-```
-
-## Constructing a treeSummarizedExperiment {#sec:tse-build}
-
-A `treeSummarizedExperiment` object could be constructed using the
-function `treeSummarizedExperiment`.
-
-```{r}
-tseA <- treeSummarizedExperiment(tree = treeD, linkData = linkD, 
-                                 assays = list(aData), 
-                                 rowData = rData,
-                                 colData = cData, 
-                                 metadata = mData)
-```
-
-If the provided tree has a unique label for each node, we could also construct a
-`treeSummarizedExperiment` without providing the link data.
-
-We recreate a tree *treeN* based on the old tree by adding labels to the
-internal nodes.
-```{r}
-treeN <- treeD
-treeN$node.label <- paste("Node_", 6:9, sep = "")
-```
-
-In Figure \@ref(fig:newTREE), we see that all nodes have different labels in 
-orange text. 
-```{r newTREE, fig.cap="Rectangular layout of the new tree treeN."}
-# plot
-ggtree(treeN) + 
-    geom_text2(aes(label = label), color = "darkorange", 
-               hjust = -0.05, vjust = -0.4, size = 6) +
-    geom_text2(aes(label = node), color = "darkblue", 
-               hjust = -0.5, vjust = 0.7, size = 5)
-```
-
-We would need to provide the mapping information between rows and nodes of the
-tree if the link data is not given in the creation of a
-`treeSummarizedExperiment` object. This could be done by adding a `nodeLab`
-column to the row data. Users need to make sure they have assigned a correct
-label to a row.
-```{r}
-# give a column nodeLab in row data
-# the linkData is created automatically
-lab <- ifelse(is.na(linkD$nodeLab), linkD$nodeLab_alias, linkD$nodeLab)
-lab
-(nData <- cbind(nodeLab = lab, rData))
-```
-
-Create *tseB* without providing the link data.
-```{r}
-tseB <- treeSummarizedExperiment(tree = treeN, 
-                                 assays = list(aData),
-                                 rowData = nData,
-                                 colData = cData, 
-                                 metadata = mData)
-```
-
-The link data has been generated automatically and has only four columns as
-described in Section \@ref(sec:linkData).
-```{r}
-linkData(tseB)
-```
-
-As users like, data on the level of leaf nodes could be organized as a
-`leafSummarizedExperiment` object (*lseC*) or a `treeSummarizedExperiment`
-object (*tseC*) as below. 
-```{r eval= FALSE}
-lseC <- leafSummarizedExperiment(assays = list(toyTable),
-                                 rowData = rowInf,
-                                 colData = colInf,
-                                 tree = toyTree)
-```
-
-```{r}
-tseC <- treeSummarizedExperiment(assays = list(toyTable),
-                                 rowData = rowInf,
-                                 colData = colInf, 
-                                 tree = toyTree)
 ```
 

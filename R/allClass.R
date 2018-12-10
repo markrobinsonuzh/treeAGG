@@ -26,65 +26,6 @@ setClass("internal_rowData", contains = "DataFrame")
 phylo <- structure(list(), class = "phylo")
 setOldClass("phylo")
 
-#-------------------------------------------------------------------------------
-# leafSummarizedExperiment
-#-------------------------------------------------------------------------------
-#' An S4 class leafSummarizedExperiment
-#'
-#' The class \strong{leafSummarizedExperiment} is an extension class of standard
-#' \code{\link[SummarizedExperiment]{SummarizedExperiment-class}}
-#' class. It is designed to store rectangular data like a \code{matrix} for
-#' entities (e.g., microbes or cell types), and the information of the
-#' hiearchical structure of entities. The annotations on the rows and columns of
-#' the rectangular data are strored in \code{rowData} and \code{colData},
-#' respectively. Each row of the rectangular data could be mapped to a leaf node
-#' of the tree via the rownames of \code{rowData} or a column named as
-#' \code{nodeLab} in \code{rowData}. For example, the abundance count of
-#' microbes collected from different samples could be stored in the
-#' \code{assays} and the phylogenetic tree of the microbes in the
-#' \code{metadata}. Each row of matrix-like data in \code{assays} represents one
-#' microbial specie that could be mapped to a leaf node of the phylogenetic
-#' tree. The link between the row and the node could be given via a column
-#' (\code{nodeLab}), or the rownames of \code{rowData}. Each column of the
-#' matrix-like data is a sample. The sample information is given in the
-#' \code{colData}. The class \strong{leafSummarizedExperiment} has four slots
-#' \code{assays}, \code{rowData} \code{colData} and \code{metadata} as the
-#' \code{\link[SummarizedExperiment]{SummarizedExperiment-class}}
-#' class. More details about these four slots could be found in
-#' \code{\link[SummarizedExperiment]{SummarizedExperiment-class}}.
-#'
-#'
-#' The \strong{leafSummarizedExperiment} class has more restrictions in data
-#' structure than the \strong{SummarizedExperiment} class. In
-#' \strong{leafSummarizedExperiment} class, it's required that
-#' \itemize{
-#' \item A \code{phylo} object is stored in \code{metadata} and named as
-#' \code{tree}. The \code{phylo} object has a unique label for each leaf node.
-#' \item Each rows of matrix-like data in \code{assays} could be mapped to a
-#' leaf node of the tree. The label of leaf node is provided as the column
-#' \code{nodeLab} in \code{rowData}, or as the rownames of \code{rowData} or
-#' \code{assays}. If both provided, the information in column \code{nodeLab} is
-#' used. }
-#'
-#' @section Constructor:
-#' See \code{\link{leafSummarizedExperiment-constructor}} for constructor
-#' functions.
-#'
-#' @section Accessor:
-#' See \code{\link[SummarizedExperiment]{SummarizedExperiment-class}} for
-#' accessor functions.
-#'
-#' @importFrom methods setClass
-#' @importClassesFrom SummarizedExperiment SummarizedExperiment
-#' @name leafSummarizedExperiment-class
-#' @exportClass leafSummarizedExperiment
-#' @include classValid.R
-#' @seealso \code{\link{treeSummarizedExperiment}}
-#'   \code{\link[SummarizedExperiment]{SummarizedExperiment-class}}
-#' @author Ruizhu Huang
-.lse <- setClass("leafSummarizedExperiment",
-                 contains = "SummarizedExperiment",
-                 validity = checkLSE)
 
 #-------------------------------------------------------------------------------
 # treeSummarizedExperiment
@@ -136,12 +77,12 @@ setOldClass("phylo")
 #' @exportClass treeSummarizedExperiment
 #' @seealso \code{\link{treeSummarizedExperiment}}
 #'   \code{\link{treeSummarizedExperiment-accessor}}
-#'   \code{\link{leafSummarizedExperiment}}
 #'   \code{\link[SummarizedExperiment]{SummarizedExperiment-class}}
 setClass("treeSummarizedExperiment",
          representation(linkData = "DataFrame",
                         treeData = "phylo"),
-         contains = "SummarizedExperiment")
+         contains = "SummarizedExperiment",
+         validity = checkTSE)
 
 
 
@@ -149,92 +90,6 @@ setClass("treeSummarizedExperiment",
 # ==========================================================================
 ### Constructor
 # ==========================================================================
-#' Construct a leafSummarizedExperiment object
-#'
-#' \code{leafSummarizedExperiment} is the constructor of the
-#' \strong{leafSummarizedExperiment} class.
-#'
-#' @param tree A phylo object.
-#' @inheritParams SummarizedExperiment::SummarizedExperiment
-#'
-#' @importFrom utils head
-#' @importFrom SummarizedExperiment SummarizedExperiment assays rowData
-#'   "rowData<-" "metadata<-"
-#' @importFrom S4Vectors metadata
-#' @importFrom methods as
-#' @export
-#' @return A leafSummarizedExperiment object
-#' @seealso \code{\link{leafSummarizedExperiment-class}}
-#'   \code{\link{treeSummarizedExperiment-class}}
-#'   \code{\link[SummarizedExperiment]{SummarizedExperiment-class}}
-#' @name leafSummarizedExperiment-constructor
-#' @author Ruizhu HUANG
-#' @examples
-#' # tree
-#' data("tinyTree")
-#'
-#' # the count table
-#' count <- matrix(rpois(100, 50), nrow = 10)
-#' rownames(count) <- c(tinyTree$tip.label)
-#' colnames(count) <- paste("C_", 1:10, sep = "_")
-#'
-#' # the sample information
-#' sampC <- data.frame(condition = rep(c("control", "trt"),
-#'                                     each = 5),
-#'                     gender = sample(x = 1:2, size = 10,
-#'                                     replace = TRUE))
-#' rownames(sampC) <- colnames(count)
-#'
-#' # build a leafSummarizedExperiment object
-#' lse <- leafSummarizedExperiment(tree = tinyTree,
-#'                                 assays = list(count),
-#'                                 colData = sampC)
-#'
-leafSummarizedExperiment <- function(tree, ...) {
-    # -------------------------------------------------------------------------
-    # create SummarizedExperiment object
-    se <- SummarizedExperiment(...)
-
-    # -------------------------------------------------------------------------
-    # add tree in metadata
-    metadata(se)$tree <- tree
-
-    # -------------------------------------------------------------------------
-    # keep only rows that could be assigned to tree leaves
-    # use nodeLab if provided; otherwise, use rownames
-
-    # use nodeLab
-    tipLab <- tree$tip.label
-    nodeLab<- rowData(se)$nodeLab
-    if (!is.null(nodeLab)) {
-        isIn <- (nodeLab %in% tipLab)
-        isOut <- !isIn
-        if (sum(isOut) > 0) {
-            message(sum(isOut), "rows are removed from tables of *assays*. \n",
-                nodeLab[isOut],
-                " can't be matched to any leaf nodes of the tree. \n")}
-        se <- se[isIn, ] }
-    # use rownames
-    if (is.null(nodeLab)) {
-        rowNam <- rownames(se)
-        if (is.null(rowNam)) {
-            stop("Either the rownames of rowData or a nodeLab column in ",
-                 "rowData should be provided \n.")
-        }
-        isIn <- rowNam %in% tipLab
-        isOut <- !isIn
-        if (sum(isOut) > 0) {
-            message(sum(isOut), "rows are removed from tables of *assays*. \n",
-                rowNam[isOut],
-                " can't be matched to any leaf node of the tree. \n")}
-        se <- se[isIn, ]
-        }
-
-    # output as leafSummarizedExperiment
-    #lse <- as(se, "leafSummarizedExperiment")
-    lse <- .lse(se)
-    return(lse)
-    }
 
 #' Construct a treeSummarizedExperiment object
 #'
@@ -266,7 +121,6 @@ leafSummarizedExperiment <- function(tree, ...) {
 #' @author Ruizhu HUANG
 #' @seealso \code{\link{treeSummarizedExperiment-class}}
 #'   \code{\link{treeSummarizedExperiment-accessor}}
-#'   \code{\link{leafSummarizedExperiment-class}}
 #'   \code{\link[SummarizedExperiment]{SummarizedExperiment-class}}
 #' @examples
 #' data("tinyTree")
@@ -358,7 +212,8 @@ treeSummarizedExperiment <- function(tree = NULL, linkData = NULL,
         # create column nodeLab_alias, if there are duplicated value in the
         # nodeLab column
         if (any(duplicated(linkD$nodeLab))) {
-            linkD$nodeLab_alias <- paste("Node_", linkD$nodeNum, sep = "")
+            linkD$nodeLab_alias <- transNode(tree = tree,
+                                             input = linkD$nodeNum)
         }
 
         } else {
@@ -368,7 +223,8 @@ treeSummarizedExperiment <- function(tree = NULL, linkData = NULL,
             # create column nodeLab_alias, if there are duplicated value in the
             # nodeLab column
             if (any(duplicated(linkD$nodeLab))) {
-                linkD$nodeLab_alias <- paste("Node_", linkD$nodeNum, sep = "")
+                linkD$nodeLab_alias <- transNode(tree = tree,
+                                                 input = linkD$nodeNum)
             }
         }
 
@@ -380,7 +236,4 @@ treeSummarizedExperiment <- function(tree = NULL, linkData = NULL,
                linkData = linkD, treeData = tree)
 
     return(tse)
-
-
-
 }

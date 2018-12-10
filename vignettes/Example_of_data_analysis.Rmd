@@ -211,7 +211,7 @@ the function `leafSummarizedExperiment`. More details about the
 leafSummarizedExperiment and treeSummarizedExperiment*.
 
 ```{r}
-lse <- leafSummarizedExperiment(assays = list(toyData), 
+lse <- treeSummarizedExperiment(assays = list(toyData), 
                                 rowData = rowD,
                                 colData = colD,
                                 tree = tinyTree)

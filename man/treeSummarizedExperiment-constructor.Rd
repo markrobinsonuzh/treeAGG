@@ -62,7 +62,6 @@ tse <- treeSummarizedExperiment(tree = tinyTree,
 \seealso{
 \code{\link{treeSummarizedExperiment-class}}
   \code{\link{treeSummarizedExperiment-accessor}}
-  \code{\link{leafSummarizedExperiment-class}}
   \code{\link[SummarizedExperiment]{SummarizedExperiment-class}}
 }
 \author{

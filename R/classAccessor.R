@@ -44,7 +44,6 @@
 #' @author Ruizhu HUANG
 #' @seealso \code{\link{treeSummarizedExperiment}}
 #'   \code{\link{treeSummarizedExperiment-accessor}}
-#'   \code{\link{leafSummarizedExperiment}}
 #'   \code{\link[SummarizedExperiment]{SummarizedExperiment-class}}
 #' @examples
 #' library(S4Vectors)

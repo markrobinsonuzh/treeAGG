@@ -9,7 +9,7 @@
 #' @param data A matrix, representing a table of values, such as count,
 #'   collected from real data. It has the entities corresponding to tree leaves
 #'   in the row and samples in the column. Only use when \code{obj} is NULL.
-#' @param obj A leafSummarizedExperiment object that includes a list of
+#' @param obj A treeSummarizedExperiment object that includes a list of
 #'   matrix-like elements, or a matrix-like element in assays, and a phylo
 #'   object in metadata. In other words, \strong{obj} provides the same
 #'   information given by \strong{tree} and \strong{data}.
@@ -120,7 +120,7 @@
 #' rownames(y) <- tinyTree$tip.label
 #'
 #'
-#' toy_lse <- leafSummarizedExperiment(tree = tinyTree,
+#' toy_lse <- treeSummarizedExperiment(tree = tinyTree,
 #'                                     assays = list(y))
 #' res <- parEstimate(data = toy_lse)
 #'
@@ -161,15 +161,15 @@ simData <- function(tree = NULL, data = NULL,
     # -------------------------------------------------------------------------
     # provide obj
     } else {
-        if(!is(obj, "leafSummarizedExperiment")){
-            stop("obj should be a leafSummarizedExperiment object.")
+        if(!is(obj, "treeSummarizedExperiment")){
+            stop("obj should be a treeSummarizedExperiment object.")
         } else{
             # -------------------------------
             # don't use tree & data argument
             if ((!is.null(tree)) |
                 (!is.null(data)) ) {
                 stop("Set tree = NULL and data = NULL when obj is a
-                     leafSummarizedExperiment object. \n")
+                     treeSummarizedExperiment object. \n")
             }
 
             # confirme that the dirichlet multinomial parameters are available.
@@ -187,7 +187,7 @@ simData <- function(tree = NULL, data = NULL,
                             only the first one would be used. \n")}
             data <- assays(obj)[[1]]
         }
-        obj <- .doData(tree = metadata(obj)$tree, data = pars,
+        obj <- .doData(tree = obj@treeData, data = pars,
                       scenario = scenario, from.A = from.A,
                       from.B = from.B,
                       minTip.A = minTip.A, maxTip.A = maxTip.A,
@@ -360,7 +360,7 @@ simData <- function(tree = NULL, data = NULL,
 
     if(is.list(count)) {
         grpDat <- data.frame(group = substr(colnames(count[[1]]), 1, 2))
-        countLSE <- leafSummarizedExperiment(tree = tree, assays = count,
+        countLSE <- treeSummarizedExperiment(tree = tree, assays = count,
                                              metadata = list(
                                                  FC = beta,
                                                  branch = pk,
@@ -371,7 +371,7 @@ simData <- function(tree = NULL, data = NULL,
 
     if(is.matrix(count)) {
         grpDat <- data.frame(group = substr(colnames(count), 1, 2))
-        countLSE <- leafSummarizedExperiment(tree = tree,
+        countLSE <- treeSummarizedExperiment(tree = tree,
                                              assays = list(count),
                                              metadata = list(
                                                  FC = beta,

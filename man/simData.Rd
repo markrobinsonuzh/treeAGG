@@ -17,7 +17,7 @@ simData(tree = NULL, data = NULL, obj = NULL, scenario = "S1",
 collected from real data. It has the entities corresponding to tree leaves
 in the row and samples in the column. Only use when \code{obj} is NULL.}
 
-\item{obj}{A leafSummarizedExperiment object that includes a list of
+\item{obj}{A treeSummarizedExperiment object that includes a list of
 matrix-like elements, or a matrix-like element in assays, and a phylo
 object in metadata. In other words, \strong{obj} provides the same
 information given by \strong{tree} and \strong{data}.}
@@ -143,7 +143,7 @@ colnames(y) <- paste("S", 1:10, sep = "")
 rownames(y) <- tinyTree$tip.label
 
 
-toy_lse <- leafSummarizedExperiment(tree = tinyTree,
+toy_lse <- treeSummarizedExperiment(tree = tinyTree,
                                     assays = list(y))
 res <- parEstimate(data = toy_lse)
 

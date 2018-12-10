@@ -1,9 +1,9 @@
-#' valid leafSummarizedExperiment class
+#' valid TreeSummarizedExperiment class
 #'
-#' \code{validLSE} is to valid treeSummarizedExperiment object.
+#' \code{validTSE} is to valid TreeSummarizedExperiment object.
 #'
 #'
-#' @param object A leafSummarizedExperiment object
+#' @param object A TreeSummarizedExperiment object
 #'
 #' @importFrom SummarizedExperiment SummarizedExperiment assays rowData
 #' @importFrom S4Vectors metadata
@@ -11,57 +11,46 @@
 #' @return TRUE or a character string.
 #' @keywords internal
 #'
-checkLSE <- function(object){
+checkTSE <- function(object){
 
     errors <- character()
     # -------------------------------------------------------------------------
     # it must have table in assays
     if (length(assays(object)) < 0) {
-      msg <- cat("\n there is nothing in assays. \n")
+      msg <- cat("\n No table is available in assays. \n")
       errors <- c(errors, msg)
     }
 
     # -------------------------------------------------------------------------
     #  Tree should be a phylo object
-    if (!inherits(metadata(object)$tree, "phylo")) {
-        msg <- cat("\n tree is not a phylo object")
-    }
+    if (!is.null(object@treeData)) {
+        if (!inherits(object@treeData, "phylo")) {
+            msg <- cat("\n tree is not a phylo object")
+        }
 
-    # -------------------------------------------------------------------------
-    # Different leaf nodes are not allowed to use the same labels.
-    tipLab <- metadata(object)$tree$tip.label
-    isDp <- duplicated(tipLab)
-    anyDp <- any(isDp)
-    if (anyDp) {
-        msg <- cat("\n Different leaf nodes using the same label: ",
-                   head(tipLab[isDp])," \n")
-        errors <- c(errors, msg)
-    }
-
-    # -------------------------------------------------------------------------
-    # if nodeLab column exist, they should match with the labels of tree leaves
-    nodeLab <- rowData(object)$nodeLab
-    if (!is.null(nodeLab)) {
-        notIn <- any(!nodeLab %in% tipLab)
-        if (notIn) {
-            msg <- cat("\n ", head(setdiff(nodeLab, tipLab)),
-                       " can not be found as labels of tree leaves. \n",
-                       "Check nodeLab column in rowData again.\n")
+        # The leaf nodes should have unique label.
+        tree <- object@treeData
+        tipLab <- tree$tip.label
+        isDp <- duplicated(tipLab)
+        anyDp <- any(isDp)
+        if (anyDp) {
+            msg <- cat("\n Different leaf nodes using the same label: ",
+                       head(tipLab[isDp])," \n")
             errors <- c(errors, msg)
         }
     }
 
+
     # -------------------------------------------------------------------------
-    # if nodeLab column doesn't exist, rownames should match with the labels of
-    # tree leaves
-    if (is.null(nodeLab)) {
-        rowNam <- rownames(object)
-        notIn <- any(! rowNam %in% tipLab)
-        if (notIn) {
-            msg <- cat("\n ", head(setdiff(rowNam, tipLab)),
-                       " can not be found as labels of tree leaves.
-                   Check rownames again.\n")
-            errors <- c(errors, msg)
+    # if the linkData exists, a column nodeLab_alias should be generated if
+    # there are duplicated value in the nodeLab column
+    lk <- object@linkData
+    if (!is.null(lk)) {
+        if (anyDuplicated(lk$nodeLab)) {
+            if (is.null(lk$nodeLab_alias)) {
+                msg <- cat("\n Duplicated values in the column nodeLab. \n")
+                errors <- c(errors, msg)
+            }
         }
     }
 

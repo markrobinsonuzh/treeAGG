@@ -56,6 +56,5 @@ See \code{\link{treeSummarizedExperiment-accessor}} for accessor functions.
 \seealso{
 \code{\link{treeSummarizedExperiment}}
   \code{\link{treeSummarizedExperiment-accessor}}
-  \code{\link{leafSummarizedExperiment}}
   \code{\link[SummarizedExperiment]{SummarizedExperiment-class}}
 }
