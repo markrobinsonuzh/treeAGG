@@ -282,15 +282,15 @@ datA
 class(datA) 
 
 ```
-The output *datA* is a `leafSummarizedExperiment` object. More details about the
-`leafSummarizedExperiment` class could be found in the help page
-`?leafSummarizedExperiment` or in the vignette *Introduction to
-leafSummarizedExperiment and treeSummarizedExperiment*.
+The output *datA* is a `treeSummarizedExperiment` object. More details about the
+`treeSummarizedExperiment` class could be found in the help page
+`?treeSummarizedExperiment` or in the vignette *Introduction to
+treeSummarizedExperiment*.
 
 The tree and count table could also be combined into a
-`leafSummarizedExperiment` object before using as the input for `simData`. 
+`treeSummarizedExperiment` object before using as the input for `simData`. 
 ```{r}
-lse <- leafSummarizedExperiment(tree = throat.tree, 
+lse <- treeSummarizedExperiment(tree = throat.tree, 
                                 assays = list(t(throat.otu.tab)))
 lse
 set.seed(1122)
@@ -313,7 +313,7 @@ level (`FC`), the information of branches that have differential abundance
 Estimating parameters from real data takes a while. In the vignette, we will do
 simulation several times using the same real data. To save time, the function
 `parEstimate` is used to do the estimation once and save results in the
-`metadata` of the `leafSummarizedExperiment` object for later use.
+`metadata` of the `treeSummarizedExperiment` object for later use.
 
 ```{r}
 names(metadata(lse))

@@ -176,8 +176,8 @@ treeSummarizedExperiment <- function(tree = NULL, linkData = NULL,
             isIn <- nodeLab %in% treeLab
             isOut <- !isIn
             if (sum(isOut) > 0) {
-                message(sum(isOut), "rows are removed. They can't be matched to
-                    any node of the tree. \n")}
+                message(sum(isOut), "rows are removed. \n",
+                        "They can't be matched to any node of the tree. \n")}
             se <- se[isIn, ]
             newLab <- rowData(se)$nodeLab
             }
@@ -213,7 +213,8 @@ treeSummarizedExperiment <- function(tree = NULL, linkData = NULL,
         # nodeLab column
         if (any(duplicated(linkD$nodeLab))) {
             linkD$nodeLab_alias <- transNode(tree = tree,
-                                             input = linkD$nodeNum)
+                                             input = linkD$nodeNum,
+                                             use.alias = TRUE)
         }
 
         } else {
@@ -224,7 +225,8 @@ treeSummarizedExperiment <- function(tree = NULL, linkData = NULL,
             # nodeLab column
             if (any(duplicated(linkD$nodeLab))) {
                 linkD$nodeLab_alias <- transNode(tree = tree,
-                                                 input = linkD$nodeNum)
+                                                 input = linkD$nodeNum,
+                                                 use.alias = TRUE)
             }
         }
 

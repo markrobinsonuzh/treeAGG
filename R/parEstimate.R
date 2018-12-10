@@ -105,7 +105,7 @@ parEstimate.C <- function(data) {
 parEstimate <- function(data) {
 
     stopifnot(class(data) %in% c("matrix", "list",
-                                 "leafSummarizedExperiment"))
+                                 "treeSummarizedExperiment"))
 
     if (is.matrix(data)) {
         out <- parEstimate.A(data = data)
@@ -115,7 +115,7 @@ parEstimate <- function(data) {
         out <- parEstimate.B(data = data)
     }
 
-    if (is(data, "leafSummarizedExperiment")) {
+    if (is(data, "treeSummarizedExperiment")) {
         out <- parEstimate.C(data = data)
     }
         return(out)
