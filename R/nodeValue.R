@@ -1,6 +1,8 @@
 
 # when data is a data frame or a matrix
-nodeValue.A <- function(data, fun = sum, tree, message = FALSE) {
+nodeValue.A <- function(data, fun = sum, tree,
+                        level = NULL,
+                        message = FALSE) {
     if (!(is.data.frame(data) |
           is.matrix(data))) {
         stop("data should be a matrix or data.frame")
@@ -16,6 +18,15 @@ nodeValue.A <- function(data, fun = sum, tree, message = FALSE) {
         stop(cat("Some row names can't be matched to the labels of leaf nodes:",
                  chs, "\n"))
     }
+
+    # change to node number if the provided level is not in node number
+    if (is.null(level)) {
+        if (is.character(level)) {
+            level <- transNode(tree = tree, input = level,
+                               use.alias = TRUE, message = FALSE)
+        }
+    }
+
     ## rename data with the alias of the node label
     rn <- rownames(data)
     leafNum <- transNode(tree = tree, input = rn, message = FALSE)
@@ -28,53 +39,57 @@ nodeValue.A <- function(data, fun = sum, tree, message = FALSE) {
     leaf <- setdiff(emat[, 2], emat[, 1])
     nodeI <- setdiff(emat[, 1], leaf)
 
-    ## the node labels
-    nN <- length(nodeI)
-    nodeLab <- transNode(tree = tree, input = nodeI,
-                      use.alias = FALSE,
-                      message = FALSE)
-    nodeLab_alias <- transNode(tree = tree, input = nodeI,
-                         use.alias = TRUE,
-                         message = FALSE)
+    ## the level to be aggregated to
+    if (is.null(level)) {
+        nodeA <- c(leaf, nodeI)
+    } else {
+        nodeA <- level
+    }
 
-    # calculate counts at nodes
-    cNode <- matrix(NA, nrow = nN, ncol = ncol(data))
-    rownames(cNode) <- nodeLab_alias
 
-    for (i in seq_len(nN)) {
-        node.i <- nodeI[i]
-        tips.i <- findOS(ancestor = node.i, tree = tree,
-                         only.Tip = TRUE, self.include = TRUE,
-                         use.alias = TRUE)
-        tips.i <- names(tips.i)
-        cNode[i, ] <- apply(data[tips.i, ], 2, fun)
+    ## generated data
+    desA <- findOS(tree = tree, ancestor = nodeA, only.Tip = TRUE,
+                   self.include = TRUE, use.alias = TRUE)
+
+    valA <- lapply(seq_along(desA), FUN = function(x) {
+        xx <- desA[[x]]
+        nx <- names(xx)
+        fx <- apply(data[nx, , drop = FALSE], 2, FUN = fun)
 
         # print out the running process
         if (message) {
-            message(i, " out of ", nN , " finished", "\r", appendLF = FALSE)
+            message(x, " out of ", length(desA) , " finished",
+                    "\r", appendLF = FALSE)
             flush.console()
         }
-    }
+       return(fx)
+    })
+
+    # output a matrix
+    cNode <- do.call(rbind, valA)
     colnames(cNode) <- colnames(data)
 
-    final <- rbind(data, cNode)
 
+    lab <- transNode(tree = tree, input = nodeA,
+                     use.alias = FALSE, message = FALSE)
     # if there are duplicated value the node label, use the alias of the node
     # labels as the row names
-    if (anyDuplicated(c(rn, nodeLab))) {
-        rownames(final) <- c(leafLab_alias, nodeLab_alias)
+    if (anyDuplicated(lab)) {
+        rownames(cNode) <- transNode(tree = tree, input = nodeA,
+                                     use.alias = TRUE, message = FALSE)
     } else {
-        rownames(final) <- c(rn, nodeLab)
-
+        rownames(cNode) <- lab
     }
 
     # output
-    return(final)
+    return(cNode)
 }
 
 
 # when data is a TreeSummarizedExperiment
-nodeValue.B <- function(data, fun = sum, message = FALSE) {
+nodeValue.B <- function(data, fun = sum,
+                        level = NULL,
+                        message = FALSE) {
     if (!is(data, "treeSummarizedExperiment")) {
         stop("\n data should be a leafSummarizedExperiment. \n")
     }
@@ -92,36 +107,48 @@ nodeValue.B <- function(data, fun = sum, message = FALSE) {
     emat <- tree$edge
     leaf <- setdiff(emat[, 2], emat[, 1])
     nodeI <- setdiff(emat[, 1], leaf)
-    nodeA <- c(leaf, nodeI)
+
+    # change to node number if the provided level is not in node number
+    if (is.null(level)) {
+        nodeA <- c(leaf, nodeI)
+    } else {
+        if (is.character(level)) {
+            level <- transNode(tree = tree, input = level,
+                               use.alias = FALSE, message = FALSE)
+        }
+        nodeA <- level
+    }
 
     ## all nodes
     nN <- length(nodeA)
 
     # find the rows of descendants
-    leafRow <- lapply(seq_along(nodeA), FUN = function(x) {
-        # get a node
-        xx <- nodeA[x]
-
-        # find its descendant leaves
-        lx <- findOS(tree = tree, ancestor = xx,
-                     only.Tip = TRUE, self.include = TRUE,
-                     use.alias = TRUE)
-
-        # find the rows of descendant leaves in the assay table
-        ind <- match(lx, lData[["nodeNum"]])
-        rx <- lData[["rowID"]][ind]
-        return(rx)
+    desA <- findOS(tree = tree, ancestor = nodeA,
+                   only.Tip = TRUE, self.include = TRUE)
+    leafRow <- lapply(desA, FUN = function(x) {
+        xi <- match(x, lData$nodeNum)
+        lData$rowID[xi]
     })
+
 
     ## generate values for nodes from their descendant leaves
     # assays
     tabNA <- vector("list", length = length(tabA))
 
     for (i in seq_along(tabA)) {
+        if (message) {
+            message("Aggregate on ", i, "th of ", length(tabA), " table(s). \n")}
         tabL.i <- lapply(leafRow, FUN = function(x) {
             tabA.i <- tabA[[i]]
             xi <- tabA.i[x, , drop = FALSE]
             ri <- apply(xi, 2, fun)
+
+            if (message) {
+                message(x, " out of ", length(leafRow) , " finished",
+                        "\r", appendLF = FALSE)
+                flush.console()
+            }
+
             return(ri)
         })
         tab.i <- do.call(rbind, tabL.i)
@@ -186,6 +213,8 @@ nodeValue.B <- function(data, fun = sum, message = FALSE) {
 #' at its descendant leaf nodes. The default is sum.
 #' @param tree An optional argument. Only need if \code{data} is a data frame or
 #'   matrix.
+#' @param level Default is NULL. It could be a vector of nodes using node value
+#'   or label to specify the level the data should be aggregated to.
 #' @param message A logical value. The default is TRUE. If TRUE, it will print
 #'   out the currenet status of a process.
 #' @importFrom utils head flush.console
@@ -224,10 +253,16 @@ nodeValue.B <- function(data, fun = sum, message = FALSE) {
 #' d <- cbind.data.frame(node = nod, count = count_tinyTree[, 1])
 #'
 #' ggtree(tinyTree) %<+% d + geom_text2(aes(label = count))
+#'
+#'
+#' # aggregate to a specific level
+#' count <- nodeValue(data = count, tree = tinyTree,
+#'                    fun = sum, level = c(18, 12, 9))
 #'}
 #'
 setGeneric("nodeValue", function(data, fun = sum,
-                                 tree, message = FALSE) {
+                                 tree, level = NULL,
+                                 message = FALSE) {
     standardGeneric("nodeValue")
 })
 
@@ -242,3 +277,4 @@ setMethod("nodeValue", signature(data = "ANY"),
 setMethod("nodeValue",
           signature(data = "treeSummarizedExperiment"),
           nodeValue.B)
+

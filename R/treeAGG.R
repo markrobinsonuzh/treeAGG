@@ -252,7 +252,7 @@ treeAGG.B <- function(data, sigf.by,
 #'                     stringsAsFactors = FALSE)
 #' colInf <- data.frame(gg = factor(sample(1:3, 30, replace = TRUE)),
 #'                     group = rep(LETTERS[1:3], each = 10))
-#' toy_lse <- leafSummarizedExperiment(tree = tinyTree,
+#' toy_lse <- treeSummarizedExperiment(tree = tinyTree,
 #'                                     assays = list(y, (2*y), 3*y),
 #'                                     rowData = rowInf,
 #'                                     colData = colInf)

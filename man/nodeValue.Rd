@@ -7,12 +7,13 @@
 \alias{nodeValue,treeSummarizedExperiment-method}
 \title{Calculate entity values at internal nodes}
 \usage{
-nodeValue(data, fun = sum, tree, message = FALSE)
+nodeValue(data, fun = sum, tree, level = NULL, message = FALSE)
 
-\S4method{nodeValue}{ANY}(data, fun = sum, tree, message = FALSE)
+\S4method{nodeValue}{ANY}(data, fun = sum, tree, level = NULL,
+  message = FALSE)
 
 \S4method{nodeValue}{treeSummarizedExperiment}(data, fun = sum,
-  message = FALSE)
+  level = NULL, message = FALSE)
 }
 \arguments{
 \item{data}{A leafSummarizedExperiment object or a data frame/matrix.}
@@ -22,6 +23,9 @@ at its descendant leaf nodes. The default is sum.}
 
 \item{tree}{An optional argument. Only need if \code{data} is a data frame or
 matrix.}
+
+\item{level}{Default is NULL. It could be a vector of nodes using node value
+or label to specify the level the data should be aggregated to.}
 
 \item{message}{A logical value. The default is TRUE. If TRUE, it will print
 out the currenet status of a process.}
@@ -62,6 +66,11 @@ nod <- transNode(tree = tinyTree, input = rownames(count_tinyTree),
 d <- cbind.data.frame(node = nod, count = count_tinyTree[, 1])
 
 ggtree(tinyTree) \%<+\% d + geom_text2(aes(label = count))
+
+
+# aggregate to a specific level
+count <- nodeValue(data = count, tree = tinyTree,
+                   fun = sum, level = c(18, 12, 9))
 }
 
 }

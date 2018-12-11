@@ -268,6 +268,10 @@ treePlot <- function(tree,
                          stringsAsFactors = FALSE)},
         x = col.branch, y = eList, SIMPLIFY = FALSE,
         USE.NAMES = FALSE)
+    dList <- lapply(dList, FUN = function(x) {
+        colnames(x) <- c("node", "group")
+        return(x)
+    })
     df <- do.call(rbind, dList)
 
     Truth <- rep("grp_other", nrow(d))

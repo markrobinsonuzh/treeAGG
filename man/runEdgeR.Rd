@@ -94,7 +94,7 @@ rowInf <- DataFrame(nodeLab = rownames(y),
                     var2 = sample(c(TRUE, FALSE), 10, replace = TRUE))
 colInf <- DataFrame(gg = factor(sample(1:3, 30, replace = TRUE)),
                     group = rep(LETTERS[1:3], each = 10))
-toy_lse <- leafSummarizedExperiment(tree = tinyTree, rowData = rowInf,
+toy_lse <- treeSummarizedExperiment(tree = tinyTree, rowData = rowInf,
                                     colData = colInf,
                                     assays = list(y, (2*y), 3*y))
 

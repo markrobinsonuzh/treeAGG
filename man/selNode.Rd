@@ -8,7 +8,7 @@ selNode(obj = NULL, tree = NULL, data = NULL, minTip = 0,
   maxTip = Inf, minPr = 0, maxPr = 1, skip = NULL, all = FALSE)
 }
 \arguments{
-\item{obj}{A leafSummarizedExperiment object.}
+\item{obj}{A treeSummarizedExperiment object.}
 
 \item{tree}{A phylo object}
 
@@ -55,7 +55,7 @@ dat <- parEstimate(data = toyTable)
 minPr = 0, maxPr = 0.8, all = TRUE))
 
 ## provide obj
-lse1 <- leafSummarizedExperiment(tree = tinyTree,
+lse1 <- treeSummarizedExperiment(tree = tinyTree,
                                 assays = list(toyTable))
 out <- selNode(obj = lse1, all = TRUE)
 

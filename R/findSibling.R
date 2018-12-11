@@ -31,16 +31,14 @@
 findSibling <- function(tree, input, use.alias = FALSE){
 
     # find descendant leaves of input
-    inT <- lapply(input, FUN = function(x){
-        findOS(tree = tree,
-               ancestor = x,
-               only.Tip = TRUE)})
+    inT <- findOS(tree = tree, ancestor = input,
+               only.Tip = TRUE)
     # find the parent node of the input
     pN <- findAncestor(tree = tree, node = input, level = 1)
 
     # Leaves not included in input
     exT <- lapply(seq_along(pN), FUN = function(x) {
-        aT <- findOS(tree = tree, ancestor = pN[x], only.Tip = TRUE)
+        aT <- findOS(tree = tree, ancestor = pN[x], only.Tip = TRUE)[[1]]
         setdiff(aT, inT[[x]])
     })
 

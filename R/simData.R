@@ -432,10 +432,9 @@ simData <- function(tree = NULL, data = NULL,
     # proportion of internal nodes
     leaf <- setdiff(tree$edge[, 2], tree$edge[, 1])
     nodI <- setdiff(tree$edge[, 1], leaf)
-    desI <- lapply(nodI, findOS, tree = tree,
-                   only.Tip = TRUE,
-                   self.include = TRUE,
-                   use.alias = TRUE)
+    desI <- findOS(tree = tree, ancestor = nodI,
+                   only.Tip = TRUE, self.include = TRUE,
+                   use.alias = TRUE )
     desI <- lapply(desI, names)
     names(desI) <- transNode(tree = tree, input = nodI,
                              use.alias = TRUE, message = FALSE)
@@ -595,10 +594,8 @@ simData <- function(tree = NULL, data = NULL,
     nodA <- c(leaf, nodI)
 
     # find descendants
-    desI <- lapply(nodI, findOS, tree = tree,
-                   only.Tip = TRUE,
-                   self.include = TRUE,
-                   use.alias = TRUE)
+    desI <- findOS(tree = tree, ancestor = nodI, only.Tip = TRUE,
+                   self.include = TRUE, use.alias = TRUE)
     desI <- lapply(desI, names)
     nodP <- mapply(function(x, y) {
         sum(x[y])
@@ -681,21 +678,21 @@ simData <- function(tree = NULL, data = NULL,
     # leaves
     tip.A <- findOS(tree = tree, ancestor = branchA,
                    only.Tip = TRUE, self.include = TRUE,
-                   use.alias = TRUE)
+                   use.alias = TRUE)[[1]]
     tip.A <- names(tip.A)
     # nodes
     nodA.A <- findOS(tree = tree, ancestor = branchA,
                     only.Tip = FALSE, self.include = TRUE,
-                    use.alias = TRUE)
+                    use.alias = TRUE)[[1]]
     nodA.A <- names(nodA.A)
     # internal nodes
     nodI.A <- setdiff(nodA.A, tip.A)
 
     # descendants of internal nodes
-    des.IA <- lapply(nodI.A, findOS, tree = tree,
-                   only.Tip = TRUE,
-                   self.include = TRUE,
-                   use.alias = TRUE)
+    des.IA <- findOS(tree = tree, ancestor = nodI.A,
+                     only.Tip = TRUE,
+                     self.include = TRUE,
+                     use.alias = TRUE)
     des.IA <- lapply(des.IA, names)
 
     # tip proportions estimated from real data
@@ -713,7 +710,7 @@ simData <- function(tree = NULL, data = NULL,
         # leaves on branch B
         tip.B <- findOS(tree = tree, ancestor = branchB,
                        only.Tip = TRUE, self.include = TRUE,
-                       use.alias = TRUE)
+                       use.alias = TRUE)[[1]]
         tip.B <- names(tip.B)
         beta[tip.A] <- ratio
         beta[tip.B] <- 1/ratio
@@ -725,7 +722,7 @@ simData <- function(tree = NULL, data = NULL,
     if (scenario == "S2") {
         tip.B <- findOS(tree = tree, ancestor = branchB,
                        only.Tip = TRUE, self.include = TRUE,
-                       use.alias = TRUE)
+                       use.alias = TRUE)[[1]]
         tip.B <- names(tip.B)
 
         # proportion on two branches
@@ -782,7 +779,7 @@ simData <- function(tree = NULL, data = NULL,
         }
         tip.B <- findOS(tree = tree, ancestor = branchB,
                         only.Tip = TRUE, self.include = TRUE,
-                        use.alias = TRUE)
+                        use.alias = TRUE)[[1]]
         tip.B <- names(tip.B)
         sumB <- sum(pars[tip.B])
 
