@@ -317,7 +317,9 @@ treeSummarizedExperiment <- function(tree = NULL, linkData = NULL,
 
     emat <- tree$edge
     leaf <- setdiff(emat[, 2], emat[, 1])
+    leaf <- sort(leaf)
     nodeI <- setdiff(emat[, 1], leaf)
+    nodeI <- sort(nodeI)
     nodeA <- c(leaf, nodeI)
 
     ## Create the main part of the link data
@@ -416,9 +418,9 @@ treeSummarizedExperiment <- function(tree = NULL, linkData = NULL,
         se <- se[isIn, ]
         rowID <- lapply(seq_along(linkA$nodeNum), FUN = function(x) {
             numRDL <- numRD[isIn]
-            which(numRDL %in% x)
-
-        })
+            match(x, numRDL)
+            #which(numRDL %in% x)
+            })
         linkA$rowID <- rowID
         }
 
@@ -444,7 +446,8 @@ treeSummarizedExperiment <- function(tree = NULL, linkData = NULL,
         se <- se[isIn, ]
         rowID <- lapply(seq_along(linkA$nodeNum), FUN = function(x) {
             numRNL <- numRN[isIn]
-            which(numRNL %in% x)
+            match(x, numRNL)
+            #which(numRDL %in% x)
         })
         linkA$rowID <- rowID
     }

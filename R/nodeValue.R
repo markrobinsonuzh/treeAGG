@@ -37,7 +37,9 @@ nodeValue.A <- function(data, fun = sum,
     ## nodes
     emat <- tree$edge
     leaf <- setdiff(emat[, 2], emat[, 1])
+    leaf <- sort(leaf)
     nodeI <- setdiff(emat[, 1], leaf)
+    nodeI <- sort(nodeI)
     if (is.null(level)) {
         nodeA <- c(leaf, nodeI)
     } else {
@@ -53,7 +55,8 @@ nodeValue.A <- function(data, fun = sum,
     nodeA.i <- intersect(nodeA, nodeI)
 
     if (length(nodeA.i)) {
-        desI <- findOS(tree = tree, ancestor = nodeA.i, only.leaf = TRUE,
+        desI <- findOS(tree = tree, ancestor = nodeA.i,
+                       only.leaf = TRUE,
                        self.include = FALSE, use.alias = TRUE,
                        message = message)
     } else {
@@ -84,7 +87,8 @@ nodeValue.A <- function(data, fun = sum,
     listD3 <- rapply(listD2, f = fun, how = "list")
 
     listD4 <- lapply(listD3, FUN = function(x) {
-        xx <- do.call(cbind.data.frame, c(x, stringsAsFactors = FALSE))
+        xx <- do.call(cbind.data.frame,
+                      c(x, stringsAsFactors = FALSE))
         colnames(xx) <- names(x)
         xx
     })
@@ -134,7 +138,9 @@ nodeValue.B <- function(data, fun = sum, message = FALSE,
     # leaves and internal nodes
     emat <- tree$edge
     leaf <- setdiff(emat[, 2], emat[, 1])
+    leaf <- sort(leaf)
     nodeI <- setdiff(emat[, 1], leaf)
+    nodeI <- sort(nodeI)
     if (is.null(level)) {
         nodeA <- c(leaf, nodeI)
     } else {
@@ -161,11 +167,11 @@ nodeValue.B <- function(data, fun = sum, message = FALSE,
         # find the rows of descendant leaves in the assay table
         # Note: don't use match!!! (duplicated values might exist in tipNum)
         ri <- which(tipNum %in% lx)
-        rx <- tipNum[ri]
-        return(rx)
+       # rx <- tipNum[ri]
+        return(ri)
     })
 
-    ## generate values for nodes from their descendant leaves
+    ## generate values for internal nodes from their descendant leaves
     # assays
     tabNA <- vector("list", length = length(tabA))
     for (i in seq_along(tabA)) {

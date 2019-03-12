@@ -102,8 +102,8 @@ findOS <- function(tree,
             setdiff(vv, xx)
         }
 
-        out <- if (only.leaf) {
-            intersect(out, leaf)}
+        if (only.leaf) {
+            out <- intersect(out, leaf)}
 
         names(out) <- transNode(tree = tree, input = out,
                                 use.alias = use.alias,

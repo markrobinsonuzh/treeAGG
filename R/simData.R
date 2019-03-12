@@ -149,7 +149,8 @@ simData <- function(tree = NULL, data = NULL,
         if (is.null(tree) | is.null(data)) {
             stop("tree or data is not provided")
         } else {
-            obj <- .doData(tree = tree, data = data, scenario = scenario,
+            obj <- .doData(tree = tree, data = data,
+                           scenario = scenario,
                           from.A = from.A, from.B = from.B,
                           minTip.A = minTip.A, maxTip.A = maxTip.A,
                           minTip.B = minTip.B, maxTip.B = maxTip.B,
@@ -161,33 +162,39 @@ simData <- function(tree = NULL, data = NULL,
     # -------------------------------------------------------------------------
     # provide obj
     } else {
-        if(!is(obj, "leafSummarizedExperiment")){
-            stop("obj should be a leafSummarizedExperiment object.")
-        } else{
+        # if(!is(obj, "leafSummarizedExperiment")){
+        #     stop("obj should be a leafSummarizedExperiment object.")
+        # } else{
             # -------------------------------
             # don't use tree & data argument
-            if ((!is.null(tree)) |
-                (!is.null(data)) ) {
-                stop("Set tree = NULL and data = NULL when obj is a
-                     leafSummarizedExperiment object. \n")
-            }
+            # if ((!is.null(tree)) |
+            #     (!is.null(data)) ) {
+            #     stop("Set tree = NULL and data = NULL when obj is a
+            #          leafSummarizedExperiment object. \n")
+            # }
 
             # confirme that the dirichlet multinomial parameters are available.
             # otherwise, estimate them.
-            pars <- metadata(obj)$assays.par
+#            pars <- metadata(obj)$assays.par
+             pars <- obj$assays.par
             if (is.null(pars)) {
                 obj <- parEstimate(data = obj)
                 pars <- metadata(obj)$assays.par
+                tree <- metadata(obj)$tree
+
+                if(length(assays(obj)) > 1){
+                    message("\n more than one table provided in the assays;
+                            only the first one would be used. \n")}
+                data <- assays(obj)[[1]]
             }
+
+
             # -------------------------------
             # data isn't provided, use obj assays data
             # if more than one table in assays, use the first one
-            if(length(assays(obj)) > 1){
-                message("\n more than one table provided in the assays;
-                            only the first one would be used. \n")}
-            data <- assays(obj)[[1]]
-        }
-        obj <- .doData(tree = metadata(obj)$tree, data = pars,
+
+#        }
+        obj <- .doData(tree = tree, data = pars,
                       scenario = scenario, from.A = from.A,
                       from.B = from.B,
                       minTip.A = minTip.A, maxTip.A = maxTip.A,
@@ -428,10 +435,14 @@ simData <- function(tree = NULL, data = NULL,
     nam2 <- transNode(tree = tree, input = val1, use.alias = TRUE,
                       message = FALSE)
     names(pars) <- nam2
+# df <- data.frame(pr = pars, nodeLab = nam1,
+#                  nodNum = val1, nodeLab_alias = nam2)
 
-    # proportion of internal nodes
+# proportion of internal nodes
     leaf <- setdiff(tree$edge[, 2], tree$edge[, 1])
+    leaf <- sort(leaf)
     nodI <- setdiff(tree$edge[, 1], leaf)
+    nodI <- sort(nodI)
     desI <- findOS(tree = tree, ancestor = nodI,
                    only.leaf = TRUE,
                    self.include = TRUE,
@@ -591,7 +602,9 @@ simData <- function(tree = NULL, data = NULL,
 
     # nodes
     leaf <- setdiff(tree$edge[, 2], tree$edge[, 1])
+    leaf <- sort(leaf)
     nodI <- setdiff(tree$edge[, 1], leaf)
+    nodI <- sort(nodI)
     nodA <- c(leaf, nodI)
 
     # find descendants
@@ -669,7 +682,9 @@ simData <- function(tree = NULL, data = NULL,
                  ratio = 1, adjB = NULL, pct = 1) {
     # nodes
     leaf <- setdiff(tree$edge[, 2], tree$edge[, 1])
+    leaf <- sort(leaf)
     nodI <- setdiff(tree$edge[, 1], leaf)
+    nodI <- sort(nodI)
     nodA <- c(leaf, nodI)
 
     # beta

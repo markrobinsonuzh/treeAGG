@@ -100,9 +100,11 @@ transNode <- function(tree, input, use.alias = FALSE,
         if (inLab) {
             names(nodeA) <- nodeLab
             final <- nodeA[names(nodeA) %in% input]
+            final <- final[input]
         } else {
             names(nodeA) <- nodeLab_alias
             final <- nodeA[names(nodeA) %in% input]
+            final <- final[input]
         }
     }
 

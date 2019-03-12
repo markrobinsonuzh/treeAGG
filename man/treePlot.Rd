@@ -9,7 +9,7 @@ treePlot(tree, branch = NULL, col.branch = "blue",
   size.point = 2, zoomNode = NULL, zoomLevel = NULL, zoomScale = 8,
   legend = FALSE, legend.theme = list(NULL), legend.title = c(point =
   "Title_point", branch = "Title_branch"), legend.label = NULL,
-  size.line.legend = 2, size.point.legend = 3, ...)
+  size.line.legend = 2, size.point.legend = 3, size = 1, ...)
 }
 \arguments{
 \item{tree}{A phylo object}
