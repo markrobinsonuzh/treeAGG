@@ -87,6 +87,7 @@ setMethod("treeData", signature("treeSummarizedExperiment"),
 setMethod("[", signature(x = "treeSummarizedExperiment"),
           function(x, i, j){
 
+
              # Subset the traditional slots from SummarizedExperiment
               nx <- callNextMethod()
 
@@ -117,6 +118,7 @@ setMethod("[", signature(x = "treeSummarizedExperiment"),
               final <- BiocGenerics:::replaceSlots(nx,
                                                    linkData = lk,
                                                    treeData = x@treeData)
+
               return(final)
           })
 
