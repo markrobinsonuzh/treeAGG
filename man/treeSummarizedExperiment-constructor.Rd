@@ -5,7 +5,8 @@
 \alias{treeSummarizedExperiment}
 \title{Construct a treeSummarizedExperiment object}
 \usage{
-treeSummarizedExperiment(tree = NULL, linkData = NULL, ...)
+treeSummarizedExperiment(tree = NULL, linkData = NULL,
+  message = FALSE, update.all = TRUE, ...)
 }
 \arguments{
 \item{tree}{A phylo object}
@@ -25,6 +26,9 @@ respectively.
 \item \strong{isLeaf} It indicates whether the node is a leaf node
 \item \strong{rowID} The corresponding row number of the matrix-like
 elements in \code{assays} }}
+
+\item{message}{A logical value. Defaut is FALSE. If TRUE, the running process
+is given.}
 
 \item{...}{For \code{SummarizedExperiment}, S4 methods \code{list}
     and \code{matrix}, arguments identical to those of the
@@ -57,6 +61,14 @@ rownames(sampC) <- colnames(count)
 tse <- treeSummarizedExperiment(tree = tinyTree,
                                 assays = list(count),
                                 colData = sampC)
+
+# if there are data to be put in the linkData
+tax <- data.frame(family = rep(LETTERS[1:2], each = 5))
+tax$nodeLab <- tinyTree$tip.label
+ntse <- treeSummarizedExperiment(tree = tinyTree,
+                                assays = list(count),
+                                colData = sampC,
+                                linkData = tax)
 
 }
 \seealso{

@@ -4,8 +4,8 @@
 \alias{findOS}
 \title{Find descendants (or offsprings)}
 \usage{
-findOS(tree, ancestor, only.Tip = TRUE, self.include = TRUE,
-  use.alias = FALSE)
+findOS(tree, ancestor, only.leaf = TRUE, self.include = TRUE,
+  use.alias = FALSE, message = FALSE)
 }
 \arguments{
 \item{tree}{A phylo object.}
@@ -13,7 +13,7 @@ findOS(tree, ancestor, only.Tip = TRUE, self.include = TRUE,
 \item{ancestor}{An internal node. It could be the node number or the node
 label.}
 
-\item{only.Tip}{A logical value, TRUE or FALSE. The default is TRUE. If
+\item{only.leaf}{A logical value, TRUE or FALSE. The default is TRUE. If
 default, only the leaf nodes in the descendant nodes would be returned.}
 
 \item{self.include}{A logical value, TRUE or FALSE. The default is TRUE. If
@@ -26,6 +26,9 @@ node label would be used to name the output. The alias of node label is
 created by adding a prefix \code{"Node_"} to the node number if the node is
 an internal node or adding a prefix \code{"Leaf_"} if the node is a leaf
 node.}
+
+\item{message}{A logical value, TRUE or FALSE. The default is FALSE. It
+decides whether the running process should be shown.}
 }
 \value{
 A vector of nodes. The numeric value is the node number, and the
@@ -47,7 +50,9 @@ geom_hilight(node = 17, fill = 'steelblue', alpha = 0.5) +
 geom_text2(aes(label = label), color = "darkorange",
            hjust = -0.1, vjust = -0.7)
 
-(tips <- findOS(tree = tinyTree, ancestor = c(17), only.Tip = TRUE))
+
+(tips <- findOS(tree = tinyTree, ancestor = 17, only.leaf = TRUE))
+
 }
 \author{
 Ruizhu Huang

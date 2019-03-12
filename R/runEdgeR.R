@@ -109,7 +109,7 @@ runEdgeR <- function(obj, design = NULL, contrast = NULL,
 
     # calculate library size
     linkD <- linkData(obj)
-    objL<- obj[linkD$isLeaf, ]
+    objL <- obj[linkD$isLeaf, ]
     tableL <- assays(objL, withDimnames = FALSE)[use.assays]
     libSize <- lapply(seq_along(tableL), FUN = function(x) {
         rs <- rowsum(tableL[[x]], group = rep(1, nrow(tableL[[x]])))

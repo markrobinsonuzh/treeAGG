@@ -4,7 +4,7 @@
 \alias{.fdr0}
 \title{Calculate false discoveries and discoveries}
 \usage{
-.fdr0(tree, truth = NULL, found = NULL, only.Tip = TRUE)
+.fdr0(tree, truth = NULL, found = NULL, only.leaf = TRUE)
 }
 \arguments{
 \item{tree}{A phylo object}
@@ -14,7 +14,7 @@ experimental conditions).}
 
 \item{found}{Nodes that have been found to have signal}
 
-\item{only.Tip}{A logical value, TRUE or FALSE. If TRUE, false discovery rate
+\item{only.leaf}{A logical value, TRUE or FALSE. If TRUE, false discovery rate
 is calculated at the leaf (tip) level; otherwise it is calculated at node
 level. The default is TRUE}
 }

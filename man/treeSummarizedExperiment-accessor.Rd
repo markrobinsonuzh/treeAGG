@@ -9,6 +9,8 @@
 \alias{treeData}
 \alias{treeData,treeSummarizedExperiment-method}
 \alias{[,treeSummarizedExperiment,ANY,ANY,ANY-method}
+\alias{getByLink}
+\alias{getByLink,treeSummarizedExperiment-method}
 \alias{treeSummarizedExperiment-accessor}
 \title{Accessor functions for treeSummarizedExperiment}
 \usage{
@@ -26,6 +28,10 @@ treeData(x)
 \S4method{treeData}{treeSummarizedExperiment}(x)
 
 \S4method{[}{treeSummarizedExperiment,ANY,ANY,ANY}(x, i, j)
+
+getByLink(x, subset)
+
+\S4method{getByLink}{treeSummarizedExperiment}(x, subset)
 }
 \arguments{
 \item{x}{A treeSummarizedExperiment object}

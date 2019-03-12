@@ -1,8 +1,9 @@
-
 # when data is a data frame or a matrix
-nodeValue.A <- function(data, fun = sum, tree, message = FALSE) {
+nodeValue.A <- function(data, fun = sum,
+                        tree, message = FALSE,
+                        level = NULL) {
     if (!(is.data.frame(data) |
-          is.matrix(data))) {
+          is.matrix(data) | is(data, "DataFrame")) ) {
         stop("data should be a matrix or data.frame")
     }
 
@@ -10,70 +11,108 @@ nodeValue.A <- function(data, fun = sum, tree, message = FALSE) {
         stop("tree: should be a phylo object")
     }
 
-    if (!setequal(rownames(data), tree$tip.label)) {
-        chx <- setdiff(rownames(data), tree$tip.label)
+    if (is.null(data[["nodeLab_alias"]])) {
+        lab1 <- data[["nodeLab"]]
+        if (is.null(lab1)) {
+            lab1 <- rownames(data)
+        }
+    }
+    num1 <- transNode(tree = tree, input = lab1)
+    num2 <- unique(as.vector(tree$edge))
+    if (!all(num1 %in% num2)) {
+        chx <- setdiff(num1, num2)
+        chx <- transNode(tree = tree, input = chx)
         chs <- head(chx)
         stop(cat("Some row names can't be matched to the labels of leaf nodes:",
                  chs, "\n"))
     }
-    ## rename data with the alias of the node label
-    rn <- rownames(data)
-    leafNum <- transNode(tree = tree, input = rn, message = FALSE)
-    leafLab_alias <- transNode(tree = tree, input = leafNum,
+    ## rename data with the alias of the node labels
+    tabA <- data
+    rn <- rownames(tabA)
+    tipNum <- transNode(tree = tree, input = rn, message = FALSE)
+    leafLab_alias <- transNode(tree = tree, input = tipNum,
                                use.alias = TRUE, message = FALSE)
-    rownames(data) <- leafLab_alias
+    rownames(tabA) <- leafLab_alias
 
     ## nodes
     emat <- tree$edge
     leaf <- setdiff(emat[, 2], emat[, 1])
+    leaf <- sort(leaf)
     nodeI <- setdiff(emat[, 1], leaf)
+    nodeI <- sort(nodeI)
+    if (is.null(level)) {
+        nodeA <- c(leaf, nodeI)
+    } else {
+        if (is.character(level)) {
+            level <- transNode(tree = tree, input = level,
+                               use.alias = FALSE, message = FALSE)
+        }
+        nodeA <- level
+        }
+
+    ## Find the rows of descendants
+    nodeA.l <- intersect(nodeA, leaf)
+    nodeA.i <- intersect(nodeA, nodeI)
+
+    if (length(nodeA.i)) {
+        desI <- findOS(tree = tree, ancestor = nodeA.i,
+                       only.leaf = TRUE,
+                       self.include = FALSE, use.alias = TRUE,
+                       message = message)
+    } else {
+        desI <- numeric(0)
+    }
+
+    desL <- as.list(nodeA.l)
+    desA <- c(desL, desI)
+    leafRow <- lapply(desA, FUN = function(x){
+        # find the rows of descendant leaves in the assay table
+        # Note: don't use match!!! (duplicated values might exist in tipNum)
+        ri <- which(tipNum %in% x)
+        return(ri)
+    })
+
+    ## generate values for nodes from their descendant leaves
+    # assays
+    ## Extract the colum used to do aggregation from the link data
+
+    listD1 <- lapply(leafRow, FUN = function(x){
+        tabA[x, , drop = FALSE]
+    })
+
+    listD2 <- lapply(listD1, FUN = function(x){
+        as.list(x)
+    })
+
+    listD3 <- rapply(listD2, f = fun, how = "list")
+
+    listD4 <- lapply(listD3, FUN = function(x) {
+        xx <- do.call(cbind.data.frame,
+                      c(x, stringsAsFactors = FALSE))
+        colnames(xx) <- names(x)
+        xx
+    })
+
+    tabN <- do.call(rbind, listD4)
 
     ## the node labels
-    nN <- length(nodeI)
-    nodeLab <- transNode(tree = tree, input = nodeI,
-                      use.alias = FALSE,
-                      message = FALSE)
-    nodeLab_alias <- transNode(tree = tree, input = nodeI,
-                         use.alias = TRUE,
-                         message = FALSE)
-
-    # calculate counts at nodes
-    cNode <- matrix(NA, nrow = nN, ncol = ncol(data))
-    rownames(cNode) <- nodeLab_alias
-
-    for (i in seq_len(nN)) {
-        node.i <- nodeI[i]
-        tips.i <- findOS(ancestor = node.i, tree = tree,
-                         only.Tip = TRUE, self.include = TRUE,
-                         use.alias = TRUE)
-        tips.i <- names(tips.i)
-        cNode[i, ] <- apply(data[tips.i, ], 2, fun)
-
-        # print out the running process
-        if (message) {
-            message(i, " out of ", nN , " finished", "\r", appendLF = FALSE)
-            flush.console()
-        }
-    }
-    colnames(cNode) <- colnames(data)
-
-    final <- rbind(data, cNode)
-
-    # if there are duplicated value the node label, use the alias of the node
-    # labels as the row names
-    if (anyDuplicated(c(rn, nodeLab))) {
-        rownames(final) <- c(leafLab_alias, nodeLab_alias)
+    nodeLab <- transNode(tree = tree, input = nodeA,
+                         use.alias = FALSE, message = FALSE)
+    if (anyDuplicated(nodeLab)) {
+        nodeLab_alias <- transNode(tree = tree, input = nodeA,
+                                   use.alias = TRUE, message = FALSE)
+        rownames(tabN) <- nodeLab_alias
     } else {
-        rownames(final) <- c(rn, nodeLab)
-
+        rownames(tabN) <- nodeLab
     }
 
     # output
-    return(final)
+    return(tabN)
 }
 
 # when data is a leafSummarizedExperiment
-nodeValue.B <- function(data, fun = sum, message = FALSE) {
+nodeValue.B <- function(data, fun = sum, message = FALSE,
+                        level = NULL) {
     if (!is(data, "leafSummarizedExperiment")) {
         stop("\n data should be a leafSummarizedExperiment. \n")
     }
@@ -83,6 +122,9 @@ nodeValue.B <- function(data, fun = sum, message = FALSE) {
     tree <- metadata(data)$tree
     tabA <- assays(data)
     rData <- rowData(data, use.names = FALSE)
+    if (ncol(rData) == 0) {
+        rData <- DataFrame(nodeLab = rownames(data))
+    }
     mData <- metadata(data)
     cData <- colData(data)
 
@@ -96,10 +138,22 @@ nodeValue.B <- function(data, fun = sum, message = FALSE) {
     # leaves and internal nodes
     emat <- tree$edge
     leaf <- setdiff(emat[, 2], emat[, 1])
+    leaf <- sort(leaf)
     nodeI <- setdiff(emat[, 1], leaf)
-    nodeA <- c(leaf, nodeI)
+    nodeI <- sort(nodeI)
+    if (is.null(level)) {
+        nodeA <- c(leaf, nodeI)
+    } else {
+        if (is.character(level)) {
+            level <- transNode(tree = tree, input = level,
+                               use.alias = FALSE, message = FALSE)
+        }
+        ll <- level
+        lo <- .findParallel(tree = tree, input = level, use.alias = FALSE)
+        nodeA <- c(ll, lo)
+    }
 
-    nN <- length(nodeA)
+
     ## Find the rows of descendants
     leafRow <- lapply(seq_along(nodeA), FUN = function(x) {
         # get a node
@@ -107,15 +161,17 @@ nodeValue.B <- function(data, fun = sum, message = FALSE) {
 
         # find its descendant leaves
         lx <- findOS(tree = tree, ancestor = xx,
-                     only.Tip = TRUE, self.include = TRUE,
+                     only.leaf = TRUE, self.include = TRUE,
                      use.alias = TRUE)
 
         # find the rows of descendant leaves in the assay table
-        rx <- match(lx, tipNum)
-        return(rx)
+        # Note: don't use match!!! (duplicated values might exist in tipNum)
+        ri <- which(tipNum %in% lx)
+       # rx <- tipNum[ri]
+        return(ri)
     })
 
-    ## generate values for nodes from their descendant leaves
+    ## generate values for internal nodes from their descendant leaves
     # assays
     tabNA <- vector("list", length = length(tabA))
     for (i in seq_along(tabA)) {
@@ -140,33 +196,16 @@ nodeValue.B <- function(data, fun = sum, message = FALSE) {
         })
         return(ri)
     })
-    rdataA <- do.call(rbind, rD)
+    rdataA <- do.call(rbind.data.frame, rD)
     rownames(rdataA) <- NULL
-
-    ## Create the node labels
-    nodeLab <- transNode(tree = tree, input = nodeA,
-                         use.alias = FALSE, message = FALSE)
-
-    ## Check whether there are duplicated values in nodeLab
-    # If yes, add another column nodeLab_alias
-    if (anyDuplicated(nodeLab)) {
-        nodeLab_alias <- transNode(tree = tree, input = nodeA,
-                                   use.alias = TRUE, message = FALSE)
-        linkD <- DataFrame(nodeLab = nodeLab,
-                           nodeLab_alias = nodeLab_alias,
-                           nodeNum = nodeA,
-                           isLeaf = nodeA %in% leaf,
-                           rowID = seq_len(nN))
-    } else {
-        linkD <- DataFrame(nodeLab = nodeLab,
-                           nodeNum = nodeA,
-                           isLeaf = nodeA %in% leaf,
-                           rowID = seq_len(nN))
-    }
+    colnames(rdataA) <- colnames(rData)
+    rdataA <- DataFrame(rdataA)
+    rdataA$nodeLab <- transNode(tree = tree, input = nodeA,
+                                use.alias = TRUE, message = FALSE)
 
 
-    mData.new <- mData
-    tse <- treeSummarizedExperiment(linkData = linkD, tree = tree,
+    mData.new <- mData[!names(mData) %in% "tree"]
+    tse <- treeSummarizedExperiment(tree = tree,
                                     assays = tabNA, metadata = mData.new,
                                     colData = cData, rowData = rdataA)
     return(tse)
@@ -175,99 +214,156 @@ nodeValue.B <- function(data, fun = sum, message = FALSE) {
 }
 
 # when data is a treeSummarizedExperiment
-nodeValue.C <- function(data, fun = sum, message = FALSE) {
+nodeValue.C <- function(data, fun = sum, message = FALSE,
+                        level = NULL, col.linkData = "nodeNum") {
+
     if (!is(data, "treeSummarizedExperiment")) {
         stop("\n data should be a leafSummarizedExperiment. \n")
     }
 
+    # =========================================================================
+    if (message) {cat("Determine the level on the tree...")}
+    ## Extract the colum used to do aggregation from the link data
+    lk <- linkData(data)
+    av <- lk[[col.linkData]]
 
-    # extract table and tree from treeSummarizedExperiment.
-    tree <- treeData(data)
-    tabA <- assays(data, use.nodeLab = TRUE)
-    rData <- rowData(data, use.names = FALSE)
-    lData <- linkData(data)
-    cData <- colData(data)
-    mData <- metadata(data)
+    ## Decide the knots
+    if (!is.null(level)) {
+        isOut <- !level %in% av
+        if (any(isOut)) {
+            stop(level[isOut], " can't be found in the specified column ",
+                 col.linkData, "\n")
+        }
 
-    # leaf nodes and internal nodes
-    emat <- tree$edge
-    leaf <- setdiff(emat[, 2], emat[, 1])
-    nodeI <- setdiff(emat[, 1], leaf)
-    nodeA <- c(leaf, nodeI)
+        # the value indexed
+        ind <- which(av %in% level)
+    } else {
+        ind <- seq_along(av)
+     }
 
-    ## all nodes
-    nN <- length(nodeA)
+    av <- av[ind]
+    nd <- lk[["nodeNum"]][ind]
 
-    # find the rows of descendants
-    leafRow <- lapply(seq_along(nodeA), FUN = function(x) {
-        # get a node
-        xx <- nodeA[x]
 
-        # find its descendant leaves
-        lx <- findOS(tree = tree, ancestor = xx,
-                     only.Tip = TRUE, self.include = TRUE,
-                     use.alias = TRUE)
+    if (col.linkData %in% c("nodeNum", "nodeLab", "nodeLab_alias")) {
+        lnd <- findOS(tree = treeData(data), ancestor = nd,
+                          only.leaf = TRUE, self.include = TRUE,
+                          use.alias = TRUE, message = FALSE)
+        knot <- as.list(level)
+    } else {
+        lnd <- base::split(x = nd, f = av)
+        knot <- lapply(seq_along(lnd), FUN = function(x) {
+            if (message) {cat(x, " out of ", length(lnd), "\n")}
+            vx <- lnd[[x]]
+            if (length(vx)) {
+                xx <- signalNode(tree = treeData(data), node = vx,
+                                 use.alias = FALSE)
+            } else {
+                xx <- numeric(0)
+            }
+            return(xx)
+        })
+    }
 
-        # find the rows of descendant leaves in the assay table
-        ind <- match(lx, lData[["nodeNum"]])
-        rx <- lData[["rowID"]][ind]
-        return(rx)
+    idK <- lapply(seq_along(lnd), FUN = function(x) {
+        ix <- lnd[[x]]
+        ik <- lk[["rowID"]][ix]
+        unlist(ik)
     })
-
-    ## generate values for nodes from their descendant leaves
+    # =========================================================================
+    if (message) { cat("Aggregate the tables in assays... \n")}
+    ## Do aggregation on tables of assays
     # assays
-    tabNA <- vector("list", length = length(tabA))
-
+    tabA <- assays(data, use.nodeLab = TRUE)
+    aggK <- vector("list", length = length(tabA))
     for (i in seq_along(tabA)) {
-        tabL.i <- lapply(leafRow, FUN = function(x) {
+        tabL.i <- lapply(idK, FUN = function(x) {
             tabA.i <- tabA[[i]]
             xi <- tabA.i[x, , drop = FALSE]
             ri <- apply(xi, 2, fun)
             return(ri)
         })
         tab.i <- do.call(rbind, tabL.i)
-        tabNA[[i]] <- tab.i
+        aggK[[i]] <- tab.i
 
     }
 
-    # rowData
-    rD <- lapply(leafRow, FUN = function(x) {
-        xi <- rData[x, , drop = FALSE]
-        ri <- apply(xi, 2, FUN = function(x) {
-            ui <- unique(x)
-            si <- ifelse(length(ui) > 1, NA, ui)
-            return(si)
+    # =========================================================================
+    if (message) { cat("Aggregate the row data... \n")}
+    ## do aggregation on rowData
+    rData <- rowData(data)
+    if (ncol(rData)) {
+        listD1 <- lapply(idK, FUN = function(x){
+            rData[x, , drop = FALSE]
         })
-        return(ri)
-    })
-    rdataA <- do.call(rbind, rD)
-    rownames(rdataA) <- NULL
 
-    ## Create the node labels
-    nodeLab <- transNode(tree = tree, input = nodeA,
-                         use.alias = FALSE, message = FALSE)
+        listD2 <- lapply(listD1, FUN = function(x){
+            as.list(x)
+        })
 
-    if (anyDuplicated(nodeLab)) {
-        nodeLab_alias <- transNode(tree = tree, input = nodeA,
-                                   use.alias = TRUE, message = FALSE)
-        linkD <- DataFrame(nodeLab = nodeLab,
-                           nodeLab_alias = nodeLab_alias,
-                           nodeNum = nodeA,
-                           isLeaf = nodeA %in% leaf,
-                           rowID = seq_len(nN))
+        listD3 <- rapply(listD2, f = function(x) {
+            xx <- unique(x)
+            ifelse(length(xx) > 1, NA, xx)
+        }, how = "list")
+
+        listD4 <- lapply(listD3, FUN = function(x) {
+            xx <- do.call(cbind.data.frame, x)
+            colnames(xx) <- names(x)
+            xx
+        })
+
+        rDataA <- do.call(rbind, listD4)
+        rownames(rDataA) <- NULL
     } else {
-        linkD <- DataFrame(nodeLab = nodeLab,
-                           nodeNum = nodeA,
-                           isLeaf = nodeA %in% leaf,
-                           rowID = seq_len(nN))
+        rDataA <- rData[rep(1, nrow(aggK[[1]])), ]
+    }
+    rDataA <- DataFrame(rDataA)
+    rownames(rDataA) <- names(lnd)
+    # =========================================================================
+    if (message) { cat("Aggregate the link data ... \n")}
+    ## do aggregation on linkData
+    # lkData <- linkData(data)
+    # lkData <- lkData[lkData$isLeaf, ]
+    # if (is.null(lkData$nodeLab_alias)) {
+    #     rownames(lkData) <- lkData$nodeLab
+    # } else {
+    #     rownames(lkData) <- lkData$nodeLab_alias
+    # }
+    #
+    # treeD <- treeData(data)
+    # nkData <- nodeValue.A(data = data.frame(lkData),
+    #                       fun = function(x) {
+    #     ux <- unique(x)
+    #     ux <- as.charactor(ux)
+    #     ifelse(length(ux) == 1, ux, NA)
+    # }, tree = treeD, message = message, level = nd)
+
+
+
+    if (message) { cat("Output the new treeSummarizedExperiment... \n")}
+
+    lenK <- unlist(lapply(knot, length))
+    if (any(lenK > 1)) {
+        # Give warning if a knot includes more than one branch and output
+        # results as a summarizedExperiment object
+        ik <- lenK > 1
+        iav <- unique(av[which(ik %in% TRUE)])
+        warning(paste(iav, collapse = " "),
+                ": each has nodes on different branches. \n")
+        out <- SummarizedExperiment(assays = aggK, metadata = metadata(data),
+                                    colData = colData(data), rowData = rDataA)
+        warning("The output is a SummarizedExperiment object.")
+    } else {
+        rDataA$nodeLab <- transNode(tree = treeData(data), input = unlist(knot),
+                                    use.alias = TRUE, message = FALSE)
+
+        out <- treeSummarizedExperiment(tree = treeData(data),
+                                        linkData = linkData(data),
+                                        assays = aggK, metadata = metadata(data),
+                                        colData = colData(data), rowData = rDataA)
     }
 
-
-    mData.new <- mData
-    tse <- treeSummarizedExperiment(linkData = linkD, tree = tree,
-                                    assays = tabNA, metadata = mData.new,
-                                    colData = cData, rowData = rdataA)
-    return(tse)
+    return(out)
 
 }
 
@@ -287,6 +383,17 @@ nodeValue.C <- function(data, fun = sum, message = FALSE) {
 #' at its descendant leaf nodes. The default is sum.
 #' @param tree An optional argument. Only need if \code{data} is a data frame or
 #'   matrix.
+#' @param level A vector of nodes. This indicates the level to which the
+#'   aggregation is made. For example, a tree has two main branches (A & B).
+#'   Each branch (A or B) has multiple sub-branches. If the aggregation to the
+#'   two main branches is desired, we could use \code{ level = c(A, B)},
+#'   \code{level = A} or \code{level = B}. In other words, users could specify
+#'   the level by provide some branches that covers parts of the tree. The rest
+#'   part of the tree is pruned automactially with the minimum number of
+#'   branches.
+#' @param ... The additional argument allows only for
+#'   \code{treeSummarizedExperiment}.
+#' @param col.linkData the column names from \code{linkData}.
 #' @param message A logical value. The default is TRUE. If TRUE, it will print
 #'   out the currenet status of a process.
 #' @importFrom utils head flush.console
@@ -305,7 +412,12 @@ nodeValue.C <- function(data, fun = sum, message = FALSE) {
 #' @examples
 #' data("tinyTree")
 #' if (require(ggtree)) {
-#' (p <- ggtree(tinyTree) + geom_text(aes(label = label)))
+#' ## The node labels are in orange and the node numbers are in blue
+#' (ggtree(tinyTree,branch.length = 'none')+
+#'     geom_text2(aes(label = label), color = "darkorange",
+#'            hjust = -0.1, vjust = -0.7) +
+#'     geom_text2(aes(label = node), color = "darkblue",
+#'                hjust = -0.5, vjust = 0.7))
 
 #' set.seed(1)
 #' count <- matrix(rpois(100, 10), nrow =10)
@@ -313,22 +425,35 @@ nodeValue.C <- function(data, fun = sum, message = FALSE) {
 #' colnames(count) <- paste(c("C1_", "C2_"),
 #' c(1:5, 1:5), sep = "")
 #'
-#' count_tinyTree <- nodeValue(data = count,
-#' tree = tinyTree, fun = sum)
+#' ## if the level isn't specified, the aggregation is made at each level
+#' (agg1 <- nodeValue(data = count, tree = tinyTree,
+#'                   fun = sum, level = NULL))
+#'
+#' ## specify the level that the aggregation should be made to
+#'  # 13 (a branch); 16 (a branch); 9 & 10 (are automatically found and
+#'  #  separate because they are not in a same branch)
+#' (agg2 <- nodeValue(data = count, tree = tinyTree,
+#'                   fun = sum, level = c(13, 16)))
+#'
+#'  # 13 (a branch); 15, 10 (are automatically found and
+#'  #  separate because they are not in a same branch)
+#' (agg3 <- nodeValue(data = count, tree = tinyTree,
+#'                   fun = sum, level = c(13)))
 #'
 #' # check to see whether the count of an internal node is the sum
 #' # of counts of its descendant leaves.
 #' # here, check the first sample as an example
 #'
-#' nod <- transNode(tree = tinyTree, input = rownames(count_tinyTree),
+#' nod <- transNode(tree = tinyTree, input = rownames(agg1),
 #'                  message = FALSE)
-#' d <- cbind.data.frame(node = nod, count = count_tinyTree[, 1])
+#' d <- cbind.data.frame(node = nod, count = agg1[, 1])
 #'
 #' ggtree(tinyTree) %<+% d + geom_text2(aes(label = count))
 #'}
 #'
 setGeneric("nodeValue", function(data, fun = sum,
-                                 tree, message = FALSE) {
+                                 tree, message = FALSE,
+                                 level = NULL, ...) {
     standardGeneric("nodeValue")
 })
 
@@ -350,3 +475,4 @@ setMethod("nodeValue",
 setMethod("nodeValue",
           signature(data = "treeSummarizedExperiment"),
           nodeValue.C)
+

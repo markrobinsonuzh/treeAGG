@@ -256,6 +256,8 @@ leafSummarizedExperiment <- function(tree, ...) {
 #'   \item \strong{isLeaf} It indicates whether the node is a leaf node
 #'   \item \strong{rowID} The corresponding row number of the matrix-like
 #'   elements in \code{assays} }
+#' @param message A logical value. Defaut is FALSE. If TRUE, the running process
+#'   is given.
 #' @inheritParams SummarizedExperiment::SummarizedExperiment
 #' @importFrom SummarizedExperiment SummarizedExperiment rowData
 #' @importFrom S4Vectors DataFrame
@@ -286,101 +288,177 @@ leafSummarizedExperiment <- function(tree, ...) {
 #'                                 assays = list(count),
 #'                                 colData = sampC)
 #'
+#' # if there are data to be put in the linkData
+#' tax <- data.frame(family = rep(LETTERS[1:2], each = 5))
+#' tax$nodeLab <- tinyTree$tip.label
+#' ntse <- treeSummarizedExperiment(tree = tinyTree,
+#'                                 assays = list(count),
+#'                                 colData = sampC,
+#'                                 linkData = tax)
+#'
 treeSummarizedExperiment <- function(tree = NULL, linkData = NULL,
+                                     message = FALSE, update.all = TRUE,
                                      ...){
 
     # -------------------------------------------------------------------------
-    # create a SummarizedExperiment object
+    ## create a SummarizedExperiment object
     se <- SummarizedExperiment(...)
 
     # -------------------------------------------------------------------------
-    # tree is a phylo object
+    ## tree: a phylo object
     if(!inherits(tree, "phylo")) {
         stop(tree, ": A phylo object is required", "\n")
     }
 
     # -------------------------------------------------------------------------
-    # The labels of tree nodes should be unique
-    treeLab <- c(tree$tip.label, tree$node.label)
-    tipLab <- tree$tip.label
-    isDp <- duplicated(tipLab)
-    anyDp <- any(isDp)
-    if (anyDp) {
-        stop("\n Can not distinguish nodes with the same label: ",
-             head(tipLab[isDp])," \n")
+    ## create linkData: the number of rows equals to the number of nodes
+    # the nodes
+    if (message) {cat("Collect the information of nodes from the tree... \n")}
+
+    emat <- tree$edge
+    leaf <- setdiff(emat[, 2], emat[, 1])
+    leaf <- sort(leaf)
+    nodeI <- setdiff(emat[, 1], leaf)
+    nodeI <- sort(nodeI)
+    nodeA <- c(leaf, nodeI)
+
+    ## Create the main part of the link data
+    labA <- transNode(tree = tree, input = nodeA,
+                      use.alias = FALSE, message = FALSE)
+    if (anyDuplicated(labA)) {
+        # provide the alias of node labels if there are duplicated values
+        labA_a <- transNode(tree = tree, input = nodeA,
+                            use.alias = TRUE, message = FALSE)
+        linkD <- DataFrame(nodeNum = nodeA, nodeLab = labA,
+                           nodeLab_alias = labA_a,
+                           isLeaf = nodeA %in% leaf)
+    } else {
+        linkD <- DataFrame(nodeNum = nodeA, nodeLab = labA,
+                           isLeaf = nodeA %in% leaf)
     }
 
-    # -------------------------------------------------------------------------
-    ### create link data
-    if (is.null(linkData)) {
+    ## Create the extra part of the link data from the provided linkData
+    if (!is.null(linkData)) {
+        # message
+        if (message) {cat("Combine the linkData provided... \n")}
 
-        # (1) if the nodeLab column exist, they should match with the labels of
-        # tree nodes.
-        nodeLab <- rowData(se)$nodeLab
-        if (!is.null(nodeLab)) {
-            # keep only rows that could be assigned to the nodes of tree
-            isIn <- nodeLab %in% treeLab
-            isOut <- !isIn
-            if (sum(isOut) > 0) {
-                message(sum(isOut), "rows are removed. They can't be matched to
-                    any node of the tree. \n")}
-            se <- se[isIn, ]
-            newLab <- rowData(se)$nodeLab
-            }
-
-        # (2) if the nodeLab column doesn't exist, rownames should match with
-        # the labels of tree leaves.
-        if (is.null(nodeLab)) {
-            rowNam <- rownames(se)
-
-            # if neither nodeLab nor rownames are provided, return error.
-            if (is.null(rowNam)) {
-                stop("Either a nodeLab column or row names should be
-                     provided for row data \n.")}
-            # keep only rows that could be assigned to the nodes of tree
-            isIn <- rowNam %in% treeLab
-            isOut <- !isIn
-            if (sum(isOut) > 0) {
-                message(sum(isOut), " rows are removed. They cannot be maped to
-                    any node of the tree. \n")}
-            se <- se[isIn, ]
-            newLab <- rownames(se)
-            }
-
-        # create linkD
-        linkD <- DataFrame(nodeLab = newLab,
-                           nodeNum = transNode(tree = tree,
-                                               input = newLab,
-                                               message = FALSE),
-                           isLeaf = newLab %in% tree$tip.label,
-                           rowID = seq_len(length(newLab)))
-
-        # create column nodeLab_alias, if there are duplicated value in the
-        # nodeLab column
-        if (any(duplicated(linkD$nodeLab))) {
-            linkD$nodeLab_alias <- paste("Node_", linkD$nodeNum, sep = "")
+        linkData <- DataFrame(lapply(linkData, as.character))
+        labLK <- linkData$nodeLab_alias
+        if (is.null(labLK)) {
+            labLK <- linkData$nodeLab
         }
+        if (is.null(labLK)) {
+            stop("A column (nodeLab) or row names should be provided in linkData. \n ")
+        }
+        rownames(linkData) <- labLK
+
+        # check wehther the linkData for the same node is the same
+        numLK <- transNode(tree = tree, input = labLK,
+                           use.alias = FALSE, message = FALSE)
+        ind1 <- duplicated(linkData)
+        ind2 <- duplicated(numLK)
+        ind3 <- ind1 != ind2
+        if (any(ind3)) {
+            lab <- transNode(tree = tree, input = numLK[ind3],
+                             use.alias = FALSE, message = FALSE)
+            stop("The linkData provided for the nodes ",
+                 lab, " are different. \n")
+        }
+
+        # remove duplicated data
+        linkN <- linkData[, !colnames(linkData) %in% colnames(linkD),
+                          drop = FALSE]
+        linkN$numLK <- numLK
+        linkN <- linkN[!duplicated(linkN), ]
+
+        # include the given linkData as the extra part of link data
+        linkC <- linkN[rep(1, nrow(linkD)), ]
+        linkC[] <- NA
+        ind4 <- match(linkD$nodeNum, linkN$numLK)
+        linkC <- linkN[ind4, !names(linkN) %in% "numLK"]
+
+        # update nodes based on the given linkData
+        if (message) {cat("Update nodes that are not in the linkData... \n")}
+        # if (update.all) {
+        ind5 <- which(is.na(ind4))
+        if (length(ind5)) {
+            numOt <- linkD$nodeNum[ind5]
+            funU <- function(x) {
+                ux <- unique(x)
+                ifelse(length(ux) == 1, ux, NA)
+            }
+            linkAD <- nodeValue.A(data = linkData, fun = funU,
+                                  tree = tree, message = message,
+                                  level = numOt)
+            linkC[ind5, ] <- linkAD[, !names(linkAD) %in% "nodeLab"]
+        }
+
+        #}
+        linkA <- cbind(linkD, linkC)
 
         } else {
-            # if linkData is provided, then use it as linkData
-            linkD <- linkData
+        linkA <- linkD
+    }
 
-            # create column nodeLab_alias, if there are duplicated value in the
-            # nodeLab column
-            if (any(duplicated(linkD$nodeLab))) {
-                linkD$nodeLab_alias <- paste("Node_", linkD$nodeNum, sep = "")
-            }
+    # add rowID to store information about the map information between rows of
+    # assays and nodes of tree
+    # (1) if the nodeLab column exist, they should match with the labels of
+    # tree nodes.
+    if (message) {cat("Generate the rowID column in the link data... \n")}
+    labRD <- rowData(se)$nodeLab
+    if (!is.null(labRD)) {
+        numRD <- transNode(tree = tree, input = labRD,
+                           use.alias = FALSE, message = FALSE)
+        # keep only rows that could be mapped to nodes of tree
+        isIn <- numRD %in% linkA$nodeNum
+        isOut <- !isIn
+        if (sum(isOut) > 0) {
+            message(sum(isOut), "rows are removed. They can't be matched to
+                    any node of the tree. \n")}
+        se <- se[isIn, ]
+        rowID <- lapply(seq_along(linkA$nodeNum), FUN = function(x) {
+            numRDL <- numRD[isIn]
+            match(x, numRDL)
+            #which(numRDL %in% x)
+            })
+        linkA$rowID <- rowID
         }
+
+    # (2) if the nodeLab column doesn't exist, rownames should match with
+    # the labels of tree leaves.
+    if (is.null(labRD)) {
+        # the row names
+        labRN <- rownames(se)
+        # if neither nodeLab nor rownames are provided, return error.
+        if (is.null(labRN)) {
+            stop("Either a nodeLab column or row names should be
+                     provided for row data \n.")}
+        # label to number
+        numRN <- transNode(tree = tree, input = labRN,
+                           use.alias = FALSE, message = FALSE)
+
+        # keep only those could be mapped to nodes of the tree
+        isIn <- numRN %in% linkA$nodeNum
+        isOut <- !isIn
+        if (sum(isOut) > 0) {
+            message(sum(isOut), " rows of assays are removed.
+                    They cannot be maped to any node of the tree. \n")}
+        se <- se[isIn, ]
+        rowID <- lapply(seq_along(linkA$nodeNum), FUN = function(x) {
+            numRNL <- numRN[isIn]
+            match(x, numRNL)
+            #which(numRDL %in% x)
+        })
+        linkA$rowID <- rowID
+    }
 
     # -------------------------------------------------------------------------
     # create treeSummarizedExperiment
     rowData(se) <- rowData(se)[, colnames(rowData(se)) != "nodeLab",
                                drop = FALSE]
     tse <- new("treeSummarizedExperiment", se,
-               linkData = linkD, treeData = tree)
+               linkData = linkA, treeData = tree)
 
     return(tse)
-
-
-
 }
+

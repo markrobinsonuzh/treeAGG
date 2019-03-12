@@ -86,7 +86,7 @@ transNode <- function(tree, input, use.alias = FALSE,
     inAlias <- all(input %in% nodeLab_alias)
     if (is.character(input)) {
         if (!any(inLab, inAlias)) {
-            cat(setdiff(input, nodeLab),
+            cat(head(setdiff(input, nodeLab)),
                 " can't be matched to any node label of the tree. \n")
             stop("Either the node label or the alias of node label should be
                  provided, but not a mixture of them. \n")
@@ -99,10 +99,12 @@ transNode <- function(tree, input, use.alias = FALSE,
     if (is.character(input)) {
         if (inLab) {
             names(nodeA) <- nodeLab
-            final <- nodeA[input]
+            final <- nodeA[names(nodeA) %in% input]
+            final <- final[input]
         } else {
             names(nodeA) <- nodeLab_alias
-            final <- nodeA[input]
+            final <- nodeA[names(nodeA) %in% input]
+            final <- final[input]
         }
     }
 

@@ -52,7 +52,7 @@ rmDesc <- function(tree, node, use.alias = FALSE) {
     ListTip <- lapply(as.list(node),
                       FUN = function(x) {
                           findOS(ancestor = x, tree = tree,
-                                 only.Tip = TRUE, self.include = TRUE)
+                                 only.leaf = TRUE, self.include = TRUE)
     })
 
     # remove duplicates

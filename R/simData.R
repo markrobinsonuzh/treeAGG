@@ -149,7 +149,8 @@ simData <- function(tree = NULL, data = NULL,
         if (is.null(tree) | is.null(data)) {
             stop("tree or data is not provided")
         } else {
-            obj <- .doData(tree = tree, data = data, scenario = scenario,
+            obj <- .doData(tree = tree, data = data,
+                           scenario = scenario,
                           from.A = from.A, from.B = from.B,
                           minTip.A = minTip.A, maxTip.A = maxTip.A,
                           minTip.B = minTip.B, maxTip.B = maxTip.B,
@@ -161,33 +162,39 @@ simData <- function(tree = NULL, data = NULL,
     # -------------------------------------------------------------------------
     # provide obj
     } else {
-        if(!is(obj, "leafSummarizedExperiment")){
-            stop("obj should be a leafSummarizedExperiment object.")
-        } else{
+        # if(!is(obj, "leafSummarizedExperiment")){
+        #     stop("obj should be a leafSummarizedExperiment object.")
+        # } else{
             # -------------------------------
             # don't use tree & data argument
-            if ((!is.null(tree)) |
-                (!is.null(data)) ) {
-                stop("Set tree = NULL and data = NULL when obj is a
-                     leafSummarizedExperiment object. \n")
-            }
+            # if ((!is.null(tree)) |
+            #     (!is.null(data)) ) {
+            #     stop("Set tree = NULL and data = NULL when obj is a
+            #          leafSummarizedExperiment object. \n")
+            # }
 
             # confirme that the dirichlet multinomial parameters are available.
             # otherwise, estimate them.
-            pars <- metadata(obj)$assays.par
+#            pars <- metadata(obj)$assays.par
+             pars <- obj$assays.par
             if (is.null(pars)) {
                 obj <- parEstimate(data = obj)
                 pars <- metadata(obj)$assays.par
+                tree <- metadata(obj)$tree
+
+                if(length(assays(obj)) > 1){
+                    message("\n more than one table provided in the assays;
+                            only the first one would be used. \n")}
+                data <- assays(obj)[[1]]
             }
+
+
             # -------------------------------
             # data isn't provided, use obj assays data
             # if more than one table in assays, use the first one
-            if(length(assays(obj)) > 1){
-                message("\n more than one table provided in the assays;
-                            only the first one would be used. \n")}
-            data <- assays(obj)[[1]]
-        }
-        obj <- .doData(tree = metadata(obj)$tree, data = pars,
+
+#        }
+        obj <- .doData(tree = tree, data = pars,
                       scenario = scenario, from.A = from.A,
                       from.B = from.B,
                       minTip.A = minTip.A, maxTip.A = maxTip.A,
@@ -428,12 +435,16 @@ simData <- function(tree = NULL, data = NULL,
     nam2 <- transNode(tree = tree, input = val1, use.alias = TRUE,
                       message = FALSE)
     names(pars) <- nam2
+# df <- data.frame(pr = pars, nodeLab = nam1,
+#                  nodNum = val1, nodeLab_alias = nam2)
 
-    # proportion of internal nodes
+# proportion of internal nodes
     leaf <- setdiff(tree$edge[, 2], tree$edge[, 1])
+    leaf <- sort(leaf)
     nodI <- setdiff(tree$edge[, 1], leaf)
-    desI <- lapply(nodI, findOS, tree = tree,
-                   only.Tip = TRUE,
+    nodI <- sort(nodI)
+    desI <- findOS(tree = tree, ancestor = nodI,
+                   only.leaf = TRUE,
                    self.include = TRUE,
                    use.alias = TRUE)
     desI <- lapply(desI, names)
@@ -591,12 +602,14 @@ simData <- function(tree = NULL, data = NULL,
 
     # nodes
     leaf <- setdiff(tree$edge[, 2], tree$edge[, 1])
+    leaf <- sort(leaf)
     nodI <- setdiff(tree$edge[, 1], leaf)
+    nodI <- sort(nodI)
     nodA <- c(leaf, nodI)
 
     # find descendants
-    desI <- lapply(nodI, findOS, tree = tree,
-                   only.Tip = TRUE,
+    desI <- findOS(tree = tree, ancestor = nodI,
+                   only.leaf = TRUE,
                    self.include = TRUE,
                    use.alias = TRUE)
     desI <- lapply(desI, names)
@@ -669,7 +682,9 @@ simData <- function(tree = NULL, data = NULL,
                  ratio = 1, adjB = NULL, pct = 1) {
     # nodes
     leaf <- setdiff(tree$edge[, 2], tree$edge[, 1])
+    leaf <- sort(leaf)
     nodI <- setdiff(tree$edge[, 1], leaf)
+    nodI <- sort(nodI)
     nodA <- c(leaf, nodI)
 
     # beta
@@ -680,22 +695,22 @@ simData <- function(tree = NULL, data = NULL,
     ## the label of nodes on branch A
     # leaves
     tip.A <- findOS(tree = tree, ancestor = branchA,
-                   only.Tip = TRUE, self.include = TRUE,
+                   only.leaf = TRUE, self.include = TRUE,
                    use.alias = TRUE)
     tip.A <- names(tip.A)
     # nodes
     nodA.A <- findOS(tree = tree, ancestor = branchA,
-                    only.Tip = FALSE, self.include = TRUE,
+                    only.leaf = FALSE, self.include = TRUE,
                     use.alias = TRUE)
     nodA.A <- names(nodA.A)
     # internal nodes
     nodI.A <- setdiff(nodA.A, tip.A)
 
     # descendants of internal nodes
-    des.IA <- lapply(nodI.A, findOS, tree = tree,
-                   only.Tip = TRUE,
-                   self.include = TRUE,
-                   use.alias = TRUE)
+    des.IA <- findOS(tree = tree, ancestor = nodI.A,
+                     only.leaf = TRUE,
+                     self.include = TRUE,
+                     use.alias = TRUE)
     des.IA <- lapply(des.IA, names)
 
     # tip proportions estimated from real data
@@ -712,7 +727,7 @@ simData <- function(tree = NULL, data = NULL,
     if (scenario == "S1") {
         # leaves on branch B
         tip.B <- findOS(tree = tree, ancestor = branchB,
-                       only.Tip = TRUE, self.include = TRUE,
+                       only.leaf = TRUE, self.include = TRUE,
                        use.alias = TRUE)
         tip.B <- names(tip.B)
         beta[tip.A] <- ratio
@@ -724,7 +739,7 @@ simData <- function(tree = NULL, data = NULL,
     # increase or decrease)
     if (scenario == "S2") {
         tip.B <- findOS(tree = tree, ancestor = branchB,
-                       only.Tip = TRUE, self.include = TRUE,
+                       only.leaf = TRUE, self.include = TRUE,
                        use.alias = TRUE)
         tip.B <- names(tip.B)
 
@@ -781,7 +796,7 @@ simData <- function(tree = NULL, data = NULL,
                  Try another branchA or another max of ratio... \n")
         }
         tip.B <- findOS(tree = tree, ancestor = branchB,
-                        only.Tip = TRUE, self.include = TRUE,
+                        only.leaf = TRUE, self.include = TRUE,
                         use.alias = TRUE)
         tip.B <- names(tip.B)
         sumB <- sum(pars[tip.B])

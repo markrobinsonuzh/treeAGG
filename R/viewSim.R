@@ -189,11 +189,7 @@ viewSim <- function(obj, layout = "rectangular", zoomScale = 1/20,
     }
 
     # find descendant leaves of input
-    inT <- lapply(input,
-                  FUN = function(x){
-                      findOS(tree = tree,
-                             ancestor = x,
-                             only.Tip = TRUE)})
+    inT <- findOS(tree = tree, ancestor = input, only.leaf = TRUE)
     inT <- unlist(inT)
     # find all leaves of tree
     allT <- setdiff(tree$edge[,2], tree$edge[, 1])

@@ -226,7 +226,7 @@ used as the row names. However, if it has duplicated values, the column
 `nodeLab_alias` is used.
 
 ```{r}
-assays(tse, use.nodeLab = TRUE)[[1]] 
+aData <- assays(tse, use.nodeLab = TRUE)[[1]] 
 ```
 
 The value at each node (from sample *A_1*) could be visualized with the
@@ -326,7 +326,7 @@ A `treeSummarizedExperiment` object could be constructed using the
 function `treeSummarizedExperiment`.
 
 ```{r}
-tseA <- treeSummarizedExperiment(tree = treeD, linkData = linkD, 
+tseA <- treeSummarizedExperiment(tree = treeD,  
                                  assays = list(aData), 
                                  rowData = rData,
                                  colData = cData, 

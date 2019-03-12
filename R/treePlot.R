@@ -138,13 +138,14 @@ treePlot <- function(tree,
                          "branch" = "Title_branch"),
                      legend.label = NULL,
                      size.line.legend = 2,
-                     size.point.legend = 3, ...) {
+                     size.point.legend = 3, size = 1, ...) {
 
     # check tree
     if (!inherits(tree, "phylo")) {
         stop("tree: should be a phylo object")
     }
-    p <- ggtree(tree, ...)
+    # p <- ggtree(tree)
+    p <- ggtree(tree, size = size, ...)
 
     # color branch
     if (!is.null(branch)) {
@@ -254,8 +255,8 @@ treePlot <- function(tree,
     d <- p$data[, "node", drop = FALSE]
 
     # The edges selected to be colored
-    eList <- lapply(branch, findOS, tree = tree,
-                    only.Tip = FALSE, self.include = TRUE)
+    eList <- findOS(tree = tree, ancestor = branch,
+                    only.leaf = FALSE, self.include = TRUE)
     el <- unlist(lapply(eList, length))
     eList <- eList[order(el, decreasing = TRUE)]
     if (length(col.branch) == length(branch)) {
@@ -379,8 +380,10 @@ treePlot <- function(tree,
     }
     labAlias <- transNode(tree = tree, input = zoomNode,
                           use.alias = TRUE)
-    zList <- lapply(zoomNode, findOS, tree = tree,
-                    only.Tip = FALSE, self.include = TRUE)
+    zList <- findOS(tree = tree, ancestor = zoomNode,
+                    only.leaf = FALSE, self.include = TRUE)
+
+    if (!is.list(zList)) {zList <- list(zList)}
     names(zList) <- labAlias
     z_len <- unlist(lapply(zList, length))
 
@@ -406,7 +409,8 @@ treePlot <- function(tree,
     # the nodes to be zoomed in
     nodZ <- findAncestor(tree = tree, node = zoomNode,
                          level = zoomLevel)
-    names(nodZ) <- names(zoomScale) <- labAlias
+    nodLZ <- transNode(tree = tree, input = nodZ, use.alias = TRUE)
+    names(nodZ) <- names(zoomScale) <- nodLZ
 
     # remove nodes which are the descendants of the others
     nodZW <- rmDesc(node = nodZ, tree = tree, use.alias = TRUE)
@@ -501,7 +505,12 @@ treePlot <- function(tree,
 
 .sizeScale <- function(col.point, size.point,
                       legend.label, legend.title,
-                      size.point.legend, legend) {
+                      size.point.legend, legend, ...) {
+    ol <- list(...)
+    sl <- ol$size
+    if (!is.null(sl)) {
+        size.point <- c(sl, size.point)
+    }
     # if legend is required, correct the label with guide_legend
     if (legend) {
         ll <- list("branch" = NULL, "point" = NULL)

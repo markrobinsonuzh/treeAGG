@@ -5,7 +5,7 @@
 #' @param ancestor An internal node. It could be the node number or the node
 #'   label.
 #' @param tree A phylo object.
-#' @param only.Tip A logical value, TRUE or FALSE. The default is TRUE. If
+#' @param only.leaf A logical value, TRUE or FALSE. The default is TRUE. If
 #'   default, only the leaf nodes in the descendant nodes would be returned.
 #' @param self.include A logical value, TRUE or FALSE. The default is TRUE. If
 #'   default, the node specified in \strong{ancestor} is included. The leaf node
@@ -16,6 +16,8 @@
 #'   created by adding a prefix \code{"Node_"} to the node number if the node is
 #'   an internal node or adding a prefix \code{"Leaf_"} if the node is a leaf
 #'   node.
+#' @param message A logical value, TRUE or FALSE. The default is FALSE. It
+#'   decides whether the running process should be shown.
 #' @export
 #' @return A vector of nodes. The numeric value is the node number, and the
 #'   vector name is the corresponding node label. If a node has no label, it
@@ -34,16 +36,17 @@
 #' geom_text2(aes(label = label), color = "darkorange",
 #'            hjust = -0.1, vjust = -0.7)
 #'
-#' (tips <- findOS(tree = tinyTree, ancestor = c(17), only.Tip = TRUE))
+
+#' (tips <- findOS(tree = tinyTree, ancestor = 17, only.leaf = TRUE))
+
 
 findOS <- function(tree,
                    ancestor,
-                   only.Tip = TRUE,
+                   only.leaf = TRUE,
                    self.include = TRUE,
-                   use.alias = FALSE) {
-    if (length(ancestor) > 1) {
-        stop("ancestor should have length equal to one")
-    }
+                   use.alias = FALSE,
+                   message = FALSE) {
+
     if (!inherits(tree, "phylo")) {
         stop("tree: should be a phylo object")
     }
@@ -55,6 +58,10 @@ findOS <- function(tree,
     }
     # the edge matrix
     mat <- tree$edge
+    leaf <- setdiff(mat[, 2], mat[, 1])
+    nodeI <- setdiff(mat[, 1], leaf)
+
+    # the tree path
     matN <- matTree(tree = tree)
 
     if (is.character(ancestor)) {
@@ -63,41 +70,54 @@ findOS <- function(tree,
                           message = FALSE)
     } else {
         numA <- ancestor
-        if (!numA %in% mat) {
-            stop("Node ", numA,
+        isOut <- !numA %in% mat
+        if (any(isOut)) {
+            stop("Node ", numA[isOut],
                  " can't be found in the ",
                  deparse(substitute(tree)), "\n")
-            }
+        }
 
     }
 
     # convert to a list. (each element in the list is one path)
-    desA <- lapply(seq_len(nrow(matN)),
-                   FUN = function(x) {
-                       xx <- match(numA, matN[x, ])
-                       yy <- ifelse(is.na(xx), 0, xx)
-                       matN[x, seq_len(yy)]
-                       })
-
-    # descendants: internal nodes & tips
-    desA <- unique(unlist(desA))
-
-    # descendants: tips
-    tipA <- unique(setdiff(desA, mat[, 1]))
-
-    out <- if (self.include) {
-        if (only.Tip) {tipA} else {desA}
-    } else {
-        if (only.Tip) {
-            setdiff(tipA, numA)
-        } else {
-            setdiff(desA, numA)
+    desA <- lapply(seq_along(numA), FUN = function(x) {
+        if (message) {
+            message(x, " out of ", length(numA),
+                    "\r", appendLF = FALSE)
+            flush.console()
         }
+        xx <- numA[x]
+        loc <- which(matN == xx, arr.ind = TRUE)
+        eloc <- lapply(seq_len(nrow(loc)), FUN = function(x) {
+            xx <- loc[x, ]
+            cbind(rep(xx["row"], xx["col"]), seq_len(xx["col"]))
+        })
+        eloc <- do.call(rbind, eloc)
+        rownames(eloc) <- NULL
+        colnames(eloc) <- colnames(loc)
+        vv <- matN[eloc]
+        vv <- unique(vv)
+
+        out <- if (self.include) {
+            vv
+        } else {
+            setdiff(vv, xx)
+        }
+
+        if (only.leaf) {
+            out <- intersect(out, leaf)}
+
+        names(out) <- transNode(tree = tree, input = out,
+                                use.alias = use.alias,
+                                message = FALSE)
+        return(out)
+    })
+
+    if (length(ancestor) == 1) {
+        desA <- desA[[1]]
     }
 
+
     # final output (node number or label)
-    names(out) <- transNode(tree = tree, input = out,
-                            use.alias = use.alias,
-                            message = FALSE)
-    return(out)
+    return(desA)
 }

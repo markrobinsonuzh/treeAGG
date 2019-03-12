@@ -77,8 +77,8 @@ selNode <- function(obj = NULL, tree = NULL, data = NULL,
                       message = FALSE)
 
     # descendant leaves
-    tipI <- lapply(nodI, findOS, tree = tree,
-                   only.Tip = TRUE, self.include = TRUE)
+    tipI <- findOS(tree = tree, ancestor = nodI,
+                   only.leaf = TRUE, self.include = TRUE)
     names(tipI) <- nodeLab_alias
 
     # number of descendant leaves
@@ -139,12 +139,12 @@ selNode <- function(obj = NULL, tree = NULL, data = NULL,
             skip <- transNode(tree = tree, input = skip,
                               message = FALSE)
         }
-        tipS <- lapply(skip, findOS, tree = tree,
-                       only.Tip = TRUE, self.include = TRUE)
+        tipS <- findOS(tree = tree, ancestor = skip,
+                       only.leaf = TRUE, self.include = TRUE)
         tipS <- unlist(tipS)
 
         rmp <- vapply(st$nodeNum, FUN = function(x){
-            tx <- findOS(ancestor = x, tree = tree, only.Tip = TRUE,
+            tx <- findOS(ancestor = x, tree = tree, only.leaf = TRUE,
                          self.include = TRUE)
             ix <- intersect(tipS, tx)
             length(ix) == 0
