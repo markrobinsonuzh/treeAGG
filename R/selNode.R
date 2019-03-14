@@ -155,6 +155,12 @@ selNode <- function(obj = NULL, tree = NULL, data = NULL,
         new.st <- st
     }
 
+    if (nrow(new.st) == 0) {
+        stop("No nodes fullfill the requirements;
+             try other settings
+             for tip numbers or proportions")
+    }
+
     # return the one has the lowest proportion if all = FALSE
     if (all) {
         final <- new.st
