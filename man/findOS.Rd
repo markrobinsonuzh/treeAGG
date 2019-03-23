@@ -50,9 +50,7 @@ geom_hilight(node = 17, fill = 'steelblue', alpha = 0.5) +
 geom_text2(aes(label = label), color = "darkorange",
            hjust = -0.1, vjust = -0.7)
 
-
 (tips <- findOS(tree = tinyTree, ancestor = 17, only.leaf = TRUE))
-
 }
 \author{
 Ruizhu Huang
