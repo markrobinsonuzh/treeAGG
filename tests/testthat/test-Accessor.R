@@ -32,8 +32,8 @@ test_that("assays could extract table successfully", {
               expect_equal(assays(lse)[[1]], assays(tse)[[1]])
               expect_equal(assays(lse)[[1]], toyTable)
               expect_equal(assays(tse)[[1]], toyTable)
-              expect_equal(rownames(assays(tse, use.nodeLab = TRUE,
-                                  withDimnames = TRUE)[[1]]), rowInf$nodeLab)
+              # expect_equal(rownames(assays(tse, use.nodeLab = TRUE,
+              #                     withDimnames = TRUE)[[1]]), rowInf$nodeLab)
               expect_equal(rownames(assays(tse, use.nodeLab = FALSE,
                                            withDimnames = TRUE)[[1]]),
                            rownames(toyTable))

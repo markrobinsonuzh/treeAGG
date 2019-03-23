@@ -55,9 +55,9 @@ suppressPackageStartupMessages({
 
 data("exTree")
 
-leaf1 <- findOS(tree = exTree, ancestor = 52, only.Tip = TRUE)
+leaf1 <- findOS(tree = exTree, ancestor = 52, only.leaf = TRUE)
 l1 <- length(leaf1)
-leaf2 <- findOS(tree = exTree, ancestor = 76, only.Tip = TRUE)
+leaf2 <- findOS(tree = exTree, ancestor = 76, only.leaf = TRUE)
 l2 <- length(leaf2)
 leaf3 <- c(4, 3, 6, 14, 10, 9)
 

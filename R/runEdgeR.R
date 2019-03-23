@@ -198,6 +198,7 @@ runEdgeR <- function(obj, design = NULL, contrast = NULL,
     # reshape: convert a list into a dataFrame
     tt3 <- lapply(seq_along(tt2), FUN = function(j) {
         x <- tt2[[j]]
+        #dx <- x[[1]][, 0]
         dx <- x[[1]][, 0]
         for (i in seq_along(x)) {
             xi <- x[[i]]
