@@ -39,7 +39,7 @@ viewSim <- function(obj, layout = "rectangular", zoomScale = 1/20,
                     legend.theme = list(
                         legend.position = c(0.15, 0.6),
                         legend.background = element_rect(fill="transparent")),
-                    tip.label = FALSE, legend.title = "Abundance"){
+                    tip.label = FALSE, legend.title = "Abundance", ...){
 
     md <- metadata(obj)
     # tree
@@ -90,7 +90,7 @@ viewSim <- function(obj, layout = "rectangular", zoomScale = 1/20,
                         zoomScale = zoomScale, layout = layout,
                         legend = TRUE, legend.label = legend.label,
                         legend.theme = legend.theme,
-                        legend.title = legend.title )
+                        legend.title = legend.title, ... )
 
         if(tip.label) {
             fig <- fig %<+% d +
@@ -105,7 +105,7 @@ viewSim <- function(obj, layout = "rectangular", zoomScale = 1/20,
                          legend = TRUE,
                          legend.label = legend.label,
                          legend.theme = legend.theme,
-                         legend.title = legend.title)
+                         legend.title = legend.title, ...)
 
          fig <- fig %<+% d +
              geom_point2(aes(subset = (fc != 1),
@@ -137,7 +137,7 @@ viewSim <- function(obj, layout = "rectangular", zoomScale = 1/20,
                         legend = TRUE,
                         legend.label = legend.label,
                         legend.theme = legend.theme,
-                        legend.title = legend.title)
+                        legend.title = legend.title, ...)
         if(tip.label) {
             fig <- fig %<+% d +
                 geom_tiplab(aes(subset = (fc !=1)))
